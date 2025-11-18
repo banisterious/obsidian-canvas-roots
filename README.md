@@ -19,7 +19,7 @@ The core idea is a hybrid approach: the plugin will use the power of D3.js for a
 
 - **Relayout Command:** Recalculate and restore the D3-optimized layout with a single command if Canvas nodes are manually rearranged.
 
-- **Privacy & Obfuscation:** Optional data obfuscation for exports and canvas display. Protect PII when sharing family trees publicly, for demonstrations, or for research collaboration while preserving relationship structure.
+- **Privacy & Obfuscation:** Optional data obfuscation for exports and canvas display. Protect PII when sharing family trees publicly, for demonstrations, or for research collaboration while preserving relationship structure. Selectively obfuscate all individuals, living persons only, minors only, or combine filters for maximum privacy protection.
 
 - **YAML-First Data:** Uses native YAML frontmatter for maximum compatibility with Dataview, Bases, and other Obsidian tools.
 
