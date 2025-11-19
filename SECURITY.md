@@ -67,7 +67,7 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
    - **Never** share your vault publicly without sanitizing PII first
    - Be extremely cautious about who has access to your vault
    - Consider using separate vaults for sensitive genealogical data vs. other notes
-   - **Use the built-in obfuscation feature** (§5.5 of specification) when sharing Canvas screenshots or GEDCOM exports
+   - **Use the built-in obfuscation feature** (§5.6 of specification) when sharing Canvas screenshots or GEDCOM exports
    - The obfuscation feature protects PII while preserving family tree structure for demonstrations and collaboration
 
 3. **Cloud Sync and Backup**
@@ -229,7 +229,7 @@ Canvas Roots includes comprehensive data obfuscation capabilities designed to pr
 - **Educational Materials**: Create teaching examples protecting all living individuals
 - **Collaborative Research**: Share tree structure with researchers who need patterns, not names
 
-See the [Technical Specification §5.5](docs/specification.md#55-privacy-and-data-obfuscation) for complete details.
+See the [Technical Specification §5.6](docs/specification.md#56-privacy-and-data-obfuscation) for complete details.
 
 ## Future Security Enhancements
 
