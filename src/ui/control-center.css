@@ -75,6 +75,11 @@
 
 .crc-control-center-modal {
   padding: 0 !important;
+  width: var(--modal-width);
+  height: var(--modal-height);
+  max-width: var(--modal-max-width);
+  max-height: var(--modal-max-height);
+  overflow: hidden;
 }
 
 .crc-modal-container {
