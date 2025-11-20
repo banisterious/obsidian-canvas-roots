@@ -65,3 +65,6 @@ CLAUDE.md
 # Personal deployment scripts
 deploy.sh
 dev-deploy.sh
+
+# Test data
+gedcom_testing/

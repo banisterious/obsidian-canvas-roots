@@ -33,6 +33,8 @@ export interface CreatePersonNoteOptions {
 	directory?: string;
 	/** Whether to open the note after creation (default: false) */
 	openAfterCreate?: boolean;
+	/** Whether to add bidirectional spouse links (default: true) */
+	addBidirectionalLinks?: boolean;
 }
 
 /**
@@ -58,7 +60,7 @@ export async function createPersonNote(
 	person: PersonData,
 	options: CreatePersonNoteOptions = {}
 ): Promise<TFile> {
-	const { directory = '', openAfterCreate = false } = options;
+	const { directory = '', openAfterCreate = false, addBidirectionalLinks = true } = options;
 
 	// Generate cr_id if not provided
 	const crId = person.crId || generateCrId();
@@ -169,7 +171,7 @@ export async function createPersonNote(
 	const file = await app.vault.create(finalPath, noteContent);
 
 	// Handle bidirectional spouse linking
-	if (person.spouseCrId && person.spouseCrId.length > 0) {
+	if (addBidirectionalLinks && person.spouseCrId && person.spouseCrId.length > 0) {
 		for (const spouseCrId of person.spouseCrId) {
 			await addBidirectionalSpouseLink(app, spouseCrId, crId, directory);
 		}

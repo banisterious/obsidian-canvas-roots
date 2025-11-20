@@ -5,8 +5,9 @@ import { createPersonNote, PersonData } from '../core/person-note-writer';
 import { PersonPickerModal, PersonInfo } from './person-picker';
 import { VaultStatsService, FullVaultStats } from '../core/vault-stats';
 import { FamilyGraphService, TreeOptions } from '../core/family-graph';
-import { CanvasGenerator, LayoutOptions } from '../core/canvas-generator';
+import { CanvasGenerator, CanvasData, LayoutOptions } from '../core/canvas-generator';
 import { getLogger, LoggerFactory, type LogLevel } from '../core/logging';
+import { GedcomImporter } from '../gedcom/gedcom-importer';
 
 const logger = getLogger('ControlCenter');
 
@@ -1022,8 +1023,18 @@ export class ControlCenterModal extends Modal {
 			}
 
 			// Create canvas file
-			const canvasContent = JSON.stringify(canvasData, null, 2);
+			// Note: Obsidian uses a specific JSON format: tabs for indentation,
+			// but objects within arrays are compact (single line, no spaces)
+			const canvasContent = this.formatCanvasJson(canvasData);
 			const filePath = `${fileName}`;
+
+			// Log the actual canvas content being written
+			logger.info('canvas-generation', 'Canvas JSON content to write', {
+				contentLength: canvasContent.length,
+				contentPreview: canvasContent.substring(0, 500),
+				hasNodes: canvasContent.includes('"nodes"'),
+				hasEdges: canvasContent.includes('"edges"')
+			});
 
 			let file: TFile;
 			const existingFile = this.app.vault.getAbstractFileByPath(filePath);
@@ -1038,6 +1049,11 @@ export class ControlCenterModal extends Modal {
 				new Notice(`Created canvas: ${fileName}`);
 			}
 
+			// Wait a moment for file system to settle before opening
+			// This helps prevent race conditions where Obsidian tries to parse
+			// the canvas before the write is fully complete
+			await new Promise(resolve => setTimeout(resolve, 100));
+
 			// Open the canvas file
 			const leaf = this.app.workspace.getLeaf(false);
 			await leaf.openFile(file);
@@ -1051,10 +1067,202 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
+	 * Formats canvas data to match Obsidian's exact JSON format.
+	 *
+	 * Obsidian canvases use a specific format:
+	 * - Tabs for indentation
+	 * - Objects within arrays are compact (single line, no spaces after colons/commas)
+	 * - Top-level structure is indented with newlines
+	 *
+	 * @param data Canvas data to format
+	 * @returns Formatted JSON string matching Obsidian's format
+	 */
+	private formatCanvasJson(data: CanvasData): string {
+		const lines: string[] = [];
+		lines.push('{');
+
+		// Format nodes array
+		lines.push('\t"nodes":[');
+		data.nodes.forEach((node, index) => {
+			const compact = JSON.stringify(node);
+			const suffix = index < data.nodes.length - 1 ? ',' : '';
+			lines.push(`\t\t${compact}${suffix}`);
+		});
+		lines.push('\t],');
+
+		// Format edges array
+		lines.push('\t"edges":[');
+		data.edges.forEach((edge, index) => {
+			const compact = JSON.stringify(edge);
+			const suffix = index < data.edges.length - 1 ? ',' : '';
+			lines.push(`\t\t${compact}${suffix}`);
+		});
+		lines.push('\t],');
+
+		// Format metadata
+		lines.push('\t"metadata":{');
+		if (data.metadata?.version) {
+			lines.push(`\t\t"version":"${data.metadata.version}",`);
+		}
+		lines.push('\t\t"frontmatter":{}');
+		lines.push('\t}');
+
+		lines.push('}');
+
+		return lines.join('\n');
+	}
+
+	/**
+	 * Handle GEDCOM file import
+	 */
+	private async handleGedcomImport(
+		file: File,
+		mode: 'canvas-only' | 'vault-sync'
+	): Promise<void> {
+		try {
+			logger.info('gedcom', `Starting GEDCOM import: ${file.name}, mode: ${mode}`);
+
+			// Read file content
+			const content = await file.text();
+
+			// Create importer
+			const importer = new GedcomImporter(this.app);
+
+			// Import with options
+			const result = await importer.importFile(content, {
+				mode,
+				peopleFolder: this.plugin.settings.peopleFolder,
+				overwriteExisting: false
+			});
+
+			// Log results
+			logger.info('gedcom', `Import complete: ${result.individualsProcessed} individuals processed`);
+
+			if (result.errors.length > 0) {
+				logger.warn('gedcom', `Import had ${result.errors.length} errors`);
+				result.errors.forEach(error => logger.error('gedcom', error));
+			}
+
+			// Show summary
+			if (mode === 'vault-sync') {
+				new Notice(
+					`GEDCOM imported: ${result.notesCreated} notes created, ${result.errors.length} errors`
+				);
+			} else {
+				new Notice(
+					`GEDCOM parsed: ${result.individualsProcessed} individuals ready for visualization`
+				);
+			}
+
+			// Refresh status tab if we're in vault-sync mode
+			if (mode === 'vault-sync' && result.notesCreated > 0) {
+				this.showTab('status');
+			}
+		} catch (error) {
+			logger.error('gedcom', `GEDCOM import failed: ${error.message}`);
+			new Notice(`Failed to import GEDCOM: ${error.message}`);
+		}
+	}
+
+	/**
 	 * Show GEDCOM tab
 	 */
 	private showGedcomTab(): void {
-		this.showPlaceholderTab('gedcom');
+		const container = this.contentContainer;
+
+		// Import Card
+		const importCard = this.createCard({
+			title: 'Import GEDCOM',
+			icon: 'upload'
+		});
+
+		const importContent = importCard.querySelector('.crc-card__content') as HTMLElement;
+
+		// Import mode selection
+		const modeGroup = importContent.createDiv({ cls: 'crc-form-group' });
+		modeGroup.createEl('label', {
+			cls: 'crc-form-label',
+			text: 'Import mode'
+		});
+
+		const modeSelect = modeGroup.createEl('select', { cls: 'crc-form-input' });
+		[
+			{ value: 'vault-sync', label: 'Full vault synchronization' },
+			{ value: 'canvas-only', label: 'Canvas visualization only' }
+		].forEach(option => {
+			const opt = modeSelect.createEl('option', {
+				value: option.value,
+				text: option.label
+			});
+			if (option.value === this.plugin.settings.gedcomImportMode) {
+				opt.selected = true;
+			}
+		});
+
+		modeGroup.createDiv({
+			cls: 'crc-form-help',
+			text: 'Vault sync creates person notes for all individuals'
+		});
+
+		// File selection button
+		const fileBtn = importContent.createEl('button', {
+			cls: 'crc-btn crc-btn--primary crc-mt-4',
+			text: 'Select GEDCOM file'
+		});
+		const fileIcon = createLucideIcon('file-text', 16);
+		fileBtn.prepend(fileIcon);
+
+		// Create hidden file input
+		const fileInput = importContent.createEl('input', {
+			attr: {
+				type: 'file',
+				accept: '.ged,.gedcom',
+				style: 'display: none;'
+			}
+		});
+
+		fileBtn.addEventListener('click', () => {
+			fileInput.click();
+		});
+
+		fileInput.addEventListener('change', async (event) => {
+			const target = event.target as HTMLInputElement;
+			const file = target.files?.[0];
+			if (file) {
+				await this.handleGedcomImport(
+					file,
+					modeSelect.value as 'canvas-only' | 'vault-sync'
+				);
+			}
+		});
+
+		container.appendChild(importCard);
+
+		// Export Card
+		const exportCard = this.createCard({
+			title: 'Export GEDCOM',
+			icon: 'download'
+		});
+
+		const exportContent = exportCard.querySelector('.crc-card__content') as HTMLElement;
+
+		exportContent.createEl('p', {
+			text: 'Export your family tree data to GEDCOM format',
+			cls: 'crc-text-muted'
+		});
+
+		const exportBtn = exportContent.createEl('button', {
+			cls: 'crc-btn crc-btn--secondary crc-mt-4',
+			text: 'Export to GEDCOM'
+		});
+		const exportIcon = createLucideIcon('download', 16);
+		exportBtn.prepend(exportIcon);
+
+		exportBtn.addEventListener('click', () => {
+			new Notice('⚠️ GEDCOM export coming in Phase 3');
+		});
+
+		container.appendChild(exportCard);
 	}
 
 	/**

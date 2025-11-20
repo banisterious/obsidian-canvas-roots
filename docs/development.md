@@ -116,7 +116,7 @@ canvas-roots/
 
 | Component | Status | Purpose |
 |-----------|--------|---------|
-| `canvas-generator.ts` | 🟡 Partial | Writes family trees to `.canvas` files with metadata |
+| `canvas-generator.ts` | ✅ Complete | Writes family trees to `.canvas` files with metadata |
 | `family-graph.ts` | 🟡 Partial | Builds relationship graphs from person notes |
 | `logging.ts` | ✅ Complete | Structured logging with export capability |
 | `person-note-writer.ts` | ✅ Complete | Creates person notes with YAML frontmatter |
@@ -241,6 +241,63 @@ For instant plugin reloading without restarting Obsidian:
 2. It will automatically detect changes to `main.js` in your vault's plugin directory
 3. Use `npm run dev:deploy` to build and deploy on file changes
 4. Hot Reload will automatically reload the plugin
+
+## Canvas Generation Implementation
+
+### Canvas Node ID Format
+
+Canvas nodes require alphanumeric IDs without special characters (dashes, underscores, etc.). The plugin generates these using `Math.random().toString(36)`:
+
+```typescript
+// Good: alphanumeric only
+"6qi8mqi3quaufgk0imt33f"
+
+// Bad: contains dashes (not movable in Obsidian)
+"qjk-453-lms-042"
+```
+
+**Implementation:** The canvas generator maintains a mapping from `cr_id` (person identifier) to `canvasId` (canvas node identifier) to ensure edges connect correctly while using Obsidian-compatible IDs.
+
+### Canvas JSON Format
+
+Obsidian Canvas requires a specific JSON format:
+
+1. **Tab indentation** (`\t`) for structure
+2. **Compact objects** - each node/edge on a single line with no spaces after colons/commas
+3. **Required metadata** - version and frontmatter fields
+
+Example:
+```json
+{
+	"nodes":[
+		{"id":"abc123","type":"file","file":"Person.md","x":0,"y":0,"width":250,"height":120}
+	],
+	"edges":[],
+	"metadata":{
+		"version":"1.0-1.0",
+		"frontmatter":{}
+	}
+}
+```
+
+**Implementation:** Custom `formatCanvasJson()` method in `control-center.ts` ensures exact format match.
+
+### Known Issues & Solutions
+
+#### Issue: Canvas nodes not movable/resizable
+**Cause:** Canvas node IDs contained dashes (e.g., `qjk-453-lms-042`)
+**Solution:** Generate alphanumeric-only IDs matching Obsidian's format
+**Fixed in:** canvas-generator.ts lines 132-141
+
+#### Issue: Canvas cleared on close/reopen
+**Cause:** JSON formatting didn't match Obsidian's exact requirements
+**Solution:** Implement custom JSON formatter with tabs and compact objects
+**Fixed in:** control-center.ts lines 1067-1100
+
+#### Issue: Race condition when opening canvas
+**Cause:** Canvas opened before file system write completed
+**Solution:** Add 100ms delay before opening canvas file
+**Fixed in:** control-center.ts lines 1052-1055
 
 ## Debugging
 

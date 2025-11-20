@@ -28,6 +28,9 @@ interface CanvasNode {
  */
 interface CanvasEdge {
 	id: string;
+	styleAttributes?: Record<string, unknown>;
+	fromFloating?: boolean;
+	toFloating?: boolean;
 	fromNode: string;
 	fromSide: 'top' | 'right' | 'bottom' | 'left';
 	toNode: string;
@@ -42,6 +45,10 @@ interface CanvasEdge {
 export interface CanvasData {
 	nodes: CanvasNode[];
 	edges: CanvasEdge[];
+	metadata?: {
+		version?: string;
+		frontmatter?: Record<string, unknown>;
+	};
 }
 
 /**
@@ -122,18 +129,23 @@ export class CanvasGenerator {
 		// Generate canvas nodes
 		const canvasNodes: CanvasNode[] = [];
 		const nodeMap = new Map<string, { x: number; y: number }>();
+		const crIdToCanvasId = new Map<string, string>();
 
 		layoutRoot.each((node) => {
 			const person = node.data.person;
 			const x = opts.direction === 'vertical' ? node.x : node.y;
 			const y = opts.direction === 'vertical' ? node.y : node.x;
 
+			// Generate a canvas-compatible ID (no dashes, alphanumeric only)
+			const canvasId = this.generateId();
+			crIdToCanvasId.set(person.crId, canvasId);
+
 			// Store position for edge generation
 			nodeMap.set(person.crId, { x, y });
 
-			// Create canvas node - use cr_id as node ID so edges can reference it
+			// Create canvas node using generated canvas ID
 			canvasNodes.push({
-				id: person.crId,
+				id: canvasId,
 				type: 'file',
 				file: person.file.path,
 				x,
@@ -144,16 +156,21 @@ export class CanvasGenerator {
 			});
 		});
 
-		// Generate canvas edges
+		// Generate canvas edges using canvas IDs
 		const canvasEdges = this.generateEdges(
 			familyTree,
 			nodeMap,
+			crIdToCanvasId,
 			opts
 		);
 
 		return {
 			nodes: canvasNodes,
-			edges: canvasEdges
+			edges: canvasEdges,
+			metadata: {
+				version: '1.0-1.0',
+				frontmatter: {}
+			}
 		};
 	}
 
@@ -262,6 +279,7 @@ export class CanvasGenerator {
 	private generateEdges(
 		familyTree: FamilyTree,
 		nodeMap: Map<string, { x: number; y: number }>,
+		crIdToCanvasId: Map<string, string>,
 		options: Required<LayoutOptions>
 	): CanvasEdge[] {
 		const edges: CanvasEdge[] = [];
@@ -271,6 +289,14 @@ export class CanvasGenerator {
 			const toPos = nodeMap.get(edge.to);
 
 			if (!fromPos || !toPos) {
+				continue;
+			}
+
+			// Get canvas IDs for the nodes
+			const fromCanvasId = crIdToCanvasId.get(edge.from);
+			const toCanvasId = crIdToCanvasId.get(edge.to);
+
+			if (!fromCanvasId || !toCanvasId) {
 				continue;
 			}
 
@@ -308,9 +334,12 @@ export class CanvasGenerator {
 
 			edges.push({
 				id: this.generateId(),
-				fromNode: edge.from,
+				styleAttributes: {},
+				fromFloating: false,
+				toFloating: false,
+				fromNode: fromCanvasId,
 				fromSide,
-				toNode: edge.to,
+				toNode: toCanvasId,
 				toSide,
 				color: this.getEdgeColor(edge.type),
 				label: options.showLabels ? this.getEdgeLabel(edge.type) : undefined
