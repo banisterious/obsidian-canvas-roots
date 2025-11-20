@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-canvas-roots",
 	"version": "0.1.0",
-	"description": "Obsidian plugin for creating family trees in Canvas using D3.js layouts",
+	"description": "Obsidian plugin for creating family trees in Canvas using specialized genealogical layout algorithms",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
@@ -56,6 +56,7 @@
 		"d3": "^7.9.0",
 		"d3-dag": "^1.1.0",
 		"d3-hierarchy": "^3.1.2",
-		"d3-selection": "^3.0.0"
+		"d3-selection": "^3.0.0",
+		"family-chart": "^0.9.0"
 	}
 }

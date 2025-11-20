@@ -16,8 +16,10 @@ export interface CanvasRootsSettings {
 export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	defaultNodeWidth: 200,
 	defaultNodeHeight: 100,
-	horizontalSpacing: 50,
-	verticalSpacing: 100,
+	// Spacing values optimized for family-chart layout engine with 1.5x multiplier
+	// family-chart-layout.ts applies 1.5x multiplier: 400 * 1.5 = 600px effective horizontal spacing
+	horizontalSpacing: 400,  // Base horizontal spacing (multiplied by 1.5x in layout engine)
+	verticalSpacing: 250,    // Vertical spacing between generations (used directly)
 	autoGenerateCrId: true,
 	peopleFolder: '',
 	logExportPath: '',
@@ -74,7 +76,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 			.setName('Horizontal spacing')
 			.setDesc('Space between nodes horizontally in pixels')
 			.addText(text => text
-				.setPlaceholder('50')
+				.setPlaceholder('400')
 				.setValue(String(this.plugin.settings.horizontalSpacing))
 				.onChange(async (value) => {
 					const numValue = parseInt(value);
@@ -88,7 +90,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 			.setName('Vertical spacing')
 			.setDesc('Space between generations vertically in pixels')
 			.addText(text => text
-				.setPlaceholder('100')
+				.setPlaceholder('250')
 				.setValue(String(this.plugin.settings.verticalSpacing))
 				.onChange(async (value) => {
 					const numValue = parseInt(value);

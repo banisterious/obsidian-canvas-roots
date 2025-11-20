@@ -52,13 +52,14 @@ canvas-roots/
 ├── src/
 │   ├── settings.ts            # Plugin settings interface
 │   ├── core/                  # Core business logic
-│   │   ├── canvas-generator.ts   # Canvas JSON generation from positioned nodes ✓
-│   │   ├── family-graph.ts       # Relationship graph builder ✓
-│   │   ├── layout-engine.ts      # D3.js hierarchy layout calculations ✓
-│   │   ├── logging.ts            # Structured logging system ✓
-│   │   ├── person-note-writer.ts # Person note creation ✓
-│   │   ├── uuid.ts               # UUID generation ✓
-│   │   └── vault-stats.ts        # Vault statistics ✓
+│   │   ├── canvas-generator.ts      # Canvas JSON generation from positioned nodes ✓
+│   │   ├── family-chart-layout.ts   # Family tree layout using family-chart library ✓
+│   │   ├── family-graph.ts          # Relationship graph builder ✓
+│   │   ├── layout-engine.ts         # Original D3.js layout (deprecated) ✓
+│   │   ├── logging.ts               # Structured logging system ✓
+│   │   ├── person-note-writer.ts    # Person note creation ✓
+│   │   ├── uuid.ts                  # UUID generation ✓
+│   │   └── vault-stats.ts           # Vault statistics ✓
 │   ├── models/                # TypeScript interfaces
 │   │   ├── person.ts             # Person data structures (partial)
 │   │   └── canvas.ts             # Canvas JSON types (partial)
@@ -94,8 +95,9 @@ canvas-roots/
 |-----------|--------|---------|
 | `bidirectional-linker.ts` | ✅ Complete | Automatic relationship synchronization with dual storage |
 | `canvas-generator.ts` | ✅ Complete | Converts positioned nodes to Canvas JSON format with styling |
+| `family-chart-layout.ts` | ✅ Complete | Family tree layout using family-chart library with support for complex relationships |
 | `family-graph.ts` | ✅ Complete | Builds relationship graphs from person notes with dual storage support |
-| `layout-engine.ts` | ✅ Complete | D3.js hierarchy layout calculations for family trees |
+| `layout-engine.ts` | 🟡 Deprecated | Original D3.js hierarchy layout (superseded by family-chart-layout.ts) |
 | `logging.ts` | ✅ Complete | Structured logging with export capability and persistent log level settings |
 | `person-note-writer.ts` | ✅ Complete | Creates person notes with YAML frontmatter |
 | `uuid.ts` | ✅ Complete | UUID v4 generation for `cr_id` fields |
@@ -351,6 +353,44 @@ Example:
 **Fixed in:** gedcom-importer.ts lines 208-246 (2025-11-20)
 
 ## Design Decisions
+
+### Switch to family-chart Library (2025-11-20)
+
+**Decision:** Replaced the custom D3.js hierarchy layout engine with the family-chart library for calculating family tree positions.
+
+**Rationale:**
+- Complex spouse relationships: D3's hierarchy layout doesn't natively support multiple spouses or marriage connections, which are fundamental to genealogy
+- Overlapping nodes: The original implementation couldn't handle extended families where siblings-in-law and multiple generations created visual conflicts
+- Specialized algorithm: family-chart is purpose-built for genealogical visualization with algorithms designed for family relationships
+- Spouse positioning: family-chart automatically places spouses side-by-side at the same generation level
+- Maintained separation: Layout calculation remains separate from canvas generation, preserving the clean architecture
+
+**Implementation:**
+- Created [src/core/family-chart-layout.ts](../src/core/family-chart-layout.ts) as new layout engine
+- Integrated family-chart's `f3.calculateTree()` for position calculation
+- Added custom logic to handle "siblings-in-law" (people connected only through marriage) that family-chart excludes
+- Implemented smart ancestor selection algorithm to choose optimal tree root for best visual layout
+- Updated default spacing settings (400px horizontal, 250px vertical) with 1.5x multiplier for family-chart's algorithm
+- Maintained LayoutEngine interface compatibility for future flexibility
+
+**Challenges Solved:**
+- Overlapping nodes at generation boundaries (e.g., grandparents hiding behind parents)
+- Missing people in output when they're not in direct bloodline (siblings-in-law)
+- Inconsistent tree orientation (wrong person at top/y=0)
+- Spacing optimization for Canvas name labels
+
+**Technical Details:**
+- Uses family-chart's `ancestry_depth: undefined` and `progeny_depth: undefined` to show full family
+- Implements manual positioning strategy for missing people (place next to spouse or above children)
+- Applies 1.5x spacing multiplier to account for Canvas labels and visual clarity
+- Maintains post-processing step to enforce minimum spacing and prevent overlaps
+
+**Impact:**
+- Zero overlapping nodes in complex family trees
+- Proper handling of multiple spouses, adoptive parents, and extended family
+- More accurate genealogical representation
+- Better visual clarity with appropriate spacing
+- Original layout-engine.ts retained for potential future use or comparison
 
 ### Layout Engine Extraction (2025-11-20)
 

@@ -1024,7 +1024,8 @@ export class ControlCenterModal extends Modal {
 				nodeSpacingX: spacingX,
 				nodeSpacingY: spacingY,
 				colorByGender: true,
-				showLabels: true
+				showLabels: true,
+				useFamilyChartLayout: true  // Use family-chart for proper spouse handling
 			};
 
 			// Generate tree

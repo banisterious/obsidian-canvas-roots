@@ -1,15 +1,15 @@
-# Canvas Roots: D3-Powered Family Tree Plugin for Obsidian
+# Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-**Canvas Roots** is an Obsidian plugin that automatically generates complex, D3-calculated family trees directly onto the Canvas using structured note properties for non-overlapping layouts.
+**Canvas Roots** is an Obsidian plugin that automatically generates complex family trees directly onto the Canvas using specialized genealogical layout algorithms for non-overlapping, relationship-aware positioning.
 
 This Obsidian plugin is designed for genealogists, historians, and world-builders. It transforms structured data in your Markdown notes (relationships, dates, locations) into perfectly laid-out family trees directly on the Obsidian Canvas.
 
-The core approach is hybrid: the plugin uses the power of D3.js for advanced layout calculation, but generates the output using native Obsidian Canvas nodes and edges. This creates a beautiful, structured chart that is fully editable and linkable within the Canvas environment.
+The core approach is hybrid: the plugin uses specialized family tree layout algorithms (powered by the [family-chart](https://github.com/donatso/family-chart) library) for advanced positioning that understands spouse relationships, multiple marriages, and complex genealogical structures, but generates the output using native Obsidian Canvas nodes and edges. This creates a beautiful, structured chart that is fully editable and linkable within the Canvas environment.
 
 
 ## ✨ Key Features
 
-- **Automated Layout:** Generate precise, non-overlapping pedigree (ancestor) and descendant charts using D3.js hierarchy algorithms inspired by [family-chart](https://github.com/donatso/family-chart) logic.
+- **Automated Layout:** Generate precise, non-overlapping pedigree (ancestor) and descendant charts using specialized genealogical layout algorithms from the [family-chart](https://github.com/donatso/family-chart) library, designed specifically for complex family relationships.
 
 - **Native Canvas Nodes:** Trees are built from Obsidian file nodes, making every person immediately linkable to research notes, images, and documents on the Canvas.
 
@@ -17,7 +17,7 @@ The core approach is hybrid: the plugin uses the power of D3.js for advanced lay
 
 - **Bi-Directional Linking (Optional):** Configure automatic two-way relationship synchronization (e.g., setting a father automatically sets the child) with flexible settings for manual or automatic sync.
 
-- **Relayout Command:** Recalculate and restore the D3-optimized layout with a single command if Canvas nodes are manually rearranged.
+- **Relayout Command:** Recalculate and restore the optimized genealogical layout with a single command if Canvas nodes are manually rearranged.
 
 - **Privacy & Obfuscation:** Optional data obfuscation for exports and canvas display. Protect PII when sharing family trees publicly, for demonstrations, or for research collaboration while preserving relationship structure. Selectively obfuscate all individuals, living persons only, minors only, or combine filters for maximum privacy protection.
 
@@ -66,7 +66,7 @@ Use [Obsidian Bases](https://help.obsidian.md/bases) to manage multiple family m
 3. Open the Command Palette (`Ctrl/Cmd + P`)
 4. Run: `Canvas Roots: Generate Tree for Current Note`
 
-The plugin populates the Canvas with the D3-calculated family tree layout.
+The plugin populates the Canvas with the calculated family tree layout using specialized genealogical positioning algorithms.
 
 ### 3. Maintain the Layout
 
@@ -128,10 +128,13 @@ Canvas Roots is in active development with core functionality in place:
 - Bidirectional relationship linking
 - Structured logging system with export capability
 
-**In Progress:**
-- D3.js layout engine for automated tree positioning
-- Canvas generation from person notes
-- Re-layout command for existing canvases
-- Person picker UI component
+**Recently Completed:**
+- Genealogical layout engine using family-chart library for automated tree positioning
+- Canvas generation from person notes with proper handling of complex relationships
+- Person picker UI component with fuzzy search
+- Full tree generation workflow with spacing optimization
 
-The plugin reads the vault's file structure and will apply D3.js layout logic to safely write positional data into Canvas JSON files. The `cr_id` field ensures stable identity mapping between notes and canvas nodes.
+**In Progress:**
+- Re-layout command for existing canvases
+
+The plugin reads the vault's file structure and applies specialized family tree layout algorithms to safely write positional data into Canvas JSON files. The `cr_id` field ensures stable identity mapping between notes and canvas nodes.

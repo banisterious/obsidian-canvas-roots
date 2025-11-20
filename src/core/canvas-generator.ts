@@ -6,7 +6,8 @@
  */
 
 import { FamilyTree, PersonNode } from './family-graph';
-import { LayoutEngine, LayoutOptions } from './layout-engine';
+import { LayoutEngine, LayoutOptions, NodePosition } from './layout-engine';
+import { FamilyChartLayoutEngine } from './family-chart-layout';
 
 /**
  * Obsidian Canvas node
@@ -60,6 +61,9 @@ export interface CanvasGenerationOptions extends LayoutOptions {
 
 	/** Show relationship labels on edges */
 	showLabels?: boolean;
+
+	/** Use family-chart layout engine (better for complex trees with spouses) */
+	useFamilyChartLayout?: boolean;
 }
 
 /**
@@ -73,7 +77,8 @@ const DEFAULT_OPTIONS: Required<CanvasGenerationOptions> = {
 	direction: 'vertical',
 	treeType: 'descendant',
 	colorByGender: true,
-	showLabels: true
+	showLabels: true,
+	useFamilyChartLayout: true  // Use family-chart by default for better layouts
 }
 
 /**
@@ -81,9 +86,11 @@ const DEFAULT_OPTIONS: Required<CanvasGenerationOptions> = {
  */
 export class CanvasGenerator {
 	private layoutEngine: LayoutEngine;
+	private familyChartLayoutEngine: FamilyChartLayoutEngine;
 
 	constructor() {
 		this.layoutEngine = new LayoutEngine();
+		this.familyChartLayoutEngine = new FamilyChartLayoutEngine();
 	}
 
 	/**
@@ -95,8 +102,12 @@ export class CanvasGenerator {
 	): CanvasData {
 		const opts = { ...DEFAULT_OPTIONS, ...options };
 
-		// Calculate layout using LayoutEngine
-		const layoutResult = this.layoutEngine.calculateLayout(familyTree, opts);
+		console.log('[CanvasGenerator] useFamilyChartLayout:', opts.useFamilyChartLayout);
+
+		// Choose layout engine based on option
+		const layoutResult = opts.useFamilyChartLayout
+			? this.familyChartLayoutEngine.calculateLayout(familyTree, opts)
+			: this.layoutEngine.calculateLayout(familyTree, opts);
 
 		// Generate canvas nodes
 		const canvasNodes: CanvasNode[] = [];
@@ -272,35 +283,53 @@ export class CanvasGenerator {
 				continue;
 			}
 
-			// Determine edge sides based on direction
+			// Filter edges to reduce clutter:
+			// 1. Skip "child" edges (only show parent→child, not child→parent)
+			// 2. Skip ALL spouse edges (side-by-side positioning makes them obvious)
+			if (edge.type === 'child') {
+				continue; // Skip child edges - we'll show parent edges instead
+			}
+
+			if (edge.type === 'spouse') {
+				continue; // Skip spouse edges - visual positioning makes the relationship clear
+			}
+
+			// Determine edge sides based on direction and relationship
+			// Note: We've already filtered out 'child' edges above
 			let fromSide: 'top' | 'right' | 'bottom' | 'left';
 			let toSide: 'top' | 'right' | 'bottom' | 'left';
 
 			if (options.direction === 'vertical') {
-				// Parent-child: top to bottom
 				if (edge.type === 'parent') {
+					// Parent-child relationships: always vertical (top-bottom)
 					fromSide = 'bottom';
 					toSide = 'top';
-				} else if (edge.type === 'child') {
-					fromSide = 'top';
-					toSide = 'bottom';
 				} else {
-					// Spouse: side to side
-					fromSide = fromPos.x < toPos.x ? 'right' : 'left';
-					toSide = fromPos.x < toPos.x ? 'left' : 'right';
+					// Spouse relationships: horizontal (side-to-side)
+					// Use horizontal edges to avoid crossing vertical parent-child lines
+					if (fromPos.x < toPos.x) {
+						fromSide = 'right';
+						toSide = 'left';
+					} else {
+						fromSide = 'left';
+						toSide = 'right';
+					}
 				}
 			} else {
 				// Horizontal layout
 				if (edge.type === 'parent') {
+					// Parent-child: horizontal
 					fromSide = 'right';
 					toSide = 'left';
-				} else if (edge.type === 'child') {
-					fromSide = 'left';
-					toSide = 'right';
 				} else {
 					// Spouse: vertical
-					fromSide = fromPos.y < toPos.y ? 'bottom' : 'top';
-					toSide = fromPos.y < toPos.y ? 'top' : 'bottom';
+					if (fromPos.y < toPos.y) {
+						fromSide = 'bottom';
+						toSide = 'top';
+					} else {
+						fromSide = 'top';
+						toSide = 'bottom';
+					}
 				}
 			}
 
@@ -358,18 +387,15 @@ export class CanvasGenerator {
 
 	/**
 	 * Gets label text for edge based on relationship type
+	 *
+	 * Note: We hide all labels because:
+	 * - The visual layout (top-to-bottom for parent-child, side-by-side for spouses) makes relationships clear
+	 * - Labels clutter the diagram and cause overlaps
+	 * - Edge colors already distinguish relationship types
 	 */
-	private getEdgeLabel(type: 'parent' | 'spouse' | 'child'): string {
-		switch (type) {
-			case 'parent':
-				return 'parent';
-			case 'child':
-				return 'child';
-			case 'spouse':
-				return 'spouse';
-			default:
-				return '';
-		}
+	private getEdgeLabel(_type: 'parent' | 'spouse' | 'child'): string {
+		// Return empty string to hide all labels - visual layout is self-explanatory
+		return '';
 	}
 
 	/**
