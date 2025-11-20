@@ -61,6 +61,7 @@ docs/developer/family-chart/
 
 # Claude Code working files
 CLAUDE.md
+.session-restore.md
 
 # Personal deployment scripts
 deploy.sh
@@ -68,3 +69,6 @@ dev-deploy.sh
 
 # Test data
 gedcom_testing/
+
+# Generated log files
+canvas-roots-logs-*.json
