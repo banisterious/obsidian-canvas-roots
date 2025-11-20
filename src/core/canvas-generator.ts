@@ -2,11 +2,11 @@
  * Canvas Generator
  *
  * Converts family tree data structures into Obsidian Canvas JSON format.
- * Handles layout, positioning, styling, and edge rendering.
+ * Handles styling and edge rendering. Uses LayoutEngine for positioning.
  */
 
-import { hierarchy, tree } from 'd3-hierarchy';
-import { FamilyTree, PersonNode, FamilyEdge } from './family-graph';
+import { FamilyTree, PersonNode } from './family-graph';
+import { LayoutEngine, LayoutOptions } from './layout-engine';
 
 /**
  * Obsidian Canvas node
@@ -52,96 +52,66 @@ export interface CanvasData {
 }
 
 /**
- * Layout options for tree generation
+ * Canvas generation options (extends layout options with styling)
  */
-export interface LayoutOptions {
-	/** Horizontal spacing between nodes */
-	nodeSpacingX?: number;
-
-	/** Vertical spacing between generations */
-	nodeSpacingY?: number;
-
-	/** Node width */
-	nodeWidth?: number;
-
-	/** Node height */
-	nodeHeight?: number;
-
-	/** Tree direction */
-	direction?: 'vertical' | 'horizontal';
-
-	/** Color coding */
+export interface CanvasGenerationOptions extends LayoutOptions {
+	/** Color coding by gender */
 	colorByGender?: boolean;
 
-	/** Show relationship labels */
+	/** Show relationship labels on edges */
 	showLabels?: boolean;
 }
 
 /**
- * Default layout options
+ * Default canvas generation options
  */
-const DEFAULT_LAYOUT: Required<LayoutOptions> = {
+const DEFAULT_OPTIONS: Required<CanvasGenerationOptions> = {
 	nodeSpacingX: 300,
 	nodeSpacingY: 200,
 	nodeWidth: 250,
 	nodeHeight: 120,
 	direction: 'vertical',
+	treeType: 'descendant',
 	colorByGender: true,
 	showLabels: true
-};
-
-/**
- * Hierarchy node for D3 layout
- */
-interface TreeNode {
-	crId: string;
-	person: PersonNode;
-	children?: TreeNode[];
 }
 
 /**
  * Service for generating Obsidian Canvas JSON from family trees
  */
 export class CanvasGenerator {
+	private layoutEngine: LayoutEngine;
+
+	constructor() {
+		this.layoutEngine = new LayoutEngine();
+	}
+
 	/**
 	 * Generates Canvas JSON from a family tree
 	 */
 	generateCanvas(
 		familyTree: FamilyTree,
-		options: LayoutOptions = {}
+		options: CanvasGenerationOptions = {}
 	): CanvasData {
-		const opts = { ...DEFAULT_LAYOUT, ...options };
+		const opts = { ...DEFAULT_OPTIONS, ...options };
 
-		// Convert tree to hierarchical structure for D3
-		const treeData = this.buildHierarchy(familyTree);
-
-		// Calculate layout using D3
-		const layout = tree<TreeNode>()
-			.nodeSize([opts.nodeSpacingX, opts.nodeSpacingY])
-			.separation((a, b) => {
-				// Wider spacing for different parents
-				return a.parent === b.parent ? 1 : 1.5;
-			});
-
-		const root = hierarchy(treeData);
-		const layoutRoot = layout(root);
+		// Calculate layout using LayoutEngine
+		const layoutResult = this.layoutEngine.calculateLayout(familyTree, opts);
 
 		// Generate canvas nodes
 		const canvasNodes: CanvasNode[] = [];
 		const nodeMap = new Map<string, { x: number; y: number }>();
 		const crIdToCanvasId = new Map<string, string>();
 
-		layoutRoot.each((node) => {
-			const person = node.data.person;
-			const x = opts.direction === 'vertical' ? node.x : node.y;
-			const y = opts.direction === 'vertical' ? node.y : node.x;
+		for (const position of layoutResult.positions) {
+			const { crId, person, x, y } = position;
 
 			// Generate a canvas-compatible ID (no dashes, alphanumeric only)
 			const canvasId = this.generateId();
-			crIdToCanvasId.set(person.crId, canvasId);
+			crIdToCanvasId.set(crId, canvasId);
 
 			// Store position for edge generation
-			nodeMap.set(person.crId, { x, y });
+			nodeMap.set(crId, { x, y });
 
 			// Create canvas node using generated canvas ID
 			canvasNodes.push({
@@ -154,7 +124,7 @@ export class CanvasGenerator {
 				height: opts.nodeHeight,
 				color: opts.colorByGender ? this.getPersonColor(person) : undefined
 			});
-		});
+		}
 
 		// Generate canvas edges using canvas IDs
 		const canvasEdges = this.generateEdges(
@@ -175,112 +145,13 @@ export class CanvasGenerator {
 	}
 
 	/**
-	 * Builds hierarchical tree structure for D3 layout
-	 */
-	private buildHierarchy(familyTree: FamilyTree): TreeNode {
-		const { root, nodes, edges } = familyTree;
-
-		// Build adjacency maps for both parent->child and child->parent relationships
-		const childrenMap = new Map<string, string[]>();
-		const parentsMap = new Map<string, string[]>();
-
-		for (const edge of edges) {
-			if (edge.type === 'parent' || edge.type === 'child') {
-				const parentId = edge.type === 'parent' ? edge.from : edge.to;
-				const childId = edge.type === 'parent' ? edge.to : edge.from;
-
-				// Parent -> Children map
-				if (!childrenMap.has(parentId)) {
-					childrenMap.set(parentId, []);
-				}
-				const children = childrenMap.get(parentId)!;
-				if (!children.includes(childId)) {
-					children.push(childId);
-				}
-
-				// Child -> Parents map
-				if (!parentsMap.has(childId)) {
-					parentsMap.set(childId, []);
-				}
-				const parents = parentsMap.get(childId)!;
-				if (!parents.includes(parentId)) {
-					parents.push(parentId);
-				}
-			}
-		}
-
-		// Build tree structure based on whether we're going up (ancestors) or down (descendants)
-		const visited = new Set<string>();
-
-		const buildNode = (crId: string): TreeNode | null => {
-			if (!nodes.has(crId)) {
-				return null;
-			}
-
-			if (visited.has(crId)) {
-				// Circular reference protection - return a stub node
-				return {
-					crId,
-					person: nodes.get(crId)!,
-					children: []
-				};
-			}
-
-			visited.add(crId);
-
-			const person = nodes.get(crId)!;
-			const children: TreeNode[] = [];
-
-			// Get hierarchical children (could be actual children for descendant trees,
-			// or parents for ancestor trees)
-			const childIds = childrenMap.get(crId) || [];
-			const parentIds = parentsMap.get(crId) || [];
-
-			// For descendant trees, children go down
-			// For ancestor trees, we want to show parents as "children" in the hierarchy
-			// Check if this is an ancestor tree by seeing if root has parents
-			const isAncestorTree = parentsMap.has(root.crId);
-
-			const hierarchicalChildren = isAncestorTree ? parentIds : childIds;
-
-			for (const childId of hierarchicalChildren) {
-				if (!visited.has(childId)) {
-					const childNode = buildNode(childId);
-					if (childNode) {
-						children.push(childNode);
-					}
-				}
-			}
-
-			return {
-				crId,
-				person,
-				children
-			};
-		};
-
-		const rootNode = buildNode(root.crId);
-
-		if (!rootNode) {
-			// Fallback: return a minimal tree with just the root
-			return {
-				crId: root.crId,
-				person: root,
-				children: []
-			};
-		}
-
-		return rootNode;
-	}
-
-	/**
 	 * Generates canvas edges from family relationships
 	 */
 	private generateEdges(
 		familyTree: FamilyTree,
 		nodeMap: Map<string, { x: number; y: number }>,
 		crIdToCanvasId: Map<string, string>,
-		options: Required<LayoutOptions>
+		options: Required<CanvasGenerationOptions>
 	): CanvasEdge[] {
 		const edges: CanvasEdge[] = [];
 

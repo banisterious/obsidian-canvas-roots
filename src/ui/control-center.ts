@@ -5,7 +5,7 @@ import { createPersonNote, PersonData } from '../core/person-note-writer';
 import { PersonPickerModal, PersonInfo } from './person-picker';
 import { VaultStatsService, FullVaultStats } from '../core/vault-stats';
 import { FamilyGraphService, TreeOptions } from '../core/family-graph';
-import { CanvasGenerator, CanvasData, LayoutOptions } from '../core/canvas-generator';
+import { CanvasGenerator, CanvasData, CanvasGenerationOptions } from '../core/canvas-generator';
 import { getLogger, LoggerFactory, type LogLevel } from '../core/logging';
 import { GedcomImporter } from '../gedcom/gedcom-importer';
 import { BidirectionalLinker } from '../core/bidirectional-linker';
@@ -1017,8 +1017,8 @@ export class ControlCenterModal extends Modal {
 				includeSpouses
 			};
 
-			// Create layout options
-			const layoutOptions: LayoutOptions = {
+			// Create canvas generation options
+			const canvasOptions: CanvasGenerationOptions = {
 				direction,
 				nodeSpacingX: spacingX,
 				nodeSpacingY: spacingY,
@@ -1064,7 +1064,7 @@ export class ControlCenterModal extends Modal {
 
 			// Generate canvas
 			const canvasGenerator = new CanvasGenerator();
-			const canvasData = canvasGenerator.generateCanvas(familyTree, layoutOptions);
+			const canvasData = canvasGenerator.generateCanvas(familyTree, canvasOptions);
 
 			// Log canvas generation
 			logger.info('canvas-generation', 'Canvas data generated', {
