@@ -32,6 +32,7 @@ node_modules/
 main.js
 main.js.map
 *.js.map
+styles.css
 
 # OS files
 .DS_Store
