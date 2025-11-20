@@ -435,7 +435,7 @@ export class ControlCenterModal extends Modal {
 
 		// Birth date field
 		const birthGroup = content.createDiv({ cls: 'crc-form-group' });
-		birthGroup.createDiv({ cls: 'crc-form-label', text: 'Birth Date' });
+		birthGroup.createDiv({ cls: 'crc-form-label', text: 'Birth date' });
 		const birthInput = birthGroup.createEl('input', {
 			cls: 'crc-form-input',
 			attr: {
@@ -450,7 +450,7 @@ export class ControlCenterModal extends Modal {
 
 		// Death date field
 		const deathGroup = content.createDiv({ cls: 'crc-form-group' });
-		deathGroup.createDiv({ cls: 'crc-form-label', text: 'Death Date' });
+		deathGroup.createDiv({ cls: 'crc-form-label', text: 'Death date' });
 		const deathInput = deathGroup.createEl('input', {
 			cls: 'crc-form-input',
 			attr: {
@@ -623,7 +623,7 @@ export class ControlCenterModal extends Modal {
 		const configHeader = configCard.createDiv({ cls: 'crc-card__header' });
 		const configTitle = configHeader.createEl('h3', {
 			cls: 'crc-card__title',
-			text: 'Tree Configuration'
+			text: 'Tree configuration'
 		});
 		const configIcon = createLucideIcon('settings', 20);
 		configTitle.prepend(configIcon);
@@ -635,7 +635,7 @@ export class ControlCenterModal extends Modal {
 		const rootGroup = configContent.createDiv({ cls: 'crc-form-group' });
 		const rootLabel = rootGroup.createEl('label', {
 			cls: 'crc-form-label',
-			text: 'Root Person'
+			text: 'Root person'
 		});
 		const rootLabelBadge = rootLabel.createSpan({ cls: 'crc-help-badge', text: 'Required' });
 		rootLabelBadge.style.marginLeft = '8px';
@@ -651,7 +651,7 @@ export class ControlCenterModal extends Modal {
 		const typeGroup = configContent.createDiv({ cls: 'crc-form-group' });
 		typeGroup.createEl('label', {
 			cls: 'crc-form-label',
-			text: 'Tree Type'
+			text: 'Tree type'
 		});
 
 		const typeSelect = typeGroup.createEl('select', { cls: 'crc-form-input' });
@@ -670,7 +670,7 @@ export class ControlCenterModal extends Modal {
 		const genGroup = configContent.createDiv({ cls: 'crc-form-group' });
 		genGroup.createEl('label', {
 			cls: 'crc-form-label',
-			text: 'Maximum Generations'
+			text: 'Maximum generations'
 		});
 		const genInput = genGroup.createEl('input', {
 			cls: 'crc-form-input',
@@ -709,7 +709,7 @@ export class ControlCenterModal extends Modal {
 		const layoutHeader = layoutCard.createDiv({ cls: 'crc-card__header' });
 		const layoutTitle = layoutHeader.createEl('h3', {
 			cls: 'crc-card__title',
-			text: 'Layout Options'
+			text: 'Layout options'
 		});
 		const layoutIcon = createLucideIcon('layout', 20);
 		layoutTitle.prepend(layoutIcon);
@@ -720,7 +720,7 @@ export class ControlCenterModal extends Modal {
 		const dirGroup = layoutContent.createDiv({ cls: 'crc-form-group' });
 		dirGroup.createEl('label', {
 			cls: 'crc-form-label',
-			text: 'Tree Direction'
+			text: 'Tree direction'
 		});
 
 		const dirSelect = dirGroup.createEl('select', { cls: 'crc-form-input' });
@@ -738,7 +738,7 @@ export class ControlCenterModal extends Modal {
 		const spacingXGroup = layoutContent.createDiv({ cls: 'crc-form-group' });
 		spacingXGroup.createEl('label', {
 			cls: 'crc-form-label',
-			text: 'Horizontal Spacing'
+			text: 'Horizontal spacing'
 		});
 		const spacingXInput = spacingXGroup.createEl('input', {
 			cls: 'crc-form-input',
@@ -754,7 +754,7 @@ export class ControlCenterModal extends Modal {
 		const spacingYGroup = layoutContent.createDiv({ cls: 'crc-form-group' });
 		spacingYGroup.createEl('label', {
 			cls: 'crc-form-label',
-			text: 'Vertical Spacing'
+			text: 'Vertical spacing'
 		});
 		const spacingYInput = spacingYGroup.createEl('input', {
 			cls: 'crc-form-input',
@@ -772,7 +772,7 @@ export class ControlCenterModal extends Modal {
 		const outputHeader = outputCard.createDiv({ cls: 'crc-card__header' });
 		const outputTitle = outputHeader.createEl('h3', {
 			cls: 'crc-card__title',
-			text: 'Output Options'
+			text: 'Output options'
 		});
 		const outputIcon = createLucideIcon('file', 20);
 		outputTitle.prepend(outputIcon);
@@ -783,7 +783,7 @@ export class ControlCenterModal extends Modal {
 		const nameGroup = outputContent.createDiv({ cls: 'crc-form-group' });
 		nameGroup.createEl('label', {
 			cls: 'crc-form-label',
-			text: 'Canvas File Name'
+			text: 'Canvas file name'
 		});
 		const nameInput = nameGroup.createEl('input', {
 			cls: 'crc-form-input',
@@ -977,7 +977,7 @@ export class ControlCenterModal extends Modal {
 		// Log Level Selector
 		const logLevelGroup = loggingContent.createDiv({ cls: 'crc-form-group' });
 		logLevelGroup.createEl('label', {
-			text: 'Log Level',
+			text: 'Log level',
 			cls: 'crc-form-label'
 		});
 
@@ -1015,7 +1015,7 @@ export class ControlCenterModal extends Modal {
 		// Export Path Display
 		const exportPathGroup = loggingContent.createDiv({ cls: 'crc-form-group crc-mt-4' });
 		exportPathGroup.createEl('label', {
-			text: 'Export Directory',
+			text: 'Export directory',
 			cls: 'crc-form-label'
 		});
 
@@ -1087,7 +1087,7 @@ export class ControlCenterModal extends Modal {
 		buttonGroup.setAttr('style', 'display: flex; gap: 8px;');
 
 		const exportButton = buttonGroup.createEl('button', {
-			text: 'Export Logs',
+			text: 'Export logs',
 			cls: 'crc-btn crc-btn--primary'
 		});
 		const exportIcon = createLucideIcon('download', 16);
@@ -1098,7 +1098,7 @@ export class ControlCenterModal extends Modal {
 		});
 
 		const clearButton = buttonGroup.createEl('button', {
-			text: 'Clear Logs',
+			text: 'Clear logs',
 			cls: 'crc-btn crc-btn--secondary'
 		});
 		const clearIcon = createLucideIcon('trash', 16);
@@ -1115,7 +1115,7 @@ export class ControlCenterModal extends Modal {
 
 		// Debug Card
 		const debugCard = this.createCard({
-			title: 'Debug Information',
+			title: 'Debug information',
 			icon: 'info'
 		});
 

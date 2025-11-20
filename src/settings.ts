@@ -36,13 +36,13 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', { text: 'Canvas Roots Settings' });
-
-		// Layout Settings
-		containerEl.createEl('h3', { text: 'Layout Settings' });
+		// Layout
+		new Setting(containerEl)
+			.setName('Layout')
+			.setHeading();
 
 		new Setting(containerEl)
-			.setName('Default Node Width')
+			.setName('Default node width')
 			.setDesc('Width of person nodes in pixels')
 			.addText(text => text
 				.setPlaceholder('200')
@@ -56,7 +56,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Default Node Height')
+			.setName('Default node height')
 			.setDesc('Height of person nodes in pixels')
 			.addText(text => text
 				.setPlaceholder('100')
@@ -70,7 +70,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Horizontal Spacing')
+			.setName('Horizontal spacing')
 			.setDesc('Space between nodes horizontally in pixels')
 			.addText(text => text
 				.setPlaceholder('50')
@@ -84,7 +84,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Vertical Spacing')
+			.setName('Vertical spacing')
 			.setDesc('Space between generations vertically in pixels')
 			.addText(text => text
 				.setPlaceholder('100')
@@ -97,11 +97,13 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					}
 				}));
 
-		// Data Settings
-		containerEl.createEl('h3', { text: 'Data Settings' });
+		// Data
+		new Setting(containerEl)
+			.setName('Data')
+			.setHeading();
 
 		new Setting(containerEl)
-			.setName('People Folder')
+			.setName('People folder')
 			.setDesc('Folder path for person notes (leave empty for vault root)')
 			.addText(text => text
 				.setPlaceholder('People')
@@ -112,7 +114,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Auto-generate CR ID')
+			.setName('Auto-generate cr_id')
 			.setDesc('Automatically generate cr_id for person notes that don\'t have one')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.autoGenerateCrId)
@@ -121,11 +123,13 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
-		// GEDCOM Settings
-		containerEl.createEl('h3', { text: 'GEDCOM Import Settings' });
+		// GEDCOM import
+		new Setting(containerEl)
+			.setName('GEDCOM import')
+			.setHeading();
 
 		new Setting(containerEl)
-			.setName('Default Import Mode')
+			.setName('Default import mode')
 			.setDesc('Canvas-only: quick visualization. Vault-sync: create notes for all individuals.')
 			.addDropdown(dropdown => dropdown
 				.addOption('canvas-only', 'Canvas Visualization Only')
