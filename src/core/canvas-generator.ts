@@ -103,6 +103,7 @@ export class CanvasGenerator {
 		const nodeMap = new Map<string, { x: number; y: number }>();
 		const crIdToCanvasId = new Map<string, string>();
 
+		// Process hierarchically positioned nodes
 		for (const position of layoutResult.positions) {
 			const { crId, person, x, y } = position;
 
@@ -124,6 +125,58 @@ export class CanvasGenerator {
 				height: opts.nodeHeight,
 				color: opts.colorByGender ? this.getPersonColor(person) : undefined
 			});
+		}
+
+		// Add spouse nodes that weren't in the hierarchical layout
+		const spouseSpacing = opts.nodeWidth + (opts.nodeSpacingX * 0.3); // 30% of horizontal spacing
+		for (const edge of familyTree.edges) {
+			if (edge.type === 'spouse') {
+				const fromPos = nodeMap.get(edge.from);
+				const toPos = nodeMap.get(edge.to);
+
+				// If one spouse is positioned but the other isn't, add the missing spouse
+				if (fromPos && !toPos) {
+					// Add 'to' spouse next to 'from'
+					const spouse = familyTree.nodes.get(edge.to);
+					if (spouse) {
+						const canvasId = this.generateId();
+						crIdToCanvasId.set(edge.to, canvasId);
+						const spousePos = { x: fromPos.x + spouseSpacing, y: fromPos.y };
+						nodeMap.set(edge.to, spousePos);
+
+						canvasNodes.push({
+							id: canvasId,
+							type: 'file',
+							file: spouse.file.path,
+							x: spousePos.x,
+							y: spousePos.y,
+							width: opts.nodeWidth,
+							height: opts.nodeHeight,
+							color: opts.colorByGender ? this.getPersonColor(spouse) : undefined
+						});
+					}
+				} else if (toPos && !fromPos) {
+					// Add 'from' spouse next to 'to'
+					const spouse = familyTree.nodes.get(edge.from);
+					if (spouse) {
+						const canvasId = this.generateId();
+						crIdToCanvasId.set(edge.from, canvasId);
+						const spousePos = { x: toPos.x - spouseSpacing, y: toPos.y };
+						nodeMap.set(edge.from, spousePos);
+
+						canvasNodes.push({
+							id: canvasId,
+							type: 'file',
+							file: spouse.file.path,
+							x: spousePos.x,
+							y: spousePos.y,
+							width: opts.nodeWidth,
+							height: opts.nodeHeight,
+							color: opts.colorByGender ? this.getPersonColor(spouse) : undefined
+						});
+					}
+				}
+			}
 		}
 
 		// Generate canvas edges using canvas IDs
