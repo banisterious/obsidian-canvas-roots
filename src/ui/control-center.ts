@@ -862,10 +862,11 @@ export class ControlCenterModal extends Modal {
 			cls: 'crc-checkbox',
 			attr: {
 				type: 'checkbox',
-				id: 'include-spouses',
-				checked: 'true'
+				id: 'include-spouses'
 			}
 		});
+		// Set initial state to checked
+		spouseCheckbox.checked = true;
 		spouseContainer.createEl('label', {
 			cls: 'crc-checkbox-label',
 			text: 'Include spouses in tree',
