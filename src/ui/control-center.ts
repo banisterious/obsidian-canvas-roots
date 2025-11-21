@@ -1244,6 +1244,52 @@ export class ControlCenterModal extends Modal {
 				nameInput.value
 			);
 		});
+
+		// Separator and "Generate All Trees" option
+		const separator = outputContent.createDiv({ cls: 'crc-separator crc-mt-4' });
+		separator.createEl('span', { text: 'OR', cls: 'crc-separator-text' });
+
+		// Generate All Trees section
+		const allTreesSection = outputContent.createDiv({ cls: 'crc-mt-4' });
+		allTreesSection.createEl('p', {
+			text: 'Generate separate canvases for all disconnected family groups in your vault',
+			cls: 'crc-text-muted crc-text-sm'
+		});
+
+		const allTreesBtn = allTreesSection.createEl('button', {
+			cls: 'crc-btn crc-btn--secondary crc-mt-2',
+			text: 'Generate All Trees'
+		});
+		const allTreesIcon = createLucideIcon('git-branch', 16);
+		allTreesBtn.prepend(allTreesIcon);
+
+		// Add component count badge (updated dynamically)
+		const countBadge = allTreesBtn.createSpan({
+			cls: 'crc-badge crc-ml-2',
+			text: '...'
+		});
+
+		// Check for multiple components and update badge
+		(async () => {
+			try {
+				const graphService = new FamilyGraphService(this.app);
+				const components = await graphService.findAllFamilyComponents();
+
+				if (components.length > 1) {
+					countBadge.setText(`${components.length} groups`);
+				} else {
+					countBadge.setText('1 group');
+					allTreesBtn.disabled = true;
+					allTreesBtn.addClass('crc-btn--disabled');
+				}
+			} catch (error) {
+				countBadge.setText('');
+			}
+		})();
+
+		allTreesBtn.addEventListener('click', async () => {
+			await this.openAndGenerateAllTrees();
+		});
 	}
 
 	/**
