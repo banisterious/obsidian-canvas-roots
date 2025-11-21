@@ -61,10 +61,22 @@ Use [Obsidian Bases](https://help.obsidian.md/bases) to manage multiple family m
 
 ### 2. Generate the Tree
 
-1. Open or create a new Obsidian Canvas file (`.canvas`)
-2. Navigate to the note of the person you want as the root (center) of the tree
-3. Open the Command Palette (`Ctrl/Cmd + P`)
-4. Run: `Canvas Roots: Generate Tree for Current Note`
+1. Open the Command Palette (`Ctrl/Cmd + P`)
+2. Run: `Canvas Roots: Open Control Center`
+3. Navigate to the **Tree Generation** tab
+4. **Select a root person:**
+   - Use the inline person browser to search, sort, and filter
+   - Click any person to select them as the tree's root
+   - Or use the family group sidebar if you have disconnected family groups
+5. **Configure tree options:**
+   - Choose tree type (ancestors, descendants, or full family tree)
+   - Set generation limits or include all generations
+   - Enable/disable spouse inclusion
+   - Adjust layout direction and spacing
+6. **Generate:**
+   - Enter an optional canvas name
+   - Click **Generate family tree** for the selected person
+   - Or click **Generate all trees** to automatically create separate trees for each disconnected family group
 
 The plugin populates the Canvas with the calculated family tree layout using specialized genealogical positioning algorithms.
 
@@ -131,8 +143,9 @@ Canvas Roots is in active development with core functionality in place:
 **Recently Completed:**
 - Genealogical layout engine using family-chart library for automated tree positioning
 - Canvas generation from person notes with proper handling of complex relationships
-- Person picker UI component with fuzzy search
-- Full tree generation workflow with spacing optimization
+- Streamlined Tree Generation tab with inline person browser (search, sort, filters, family groups)
+- Integrated generation workflow with single-card interface
+- Full tree generation with spacing optimization and multi-family support
 
 **In Progress:**
 - Re-layout command for existing canvases

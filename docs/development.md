@@ -434,9 +434,81 @@ Example:
 
 ## Recent Features
 
+### Tree Generation Tab Streamlining (2025-11-21)
+
+**Enhanced:** Redesigned Tree Generation tab with inline person browser for improved UX.
+
+**Major Changes:**
+- **Removed Modal Dependency:** Eliminated PersonPickerModal from Tree Generation workflow
+- **Inline Person Browser:** Integrated complete person selection directly into Root Person card
+- **Single-Card Interface:** Consolidated all tree generation actions into one streamlined card
+- **Improved Prominence:** Moved generate buttons into Root Person card for better visibility
+
+**Implemented Features:**
+
+1. **Inline Person Browser in Root Person Card:**
+   - Real-time search filtering by person name
+   - 5 sort options (Name A-Z/Z-A, Birth year ascending/descending, Recently modified)
+   - 3 filter categories (Living status, Birth date presence, Sex)
+   - Family group sidebar for multi-family vaults (shows disconnected components)
+   - Constrained height (400px max) with scrollable results
+   - Async loading of all person notes and family components
+
+2. **Integrated Generation Actions:**
+   - Canvas name input field (optional)
+   - Large, prominent "Generate family tree" button
+   - "Generate all trees" option with dynamic family group count
+   - Visual "OR" separator for clarity
+   - Both generation options in same card - no scrolling required
+
+3. **Multi-Family Detection:**
+   - Uses BFS graph traversal via FamilyGraphService
+   - Automatically detects disconnected family components
+   - Dynamic message shows actual count: "Found 6 disconnected family groups"
+   - "Generate all trees" auto-selects one representative per component
+
+**Layout Before:**
+- Root person field in Configuration card (modal picker)
+- Configuration card (tree type, generations, spouses)
+- Layout card (direction, spacing)
+- Output card at bottom (canvas name, generate button) - easy to miss
+
+**Layout After:**
+- Root Person card (person display, inline browser, canvas name, both generate buttons)
+- Tree Configuration card (tree type, generations, spouses)
+- Layout Options card (direction, spacing)
+
+**Files Modified:**
+- `src/ui/control-center.ts`:
+  - Made `showTreeGenerationTab()` async (line 1018)
+  - Created `createRootPersonCard()` method (lines 2146-2545) with inline browser
+  - Created `updateRootPersonDisplay()` helper (lines 2547-2567)
+  - Created `extractPersonInfoFromFile()` helper (lines 2575-2587)
+  - Added class properties: `treeCanvasNameInput`, `treeGenerateBtn`
+  - Removed Output card, integrated actions into Root Person card
+- `styles/modals.css`:
+  - Added `.crc-root-person-display` styles (lines 290-346)
+  - Added `.crc-person-browser` styles (lines 348-394)
+  - Added `.crc-root-person-generate` styles (lines 396-409)
+  - Added `.crc-separator` with "OR" visual styling (lines 411-438)
+  - Added `.crc-btn--large` for prominent full-width buttons (lines 490-495)
+
+**Documentation Updated:**
+- `docs/specification.md` - Updated Tree Generation Tab section with new layout
+- `README.md` - Updated workflow instructions for new streamlined process
+
+**UX Benefits:**
+- No modal switching required - entire workflow in one view
+- Primary action impossible to miss (large button at top)
+- Clear distinction between single-tree and multi-tree workflows
+- Faster person selection with inline filtering
+- Better understanding of vault structure via family group detection
+
 ### Person Picker Enhancements (2025-11-20)
 
 **Added:** Sorting and filtering capabilities for person selection modal.
+
+**Note:** PersonPickerModal is now primarily used in the Data Entry tab. The Tree Generation tab uses an inline person browser implementation (see Tree Generation Tab Streamlining above).
 
 **Implemented Features:**
 - **5 Sort Options:**

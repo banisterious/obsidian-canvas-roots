@@ -1766,73 +1766,127 @@ this.addCommand({
 
 ##### Tree Generation Tab
 
-**Purpose:** Configure tree layout, filters, and styling
+**Purpose:** Select root person, configure tree settings, and generate family trees
+
+**Layout:** Single streamlined card containing person selection, configuration, and generation actions
 
 **Content Sections:**
 
-1. **Root Selection:**
+1. **Root Person Card:**
+
+   This integrated card combines person selection, tree configuration, and generation actions in a single, scrollable interface.
+
+   **Part A: Person Selection Display**
    ```
    ┌─────────────────────────────────────┐
    │ Root Person                         │
    ├─────────────────────────────────────┤
-   │ Person: [Search or select...]       │
-   │ ○ Use current active note           │
-   │ ○ Use person with cr_root: true     │
-   │ ● Specify: [[John Smith]]           │
+   │ Empty State (no selection):         │
+   │   👤 No person selected             │
+   │   Select a person below to start    │
+   │                                     │
+   │ OR Selected State:                  │
+   │   John Robert Smith                 │
+   │   ID: abc-123-def-456               │
+   │   1888-1952                         │
    └─────────────────────────────────────┘
    ```
 
-2. **Filters:**
+   **Part B: Inline Person Browser**
+
+   The person browser is embedded directly in the card, eliminating the need for modal dialogs:
+
    ```
    ┌─────────────────────────────────────┐
-   │ Tree Filters                        │
+   │ Search: [____________]  [🔍]        │
    ├─────────────────────────────────────┤
-   │ Depth Limits:                       │
-   │   Ancestors:  [∞] generations       │
-   │   Descendants: [∞] generations      │
-   │                                     │
-   │ Relationship Types:                 │
-   │   ☑ Biological parents              │
-   │   ☑ Adoptive parents                │
-   │   ☑ Step-parents                    │
-   │   ☑ Spouses                         │
-   │                                     │
-   │ Date Range:                         │
-   │   From: [1800]  To: [2024]         │
+   │ Sort by: [Name (A-Z) ▼]             │
+   │ Living:  [All ▼]                    │
+   │ Birth:   [All ▼]                    │
+   │ Sex:     [All ▼]                    │
+   ├─────────────────────────────────────┤
+   │ ┌────────┬─────────────────────┐    │
+   │ │ All (5)│ John Smith          │    │  ← Scrollable
+   │ │ ─────  │ b. 1920 - d. 2005   │    │     results
+   │ │ Fam 1  │ ID: abc-123         │    │     (400px max)
+   │ │ (3)    │                     │    │
+   │ │        │ Mary Jones          │    │
+   │ │ Fam 2  │ b. 1925             │    │
+   │ │ (2)    │ ID: def-456         │    │
+   │ └────────┴─────────────────────┘    │
    └─────────────────────────────────────┘
    ```
 
-3. **Layout Settings:**
+   **Features:**
+   - **Search:** Real-time filtering by person name
+   - **Sort Options:**
+     - Name (A-Z)
+     - Name (Z-A)
+     - Birth year (oldest first)
+     - Birth year (youngest first)
+     - Recently modified
+   - **Filters:**
+     - Living status: All / Living only / Deceased only
+     - Birth date: All / Has date / No date
+     - Sex: All / Male / Female
+   - **Family Sidebar:** When multiple disconnected family groups exist, shows tabs for each group with person counts
+   - **Constrained Height:** Results scroll within 400px max-height container
+
+   **Part C: Tree Generation Actions**
    ```
    ┌─────────────────────────────────────┐
-   │ Layout Configuration                │
+   │ Canvas name (optional):             │
+   │ [Family Tree - Smith Family      ]  │
+   │                                     │
+   │ [Generate family tree            ]  │ ← Large primary button
+   │                                     │
+   │ ─────────────── OR ──────────────   │
+   │                                     │
+   │ Automatically generate one tree for │
+   │ each disconnected family group.     │
+   │ Found 6 disconnected family groups. │
+   │                                     │
+   │ [Generate all trees              ]  │ ← Large secondary button
+   └─────────────────────────────────────┘
+   ```
+
+   **"Generate All Trees" Behavior:**
+   - Automatically detects all disconnected family components using BFS graph traversal
+   - Selects one representative person from each component
+   - Generates separate canvas files for each family group
+   - Dynamic message updates with actual family group count
+   - No manual multi-selection required
+
+2. **Tree Configuration Card:**
+   ```
+   ┌─────────────────────────────────────┐
+   │ Tree Configuration                  │
    ├─────────────────────────────────────┤
-   │ Node Dimensions:                    │
-   │   Width:  [200] px                  │
-   │   Height: [100] px                  │
+   │ Tree type: [Full family tree ▼]    │
+   │   • Ancestors only                  │
+   │   • Descendants only                │
+   │   • Full family tree                │
+   │                                     │
+   │ Generations: [All ▼]                │
+   │   • All                             │
+   │   • 1-10 generations                │
+   │                                     │
+   │ ☑ Include spouses                   │
+   └─────────────────────────────────────┘
+   ```
+
+3. **Layout Options Card:**
+   ```
+   ┌─────────────────────────────────────┐
+   │ Layout Options                      │
+   ├─────────────────────────────────────┤
+   │ Direction: [Vertical ▼]             │
+   │   • Vertical (ancestors up)         │
+   │   • Horizontal (ancestors left)     │
    │                                     │
    │ Spacing:                            │
-   │   Horizontal: [50] px               │
-   │   Vertical:   [100] px              │
-   │                                     │
-   │ Algorithm: [D3 Hierarchy]           │
-   └─────────────────────────────────────┘
-   ```
-
-4. **Visual Styling:**
-   ```
-   ┌─────────────────────────────────────┐
-   │ Visual Styling                      │
-   ├─────────────────────────────────────┤
-   │ Active Overlay: [None ▼]            │
-   │   ○ None                            │
-   │   ○ House Colors                    │
-   │   ○ Generation Depth                │
-   │   ○ Living vs. Deceased             │
-   │                                     │
-   │ Card Template: [Standard ▼]        │
-   │                                     │
-   │ [Preview Changes]                   │
+   │   Horizontal: [300] px              │
+   │   Vertical:   [200] px              │
    └─────────────────────────────────────┘
    ```
 
