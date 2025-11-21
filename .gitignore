@@ -67,8 +67,5 @@ CLAUDE.md
 deploy.sh
 dev-deploy.sh
 
-# Test data
-gedcom_testing/
-
 # Generated log files
 canvas-roots-logs-*.json

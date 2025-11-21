@@ -18,6 +18,7 @@ export interface PersonNode {
 	name: string;
 	birthDate?: string;
 	deathDate?: string;
+	sex?: string;
 	file: TFile;
 
 	// Relationships (as cr_ids)
@@ -431,6 +432,7 @@ export class FamilyGraphService {
 			name,
 			birthDate: fm.born || fm.birth_date,
 			deathDate: fm.died || fm.death_date,
+			sex: fm.sex || fm.gender,
 			file,
 			fatherCrId,
 			motherCrId,

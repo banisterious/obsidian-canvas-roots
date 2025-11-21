@@ -1,6 +1,6 @@
 # Canvas Roots Plugin - Technical Specification
 
-**Version:** 1.7
+**Version:** 1.9
 **Last Updated:** 2025-11-20
 **Status:** Draft
 
@@ -68,8 +68,38 @@ Each person in the family tree is represented by an individual Markdown note wit
 | `died` | Date | No | Death date (see §6.4 for format details) |
 | `cr_living` | Boolean | No | Explicitly mark if person is living (overrides auto-detection for obfuscation) |
 | `cr_root` | Boolean | No | Marks person as tree center (optional filter) |
+| `sex` | String | No | Biological sex (GEDCOM: M/F/U) for data compatibility and color coding |
+| `gender` | String | No | Gender identity (free-form, e.g., "Woman", "Non-binary", "Transgender man") |
+| `pronouns` | String | No | Preferred pronouns (e.g., "she/her", "they/them", "he/him") |
+| `_previous_names` | Array<String> | No | Historical names (underscore prefix = private/sensitive data, see §2.1.2) |
 
-#### 2.1.2 Extended Properties (See §6)
+#### 2.1.2 Privacy and Identity Protection
+
+**Gender and Identity:** Canvas Roots respects the distinction between biological sex (relevant for GEDCOM data interchange and medical history) and gender identity (a person's authentic self-identification). The plugin supports both fields independently:
+
+- **`sex`**: Used for GEDCOM compatibility and optional color coding in canvas visualizations. Supports standard GEDCOM values: M (male), F (female), U (unknown/unspecified). This field is optional and should reflect biological sex as recorded in genealogical records, not gender identity.
+- **`gender`**: Free-form text field for recording gender identity. Examples: "Woman", "Man", "Non-binary", "Genderfluid", "Transgender woman", etc. This field takes precedence for display purposes and respectful language in UI.
+- **`pronouns`**: Optional field for preferred pronouns to ensure respectful reference in documentation, exports, and custom reports.
+
+**Visual Representation:** When color coding is enabled, the canvas generator uses the `sex` field by default for backward compatibility with GEDCOM data. Future versions will support user preference settings to color by `gender`, `sex`, or disable color coding entirely.
+
+**Deadname Protection:** The `name` field always represents the person's current, chosen name. Historical names should **never** be displayed as the primary name. If historical names must be preserved for genealogical record-keeping:
+
+- Use the `_previous_names` field (underscore prefix indicates private/sensitive data)
+- The plugin **will not display** underscore-prefixed fields in UI, search results, or standard exports
+- When exporting to GEDCOM or other formats, users will be warned if private fields are included
+- Documentation and UI language will emphasize dignity and respect for chosen names
+
+**Privacy Field Convention:** Any field prefixed with an underscore (`_`) is considered private or sensitive:
+
+- **Never displayed** in person picker, search results, or canvas labels
+- **Excluded by default** from exports and reports
+- **Requires explicit user confirmation** if included in data exchange formats
+- Examples: `_previous_names`, `_medical_notes`, `_adoption_details`
+
+**Inclusive Language:** All documentation, UI text, and code comments use inclusive language that respects diverse gender identities and family structures. The plugin is designed to serve all users regardless of their gender identity, sexual orientation, or family composition.
+
+#### 2.1.3 Extended Properties (See §6)
 
 Additional properties for complex genealogical data:
 - Multiple spouse tracking with metadata (§6.1)
@@ -82,7 +112,7 @@ Additional properties for complex genealogical data:
 - Medical and genetic information (§6.9)
 - Location and migration tracking (§6.10)
 
-#### 2.1.3 Reference Numbering Systems (Optional)
+#### 2.1.4 Reference Numbering Systems (Optional)
 
 **Overview:** Reference numbering systems provide human-readable, hierarchical identifiers that encode genealogical relationships and positions within family trees. These complement the machine-level `cr_id` UUID system by offering intuitive labeling for research organization, file management, and print reports.
 
@@ -1805,6 +1835,40 @@ this.addCommand({
    └─────────────────────────────────────┘
    ```
 
+5. **Canvas Color Customization:** *(Future Enhancement)*
+   ```
+   ┌─────────────────────────────────────┐
+   │ Canvas Colors                       │
+   ├─────────────────────────────────────┤
+   │ Node Colors:                        │
+   │   Male:    [Color 4 - Green ▼]     │
+   │   Female:  [Color 6 - Purple ▼]    │
+   │   Unknown: [Color 2 - Orange ▼]    │
+   │                                     │
+   │ Edge Colors:                        │
+   │   Parent-Child: [Color 1 - Red ▼]  │
+   │   Spouse:       [Color 5 - Blue ▼] │
+   │                                     │
+   │ Available Colors:                   │
+   │   1=Red, 2=Orange, 3=Yellow,        │
+   │   4=Green, 5=Blue, 6=Purple         │
+   │                                     │
+   │ ☐ Color nodes by gender             │
+   │                                     │
+   │ [Reset to Defaults]                 │
+   └─────────────────────────────────────┘
+   ```
+
+   **Current Implementation (v1.8):**
+   - Gender-based coloring using sex/gender field from frontmatter
+   - Male persons: Canvas color 4 (Green)
+   - Female persons: Canvas color 6 (Purple)
+   - Unknown gender: Canvas color 2 (Orange)
+   - Parent-child edges: Canvas color 1 (Red)
+   - Spouse edges: Canvas color 5 (Blue)
+   - Automatically reads `sex` or `gender` field from YAML frontmatter
+   - Standard GEDCOM values supported: M, F, U (male, female, unknown)
+
 ##### Properties Tab (Phase 2)
 
 **Purpose:** Configure custom property names for person note YAML frontmatter
@@ -2410,7 +2474,62 @@ The plugin reads and writes Obsidian's Canvas file format (`.canvas`):
 - Connect spouse nodes
 - Side indicators control connection points
 
-### 4.4 ID Mapping and Persistence
+### 4.4 Canvas CSS Variables and Theming
+
+**Overview:** Obsidian Canvas provides CSS variables for customizing canvas appearance. Canvas Roots leverages these for consistent visual styling.
+
+**Available Canvas CSS Variables:**
+
+| Variable | Description | Default Usage |
+|----------|-------------|---------------|
+| `--canvas-background` | Canvas background color | Inherited from theme |
+| `--canvas-card-label-color` | Canvas card label text color | Inherited from theme |
+| `--canvas-dot-pattern` | Canvas dot pattern color | Inherited from theme |
+| `--canvas-color-1` | Card/edge color 1 (Red) | Parent-child edges |
+| `--canvas-color-2` | Card/edge color 2 (Orange) | Unknown gender nodes |
+| `--canvas-color-3` | Card/edge color 3 (Yellow) | Unused (available) |
+| `--canvas-color-4` | Card/edge color 4 (Green) | Male nodes |
+| `--canvas-color-5` | Card/edge color 5 (Blue) | Spouse edges |
+| `--canvas-color-6` | Card/edge color 6 (Purple) | Female nodes |
+
+**Canvas Roots Color Usage (v1.8):**
+
+```typescript
+// Node colors (based on sex/gender field)
+getPersonColor(person: PersonNode): string {
+  if (person.sex === 'M' || person.sex === 'MALE') return '4'; // Green
+  if (person.sex === 'F' || person.sex === 'FEMALE') return '6'; // Purple
+  return '2'; // Orange (unknown/neutral)
+}
+
+// Edge colors (based on relationship type)
+getEdgeColor(type: RelationType): string {
+  if (type === 'parent' || type === 'child') return '1'; // Red
+  if (type === 'spouse') return '5'; // Blue
+  return '3'; // Yellow (default)
+}
+```
+
+**Future Enhancement - Custom Theme Support:**
+
+Canvas Roots could provide custom CSS snippets to override canvas colors specifically for family trees:
+
+```css
+/* Custom Canvas Roots theme */
+.canvas-node[data-canvas-roots="true"] {
+  /* Override canvas colors for family trees */
+  --canvas-color-4: #4a9eff; /* Custom male color */
+  --canvas-color-6: #ff4a9e; /* Custom female color */
+}
+```
+
+**Benefits:**
+- Consistent with Obsidian's native Canvas styling
+- Users can customize colors via CSS snippets
+- Theme-aware (respects light/dark mode)
+- No custom rendering required
+
+### 4.5 ID Mapping and Persistence
 
 **Challenge:** Maintain stable identity across Canvas re-layouts
 

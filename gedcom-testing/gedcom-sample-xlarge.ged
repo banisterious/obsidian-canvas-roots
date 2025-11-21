@@ -1,0 +1,7620 @@
+0 HEAD
+1 SOUR Canvas Roots Test
+2 VERS 1.0
+2 NAME Canvas Roots Extra-Large Test Family
+1 DEST ANY
+1 DATE 20 NOV 2025
+1 SUBM @SUBM1@
+1 FILE gedcom-sample-xlarge.ged
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+0 @SUBM1@ SUBM
+1 NAME Canvas Roots User
+0 @I1@ INDI
+1 NAME Arthur /Thompson/
+2 GIVN Arthur
+2 SURN Thompson
+1 SEX M
+1 BIRT
+2 DATE 2 MAY 1893
+2 PLAC Baltimore, Maryland
+1 DEAT
+2 DATE 21 APR 1978
+2 PLAC Columbus, Ohio
+1 FAMS @F1@
+0 @I2@ INDI
+1 NAME Dorothy /Smith/
+2 GIVN Dorothy
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 26 MAR 1886
+2 PLAC Amsterdam, Netherlands
+1 DEAT
+2 DATE 17 APR 1974
+2 PLAC Fort Worth, Texas
+1 FAMS @F1@
+0 @I3@ INDI
+1 NAME Kenneth /Butler/
+2 GIVN Kenneth
+2 SURN Butler
+1 SEX M
+1 BIRT
+2 DATE 22 JUL 1887
+2 PLAC Detroit, Michigan
+1 DEAT
+2 DATE 23 JUN 1951
+2 PLAC Mexico City, Mexico
+1 FAMS @F2@
+0 @I4@ INDI
+1 NAME Margaret /Taylor/
+2 GIVN Margaret
+2 SURN Taylor
+1 SEX F
+1 BIRT
+2 DATE 18 SEP 1880
+2 PLAC Toronto, Canada
+1 DEAT
+2 DATE 9 AUG 1947
+2 PLAC Seoul, South Korea
+1 FAMS @F2@
+0 @I5@ INDI
+1 NAME Kenneth /Thompson/
+2 GIVN Kenneth
+2 SURN Thompson
+1 SEX M
+1 BIRT
+2 DATE 4 NOV 1891
+2 PLAC Seoul, South Korea
+1 DEAT
+2 DATE 5 NOV 1963
+2 PLAC Oslo, Norway
+1 FAMS @F3@
+0 @I6@ INDI
+1 NAME Kathleen /Price/
+2 GIVN Kathleen
+2 SURN Price
+1 SEX F
+1 BIRT
+2 DATE 15 NOV 1888
+2 PLAC Auckland, New Zealand
+1 DEAT
+2 DATE 17 AUG 1975
+2 PLAC Seoul, South Korea
+1 FAMS @F3@
+0 @I7@ INDI
+1 NAME Carl /Reed/
+2 GIVN Carl
+2 SURN Reed
+1 SEX M
+1 BIRT
+2 DATE 22 JUL 1885
+2 PLAC Athens, Greece
+1 DEAT
+2 DATE 14 APR 1975
+2 PLAC Budapest, Hungary
+1 FAMS @F4@
+0 @I8@ INDI
+1 NAME Carol /Miller/
+2 GIVN Carol
+2 SURN Miller
+1 SEX F
+1 BIRT
+2 DATE 28 NOV 1897
+2 PLAC Montreal, Canada
+1 DEAT
+2 DATE 23 FEB 1977
+2 PLAC Memphis, Tennessee
+1 FAMS @F4@
+0 @I9@ INDI
+1 NAME Timothy /Thomas/
+2 GIVN Timothy
+2 SURN Thomas
+1 SEX M
+1 BIRT
+2 DATE 8 SEP 1892
+2 PLAC Charlotte, North Carolina
+1 DEAT
+2 DATE 28 NOV 1971
+2 PLAC New York, New York
+1 FAMS @F5@
+0 @I10@ INDI
+1 NAME Martha /James/
+2 GIVN Martha
+2 SURN James
+1 SEX F
+1 BIRT
+2 DATE 23 DEC 1881
+2 PLAC Chicago, Illinois
+1 DEAT
+2 DATE 1 OCT 1968
+2 PLAC San Jose, California
+1 FAMS @F5@
+0 @I11@ INDI
+1 NAME Amy /Lee/
+2 GIVN Amy
+2 SURN Lee
+1 SEX F
+1 BIRT
+2 DATE 23 JAN 1914
+2 PLAC Los Angeles, California
+1 DEAT
+2 DATE 12 FEB 1978
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F1@
+1 FAMS @F6@
+0 @I12@ INDI
+1 NAME Christina /Smith/
+2 GIVN Christina
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 27 APR 1908
+2 PLAC Los Angeles, California
+1 DEAT
+2 DATE 18 APR 1993
+2 PLAC Portland, Oregon
+1 FAMC @F1@
+1 FAMS @F6@
+0 @I13@ INDI
+1 NAME Mark /Edwards/
+2 GIVN Mark
+2 SURN Edwards
+1 SEX M
+1 BIRT
+2 DATE 10 MAY 1912
+2 PLAC Rome, Italy
+1 DEAT
+2 DATE 2 APR 2004
+2 PLAC London, England
+1 FAMC @F1@
+1 FAMS @F7@
+0 @I14@ INDI
+1 NAME Jeffrey /Smith/
+2 GIVN Jeffrey
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 5 MAR 1907
+2 PLAC Houston, Texas
+1 DEAT
+2 DATE 26 JAN 1995
+2 PLAC San Jose, California
+1 FAMC @F1@
+1 FAMS @F7@
+0 @I15@ INDI
+1 NAME Benjamin /Wright/
+2 GIVN Benjamin
+2 SURN Wright
+1 SEX M
+1 BIRT
+2 DATE 13 FEB 1905
+2 PLAC Baltimore, Maryland
+1 DEAT
+2 DATE 7 SEP 2002
+2 PLAC Memphis, Tennessee
+1 FAMC @F1@
+1 FAMS @F8@
+0 @I16@ INDI
+1 NAME Ryan /Fisher/
+2 GIVN Ryan
+2 SURN Fisher
+1 SEX M
+1 BIRT
+2 DATE 14 MAY 1910
+2 PLAC Montreal, Canada
+1 DEAT
+2 DATE 22 JAN 1999
+2 PLAC Lisbon, Portugal
+1 FAMC @F2@
+1 FAMS @F8@
+0 @I17@ INDI
+1 NAME Dorothy /Edwards/
+2 GIVN Dorothy
+2 SURN Edwards
+1 SEX F
+1 BIRT
+2 DATE 28 NOV 1901
+2 PLAC Seattle, Washington
+1 DEAT
+2 DATE 15 FEB 2000
+2 PLAC Los Angeles, California
+1 FAMC @F2@
+1 FAMS @F9@
+0 @I18@ INDI
+1 NAME Timothy /Bailey/
+2 GIVN Timothy
+2 SURN Bailey
+1 SEX M
+1 BIRT
+2 DATE 6 MAR 1908
+2 PLAC Rome, Italy
+1 DEAT
+2 DATE 22 JUN 1971
+2 PLAC London, England
+1 FAMC @F2@
+1 FAMS @F9@
+0 @I19@ INDI
+1 NAME Kenneth /Moore/
+2 GIVN Kenneth
+2 SURN Moore
+1 SEX M
+1 BIRT
+2 DATE 3 AUG 1907
+2 PLAC Charlotte, North Carolina
+1 DEAT
+2 DATE 26 OCT 1981
+2 PLAC New York, New York
+1 FAMC @F3@
+1 FAMS @F10@
+0 @I20@ INDI
+1 NAME Emma /Foster/
+2 GIVN Emma
+2 SURN Foster
+1 SEX F
+1 BIRT
+2 DATE 21 JUL 1920
+2 PLAC Portland, Oregon
+1 DEAT
+2 DATE 4 JUN 2001
+2 PLAC Mexico City, Mexico
+1 FAMC @F3@
+1 FAMS @F10@
+0 @I21@ INDI
+1 NAME Christopher /James/
+2 GIVN Christopher
+2 SURN James
+1 SEX M
+1 BIRT
+2 DATE 24 SEP 1906
+2 PLAC Las Vegas, Nevada
+1 DEAT
+2 DATE 6 JUN 1994
+2 PLAC Tokyo, Japan
+1 FAMC @F3@
+1 FAMS @F11@
+0 @I22@ INDI
+1 NAME Andrea /Gonzalez/
+2 GIVN Andrea
+2 SURN Gonzalez
+1 SEX F
+1 BIRT
+2 DATE 1 MAR 1908
+2 PLAC Dublin, Ireland
+1 DEAT
+2 DATE 3 JUN 1986
+2 PLAC Vancouver, Canada
+1 FAMC @F3@
+1 FAMS @F11@
+0 @I23@ INDI
+1 NAME Linda /Perry/
+2 GIVN Linda
+2 SURN Perry
+1 SEX F
+1 BIRT
+2 DATE 4 NOV 1909
+2 PLAC Seoul, South Korea
+1 DEAT
+2 DATE 3 AUG 1983
+2 PLAC San Jose, California
+1 FAMC @F3@
+1 FAMS @F12@
+0 @I24@ INDI
+1 NAME Harold /Johnson/
+2 GIVN Harold
+2 SURN Johnson
+1 SEX M
+1 BIRT
+2 DATE 14 FEB 1908
+2 PLAC Indianapolis, Indiana
+1 DEAT
+2 DATE 18 JUN 1997
+2 PLAC San Jose, California
+1 FAMC @F4@
+1 FAMS @F12@
+0 @I25@ INDI
+1 NAME Joyce /Russell/
+2 GIVN Joyce
+2 SURN Russell
+1 SEX F
+1 BIRT
+2 DATE 26 APR 1916
+2 PLAC Dublin, Ireland
+1 DEAT
+2 DATE 16 MAY 1982
+2 PLAC Oslo, Norway
+1 FAMC @F4@
+1 FAMS @F13@
+0 @I26@ INDI
+1 NAME Kathleen /Martinez/
+2 GIVN Kathleen
+2 SURN Martinez
+1 SEX F
+1 BIRT
+2 DATE 17 MAR 1919
+2 PLAC San Diego, California
+1 DEAT
+2 DATE 22 DEC 2014
+2 PLAC Shanghai, China
+1 FAMC @F4@
+1 FAMS @F13@
+0 @I27@ INDI
+1 NAME Brian /Mitchell/
+2 GIVN Brian
+2 SURN Mitchell
+1 SEX M
+1 BIRT
+2 DATE 9 APR 1905
+2 PLAC Mumbai, India
+1 DEAT
+2 DATE 16 MAR 1981
+2 PLAC Montreal, Canada
+1 FAMC @F5@
+1 FAMS @F14@
+0 @I28@ INDI
+1 NAME Douglas /Gutierrez/
+2 GIVN Douglas
+2 SURN Gutierrez
+1 SEX M
+1 BIRT
+2 DATE 14 MAY 1917
+2 PLAC Denver, Colorado
+1 DEAT
+2 DATE 9 NOV 2010
+2 PLAC Fort Worth, Texas
+1 FAMC @F5@
+1 FAMS @F14@
+0 @I29@ INDI
+1 NAME Arthur /Wood/
+2 GIVN Arthur
+2 SURN Wood
+1 SEX M
+1 BIRT
+2 DATE 6 JUN 1911
+2 PLAC Madrid, Spain
+1 DEAT
+2 DATE 14 JUN 1991
+2 PLAC Rome, Italy
+1 FAMS @F15@
+0 @I30@ INDI
+1 NAME Joyce /Green/
+2 GIVN Joyce
+2 SURN Green
+1 SEX F
+1 BIRT
+2 DATE 9 JAN 1905
+2 PLAC Albuquerque, New Mexico
+1 DEAT
+2 DATE 25 DEC 1982
+2 PLAC Tokyo, Japan
+1 FAMS @F15@
+0 @I31@ INDI
+1 NAME Nicholas /Foster/
+2 GIVN Nicholas
+2 SURN Foster
+1 SEX M
+1 BIRT
+2 DATE 1 OCT 1932
+2 PLAC Columbus, Ohio
+1 DEAT
+2 DATE 11 DEC 2015
+2 PLAC Las Vegas, Nevada
+1 FAMC @F6@
+1 FAMS @F16@
+0 @I32@ INDI
+1 NAME Jeffrey /Nelson/
+2 GIVN Jeffrey
+2 SURN Nelson
+1 SEX M
+1 BIRT
+2 DATE 18 JUL 1929
+2 PLAC Shanghai, China
+1 DEAT
+2 DATE 4 APR 2002
+2 PLAC London, England
+1 FAMC @F6@
+1 FAMS @F16@
+0 @I33@ INDI
+1 NAME Deborah /Martin/
+2 GIVN Deborah
+2 SURN Martin
+1 SEX F
+1 BIRT
+2 DATE 18 JUN 1927
+2 PLAC Vienna, Austria
+1 FAMC @F6@
+1 FAMS @F17@
+1 FAMS @F172@
+0 @I34@ INDI
+1 NAME Nancy /Bell/
+2 GIVN Nancy
+2 SURN Bell
+1 SEX F
+1 BIRT
+2 DATE 9 JUN 1928
+2 PLAC Indianapolis, Indiana
+1 DEAT
+2 DATE 25 MAR 1990
+2 PLAC Prague, Czech Republic
+1 FAMC @F7@
+1 FAMS @F17@
+0 @I35@ INDI
+1 NAME Helen /James/
+2 GIVN Helen
+2 SURN James
+1 SEX F
+1 BIRT
+2 DATE 7 SEP 1929
+2 PLAC Prague, Czech Republic
+1 DEAT
+2 DATE 10 OCT 2018
+2 PLAC Copenhagen, Denmark
+1 FAMC @F7@
+1 FAMS @F18@
+0 @I36@ INDI
+1 NAME Mark /Taylor/
+2 GIVN Mark
+2 SURN Taylor
+1 SEX M
+1 BIRT
+2 DATE 7 JAN 1928
+2 PLAC Milwaukee, Wisconsin
+1 DEAT
+2 DATE 19 MAR 1997
+2 PLAC Charlotte, North Carolina
+1 FAMC @F8@
+1 FAMS @F18@
+1 FAMS @F174@
+0 @I37@ INDI
+1 NAME Patricia /Turner/
+2 GIVN Patricia
+2 SURN Turner
+1 SEX F
+1 BIRT
+2 DATE 16 OCT 1926
+2 PLAC Nashville, Tennessee
+1 DEAT
+2 DATE 28 JUN 2018
+2 PLAC Melbourne, Australia
+1 FAMC @F8@
+1 FAMS @F19@
+0 @I38@ INDI
+1 NAME Jessica /Perry/
+2 GIVN Jessica
+2 SURN Perry
+1 SEX F
+1 BIRT
+2 DATE 8 SEP 1931
+2 PLAC Budapest, Hungary
+1 DEAT
+2 DATE 16 MAR 2001
+2 PLAC Columbus, Ohio
+1 FAMC @F8@
+1 FAMS @F19@
+0 @I39@ INDI
+1 NAME Nicholas /Wright/
+2 GIVN Nicholas
+2 SURN Wright
+1 SEX M
+1 BIRT
+2 DATE 28 JAN 1924
+2 PLAC Seattle, Washington
+1 DEAT
+2 DATE 26 OCT 1990
+2 PLAC Portland, Oregon
+1 FAMC @F9@
+1 FAMS @F20@
+1 FAMS @F176@
+0 @I40@ INDI
+1 NAME Debra /Cruz/
+2 GIVN Debra
+2 SURN Cruz
+1 SEX F
+1 BIRT
+2 DATE 18 OCT 1926
+2 PLAC Prague, Czech Republic
+1 DEAT
+2 DATE 24 JAN 2018
+2 PLAC Madrid, Spain
+1 FAMC @F9@
+1 FAMS @F20@
+0 @I41@ INDI
+1 NAME Barbara /Fisher/
+2 GIVN Barbara
+2 SURN Fisher
+1 SEX F
+1 BIRT
+2 DATE 14 JUL 1931
+2 PLAC Chicago, Illinois
+1 DEAT
+2 DATE 19 SEP 1994
+2 PLAC Mumbai, India
+1 FAMC @F9@
+1 FAMS @F21@
+0 @I42@ INDI
+1 NAME Donna /Brooks/
+2 GIVN Donna
+2 SURN Brooks
+1 SEX F
+1 BIRT
+2 DATE 26 DEC 1934
+2 PLAC Madrid, Spain
+1 DEAT
+2 DATE 8 APR 2008
+2 PLAC Lisbon, Portugal
+1 FAMC @F9@
+1 FAMS @F21@
+0 @I43@ INDI
+1 NAME Michael /Wood/
+2 GIVN Michael
+2 SURN Wood
+1 SEX M
+1 BIRT
+2 DATE 25 JAN 1927
+2 PLAC Portland, Oregon
+1 DEAT
+2 DATE 1 SEP 2017
+2 PLAC Tokyo, Japan
+1 FAMC @F10@
+1 FAMS @F22@
+0 @I44@ INDI
+1 NAME Jennifer /Richardson/
+2 GIVN Jennifer
+2 SURN Richardson
+1 SEX F
+1 BIRT
+2 DATE 7 SEP 1924
+2 PLAC Houston, Texas
+1 FAMC @F10@
+1 FAMS @F22@
+0 @I45@ INDI
+1 NAME Stephen /Phillips/
+2 GIVN Stephen
+2 SURN Phillips
+1 SEX M
+1 BIRT
+2 DATE 28 MAR 1929
+2 PLAC Athens, Greece
+1 DEAT
+2 DATE 16 NOV 2008
+2 PLAC Seattle, Washington
+1 FAMC @F11@
+1 FAMS @F23@
+1 FAMS @F173@
+0 @I46@ INDI
+1 NAME George /Adams/
+2 GIVN George
+2 SURN Adams
+1 SEX M
+1 BIRT
+2 DATE 6 FEB 1927
+2 PLAC Rome, Italy
+1 FAMC @F11@
+1 FAMS @F23@
+0 @I47@ INDI
+1 NAME Ashley /Hall/
+2 GIVN Ashley
+2 SURN Hall
+1 SEX F
+1 BIRT
+2 DATE 1 NOV 1937
+2 PLAC Madrid, Spain
+1 DEAT
+2 DATE 1 AUG 2022
+2 PLAC Jacksonville, Florida
+1 FAMC @F12@
+1 FAMS @F24@
+0 @I48@ INDI
+1 NAME Jacqueline /Kelly/
+2 GIVN Jacqueline
+2 SURN Kelly
+1 SEX F
+1 BIRT
+2 DATE 28 JUN 1925
+2 PLAC San Francisco, California
+1 DEAT
+2 DATE 13 JUN 2007
+2 PLAC Denver, Colorado
+1 FAMC @F12@
+1 FAMS @F24@
+0 @I49@ INDI
+1 NAME Paul /Ross/
+2 GIVN Paul
+2 SURN Ross
+1 SEX M
+1 BIRT
+2 DATE 23 JUN 1923
+2 PLAC Charlotte, North Carolina
+1 DEAT
+2 DATE 13 MAY 2012
+2 PLAC London, England
+1 FAMC @F13@
+1 FAMS @F25@
+0 @I50@ INDI
+1 NAME Nicholas /Myers/
+2 GIVN Nicholas
+2 SURN Myers
+1 SEX M
+1 BIRT
+2 DATE 27 APR 1936
+2 PLAC Memphis, Tennessee
+1 DEAT
+2 DATE 19 MAR 2010
+2 PLAC Detroit, Michigan
+1 FAMC @F13@
+1 FAMS @F25@
+0 @I51@ INDI
+1 NAME Douglas /Gray/
+2 GIVN Douglas
+2 SURN Gray
+1 SEX M
+1 BIRT
+2 DATE 5 NOV 1923
+2 PLAC Athens, Greece
+1 FAMC @F13@
+1 FAMS @F26@
+0 @I52@ INDI
+1 NAME Jessica /Nelson/
+2 GIVN Jessica
+2 SURN Nelson
+1 SEX F
+1 BIRT
+2 DATE 22 OCT 1932
+2 PLAC Warsaw, Poland
+1 FAMC @F14@
+1 FAMS @F26@
+0 @I53@ INDI
+1 NAME David /Sullivan/
+2 GIVN David
+2 SURN Sullivan
+1 SEX M
+1 BIRT
+2 DATE 21 JUN 1923
+2 PLAC Vancouver, Canada
+1 DEAT
+2 DATE 4 JUL 1993
+2 PLAC Sydney, Australia
+1 FAMC @F14@
+1 FAMS @F27@
+1 FAMS @F178@
+0 @I54@ INDI
+1 NAME Nicholas /Gomez/
+2 GIVN Nicholas
+2 SURN Gomez
+1 SEX M
+1 BIRT
+2 DATE 10 APR 1937
+2 PLAC Warsaw, Poland
+1 FAMC @F15@
+1 FAMS @F27@
+0 @I55@ INDI
+1 NAME Andrea /Jackson/
+2 GIVN Andrea
+2 SURN Jackson
+1 SEX F
+1 BIRT
+2 DATE 12 DEC 1926
+2 PLAC Dallas, Texas
+1 DEAT
+2 DATE 22 MAY 2008
+2 PLAC Lisbon, Portugal
+1 FAMC @F15@
+1 FAMS @F28@
+0 @I56@ INDI
+1 NAME Nicole /Gonzalez/
+2 GIVN Nicole
+2 SURN Gonzalez
+1 SEX F
+1 BIRT
+2 DATE 7 APR 1926
+2 PLAC San Francisco, California
+1 FAMC @F15@
+1 FAMS @F28@
+0 @I57@ INDI
+1 NAME Arthur /Hernandez/
+2 GIVN Arthur
+2 SURN Hernandez
+1 SEX M
+1 BIRT
+2 DATE 28 AUG 1924
+2 PLAC Charlotte, North Carolina
+1 FAMC @F15@
+1 FAMS @F29@
+0 @I58@ INDI
+1 NAME Jacob /Rogers/
+2 GIVN Jacob
+2 SURN Rogers
+1 SEX M
+1 BIRT
+2 DATE 28 MAR 1924
+2 PLAC Prague, Czech Republic
+1 FAMS @F29@
+0 @I59@ INDI
+1 NAME Angela /Thomas/
+2 GIVN Angela
+2 SURN Thomas
+1 SEX F
+1 BIRT
+2 DATE 17 OCT 1921
+2 PLAC Oklahoma City, Oklahoma
+1 FAMS @F30@
+0 @I60@ INDI
+1 NAME Roger /Moore/
+2 GIVN Roger
+2 SURN Moore
+1 SEX M
+1 BIRT
+2 DATE 10 MAY 1923
+2 PLAC Memphis, Tennessee
+1 DEAT
+2 DATE 21 JUN 1990
+2 PLAC Seoul, South Korea
+1 FAMS @F30@
+0 @I61@ INDI
+1 NAME Evelyn /Wood/
+2 GIVN Evelyn
+2 SURN Wood
+1 SEX F
+1 BIRT
+2 DATE 28 AUG 1923
+2 PLAC Vienna, Austria
+1 DEAT
+2 DATE 24 APR 2010
+2 PLAC Seoul, South Korea
+1 FAMS @F31@
+0 @I62@ INDI
+1 NAME George /Clark/
+2 GIVN George
+2 SURN Clark
+1 SEX M
+1 BIRT
+2 DATE 10 AUG 1923
+2 PLAC Toronto, Canada
+1 DEAT
+2 DATE 18 JUN 2017
+2 PLAC Nashville, Tennessee
+1 FAMS @F31@
+0 @I63@ INDI
+1 NAME Victoria /Thompson/
+2 GIVN Victoria
+2 SURN Thompson
+1 SEX F
+1 BIRT
+2 DATE 11 AUG 1933
+2 PLAC Tokyo, Japan
+1 DEAT
+2 DATE 4 JUL 2013
+2 PLAC Denver, Colorado
+1 FAMS @F32@
+0 @I64@ INDI
+1 NAME Jeremy /Harris/
+2 GIVN Jeremy
+2 SURN Harris
+1 SEX M
+1 BIRT
+2 DATE 14 JUL 1932
+2 PLAC Nashville, Tennessee
+1 DEAT
+2 DATE 11 APR 2009
+2 PLAC Athens, Greece
+1 FAMS @F32@
+1 FAMS @F177@
+0 @I65@ INDI
+1 NAME Shirley /Gutierrez/
+2 GIVN Shirley
+2 SURN Gutierrez
+1 SEX F
+1 BIRT
+2 DATE 27 DEC 1929
+2 PLAC Dublin, Ireland
+1 DEAT
+2 DATE 13 APR 1995
+2 PLAC Vienna, Austria
+0 @I66@ INDI
+1 NAME Kyle /Garcia/
+2 GIVN Kyle
+2 SURN Garcia
+1 SEX M
+1 BIRT
+2 DATE 26 NOV 1965
+2 PLAC Jacksonville, Florida
+1 DEAT
+2 DATE 19 MAR 2032
+2 PLAC Mexico City, Mexico
+1 FAMC @F16@
+1 FAMS @F33@
+0 @I67@ INDI
+1 NAME Anna /White/
+2 GIVN Anna
+2 SURN White
+1 SEX F
+1 BIRT
+2 DATE 23 SEP 1965
+2 PLAC Dallas, Texas
+1 DEAT
+2 DATE 7 JAN 2031
+2 PLAC Seoul, South Korea
+1 FAMC @F16@
+1 FAMS @F33@
+0 @I68@ INDI
+1 NAME Christopher /Young/
+2 GIVN Christopher
+2 SURN Young
+1 SEX M
+1 BIRT
+2 DATE 28 APR 1962
+2 PLAC Prague, Czech Republic
+1 FAMC @F16@
+1 FAMS @F34@
+0 @I69@ INDI
+1 NAME Joshua /Hughes/
+2 GIVN Joshua
+2 SURN Hughes
+1 SEX M
+1 BIRT
+2 DATE 22 JUN 1955
+2 PLAC Indianapolis, Indiana
+1 DEAT
+2 DATE 22 APR 2025
+2 PLAC Baltimore, Maryland
+1 FAMC @F16@
+1 FAMS @F34@
+0 @I70@ INDI
+1 NAME Christina /Bailey/
+2 GIVN Christina
+2 SURN Bailey
+1 SEX F
+1 BIRT
+2 DATE 17 MAY 1948
+2 PLAC Baltimore, Maryland
+1 DEAT
+2 DATE 16 APR 2026
+2 PLAC Montreal, Canada
+1 FAMC @F17@
+1 FAMS @F35@
+0 @I71@ INDI
+1 NAME John /Moore/
+2 GIVN John
+2 SURN Moore
+1 SEX M
+1 BIRT
+2 DATE 18 JUN 1956
+2 PLAC Beijing, China
+1 DEAT
+2 DATE 14 APR 2033
+2 PLAC Amsterdam, Netherlands
+1 FAMC @F17@
+1 FAMS @F35@
+0 @I72@ INDI
+1 NAME Laura /Harris/
+2 GIVN Laura
+2 SURN Harris
+1 SEX F
+1 BIRT
+2 DATE 8 JAN 1945
+2 PLAC San Jose, California
+1 DEAT
+2 DATE 25 MAY 2019
+2 PLAC Milwaukee, Wisconsin
+1 FAMC @F17@
+1 FAMS @F36@
+0 @I73@ INDI
+1 NAME Lisa /White/
+2 GIVN Lisa
+2 SURN White
+1 SEX F
+1 BIRT
+2 DATE 25 NOV 1953
+2 PLAC Mexico City, Mexico
+1 DEAT
+2 DATE 23 OCT 2032
+2 PLAC Louisville, Kentucky
+1 FAMC @F17@
+1 FAMS @F36@
+0 @I74@ INDI
+1 NAME Kimberly /Jackson/
+2 GIVN Kimberly
+2 SURN Jackson
+1 SEX F
+1 BIRT
+2 DATE 11 MAR 1959
+2 PLAC Sydney, Australia
+1 FAMC @F17@
+1 FAMS @F37@
+0 @I75@ INDI
+1 NAME Brenda /Parker/
+2 GIVN Brenda
+2 SURN Parker
+1 SEX F
+1 BIRT
+2 DATE 9 FEB 1942
+2 PLAC Mumbai, India
+1 DEAT
+2 DATE 28 MAR 2024
+2 PLAC Stockholm, Sweden
+1 FAMC @F18@
+1 FAMS @F37@
+0 @I76@ INDI
+1 NAME Cynthia /Wright/
+2 GIVN Cynthia
+2 SURN Wright
+1 SEX F
+1 BIRT
+2 DATE 3 MAY 1941
+2 PLAC Baltimore, Maryland
+1 FAMC @F18@
+1 FAMS @F38@
+0 @I77@ INDI
+1 NAME Virginia /Lopez/
+2 GIVN Virginia
+2 SURN Lopez
+1 SEX F
+1 BIRT
+2 DATE 24 JUL 1947
+2 PLAC Charlotte, North Carolina
+1 FAMC @F18@
+1 FAMS @F38@
+0 @I78@ INDI
+1 NAME Jeffrey /Moore/
+2 GIVN Jeffrey
+2 SURN Moore
+1 SEX M
+1 BIRT
+2 DATE 3 SEP 1958
+2 PLAC Fort Worth, Texas
+1 FAMC @F19@
+1 FAMS @F39@
+0 @I79@ INDI
+1 NAME Eric /Butler/
+2 GIVN Eric
+2 SURN Butler
+1 SEX M
+1 BIRT
+2 DATE 26 JUL 1941
+2 PLAC Phoenix, Arizona
+1 FAMC @F19@
+1 FAMS @F39@
+0 @I80@ INDI
+1 NAME Thomas /Martinez/
+2 GIVN Thomas
+2 SURN Martinez
+1 SEX M
+1 BIRT
+2 DATE 15 MAR 1952
+2 PLAC Dublin, Ireland
+1 FAMC @F20@
+1 FAMS @F40@
+0 @I81@ INDI
+1 NAME Kenneth /Johnson/
+2 GIVN Kenneth
+2 SURN Johnson
+1 SEX M
+1 BIRT
+2 DATE 11 AUG 1941
+2 PLAC Jacksonville, Florida
+1 FAMC @F20@
+1 FAMS @F40@
+0 @I82@ INDI
+1 NAME Ronald /Murphy/
+2 GIVN Ronald
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 11 JAN 1960
+2 PLAC Jacksonville, Florida
+1 FAMC @F21@
+1 FAMS @F41@
+0 @I83@ INDI
+1 NAME Samuel /Davis/
+2 GIVN Samuel
+2 SURN Davis
+1 SEX M
+1 BIRT
+2 DATE 17 AUG 1962
+2 PLAC Berlin, Germany
+1 DEAT
+2 DATE 10 JUL 2033
+2 PLAC Budapest, Hungary
+1 FAMC @F21@
+1 FAMS @F41@
+0 @I84@ INDI
+1 NAME Hannah /Wood/
+2 GIVN Hannah
+2 SURN Wood
+1 SEX F
+1 BIRT
+2 DATE 23 FEB 1955
+2 PLAC Melbourne, Australia
+1 FAMC @F22@
+1 FAMS @F42@
+0 @I85@ INDI
+1 NAME Walter /Reed/
+2 GIVN Walter
+2 SURN Reed
+1 SEX M
+1 BIRT
+2 DATE 7 SEP 1945
+2 PLAC San Jose, California
+1 DEAT
+2 DATE 3 JAN 2025
+2 PLAC Vienna, Austria
+1 FAMC @F22@
+1 FAMS @F42@
+0 @I86@ INDI
+1 NAME Dennis /Robinson/
+2 GIVN Dennis
+2 SURN Robinson
+1 SEX M
+1 BIRT
+2 DATE 6 JUL 1952
+2 PLAC Warsaw, Poland
+1 FAMC @F22@
+1 FAMS @F43@
+0 @I87@ INDI
+1 NAME Samantha /Thomas/
+2 GIVN Samantha
+2 SURN Thomas
+1 SEX F
+1 BIRT
+2 DATE 1 JAN 1951
+2 PLAC Amsterdam, Netherlands
+1 FAMC @F22@
+1 FAMS @F43@
+0 @I88@ INDI
+1 NAME Hannah /Roberts/
+2 GIVN Hannah
+2 SURN Roberts
+1 SEX F
+1 BIRT
+2 DATE 23 MAY 1944
+2 PLAC Mexico City, Mexico
+1 FAMC @F23@
+1 FAMS @F44@
+0 @I89@ INDI
+1 NAME Katherine /Murphy/
+2 GIVN Katherine
+2 SURN Murphy
+1 SEX F
+1 BIRT
+2 DATE 27 AUG 1961
+2 PLAC Auckland, New Zealand
+1 FAMC @F23@
+1 FAMS @F44@
+0 @I90@ INDI
+1 NAME Adam /Lee/
+2 GIVN Adam
+2 SURN Lee
+1 SEX M
+1 BIRT
+2 DATE 2 MAR 1965
+2 PLAC Warsaw, Poland
+1 FAMC @F23@
+1 FAMS @F45@
+0 @I91@ INDI
+1 NAME Jacqueline /Clark/
+2 GIVN Jacqueline
+2 SURN Clark
+1 SEX F
+1 BIRT
+2 DATE 2 MAR 1957
+2 PLAC Warsaw, Poland
+1 FAMC @F24@
+1 FAMS @F45@
+0 @I92@ INDI
+1 NAME Peter /Cook/
+2 GIVN Peter
+2 SURN Cook
+1 SEX M
+1 BIRT
+2 DATE 18 MAY 1942
+2 PLAC Jacksonville, Florida
+1 DEAT
+2 DATE 13 DEC 2024
+2 PLAC Lisbon, Portugal
+1 FAMC @F24@
+1 FAMS @F46@
+0 @I93@ INDI
+1 NAME John /Wilson/
+2 GIVN John
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 3 FEB 1942
+2 PLAC Las Vegas, Nevada
+1 FAMC @F25@
+1 FAMS @F46@
+0 @I94@ INDI
+1 NAME Anna /Rogers/
+2 GIVN Anna
+2 SURN Rogers
+1 SEX F
+1 BIRT
+2 DATE 23 JUN 1958
+2 PLAC Mexico City, Mexico
+1 FAMC @F25@
+1 FAMS @F47@
+0 @I95@ INDI
+1 NAME Cheryl /Carter/
+2 GIVN Cheryl
+2 SURN Carter
+1 SEX F
+1 BIRT
+2 DATE 22 JAN 1948
+2 PLAC Detroit, Michigan
+1 FAMC @F25@
+1 FAMS @F47@
+1 FAMS @F170@
+0 @I96@ INDI
+1 NAME Patrick /Russell/
+2 GIVN Patrick
+2 SURN Russell
+1 SEX M
+1 BIRT
+2 DATE 11 AUG 1947
+2 PLAC Rome, Italy
+1 DEAT
+2 DATE 13 FEB 2018
+2 PLAC Dublin, Ireland
+1 FAMC @F26@
+1 FAMS @F48@
+0 @I97@ INDI
+1 NAME Thomas /Brooks/
+2 GIVN Thomas
+2 SURN Brooks
+1 SEX M
+1 BIRT
+2 DATE 4 DEC 1961
+2 PLAC Jacksonville, Florida
+1 FAMC @F26@
+1 FAMS @F48@
+0 @I98@ INDI
+1 NAME Jennifer /Fisher/
+2 GIVN Jennifer
+2 SURN Fisher
+1 SEX F
+1 BIRT
+2 DATE 7 AUG 1959
+2 PLAC Houston, Texas
+1 DEAT
+2 DATE 27 SEP 2025
+2 PLAC San Diego, California
+1 FAMC @F27@
+1 FAMS @F49@
+0 @I99@ INDI
+1 NAME Ruth /Ross/
+2 GIVN Ruth
+2 SURN Ross
+1 SEX F
+1 BIRT
+2 DATE 11 MAY 1957
+2 PLAC Seoul, South Korea
+1 FAMC @F27@
+1 FAMS @F49@
+0 @I100@ INDI
+1 NAME Amy /Jones/
+2 GIVN Amy
+2 SURN Jones
+1 SEX F
+1 BIRT
+2 DATE 10 NOV 1952
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F27@
+1 FAMS @F50@
+0 @I101@ INDI
+1 NAME Christopher /Martin/
+2 GIVN Christopher
+2 SURN Martin
+1 SEX M
+1 BIRT
+2 DATE 26 NOV 1964
+2 PLAC Portland, Oregon
+1 DEAT
+2 DATE 3 JUL 2035
+2 PLAC Indianapolis, Indiana
+1 FAMC @F28@
+1 FAMS @F50@
+0 @I102@ INDI
+1 NAME Brian /Harris/
+2 GIVN Brian
+2 SURN Harris
+1 SEX M
+1 BIRT
+2 DATE 25 JUL 1953
+2 PLAC Portland, Oregon
+1 FAMC @F28@
+1 FAMS @F51@
+0 @I103@ INDI
+1 NAME Ruth /Wilson/
+2 GIVN Ruth
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 17 MAY 1940
+2 PLAC Austin, Texas
+1 DEAT
+2 DATE 17 JUL 2006
+2 PLAC Baltimore, Maryland
+1 FAMC @F28@
+1 FAMS @F51@
+0 @I104@ INDI
+1 NAME Sharon /Cruz/
+2 GIVN Sharon
+2 SURN Cruz
+1 SEX F
+1 BIRT
+2 DATE 5 MAR 1945
+2 PLAC San Jose, California
+1 FAMC @F28@
+1 FAMS @F52@
+0 @I105@ INDI
+1 NAME Stephen /Stewart/
+2 GIVN Stephen
+2 SURN Stewart
+1 SEX M
+1 BIRT
+2 DATE 18 APR 1963
+2 PLAC Athens, Greece
+1 FAMC @F28@
+1 FAMS @F52@
+0 @I106@ INDI
+1 NAME Eric /Barnes/
+2 GIVN Eric
+2 SURN Barnes
+1 SEX M
+1 BIRT
+2 DATE 10 JUN 1944
+2 PLAC Shanghai, China
+1 FAMC @F29@
+1 FAMS @F53@
+0 @I107@ INDI
+1 NAME Pamela /Rogers/
+2 GIVN Pamela
+2 SURN Rogers
+1 SEX F
+1 BIRT
+2 DATE 13 DEC 1950
+2 PLAC Detroit, Michigan
+1 FAMC @F29@
+1 FAMS @F53@
+0 @I108@ INDI
+1 NAME Betty /Foster/
+2 GIVN Betty
+2 SURN Foster
+1 SEX F
+1 BIRT
+2 DATE 11 JUL 1951
+2 PLAC Auckland, New Zealand
+1 FAMC @F30@
+1 FAMS @F54@
+0 @I109@ INDI
+1 NAME Evelyn /Bennett/
+2 GIVN Evelyn
+2 SURN Bennett
+1 SEX F
+1 BIRT
+2 DATE 1 AUG 1952
+2 PLAC Mumbai, India
+1 FAMC @F30@
+1 FAMS @F54@
+0 @I110@ INDI
+1 NAME Rebecca /Ward/
+2 GIVN Rebecca
+2 SURN Ward
+1 SEX F
+1 BIRT
+2 DATE 10 JUL 1958
+2 PLAC Budapest, Hungary
+1 FAMC @F30@
+1 FAMS @F55@
+0 @I111@ INDI
+1 NAME Michael /Parker/
+2 GIVN Michael
+2 SURN Parker
+1 SEX M
+1 BIRT
+2 DATE 28 JUN 1961
+2 PLAC Memphis, Tennessee
+1 DEAT
+2 DATE 22 JUL 2030
+2 PLAC Dublin, Ireland
+1 FAMC @F30@
+1 FAMS @F55@
+0 @I112@ INDI
+1 NAME Kimberly /Jenkins/
+2 GIVN Kimberly
+2 SURN Jenkins
+1 SEX F
+1 BIRT
+2 DATE 14 FEB 1945
+2 PLAC San Diego, California
+1 FAMC @F31@
+1 FAMS @F56@
+0 @I113@ INDI
+1 NAME Peter /Gonzalez/
+2 GIVN Peter
+2 SURN Gonzalez
+1 SEX M
+1 BIRT
+2 DATE 14 JUL 1946
+2 PLAC Nashville, Tennessee
+1 DEAT
+2 DATE 27 APR 2026
+2 PLAC Chicago, Illinois
+1 FAMC @F31@
+1 FAMS @F56@
+0 @I114@ INDI
+1 NAME Gary /Edwards/
+2 GIVN Gary
+2 SURN Edwards
+1 SEX M
+1 BIRT
+2 DATE 11 APR 1943
+2 PLAC Montreal, Canada
+1 FAMC @F32@
+1 FAMS @F57@
+0 @I115@ INDI
+1 NAME Paul /Smith/
+2 GIVN Paul
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 12 DEC 1947
+2 PLAC Shanghai, China
+1 FAMC @F32@
+1 FAMS @F57@
+0 @I116@ INDI
+1 NAME David /Sanders/
+2 GIVN David
+2 SURN Sanders
+1 SEX M
+1 BIRT
+2 DATE 23 MAR 1972
+2 PLAC Los Angeles, California
+1 FAMC @F33@
+1 FAMS @F58@
+0 @I117@ INDI
+1 NAME Deborah /Peterson/
+2 GIVN Deborah
+2 SURN Peterson
+1 SEX F
+1 BIRT
+2 DATE 24 AUG 1974
+2 PLAC Sydney, Australia
+1 FAMC @F33@
+1 FAMS @F58@
+0 @I118@ INDI
+1 NAME Virginia /Rodriguez/
+2 GIVN Virginia
+2 SURN Rodriguez
+1 SEX F
+1 BIRT
+2 DATE 6 APR 1977
+2 PLAC Las Vegas, Nevada
+1 FAMC @F33@
+1 FAMS @F59@
+0 @I119@ INDI
+1 NAME Steven /Jackson/
+2 GIVN Steven
+2 SURN Jackson
+1 SEX M
+1 BIRT
+2 DATE 14 NOV 1966
+2 PLAC San Jose, California
+1 FAMC @F34@
+1 FAMS @F59@
+0 @I120@ INDI
+1 NAME Susan /Brown/
+2 GIVN Susan
+2 SURN Brown
+1 SEX F
+1 BIRT
+2 DATE 1 JUL 1968
+2 PLAC Portland, Oregon
+1 FAMC @F34@
+1 FAMS @F60@
+0 @I121@ INDI
+1 NAME Olivia /Morales/
+2 GIVN Olivia
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 22 JAN 1967
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F34@
+1 FAMS @F60@
+0 @I122@ INDI
+1 NAME Mary /Robinson/
+2 GIVN Mary
+2 SURN Robinson
+1 SEX F
+1 BIRT
+2 DATE 24 JAN 1969
+2 PLAC Shanghai, China
+1 FAMC @F34@
+1 FAMS @F61@
+0 @I123@ INDI
+1 NAME Samantha /Morgan/
+2 GIVN Samantha
+2 SURN Morgan
+1 SEX F
+1 BIRT
+2 DATE 28 NOV 1965
+2 PLAC Madrid, Spain
+1 FAMC @F34@
+1 FAMS @F61@
+0 @I124@ INDI
+1 NAME Helen /Stewart/
+2 GIVN Helen
+2 SURN Stewart
+1 SEX F
+1 BIRT
+2 DATE 10 MAR 1978
+2 PLAC Nashville, Tennessee
+1 FAMC @F35@
+1 FAMS @F62@
+0 @I125@ INDI
+1 NAME Heather /Long/
+2 GIVN Heather
+2 SURN Long
+1 SEX F
+1 BIRT
+2 DATE 14 OCT 1983
+2 PLAC Dublin, Ireland
+1 FAMC @F35@
+1 FAMS @F62@
+0 @I126@ INDI
+1 NAME Michael /Anderson/
+2 GIVN Michael
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 9 JUL 1973
+2 PLAC Lisbon, Portugal
+1 FAMC @F35@
+1 FAMS @F63@
+0 @I127@ INDI
+1 NAME Matthew /Williams/
+2 GIVN Matthew
+2 SURN Williams
+1 SEX M
+1 BIRT
+2 DATE 10 MAR 1969
+2 PLAC Warsaw, Poland
+1 FAMC @F36@
+1 FAMS @F63@
+0 @I128@ INDI
+1 NAME Jacob /Gomez/
+2 GIVN Jacob
+2 SURN Gomez
+1 SEX M
+1 BIRT
+2 DATE 1 MAY 1980
+2 PLAC Prague, Czech Republic
+1 FAMC @F36@
+1 FAMS @F64@
+0 @I129@ INDI
+1 NAME Anna /Miller/
+2 GIVN Anna
+2 SURN Miller
+1 SEX F
+1 BIRT
+2 DATE 24 OCT 1978
+2 PLAC Milwaukee, Wisconsin
+1 FAMC @F36@
+1 FAMS @F64@
+0 @I130@ INDI
+1 NAME Tyler /Ward/
+2 GIVN Tyler
+2 SURN Ward
+1 SEX M
+1 BIRT
+2 DATE 4 MAY 1972
+2 PLAC New York, New York
+1 FAMC @F36@
+1 FAMS @F65@
+0 @I131@ INDI
+1 NAME Nancy /Kelly/
+2 GIVN Nancy
+2 SURN Kelly
+1 SEX F
+1 BIRT
+2 DATE 2 AUG 1971
+2 PLAC Portland, Oregon
+1 FAMC @F37@
+1 FAMS @F65@
+0 @I132@ INDI
+1 NAME Daniel /King/
+2 GIVN Daniel
+2 SURN King
+1 SEX M
+1 BIRT
+2 DATE 12 FEB 1984
+2 PLAC Phoenix, Arizona
+1 FAMC @F37@
+1 FAMS @F66@
+0 @I133@ INDI
+1 NAME Kathleen /Carter/
+2 GIVN Kathleen
+2 SURN Carter
+1 SEX F
+1 BIRT
+2 DATE 21 SEP 1979
+2 PLAC Memphis, Tennessee
+1 FAMC @F37@
+1 FAMS @F66@
+0 @I134@ INDI
+1 NAME Christopher /Walker/
+2 GIVN Christopher
+2 SURN Walker
+1 SEX M
+1 BIRT
+2 DATE 26 SEP 1979
+2 PLAC Shanghai, China
+1 FAMC @F37@
+1 FAMS @F67@
+1 FAMS @F171@
+0 @I135@ INDI
+1 NAME Julie /Harris/
+2 GIVN Julie
+2 SURN Harris
+1 SEX F
+1 BIRT
+2 DATE 6 SEP 1977
+2 PLAC San Jose, California
+1 FAMC @F38@
+1 FAMS @F67@
+0 @I136@ INDI
+1 NAME Richard /Lopez/
+2 GIVN Richard
+2 SURN Lopez
+1 SEX M
+1 BIRT
+2 DATE 9 OCT 1969
+2 PLAC Columbus, Ohio
+1 FAMC @F38@
+1 FAMS @F68@
+0 @I137@ INDI
+1 NAME Alexander /Rodriguez/
+2 GIVN Alexander
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 18 JUL 1985
+2 PLAC Budapest, Hungary
+1 FAMC @F38@
+1 FAMS @F68@
+0 @I138@ INDI
+1 NAME Jason /Wilson/
+2 GIVN Jason
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 5 MAY 1981
+2 PLAC Austin, Texas
+1 FAMC @F38@
+1 FAMS @F69@
+0 @I139@ INDI
+1 NAME Barbara /Bell/
+2 GIVN Barbara
+2 SURN Bell
+1 SEX F
+1 BIRT
+2 DATE 4 APR 1976
+2 PLAC Houston, Texas
+1 FAMC @F39@
+1 FAMS @F69@
+0 @I140@ INDI
+1 NAME Kelly /Barnes/
+2 GIVN Kelly
+2 SURN Barnes
+1 SEX F
+1 BIRT
+2 DATE 19 AUG 1970
+2 PLAC Columbus, Ohio
+1 FAMC @F39@
+1 FAMS @F70@
+0 @I141@ INDI
+1 NAME Timothy /Barnes/
+2 GIVN Timothy
+2 SURN Barnes
+1 SEX M
+1 BIRT
+2 DATE 12 JUN 1973
+2 PLAC Milwaukee, Wisconsin
+1 FAMC @F39@
+1 FAMS @F70@
+0 @I142@ INDI
+1 NAME William /Morgan/
+2 GIVN William
+2 SURN Morgan
+1 SEX M
+1 BIRT
+2 DATE 26 JUL 1976
+2 PLAC Berlin, Germany
+1 FAMC @F39@
+1 FAMS @F71@
+0 @I143@ INDI
+1 NAME Ryan /Russell/
+2 GIVN Ryan
+2 SURN Russell
+1 SEX M
+1 BIRT
+2 DATE 25 JUL 1978
+2 PLAC Dublin, Ireland
+1 FAMC @F39@
+1 FAMS @F71@
+0 @I144@ INDI
+1 NAME James /Gutierrez/
+2 GIVN James
+2 SURN Gutierrez
+1 SEX M
+1 BIRT
+2 DATE 2 JUL 1980
+2 PLAC Budapest, Hungary
+1 FAMC @F40@
+1 FAMS @F72@
+0 @I145@ INDI
+1 NAME Daniel /Murphy/
+2 GIVN Daniel
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 20 AUG 1985
+2 PLAC Denver, Colorado
+1 FAMC @F40@
+1 FAMS @F72@
+0 @I146@ INDI
+1 NAME Elizabeth /King/
+2 GIVN Elizabeth
+2 SURN King
+1 SEX F
+1 BIRT
+2 DATE 8 FEB 1982
+2 PLAC London, England
+1 FAMC @F40@
+1 FAMS @F73@
+0 @I147@ INDI
+1 NAME Christina /Reed/
+2 GIVN Christina
+2 SURN Reed
+1 SEX F
+1 BIRT
+2 DATE 19 OCT 1981
+2 PLAC Portland, Oregon
+1 FAMC @F41@
+1 FAMS @F73@
+0 @I148@ INDI
+1 NAME Joseph /Garcia/
+2 GIVN Joseph
+2 SURN Garcia
+1 SEX M
+1 BIRT
+2 DATE 5 SEP 1973
+2 PLAC Portland, Oregon
+1 FAMC @F41@
+1 FAMS @F74@
+0 @I149@ INDI
+1 NAME Anthony /Sanders/
+2 GIVN Anthony
+2 SURN Sanders
+1 SEX M
+1 BIRT
+2 DATE 1 MAR 1981
+2 PLAC Mexico City, Mexico
+1 FAMC @F42@
+1 FAMS @F74@
+0 @I150@ INDI
+1 NAME Katherine /Green/
+2 GIVN Katherine
+2 SURN Green
+1 SEX F
+1 BIRT
+2 DATE 6 AUG 1976
+2 PLAC Baltimore, Maryland
+1 FAMC @F42@
+1 FAMS @F75@
+0 @I151@ INDI
+1 NAME Raymond /Clark/
+2 GIVN Raymond
+2 SURN Clark
+1 SEX M
+1 BIRT
+2 DATE 24 JUN 1975
+2 PLAC Budapest, Hungary
+1 FAMC @F43@
+1 FAMS @F75@
+0 @I152@ INDI
+1 NAME Brian /Richardson/
+2 GIVN Brian
+2 SURN Richardson
+1 SEX M
+1 BIRT
+2 DATE 24 OCT 1982
+2 PLAC Denver, Colorado
+1 FAMC @F43@
+1 FAMS @F76@
+0 @I153@ INDI
+1 NAME Victoria /Perry/
+2 GIVN Victoria
+2 SURN Perry
+1 SEX F
+1 BIRT
+2 DATE 26 OCT 1965
+2 PLAC San Antonio, Texas
+1 FAMC @F43@
+1 FAMS @F76@
+0 @I154@ INDI
+1 NAME Adam /Parker/
+2 GIVN Adam
+2 SURN Parker
+1 SEX M
+1 BIRT
+2 DATE 11 NOV 1971
+2 PLAC Athens, Greece
+1 FAMC @F43@
+1 FAMS @F77@
+0 @I155@ INDI
+1 NAME Jonathan /Morales/
+2 GIVN Jonathan
+2 SURN Morales
+1 SEX M
+1 BIRT
+2 DATE 27 JUN 1979
+2 PLAC Melbourne, Australia
+1 FAMC @F44@
+1 FAMS @F77@
+0 @I156@ INDI
+1 NAME Christine /Cox/
+2 GIVN Christine
+2 SURN Cox
+1 SEX F
+1 BIRT
+2 DATE 13 NOV 1971
+2 PLAC Oslo, Norway
+1 FAMC @F44@
+1 FAMS @F78@
+0 @I157@ INDI
+1 NAME Stephen /Gray/
+2 GIVN Stephen
+2 SURN Gray
+1 SEX M
+1 BIRT
+2 DATE 28 JAN 1969
+2 PLAC Seattle, Washington
+1 FAMC @F45@
+1 FAMS @F78@
+0 @I158@ INDI
+1 NAME Michelle /Wilson/
+2 GIVN Michelle
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 21 SEP 1972
+2 PLAC Vienna, Austria
+1 FAMC @F45@
+1 FAMS @F79@
+0 @I159@ INDI
+1 NAME Mark /Turner/
+2 GIVN Mark
+2 SURN Turner
+1 SEX M
+1 BIRT
+2 DATE 23 NOV 1981
+2 PLAC Auckland, New Zealand
+1 FAMC @F45@
+1 FAMS @F79@
+0 @I160@ INDI
+1 NAME Kyle /Edwards/
+2 GIVN Kyle
+2 SURN Edwards
+1 SEX M
+1 BIRT
+2 DATE 9 MAY 1970
+2 PLAC San Diego, California
+1 FAMC @F45@
+1 FAMS @F80@
+0 @I161@ INDI
+1 NAME Pamela /Turner/
+2 GIVN Pamela
+2 SURN Turner
+1 SEX F
+1 BIRT
+2 DATE 17 SEP 1982
+2 PLAC Amsterdam, Netherlands
+1 FAMC @F45@
+1 FAMS @F80@
+0 @I162@ INDI
+1 NAME Amy /Clark/
+2 GIVN Amy
+2 SURN Clark
+1 SEX F
+1 BIRT
+2 DATE 19 NOV 1967
+2 PLAC Louisville, Kentucky
+1 FAMC @F46@
+1 FAMS @F81@
+0 @I163@ INDI
+1 NAME Brian /Garcia/
+2 GIVN Brian
+2 SURN Garcia
+1 SEX M
+1 BIRT
+2 DATE 24 MAY 1967
+2 PLAC Las Vegas, Nevada
+1 FAMC @F46@
+1 FAMS @F81@
+0 @I164@ INDI
+1 NAME Roger /Young/
+2 GIVN Roger
+2 SURN Young
+1 SEX M
+1 BIRT
+2 DATE 25 APR 1965
+2 PLAC Baltimore, Maryland
+1 FAMC @F46@
+1 FAMS @F82@
+0 @I165@ INDI
+1 NAME Edward /Nelson/
+2 GIVN Edward
+2 SURN Nelson
+1 SEX M
+1 BIRT
+2 DATE 12 NOV 1980
+2 PLAC Denver, Colorado
+1 FAMC @F47@
+1 FAMS @F82@
+0 @I166@ INDI
+1 NAME Karen /Ward/
+2 GIVN Karen
+2 SURN Ward
+1 SEX F
+1 BIRT
+2 DATE 14 MAY 1977
+2 PLAC San Francisco, California
+1 FAMC @F47@
+1 FAMS @F83@
+0 @I167@ INDI
+1 NAME Keith /Cox/
+2 GIVN Keith
+2 SURN Cox
+1 SEX M
+1 BIRT
+2 DATE 17 JUN 1974
+2 PLAC Oslo, Norway
+1 FAMC @F47@
+1 FAMS @F83@
+0 @I168@ INDI
+1 NAME Aaron /Stewart/
+2 GIVN Aaron
+2 SURN Stewart
+1 SEX M
+1 BIRT
+2 DATE 20 JUL 1980
+2 PLAC Warsaw, Poland
+1 FAMC @F48@
+1 FAMS @F84@
+0 @I169@ INDI
+1 NAME Brian /Reed/
+2 GIVN Brian
+2 SURN Reed
+1 SEX M
+1 BIRT
+2 DATE 6 SEP 1970
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F48@
+1 FAMS @F84@
+0 @I170@ INDI
+1 NAME Cynthia /Brown/
+2 GIVN Cynthia
+2 SURN Brown
+1 SEX F
+1 BIRT
+2 DATE 26 DEC 1984
+2 PLAC Auckland, New Zealand
+1 FAMC @F49@
+1 FAMS @F85@
+0 @I171@ INDI
+1 NAME Maria /Gonzalez/
+2 GIVN Maria
+2 SURN Gonzalez
+1 SEX F
+1 BIRT
+2 DATE 21 FEB 1983
+2 PLAC Phoenix, Arizona
+1 FAMC @F49@
+1 FAMS @F85@
+0 @I172@ INDI
+1 NAME Deborah /Watson/
+2 GIVN Deborah
+2 SURN Watson
+1 SEX F
+1 BIRT
+2 DATE 7 DEC 1974
+2 PLAC Mumbai, India
+1 FAMC @F49@
+1 FAMS @F86@
+0 @I173@ INDI
+1 NAME Rebecca /Davis/
+2 GIVN Rebecca
+2 SURN Davis
+1 SEX F
+1 BIRT
+2 DATE 7 DEC 1973
+2 PLAC Seoul, South Korea
+1 FAMC @F49@
+1 FAMS @F86@
+0 @I174@ INDI
+1 NAME Brenda /Morris/
+2 GIVN Brenda
+2 SURN Morris
+1 SEX F
+1 BIRT
+2 DATE 27 MAY 1975
+2 PLAC Mexico City, Mexico
+1 FAMC @F50@
+1 FAMS @F87@
+0 @I175@ INDI
+1 NAME Jeffrey /White/
+2 GIVN Jeffrey
+2 SURN White
+1 SEX M
+1 BIRT
+2 DATE 4 SEP 1975
+2 PLAC Charlotte, North Carolina
+1 FAMC @F50@
+1 FAMS @F87@
+0 @I176@ INDI
+1 NAME Kevin /Jackson/
+2 GIVN Kevin
+2 SURN Jackson
+1 SEX M
+1 BIRT
+2 DATE 27 MAR 1978
+2 PLAC Sydney, Australia
+1 FAMC @F50@
+1 FAMS @F88@
+0 @I177@ INDI
+1 NAME Olivia /Green/
+2 GIVN Olivia
+2 SURN Green
+1 SEX F
+1 BIRT
+2 DATE 5 JUN 1966
+2 PLAC Tokyo, Japan
+1 FAMC @F50@
+1 FAMS @F88@
+0 @I178@ INDI
+1 NAME Scott /Smith/
+2 GIVN Scott
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 7 JUN 1967
+2 PLAC Athens, Greece
+1 FAMC @F50@
+1 FAMS @F89@
+0 @I179@ INDI
+1 NAME Benjamin /Russell/
+2 GIVN Benjamin
+2 SURN Russell
+1 SEX M
+1 BIRT
+2 DATE 20 JUN 1965
+2 PLAC Houston, Texas
+1 FAMC @F51@
+1 FAMS @F89@
+0 @I180@ INDI
+1 NAME Donna /James/
+2 GIVN Donna
+2 SURN James
+1 SEX F
+1 BIRT
+2 DATE 7 OCT 1981
+2 PLAC Nashville, Tennessee
+1 FAMC @F51@
+1 FAMS @F90@
+0 @I181@ INDI
+1 NAME Nathan /Bailey/
+2 GIVN Nathan
+2 SURN Bailey
+1 SEX M
+1 BIRT
+2 DATE 23 JUL 1975
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F51@
+1 FAMS @F90@
+0 @I182@ INDI
+1 NAME Rachel /Evans/
+2 GIVN Rachel
+2 SURN Evans
+1 SEX F
+1 BIRT
+2 DATE 20 NOV 1978
+2 PLAC Seoul, South Korea
+1 FAMC @F51@
+1 FAMS @F91@
+0 @I183@ INDI
+1 NAME Jeffrey /Morris/
+2 GIVN Jeffrey
+2 SURN Morris
+1 SEX M
+1 BIRT
+2 DATE 6 JAN 1966
+2 PLAC Rome, Italy
+1 FAMC @F52@
+1 FAMS @F91@
+0 @I184@ INDI
+1 NAME Ronald /Jones/
+2 GIVN Ronald
+2 SURN Jones
+1 SEX M
+1 BIRT
+2 DATE 22 AUG 1979
+2 PLAC Tokyo, Japan
+1 FAMC @F52@
+1 FAMS @F92@
+0 @I185@ INDI
+1 NAME Ruth /Thompson/
+2 GIVN Ruth
+2 SURN Thompson
+1 SEX F
+1 BIRT
+2 DATE 25 NOV 1974
+2 PLAC Jacksonville, Florida
+1 FAMC @F53@
+1 FAMS @F92@
+0 @I186@ INDI
+1 NAME Scott /Butler/
+2 GIVN Scott
+2 SURN Butler
+1 SEX M
+1 BIRT
+2 DATE 27 DEC 1980
+2 PLAC New York, New York
+1 FAMC @F53@
+1 FAMS @F93@
+0 @I187@ INDI
+1 NAME Diane /Adams/
+2 GIVN Diane
+2 SURN Adams
+1 SEX F
+1 BIRT
+2 DATE 5 SEP 1983
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F54@
+1 FAMS @F93@
+0 @I188@ INDI
+1 NAME William /Brooks/
+2 GIVN William
+2 SURN Brooks
+1 SEX M
+1 BIRT
+2 DATE 8 JUL 1970
+2 PLAC Boston, Massachusetts
+1 FAMC @F54@
+1 FAMS @F94@
+0 @I189@ INDI
+1 NAME Lisa /Powell/
+2 GIVN Lisa
+2 SURN Powell
+1 SEX F
+1 BIRT
+2 DATE 23 APR 1972
+2 PLAC Amsterdam, Netherlands
+1 FAMC @F54@
+1 FAMS @F94@
+0 @I190@ INDI
+1 NAME Steven /Gutierrez/
+2 GIVN Steven
+2 SURN Gutierrez
+1 SEX M
+1 BIRT
+2 DATE 22 OCT 1983
+2 PLAC Copenhagen, Denmark
+1 FAMC @F54@
+1 FAMS @F95@
+0 @I191@ INDI
+1 NAME Samantha /Nelson/
+2 GIVN Samantha
+2 SURN Nelson
+1 SEX F
+1 BIRT
+2 DATE 2 FEB 1976
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F55@
+1 FAMS @F95@
+0 @I192@ INDI
+1 NAME Kenneth /Hernandez/
+2 GIVN Kenneth
+2 SURN Hernandez
+1 SEX M
+1 BIRT
+2 DATE 1 JAN 1966
+2 PLAC Beijing, China
+1 FAMC @F55@
+1 FAMS @F96@
+0 @I193@ INDI
+1 NAME Eric /Clark/
+2 GIVN Eric
+2 SURN Clark
+1 SEX M
+1 BIRT
+2 DATE 21 APR 1966
+2 PLAC Baltimore, Maryland
+1 FAMC @F55@
+1 FAMS @F96@
+0 @I194@ INDI
+1 NAME Joyce /Evans/
+2 GIVN Joyce
+2 SURN Evans
+1 SEX F
+1 BIRT
+2 DATE 20 JUN 1985
+2 PLAC Austin, Texas
+1 FAMC @F56@
+1 FAMS @F97@
+1 FAMS @F175@
+0 @I195@ INDI
+1 NAME Brian /Reyes/
+2 GIVN Brian
+2 SURN Reyes
+1 SEX M
+1 BIRT
+2 DATE 15 MAY 1968
+2 PLAC Denver, Colorado
+1 FAMC @F56@
+1 FAMS @F97@
+0 @I196@ INDI
+1 NAME Jeffrey /Cruz/
+2 GIVN Jeffrey
+2 SURN Cruz
+1 SEX M
+1 BIRT
+2 DATE 3 JAN 1970
+2 PLAC Rome, Italy
+1 FAMC @F57@
+1 FAMS @F98@
+0 @I197@ INDI
+1 NAME Jacob /Wright/
+2 GIVN Jacob
+2 SURN Wright
+1 SEX M
+1 BIRT
+2 DATE 10 OCT 1979
+2 PLAC Detroit, Michigan
+1 FAMC @F57@
+1 FAMS @F98@
+0 @I198@ INDI
+1 NAME Benjamin /Howard/
+2 GIVN Benjamin
+2 SURN Howard
+1 SEX M
+1 BIRT
+2 DATE 8 NOV 1978
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F57@
+1 FAMS @F99@
+0 @I199@ INDI
+1 NAME Heather /Ward/
+2 GIVN Heather
+2 SURN Ward
+1 SEX F
+1 BIRT
+2 DATE 19 DEC 1966
+2 PLAC Las Vegas, Nevada
+1 FAMC @F57@
+1 FAMS @F99@
+1 FAMS @F179@
+0 @I200@ INDI
+1 NAME Carolyn /Campbell/
+2 GIVN Carolyn
+2 SURN Campbell
+1 SEX F
+1 BIRT
+2 DATE 17 FEB 1988
+2 PLAC Memphis, Tennessee
+1 FAMC @F58@
+1 FAMS @F100@
+0 @I201@ INDI
+1 NAME Amanda /Cox/
+2 GIVN Amanda
+2 SURN Cox
+1 SEX F
+1 BIRT
+2 DATE 5 MAY 2005
+2 PLAC Sydney, Australia
+1 FAMC @F58@
+1 FAMS @F100@
+0 @I202@ INDI
+1 NAME Robert /Morris/
+2 GIVN Robert
+2 SURN Morris
+1 SEX M
+1 BIRT
+2 DATE 5 AUG 2002
+2 PLAC London, England
+1 FAMC @F58@
+1 FAMS @F101@
+0 @I203@ INDI
+1 NAME Joseph /Jenkins/
+2 GIVN Joseph
+2 SURN Jenkins
+1 SEX M
+1 BIRT
+2 DATE 18 OCT 2000
+2 PLAC London, England
+1 FAMC @F59@
+1 FAMS @F101@
+0 @I204@ INDI
+1 NAME Sandra /Scott/
+2 GIVN Sandra
+2 SURN Scott
+1 SEX F
+1 BIRT
+2 DATE 9 JUL 2004
+2 PLAC Phoenix, Arizona
+1 FAMC @F59@
+1 FAMS @F102@
+0 @I205@ INDI
+1 NAME Jose /Lewis/
+2 GIVN Jose
+2 SURN Lewis
+1 SEX M
+1 BIRT
+2 DATE 16 FEB 1994
+2 PLAC Chicago, Illinois
+1 FAMC @F59@
+1 FAMS @F102@
+0 @I206@ INDI
+1 NAME Andrea /Rogers/
+2 GIVN Andrea
+2 SURN Rogers
+1 SEX F
+1 BIRT
+2 DATE 22 APR 2004
+2 PLAC Charlotte, North Carolina
+1 FAMC @F59@
+1 FAMS @F103@
+0 @I207@ INDI
+1 NAME Stephanie /Lewis/
+2 GIVN Stephanie
+2 SURN Lewis
+1 SEX F
+1 BIRT
+2 DATE 26 APR 2002
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F59@
+1 FAMS @F103@
+0 @I208@ INDI
+1 NAME Evelyn /Lopez/
+2 GIVN Evelyn
+2 SURN Lopez
+1 SEX F
+1 BIRT
+2 DATE 14 DEC 1992
+2 PLAC Houston, Texas
+1 FAMC @F60@
+1 FAMS @F104@
+0 @I209@ INDI
+1 NAME Tyler /Russell/
+2 GIVN Tyler
+2 SURN Russell
+1 SEX M
+1 BIRT
+2 DATE 17 DEC 2003
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F60@
+1 FAMS @F104@
+0 @I210@ INDI
+1 NAME Diane /Cooper/
+2 GIVN Diane
+2 SURN Cooper
+1 SEX F
+1 BIRT
+2 DATE 2 SEP 1988
+2 PLAC Las Vegas, Nevada
+1 FAMC @F60@
+1 FAMS @F105@
+0 @I211@ INDI
+1 NAME Patrick /Adams/
+2 GIVN Patrick
+2 SURN Adams
+1 SEX M
+1 BIRT
+2 DATE 22 OCT 1986
+2 PLAC Dublin, Ireland
+1 FAMC @F60@
+1 FAMS @F105@
+0 @I212@ INDI
+1 NAME Gary /Hernandez/
+2 GIVN Gary
+2 SURN Hernandez
+1 SEX M
+1 BIRT
+2 DATE 12 APR 1994
+2 PLAC Rome, Italy
+1 FAMC @F60@
+1 FAMS @F106@
+0 @I213@ INDI
+1 NAME Rachel /Thomas/
+2 GIVN Rachel
+2 SURN Thomas
+1 SEX F
+1 BIRT
+2 DATE 24 SEP 1992
+2 PLAC Dublin, Ireland
+1 FAMC @F60@
+1 FAMS @F106@
+0 @I214@ INDI
+1 NAME Jeffrey /Cooper/
+2 GIVN Jeffrey
+2 SURN Cooper
+1 SEX M
+1 BIRT
+2 DATE 1 JAN 1999
+2 PLAC Amsterdam, Netherlands
+1 FAMC @F61@
+1 FAMS @F107@
+0 @I215@ INDI
+1 NAME Maria /Wood/
+2 GIVN Maria
+2 SURN Wood
+1 SEX F
+1 BIRT
+2 DATE 12 JUL 1993
+2 PLAC Copenhagen, Denmark
+1 FAMC @F61@
+1 FAMS @F107@
+0 @I216@ INDI
+1 NAME Arthur /Adams/
+2 GIVN Arthur
+2 SURN Adams
+1 SEX M
+1 BIRT
+2 DATE 18 OCT 1988
+2 PLAC Baltimore, Maryland
+1 FAMC @F61@
+1 FAMS @F108@
+0 @I217@ INDI
+1 NAME Nancy /White/
+2 GIVN Nancy
+2 SURN White
+1 SEX F
+1 BIRT
+2 DATE 10 MAY 2004
+2 PLAC Memphis, Tennessee
+1 FAMC @F62@
+1 FAMS @F108@
+0 @I218@ INDI
+1 NAME Maria /Morales/
+2 GIVN Maria
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 20 MAY 2003
+2 PLAC San Jose, California
+1 FAMC @F62@
+1 FAMS @F109@
+0 @I219@ INDI
+1 NAME Charles /Nelson/
+2 GIVN Charles
+2 SURN Nelson
+1 SEX M
+1 BIRT
+2 DATE 10 MAY 1985
+2 PLAC Prague, Czech Republic
+1 FAMC @F63@
+1 FAMS @F109@
+0 @I220@ INDI
+1 NAME Katherine /Green/
+2 GIVN Katherine
+2 SURN Green
+1 SEX F
+1 BIRT
+2 DATE 24 JUN 1991
+2 PLAC Dallas, Texas
+1 FAMC @F63@
+1 FAMS @F110@
+0 @I221@ INDI
+1 NAME Amy /Taylor/
+2 GIVN Amy
+2 SURN Taylor
+1 SEX F
+1 BIRT
+2 DATE 2 MAY 1999
+2 PLAC Boston, Massachusetts
+1 FAMC @F63@
+1 FAMS @F110@
+0 @I222@ INDI
+1 NAME Kenneth /Scott/
+2 GIVN Kenneth
+2 SURN Scott
+1 SEX M
+1 BIRT
+2 DATE 28 JUN 1992
+2 PLAC Warsaw, Poland
+1 FAMC @F63@
+1 FAMS @F111@
+0 @I223@ INDI
+1 NAME Katherine /Robinson/
+2 GIVN Katherine
+2 SURN Robinson
+1 SEX F
+1 BIRT
+2 DATE 8 FEB 2000
+2 PLAC Auckland, New Zealand
+1 FAMC @F64@
+1 FAMS @F111@
+0 @I224@ INDI
+1 NAME Margaret /James/
+2 GIVN Margaret
+2 SURN James
+1 SEX F
+1 BIRT
+2 DATE 20 DEC 1996
+2 PLAC Melbourne, Australia
+1 FAMC @F64@
+1 FAMS @F112@
+0 @I225@ INDI
+1 NAME Justin /Baker/
+2 GIVN Justin
+2 SURN Baker
+1 SEX M
+1 BIRT
+2 DATE 11 SEP 2001
+2 PLAC Sydney, Australia
+1 FAMC @F64@
+1 FAMS @F112@
+0 @I226@ INDI
+1 NAME Julie /Lee/
+2 GIVN Julie
+2 SURN Lee
+1 SEX F
+1 BIRT
+2 DATE 5 SEP 1986
+2 PLAC Mexico City, Mexico
+1 FAMC @F64@
+1 FAMS @F113@
+0 @I227@ INDI
+1 NAME Katherine /Morris/
+2 GIVN Katherine
+2 SURN Morris
+1 SEX F
+1 BIRT
+2 DATE 7 AUG 2002
+2 PLAC San Diego, California
+1 FAMC @F65@
+1 FAMS @F113@
+0 @I228@ INDI
+1 NAME Anna /Hill/
+2 GIVN Anna
+2 SURN Hill
+1 SEX F
+1 BIRT
+2 DATE 18 NOV 1990
+2 PLAC San Diego, California
+1 FAMC @F65@
+1 FAMS @F114@
+0 @I229@ INDI
+1 NAME Steven /Gutierrez/
+2 GIVN Steven
+2 SURN Gutierrez
+1 SEX M
+1 BIRT
+2 DATE 13 NOV 2003
+2 PLAC Columbus, Ohio
+1 FAMC @F65@
+1 FAMS @F114@
+0 @I230@ INDI
+1 NAME Donald /Hernandez/
+2 GIVN Donald
+2 SURN Hernandez
+1 SEX M
+1 BIRT
+2 DATE 12 MAR 1992
+2 PLAC Baltimore, Maryland
+1 FAMC @F66@
+1 FAMS @F115@
+0 @I231@ INDI
+1 NAME Deborah /Rogers/
+2 GIVN Deborah
+2 SURN Rogers
+1 SEX F
+1 BIRT
+2 DATE 15 JUL 1987
+2 PLAC New York, New York
+1 FAMC @F66@
+1 FAMS @F115@
+0 @I232@ INDI
+1 NAME Donna /Brown/
+2 GIVN Donna
+2 SURN Brown
+1 SEX F
+1 BIRT
+2 DATE 2 JUN 1993
+2 PLAC Las Vegas, Nevada
+1 FAMC @F67@
+1 FAMS @F116@
+0 @I233@ INDI
+1 NAME Carolyn /Campbell/
+2 GIVN Carolyn
+2 SURN Campbell
+1 SEX F
+1 BIRT
+2 DATE 27 FEB 2000
+2 PLAC Lisbon, Portugal
+1 FAMC @F67@
+1 FAMS @F116@
+0 @I234@ INDI
+1 NAME Jennifer /Powell/
+2 GIVN Jennifer
+2 SURN Powell
+1 SEX F
+1 BIRT
+2 DATE 18 DEC 1990
+2 PLAC Portland, Oregon
+1 FAMC @F67@
+1 FAMS @F117@
+0 @I235@ INDI
+1 NAME Tyler /Miller/
+2 GIVN Tyler
+2 SURN Miller
+1 SEX M
+1 BIRT
+2 DATE 27 SEP 1993
+2 PLAC Shanghai, China
+1 FAMC @F67@
+1 FAMS @F117@
+0 @I236@ INDI
+1 NAME Richard /Parker/
+2 GIVN Richard
+2 SURN Parker
+1 SEX M
+1 BIRT
+2 DATE 25 NOV 2001
+2 PLAC Austin, Texas
+1 FAMC @F68@
+1 FAMS @F118@
+0 @I237@ INDI
+1 NAME Tyler /Adams/
+2 GIVN Tyler
+2 SURN Adams
+1 SEX M
+1 BIRT
+2 DATE 24 APR 1997
+2 PLAC Milwaukee, Wisconsin
+1 FAMC @F68@
+1 FAMS @F118@
+0 @I238@ INDI
+1 NAME Aaron /Nelson/
+2 GIVN Aaron
+2 SURN Nelson
+1 SEX M
+1 BIRT
+2 DATE 25 NOV 1988
+2 PLAC Indianapolis, Indiana
+1 FAMC @F68@
+1 FAMS @F119@
+0 @I239@ INDI
+1 NAME Peter /Smith/
+2 GIVN Peter
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 16 FEB 1991
+2 PLAC Denver, Colorado
+1 FAMC @F68@
+1 FAMS @F119@
+0 @I240@ INDI
+1 NAME Janet /Watson/
+2 GIVN Janet
+2 SURN Watson
+1 SEX F
+1 BIRT
+2 DATE 22 AUG 2004
+2 PLAC Vancouver, Canada
+1 FAMC @F68@
+1 FAMS @F120@
+0 @I241@ INDI
+1 NAME Henry /Myers/
+2 GIVN Henry
+2 SURN Myers
+1 SEX M
+1 BIRT
+2 DATE 8 APR 2004
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F69@
+1 FAMS @F120@
+0 @I242@ INDI
+1 NAME Carl /Jenkins/
+2 GIVN Carl
+2 SURN Jenkins
+1 SEX M
+1 BIRT
+2 DATE 24 FEB 1991
+2 PLAC Las Vegas, Nevada
+1 FAMC @F69@
+1 FAMS @F121@
+0 @I243@ INDI
+1 NAME James /Powell/
+2 GIVN James
+2 SURN Powell
+1 SEX M
+1 BIRT
+2 DATE 22 APR 1994
+2 PLAC Columbus, Ohio
+1 FAMC @F69@
+1 FAMS @F121@
+0 @I244@ INDI
+1 NAME Kathleen /Long/
+2 GIVN Kathleen
+2 SURN Long
+1 SEX F
+1 BIRT
+2 DATE 5 MAR 1985
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F69@
+1 FAMS @F122@
+0 @I245@ INDI
+1 NAME Anna /Price/
+2 GIVN Anna
+2 SURN Price
+1 SEX F
+1 BIRT
+2 DATE 2 MAR 1987
+2 PLAC Detroit, Michigan
+1 FAMC @F69@
+1 FAMS @F122@
+0 @I246@ INDI
+1 NAME Anna /Johnson/
+2 GIVN Anna
+2 SURN Johnson
+1 SEX F
+1 BIRT
+2 DATE 3 JAN 1995
+2 PLAC Portland, Oregon
+1 FAMC @F70@
+1 FAMS @F123@
+0 @I247@ INDI
+1 NAME Diane /Gutierrez/
+2 GIVN Diane
+2 SURN Gutierrez
+1 SEX F
+1 BIRT
+2 DATE 7 APR 2002
+2 PLAC Beijing, China
+1 FAMC @F70@
+1 FAMS @F123@
+0 @I248@ INDI
+1 NAME Karen /Price/
+2 GIVN Karen
+2 SURN Price
+1 SEX F
+1 BIRT
+2 DATE 20 MAR 1989
+2 PLAC Louisville, Kentucky
+1 FAMC @F70@
+1 FAMS @F124@
+0 @I249@ INDI
+1 NAME Melissa /Jenkins/
+2 GIVN Melissa
+2 SURN Jenkins
+1 SEX F
+1 BIRT
+2 DATE 9 JUL 2001
+2 PLAC Houston, Texas
+1 FAMC @F70@
+1 FAMS @F124@
+0 @I250@ INDI
+1 NAME Scott /Lewis/
+2 GIVN Scott
+2 SURN Lewis
+1 SEX M
+1 BIRT
+2 DATE 2 OCT 1997
+2 PLAC San Francisco, California
+1 FAMC @F71@
+1 FAMS @F125@
+0 @I251@ INDI
+1 NAME Maria /Russell/
+2 GIVN Maria
+2 SURN Russell
+1 SEX F
+1 BIRT
+2 DATE 19 AUG 1989
+2 PLAC Louisville, Kentucky
+1 FAMC @F71@
+1 FAMS @F125@
+0 @I252@ INDI
+1 NAME Melissa /Lopez/
+2 GIVN Melissa
+2 SURN Lopez
+1 SEX F
+1 BIRT
+2 DATE 17 MAR 1985
+2 PLAC Fort Worth, Texas
+1 FAMC @F71@
+1 FAMS @F126@
+0 @I253@ INDI
+1 NAME Betty /Evans/
+2 GIVN Betty
+2 SURN Evans
+1 SEX F
+1 BIRT
+2 DATE 7 JUL 2003
+2 PLAC Detroit, Michigan
+1 FAMC @F72@
+1 FAMS @F126@
+0 @I254@ INDI
+1 NAME Arthur /Parker/
+2 GIVN Arthur
+2 SURN Parker
+1 SEX M
+1 BIRT
+2 DATE 5 OCT 1987
+2 PLAC Seattle, Washington
+1 FAMC @F72@
+1 FAMS @F127@
+0 @I255@ INDI
+1 NAME Carol /Edwards/
+2 GIVN Carol
+2 SURN Edwards
+1 SEX F
+1 BIRT
+2 DATE 15 OCT 2001
+2 PLAC Rome, Italy
+1 FAMC @F72@
+1 FAMS @F127@
+0 @I256@ INDI
+1 NAME Joan /Murphy/
+2 GIVN Joan
+2 SURN Murphy
+1 SEX F
+1 BIRT
+2 DATE 5 NOV 2003
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F73@
+1 FAMS @F128@
+0 @I257@ INDI
+1 NAME Michael /Jackson/
+2 GIVN Michael
+2 SURN Jackson
+1 SEX M
+1 BIRT
+2 DATE 9 JUN 1985
+2 PLAC Louisville, Kentucky
+1 FAMC @F73@
+1 FAMS @F128@
+0 @I258@ INDI
+1 NAME Debra /Wood/
+2 GIVN Debra
+2 SURN Wood
+1 SEX F
+1 BIRT
+2 DATE 21 MAY 1996
+2 PLAC Copenhagen, Denmark
+1 FAMC @F74@
+1 FAMS @F129@
+0 @I259@ INDI
+1 NAME Jason /Gomez/
+2 GIVN Jason
+2 SURN Gomez
+1 SEX M
+1 BIRT
+2 DATE 23 AUG 1985
+2 PLAC San Jose, California
+1 FAMC @F74@
+1 FAMS @F129@
+0 @I260@ INDI
+1 NAME Keith /Clark/
+2 GIVN Keith
+2 SURN Clark
+1 SEX M
+1 BIRT
+2 DATE 4 NOV 2005
+2 PLAC Boston, Massachusetts
+1 FAMC @F74@
+1 FAMS @F130@
+0 @I261@ INDI
+1 NAME Richard /Morris/
+2 GIVN Richard
+2 SURN Morris
+1 SEX M
+1 BIRT
+2 DATE 6 DEC 1985
+2 PLAC Madrid, Spain
+1 FAMC @F74@
+1 FAMS @F130@
+0 @I262@ INDI
+1 NAME Dorothy /Powell/
+2 GIVN Dorothy
+2 SURN Powell
+1 SEX F
+1 BIRT
+2 DATE 28 MAY 1991
+2 PLAC Seattle, Washington
+1 FAMC @F74@
+1 FAMS @F131@
+0 @I263@ INDI
+1 NAME Walter /Rodriguez/
+2 GIVN Walter
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 20 FEB 2004
+2 PLAC Nashville, Tennessee
+1 FAMC @F74@
+1 FAMS @F131@
+0 @I264@ INDI
+1 NAME Peter /Wood/
+2 GIVN Peter
+2 SURN Wood
+1 SEX M
+1 BIRT
+2 DATE 3 NOV 1987
+2 PLAC Denver, Colorado
+1 FAMC @F75@
+1 FAMS @F132@
+0 @I265@ INDI
+1 NAME Joshua /Myers/
+2 GIVN Joshua
+2 SURN Myers
+1 SEX M
+1 BIRT
+2 DATE 19 DEC 2004
+2 PLAC Portland, Oregon
+1 FAMC @F75@
+1 FAMS @F132@
+0 @I266@ INDI
+1 NAME Sharon /Adams/
+2 GIVN Sharon
+2 SURN Adams
+1 SEX F
+1 BIRT
+2 DATE 4 AUG 2003
+2 PLAC Melbourne, Australia
+1 FAMC @F76@
+1 FAMS @F133@
+0 @I267@ INDI
+1 NAME Ashley /Parker/
+2 GIVN Ashley
+2 SURN Parker
+1 SEX F
+1 BIRT
+2 DATE 26 OCT 1992
+2 PLAC Melbourne, Australia
+1 FAMC @F76@
+1 FAMS @F133@
+0 @I268@ INDI
+1 NAME Gary /Cooper/
+2 GIVN Gary
+2 SURN Cooper
+1 SEX M
+1 BIRT
+2 DATE 7 NOV 2000
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F77@
+1 FAMS @F134@
+0 @I269@ INDI
+1 NAME Jennifer /White/
+2 GIVN Jennifer
+2 SURN White
+1 SEX F
+1 BIRT
+2 DATE 26 JUL 1999
+2 PLAC Dallas, Texas
+1 FAMC @F77@
+1 FAMS @F134@
+0 @I270@ INDI
+1 NAME Cynthia /Green/
+2 GIVN Cynthia
+2 SURN Green
+1 SEX F
+1 BIRT
+2 DATE 10 APR 1995
+2 PLAC Nashville, Tennessee
+1 FAMC @F77@
+1 FAMS @F135@
+0 @I271@ INDI
+1 NAME Jason /Murphy/
+2 GIVN Jason
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 27 NOV 1988
+2 PLAC Chicago, Illinois
+1 FAMC @F78@
+1 FAMS @F135@
+0 @I272@ INDI
+1 NAME Janet /Myers/
+2 GIVN Janet
+2 SURN Myers
+1 SEX F
+1 BIRT
+2 DATE 6 FEB 1991
+2 PLAC San Antonio, Texas
+1 FAMC @F78@
+1 FAMS @F136@
+0 @I273@ INDI
+1 NAME Jeffrey /Evans/
+2 GIVN Jeffrey
+2 SURN Evans
+1 SEX M
+1 BIRT
+2 DATE 22 MAY 1991
+2 PLAC New York, New York
+1 FAMC @F78@
+1 FAMS @F136@
+0 @I274@ INDI
+1 NAME Nicholas /Lopez/
+2 GIVN Nicholas
+2 SURN Lopez
+1 SEX M
+1 BIRT
+2 DATE 19 JUN 1989
+2 PLAC Mexico City, Mexico
+1 FAMC @F79@
+1 FAMS @F137@
+0 @I275@ INDI
+1 NAME Cheryl /Hernandez/
+2 GIVN Cheryl
+2 SURN Hernandez
+1 SEX F
+1 BIRT
+2 DATE 25 JUL 2001
+2 PLAC Amsterdam, Netherlands
+1 FAMC @F79@
+1 FAMS @F137@
+0 @I276@ INDI
+1 NAME Henry /Parker/
+2 GIVN Henry
+2 SURN Parker
+1 SEX M
+1 BIRT
+2 DATE 25 JAN 1996
+2 PLAC San Diego, California
+1 FAMC @F79@
+1 FAMS @F138@
+0 @I277@ INDI
+1 NAME Linda /Phillips/
+2 GIVN Linda
+2 SURN Phillips
+1 SEX F
+1 BIRT
+2 DATE 5 MAY 1998
+2 PLAC Denver, Colorado
+1 FAMC @F79@
+1 FAMS @F138@
+0 @I278@ INDI
+1 NAME Martha /Morris/
+2 GIVN Martha
+2 SURN Morris
+1 SEX F
+1 BIRT
+2 DATE 27 JAN 1989
+2 PLAC London, England
+1 FAMC @F79@
+1 FAMS @F139@
+0 @I279@ INDI
+1 NAME Jose /Collins/
+2 GIVN Jose
+2 SURN Collins
+1 SEX M
+1 BIRT
+2 DATE 4 JUL 1998
+2 PLAC Dallas, Texas
+1 FAMC @F79@
+1 FAMS @F139@
+0 @I280@ INDI
+1 NAME Christine /Myers/
+2 GIVN Christine
+2 SURN Myers
+1 SEX F
+1 BIRT
+2 DATE 14 SEP 1991
+2 PLAC Los Angeles, California
+1 FAMC @F80@
+1 FAMS @F140@
+0 @I281@ INDI
+1 NAME Gary /Hill/
+2 GIVN Gary
+2 SURN Hill
+1 SEX M
+1 BIRT
+2 DATE 13 OCT 2005
+2 PLAC Seattle, Washington
+1 FAMC @F80@
+1 FAMS @F140@
+0 @I282@ INDI
+1 NAME Jerry /Gray/
+2 GIVN Jerry
+2 SURN Gray
+1 SEX M
+1 BIRT
+2 DATE 9 SEP 2003
+2 PLAC Los Angeles, California
+1 FAMC @F80@
+1 FAMS @F141@
+0 @I283@ INDI
+1 NAME Susan /Davis/
+2 GIVN Susan
+2 SURN Davis
+1 SEX F
+1 BIRT
+2 DATE 3 AUG 2004
+2 PLAC Warsaw, Poland
+1 FAMC @F80@
+1 FAMS @F141@
+0 @I284@ INDI
+1 NAME Steven /Carter/
+2 GIVN Steven
+2 SURN Carter
+1 SEX M
+1 BIRT
+2 DATE 24 MAY 2000
+2 PLAC Indianapolis, Indiana
+1 FAMC @F80@
+1 FAMS @F142@
+0 @I285@ INDI
+1 NAME William /Young/
+2 GIVN William
+2 SURN Young
+1 SEX M
+1 BIRT
+2 DATE 19 FEB 2003
+2 PLAC Dublin, Ireland
+1 FAMC @F81@
+1 FAMS @F142@
+0 @I286@ INDI
+1 NAME Tyler /Mitchell/
+2 GIVN Tyler
+2 SURN Mitchell
+1 SEX M
+1 BIRT
+2 DATE 28 JAN 1991
+2 PLAC Paris, France
+1 FAMC @F81@
+1 FAMS @F143@
+0 @I287@ INDI
+1 NAME Carol /Cooper/
+2 GIVN Carol
+2 SURN Cooper
+1 SEX F
+1 BIRT
+2 DATE 6 APR 1997
+2 PLAC Dublin, Ireland
+1 FAMC @F81@
+1 FAMS @F143@
+0 @I288@ INDI
+1 NAME Michael /Myers/
+2 GIVN Michael
+2 SURN Myers
+1 SEX M
+1 BIRT
+2 DATE 2 APR 1996
+2 PLAC Portland, Oregon
+1 FAMC @F81@
+1 FAMS @F144@
+0 @I289@ INDI
+1 NAME William /Johnson/
+2 GIVN William
+2 SURN Johnson
+1 SEX M
+1 BIRT
+2 DATE 19 AUG 1997
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F82@
+1 FAMS @F144@
+0 @I290@ INDI
+1 NAME Anna /Martin/
+2 GIVN Anna
+2 SURN Martin
+1 SEX F
+1 BIRT
+2 DATE 21 APR 2002
+2 PLAC Melbourne, Australia
+1 FAMC @F82@
+1 FAMS @F145@
+0 @I291@ INDI
+1 NAME Carl /Williams/
+2 GIVN Carl
+2 SURN Williams
+1 SEX M
+1 BIRT
+2 DATE 1 JUN 1996
+2 PLAC Jacksonville, Florida
+1 FAMC @F83@
+1 FAMS @F145@
+0 @I292@ INDI
+1 NAME Betty /Mitchell/
+2 GIVN Betty
+2 SURN Mitchell
+1 SEX F
+1 BIRT
+2 DATE 17 JAN 1987
+2 PLAC San Jose, California
+1 FAMC @F83@
+1 FAMS @F146@
+0 @I293@ INDI
+1 NAME Timothy /Jenkins/
+2 GIVN Timothy
+2 SURN Jenkins
+1 SEX M
+1 BIRT
+2 DATE 8 FEB 1990
+2 PLAC Columbus, Ohio
+1 FAMC @F83@
+1 FAMS @F146@
+0 @I294@ INDI
+1 NAME Amanda /Mitchell/
+2 GIVN Amanda
+2 SURN Mitchell
+1 SEX F
+1 BIRT
+2 DATE 9 MAR 2003
+2 PLAC Lisbon, Portugal
+1 FAMC @F84@
+1 FAMS @F147@
+0 @I295@ INDI
+1 NAME Timothy /Sullivan/
+2 GIVN Timothy
+2 SURN Sullivan
+1 SEX M
+1 BIRT
+2 DATE 9 JUL 1985
+2 PLAC Fort Worth, Texas
+1 FAMC @F84@
+1 FAMS @F147@
+0 @I296@ INDI
+1 NAME Cheryl /Roberts/
+2 GIVN Cheryl
+2 SURN Roberts
+1 SEX F
+1 BIRT
+2 DATE 19 FEB 1994
+2 PLAC Oslo, Norway
+1 FAMC @F84@
+1 FAMS @F148@
+0 @I297@ INDI
+1 NAME Karen /Moore/
+2 GIVN Karen
+2 SURN Moore
+1 SEX F
+1 BIRT
+2 DATE 26 OCT 2004
+2 PLAC Austin, Texas
+1 FAMC @F84@
+1 FAMS @F148@
+0 @I298@ INDI
+1 NAME Lisa /Robinson/
+2 GIVN Lisa
+2 SURN Robinson
+1 SEX F
+1 BIRT
+2 DATE 23 DEC 2000
+2 PLAC London, England
+1 FAMC @F84@
+1 FAMS @F149@
+0 @I299@ INDI
+1 NAME Scott /Morales/
+2 GIVN Scott
+2 SURN Morales
+1 SEX M
+1 BIRT
+2 DATE 27 APR 1992
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F85@
+1 FAMS @F149@
+0 @I300@ INDI
+1 NAME Katherine /Stewart/
+2 GIVN Katherine
+2 SURN Stewart
+1 SEX F
+1 BIRT
+2 DATE 21 DEC 1986
+2 PLAC Vienna, Austria
+1 FAMC @F85@
+1 FAMS @F150@
+0 @I301@ INDI
+1 NAME Christina /Harris/
+2 GIVN Christina
+2 SURN Harris
+1 SEX F
+1 BIRT
+2 DATE 1 OCT 1990
+2 PLAC Montreal, Canada
+1 FAMC @F85@
+1 FAMS @F150@
+0 @I302@ INDI
+1 NAME Timothy /Brown/
+2 GIVN Timothy
+2 SURN Brown
+1 SEX M
+1 BIRT
+2 DATE 24 OCT 1986
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F86@
+1 FAMS @F151@
+0 @I303@ INDI
+1 NAME Brandon /Morales/
+2 GIVN Brandon
+2 SURN Morales
+1 SEX M
+1 BIRT
+2 DATE 5 MAY 1985
+2 PLAC Memphis, Tennessee
+1 FAMC @F86@
+1 FAMS @F151@
+0 @I304@ INDI
+1 NAME John /Smith/
+2 GIVN John
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 21 NOV 1995
+2 PLAC Shanghai, China
+1 FAMC @F86@
+1 FAMS @F152@
+0 @I305@ INDI
+1 NAME Rachel /Peterson/
+2 GIVN Rachel
+2 SURN Peterson
+1 SEX F
+1 BIRT
+2 DATE 18 DEC 1997
+2 PLAC Fort Worth, Texas
+1 FAMC @F87@
+1 FAMS @F152@
+0 @I306@ INDI
+1 NAME Carolyn /Cruz/
+2 GIVN Carolyn
+2 SURN Cruz
+1 SEX F
+1 BIRT
+2 DATE 9 OCT 1995
+2 PLAC Baltimore, Maryland
+1 FAMC @F87@
+1 FAMS @F153@
+0 @I307@ INDI
+1 NAME Daniel /Gonzalez/
+2 GIVN Daniel
+2 SURN Gonzalez
+1 SEX M
+1 BIRT
+2 DATE 21 JUN 1998
+2 PLAC Seoul, South Korea
+1 FAMC @F87@
+1 FAMS @F153@
+0 @I308@ INDI
+1 NAME Karen /Parker/
+2 GIVN Karen
+2 SURN Parker
+1 SEX F
+1 BIRT
+2 DATE 19 JUL 2000
+2 PLAC Copenhagen, Denmark
+1 FAMC @F87@
+1 FAMS @F154@
+0 @I309@ INDI
+1 NAME Paul /Taylor/
+2 GIVN Paul
+2 SURN Taylor
+1 SEX M
+1 BIRT
+2 DATE 5 APR 2005
+2 PLAC San Jose, California
+1 FAMC @F88@
+1 FAMS @F154@
+0 @I310@ INDI
+1 NAME Deborah /Bailey/
+2 GIVN Deborah
+2 SURN Bailey
+1 SEX F
+1 BIRT
+2 DATE 23 SEP 2002
+2 PLAC Seoul, South Korea
+1 FAMC @F88@
+1 FAMS @F155@
+0 @I311@ INDI
+1 NAME Rebecca /Jenkins/
+2 GIVN Rebecca
+2 SURN Jenkins
+1 SEX F
+1 BIRT
+2 DATE 26 OCT 1990
+2 PLAC Charlotte, North Carolina
+1 FAMC @F88@
+1 FAMS @F155@
+0 @I312@ INDI
+1 NAME Heather /Brooks/
+2 GIVN Heather
+2 SURN Brooks
+1 SEX F
+1 BIRT
+2 DATE 24 JUN 1997
+2 PLAC Dallas, Texas
+1 FAMC @F89@
+1 FAMS @F156@
+0 @I313@ INDI
+1 NAME Deborah /Richardson/
+2 GIVN Deborah
+2 SURN Richardson
+1 SEX F
+1 BIRT
+2 DATE 14 SEP 1992
+2 PLAC Montreal, Canada
+1 FAMC @F89@
+1 FAMS @F156@
+0 @I314@ INDI
+1 NAME Olivia /Ortiz/
+2 GIVN Olivia
+2 SURN Ortiz
+1 SEX F
+1 BIRT
+2 DATE 3 DEC 1993
+2 PLAC Portland, Oregon
+1 FAMC @F90@
+1 FAMS @F157@
+0 @I315@ INDI
+1 NAME Ryan /Campbell/
+2 GIVN Ryan
+2 SURN Campbell
+1 SEX M
+1 BIRT
+2 DATE 5 APR 1988
+2 PLAC Madrid, Spain
+1 FAMC @F90@
+1 FAMS @F157@
+0 @I316@ INDI
+1 NAME Aaron /Barnes/
+2 GIVN Aaron
+2 SURN Barnes
+1 SEX M
+1 BIRT
+2 DATE 6 JUN 2004
+2 PLAC San Jose, California
+1 FAMC @F91@
+1 FAMS @F158@
+0 @I317@ INDI
+1 NAME Janet /Hill/
+2 GIVN Janet
+2 SURN Hill
+1 SEX F
+1 BIRT
+2 DATE 12 DEC 1993
+2 PLAC Austin, Texas
+1 FAMC @F91@
+1 FAMS @F158@
+0 @I318@ INDI
+1 NAME Ashley /Young/
+2 GIVN Ashley
+2 SURN Young
+1 SEX F
+1 BIRT
+2 DATE 10 JAN 1990
+2 PLAC Stockholm, Sweden
+1 FAMC @F91@
+1 FAMS @F159@
+0 @I319@ INDI
+1 NAME George /Sanders/
+2 GIVN George
+2 SURN Sanders
+1 SEX M
+1 BIRT
+2 DATE 27 DEC 2001
+2 PLAC Dallas, Texas
+1 FAMC @F92@
+1 FAMS @F159@
+0 @I320@ INDI
+1 NAME Karen /Bailey/
+2 GIVN Karen
+2 SURN Bailey
+1 SEX F
+1 BIRT
+2 DATE 16 JAN 1991
+2 PLAC Baltimore, Maryland
+1 FAMC @F92@
+1 FAMS @F160@
+0 @I321@ INDI
+1 NAME William /Carter/
+2 GIVN William
+2 SURN Carter
+1 SEX M
+1 BIRT
+2 DATE 23 JUN 1998
+2 PLAC New York, New York
+1 FAMC @F93@
+1 FAMS @F160@
+0 @I322@ INDI
+1 NAME Cheryl /Carter/
+2 GIVN Cheryl
+2 SURN Carter
+1 SEX F
+1 BIRT
+2 DATE 12 MAR 1998
+2 PLAC Oslo, Norway
+1 FAMC @F93@
+1 FAMS @F161@
+0 @I323@ INDI
+1 NAME Helen /Scott/
+2 GIVN Helen
+2 SURN Scott
+1 SEX F
+1 BIRT
+2 DATE 11 JAN 1999
+2 PLAC Dallas, Texas
+1 FAMC @F93@
+1 FAMS @F161@
+0 @I324@ INDI
+1 NAME Samuel /Rogers/
+2 GIVN Samuel
+2 SURN Rogers
+1 SEX M
+1 BIRT
+2 DATE 16 OCT 1998
+2 PLAC Auckland, New Zealand
+1 FAMC @F94@
+1 FAMS @F162@
+0 @I325@ INDI
+1 NAME Katherine /Scott/
+2 GIVN Katherine
+2 SURN Scott
+1 SEX F
+1 BIRT
+2 DATE 27 MAY 1988
+2 PLAC Portland, Oregon
+1 FAMC @F94@
+1 FAMS @F162@
+0 @I326@ INDI
+1 NAME Larry /James/
+2 GIVN Larry
+2 SURN James
+1 SEX M
+1 BIRT
+2 DATE 4 SEP 2004
+2 PLAC Vienna, Austria
+1 FAMC @F95@
+1 FAMS @F163@
+0 @I327@ INDI
+1 NAME Robert /Baker/
+2 GIVN Robert
+2 SURN Baker
+1 SEX M
+1 BIRT
+2 DATE 10 APR 1988
+2 PLAC Dublin, Ireland
+1 FAMC @F95@
+1 FAMS @F163@
+0 @I328@ INDI
+1 NAME Anna /Morales/
+2 GIVN Anna
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 19 MAR 1988
+2 PLAC Memphis, Tennessee
+1 FAMC @F96@
+1 FAMS @F164@
+0 @I329@ INDI
+1 NAME Donna /Walker/
+2 GIVN Donna
+2 SURN Walker
+1 SEX F
+1 BIRT
+2 DATE 22 FEB 1990
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F96@
+1 FAMS @F164@
+0 @I330@ INDI
+1 NAME Timothy /Hernandez/
+2 GIVN Timothy
+2 SURN Hernandez
+1 SEX M
+1 BIRT
+2 DATE 25 MAY 2002
+2 PLAC Seoul, South Korea
+1 FAMC @F96@
+1 FAMS @F165@
+0 @I331@ INDI
+1 NAME Betty /White/
+2 GIVN Betty
+2 SURN White
+1 SEX F
+1 BIRT
+2 DATE 24 DEC 1993
+2 PLAC Seoul, South Korea
+1 FAMC @F96@
+1 FAMS @F165@
+0 @I332@ INDI
+1 NAME Stephanie /Stewart/
+2 GIVN Stephanie
+2 SURN Stewart
+1 SEX F
+1 BIRT
+2 DATE 21 JUN 1994
+2 PLAC Toronto, Canada
+1 FAMC @F97@
+1 FAMS @F166@
+0 @I333@ INDI
+1 NAME Anna /Roberts/
+2 GIVN Anna
+2 SURN Roberts
+1 SEX F
+1 BIRT
+2 DATE 7 AUG 1985
+2 PLAC Copenhagen, Denmark
+1 FAMC @F97@
+1 FAMS @F166@
+0 @I334@ INDI
+1 NAME Ronald /Edwards/
+2 GIVN Ronald
+2 SURN Edwards
+1 SEX M
+1 BIRT
+2 DATE 5 APR 1999
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F98@
+1 FAMS @F167@
+0 @I335@ INDI
+1 NAME Helen /Peterson/
+2 GIVN Helen
+2 SURN Peterson
+1 SEX F
+1 BIRT
+2 DATE 1 AUG 2004
+2 PLAC Nashville, Tennessee
+1 FAMC @F98@
+1 FAMS @F167@
+0 @I336@ INDI
+1 NAME William /Jones/
+2 GIVN William
+2 SURN Jones
+1 SEX M
+1 BIRT
+2 DATE 27 OCT 2005
+2 PLAC London, England
+1 FAMC @F98@
+1 FAMS @F168@
+0 @I337@ INDI
+1 NAME Dorothy /Mitchell/
+2 GIVN Dorothy
+2 SURN Mitchell
+1 SEX F
+1 BIRT
+2 DATE 26 JUN 1990
+2 PLAC Chicago, Illinois
+1 FAMC @F98@
+1 FAMS @F168@
+0 @I338@ INDI
+1 NAME Catherine /Cooper/
+2 GIVN Catherine
+2 SURN Cooper
+1 SEX F
+1 BIRT
+2 DATE 16 AUG 1996
+2 PLAC Dallas, Texas
+1 FAMC @F99@
+1 FAMS @F169@
+0 @I339@ INDI
+1 NAME Brandon /Barnes/
+2 GIVN Brandon
+2 SURN Barnes
+1 SEX M
+1 BIRT
+2 DATE 26 JUN 1987
+2 PLAC Milwaukee, Wisconsin
+1 FAMC @F99@
+1 FAMS @F169@
+0 @I340@ INDI
+1 NAME Steven /Richardson/
+2 GIVN Steven
+2 SURN Richardson
+1 SEX M
+1 BIRT
+2 DATE 24 MAY 2008
+2 PLAC Seattle, Washington
+1 FAMC @F100@
+0 @I341@ INDI
+1 NAME Kenneth /Wood/
+2 GIVN Kenneth
+2 SURN Wood
+1 SEX M
+1 BIRT
+2 DATE 10 MAR 2000
+2 PLAC Athens, Greece
+1 FAMC @F100@
+0 @I342@ INDI
+1 NAME Kathleen /Jenkins/
+2 GIVN Kathleen
+2 SURN Jenkins
+1 SEX F
+1 BIRT
+2 DATE 23 MAR 2021
+2 PLAC Phoenix, Arizona
+1 FAMC @F101@
+0 @I343@ INDI
+1 NAME Melissa /Martinez/
+2 GIVN Melissa
+2 SURN Martinez
+1 SEX F
+1 BIRT
+2 DATE 16 FEB 2016
+2 PLAC Seoul, South Korea
+1 FAMC @F101@
+0 @I344@ INDI
+1 NAME Eric /Martin/
+2 GIVN Eric
+2 SURN Martin
+1 SEX M
+1 BIRT
+2 DATE 5 OCT 2010
+2 PLAC Toronto, Canada
+1 FAMC @F102@
+0 @I345@ INDI
+1 NAME Evelyn /Wood/
+2 GIVN Evelyn
+2 SURN Wood
+1 SEX F
+1 BIRT
+2 DATE 13 SEP 2014
+2 PLAC Warsaw, Poland
+1 FAMC @F102@
+0 @I346@ INDI
+1 NAME Victoria /Diaz/
+2 GIVN Victoria
+2 SURN Diaz
+1 SEX F
+1 BIRT
+2 DATE 15 JUL 2011
+2 PLAC Seoul, South Korea
+1 FAMC @F103@
+0 @I347@ INDI
+1 NAME Raymond /Reed/
+2 GIVN Raymond
+2 SURN Reed
+1 SEX M
+1 BIRT
+2 DATE 1 SEP 2003
+2 PLAC San Jose, California
+1 FAMC @F103@
+0 @I348@ INDI
+1 NAME Aaron /Peterson/
+2 GIVN Aaron
+2 SURN Peterson
+1 SEX M
+1 BIRT
+2 DATE 5 NOV 2015
+2 PLAC Dallas, Texas
+1 FAMC @F104@
+0 @I349@ INDI
+1 NAME Elizabeth /Howard/
+2 GIVN Elizabeth
+2 SURN Howard
+1 SEX F
+1 BIRT
+2 DATE 18 OCT 2014
+2 PLAC Shanghai, China
+1 FAMC @F104@
+0 @I350@ INDI
+1 NAME Richard /Hughes/
+2 GIVN Richard
+2 SURN Hughes
+1 SEX M
+1 BIRT
+2 DATE 14 OCT 2015
+2 PLAC Madrid, Spain
+1 FAMC @F105@
+0 @I351@ INDI
+1 NAME Raymond /Evans/
+2 GIVN Raymond
+2 SURN Evans
+1 SEX M
+1 BIRT
+2 DATE 22 AUG 2003
+2 PLAC Montreal, Canada
+1 FAMC @F105@
+0 @I352@ INDI
+1 NAME Peter /Long/
+2 GIVN Peter
+2 SURN Long
+1 SEX M
+1 BIRT
+2 DATE 22 MAY 2001
+2 PLAC Toronto, Canada
+1 FAMC @F105@
+0 @I353@ INDI
+1 NAME Larry /Harris/
+2 GIVN Larry
+2 SURN Harris
+1 SEX M
+1 BIRT
+2 DATE 20 JUN 2018
+2 PLAC Tokyo, Japan
+1 FAMC @F105@
+0 @I354@ INDI
+1 NAME Emily /Adams/
+2 GIVN Emily
+2 SURN Adams
+1 SEX F
+1 BIRT
+2 DATE 3 SEP 2023
+2 PLAC Auckland, New Zealand
+1 FAMC @F105@
+0 @I355@ INDI
+1 NAME Henry /Powell/
+2 GIVN Henry
+2 SURN Powell
+1 SEX M
+1 BIRT
+2 DATE 15 NOV 2005
+2 PLAC Milwaukee, Wisconsin
+1 FAMC @F106@
+0 @I356@ INDI
+1 NAME Tyler /Wright/
+2 GIVN Tyler
+2 SURN Wright
+1 SEX M
+1 BIRT
+2 DATE 1 JUN 2018
+2 PLAC Charlotte, North Carolina
+1 FAMC @F106@
+0 @I357@ INDI
+1 NAME Lawrence /Morris/
+2 GIVN Lawrence
+2 SURN Morris
+1 SEX M
+1 BIRT
+2 DATE 15 MAR 2019
+2 PLAC San Antonio, Texas
+1 FAMC @F106@
+0 @I358@ INDI
+1 NAME Roger /Robinson/
+2 GIVN Roger
+2 SURN Robinson
+1 SEX M
+1 BIRT
+2 DATE 18 OCT 2005
+2 PLAC Madrid, Spain
+1 FAMC @F107@
+0 @I359@ INDI
+1 NAME Christopher /Murphy/
+2 GIVN Christopher
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 16 AUG 2006
+2 PLAC Dublin, Ireland
+1 FAMC @F107@
+0 @I360@ INDI
+1 NAME Melissa /Bennett/
+2 GIVN Melissa
+2 SURN Bennett
+1 SEX F
+1 BIRT
+2 DATE 6 APR 2018
+2 PLAC Los Angeles, California
+1 FAMC @F107@
+0 @I361@ INDI
+1 NAME Helen /Anderson/
+2 GIVN Helen
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 3 FEB 2014
+2 PLAC Beijing, China
+1 FAMC @F108@
+0 @I362@ INDI
+1 NAME Anna /Rodriguez/
+2 GIVN Anna
+2 SURN Rodriguez
+1 SEX F
+1 BIRT
+2 DATE 21 MAY 2019
+2 PLAC Vancouver, Canada
+1 FAMC @F108@
+0 @I363@ INDI
+1 NAME Judith /White/
+2 GIVN Judith
+2 SURN White
+1 SEX F
+1 BIRT
+2 DATE 26 SEP 2021
+2 PLAC Houston, Texas
+1 FAMC @F109@
+0 @I364@ INDI
+1 NAME James /Garcia/
+2 GIVN James
+2 SURN Garcia
+1 SEX M
+1 BIRT
+2 DATE 24 FEB 2007
+2 PLAC Budapest, Hungary
+1 FAMC @F109@
+0 @I365@ INDI
+1 NAME Cynthia /Collins/
+2 GIVN Cynthia
+2 SURN Collins
+1 SEX F
+1 BIRT
+2 DATE 19 JAN 2010
+2 PLAC Dallas, Texas
+1 FAMC @F109@
+0 @I366@ INDI
+1 NAME Brandon /Gomez/
+2 GIVN Brandon
+2 SURN Gomez
+1 SEX M
+1 BIRT
+2 DATE 12 APR 2024
+2 PLAC Los Angeles, California
+1 FAMC @F110@
+0 @I367@ INDI
+1 NAME Sharon /Mitchell/
+2 GIVN Sharon
+2 SURN Mitchell
+1 SEX F
+1 BIRT
+2 DATE 7 AUG 2013
+2 PLAC Seoul, South Korea
+1 FAMC @F110@
+0 @I368@ INDI
+1 NAME Julie /Jones/
+2 GIVN Julie
+2 SURN Jones
+1 SEX F
+1 BIRT
+2 DATE 19 JAN 2021
+2 PLAC Rome, Italy
+1 FAMC @F110@
+0 @I369@ INDI
+1 NAME Justin /Cooper/
+2 GIVN Justin
+2 SURN Cooper
+1 SEX M
+1 BIRT
+2 DATE 22 SEP 2015
+2 PLAC Milwaukee, Wisconsin
+1 FAMC @F110@
+0 @I370@ INDI
+1 NAME Heather /Roberts/
+2 GIVN Heather
+2 SURN Roberts
+1 SEX F
+1 BIRT
+2 DATE 8 DEC 2012
+2 PLAC Shanghai, China
+1 FAMC @F111@
+0 @I371@ INDI
+1 NAME Benjamin /Powell/
+2 GIVN Benjamin
+2 SURN Powell
+1 SEX M
+1 BIRT
+2 DATE 15 OCT 2013
+2 PLAC Paris, France
+1 FAMC @F111@
+0 @I372@ INDI
+1 NAME Keith /Howard/
+2 GIVN Keith
+2 SURN Howard
+1 SEX M
+1 BIRT
+2 DATE 2 MAR 2006
+2 PLAC Louisville, Kentucky
+1 FAMC @F111@
+0 @I373@ INDI
+1 NAME Debra /Anderson/
+2 GIVN Debra
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 3 OCT 2008
+2 PLAC Los Angeles, California
+1 FAMC @F112@
+0 @I374@ INDI
+1 NAME Robert /Gray/
+2 GIVN Robert
+2 SURN Gray
+1 SEX M
+1 BIRT
+2 DATE 10 NOV 2020
+2 PLAC Memphis, Tennessee
+1 FAMC @F112@
+0 @I375@ INDI
+1 NAME Cynthia /Walker/
+2 GIVN Cynthia
+2 SURN Walker
+1 SEX F
+1 BIRT
+2 DATE 20 SEP 2022
+2 PLAC Denver, Colorado
+1 FAMC @F112@
+0 @I376@ INDI
+1 NAME Benjamin /Turner/
+2 GIVN Benjamin
+2 SURN Turner
+1 SEX M
+1 BIRT
+2 DATE 6 DEC 2022
+2 PLAC Columbus, Ohio
+1 FAMC @F112@
+0 @I377@ INDI
+1 NAME Cynthia /Green/
+2 GIVN Cynthia
+2 SURN Green
+1 SEX F
+1 BIRT
+2 DATE 4 AUG 2016
+2 PLAC San Diego, California
+1 FAMC @F112@
+0 @I378@ INDI
+1 NAME Joshua /Wilson/
+2 GIVN Joshua
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 14 APR 2008
+2 PLAC Mexico City, Mexico
+1 FAMC @F113@
+0 @I379@ INDI
+1 NAME William /Murphy/
+2 GIVN William
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 24 MAR 2001
+2 PLAC Rome, Italy
+1 FAMC @F113@
+0 @I380@ INDI
+1 NAME Dorothy /Bell/
+2 GIVN Dorothy
+2 SURN Bell
+1 SEX F
+1 BIRT
+2 DATE 5 JAN 2002
+2 PLAC Mexico City, Mexico
+1 FAMC @F113@
+0 @I381@ INDI
+1 NAME Jeffrey /Bennett/
+2 GIVN Jeffrey
+2 SURN Bennett
+1 SEX M
+1 BIRT
+2 DATE 4 JUN 2019
+2 PLAC Montreal, Canada
+1 FAMC @F114@
+0 @I382@ INDI
+1 NAME Nancy /Perry/
+2 GIVN Nancy
+2 SURN Perry
+1 SEX F
+1 BIRT
+2 DATE 28 APR 2005
+2 PLAC Prague, Czech Republic
+1 FAMC @F114@
+0 @I383@ INDI
+1 NAME Victoria /Garcia/
+2 GIVN Victoria
+2 SURN Garcia
+1 SEX F
+1 BIRT
+2 DATE 17 JAN 2024
+2 PLAC New York, New York
+1 FAMC @F115@
+0 @I384@ INDI
+1 NAME Catherine /Jackson/
+2 GIVN Catherine
+2 SURN Jackson
+1 SEX F
+1 BIRT
+2 DATE 8 OCT 2018
+2 PLAC Shanghai, China
+1 FAMC @F115@
+0 @I385@ INDI
+1 NAME Ryan /Adams/
+2 GIVN Ryan
+2 SURN Adams
+1 SEX M
+1 BIRT
+2 DATE 13 NOV 2021
+2 PLAC Dallas, Texas
+1 FAMC @F115@
+0 @I386@ INDI
+1 NAME Julie /Foster/
+2 GIVN Julie
+2 SURN Foster
+1 SEX F
+1 BIRT
+2 DATE 2 OCT 2021
+2 PLAC Madrid, Spain
+1 FAMC @F115@
+0 @I387@ INDI
+1 NAME Lauren /Evans/
+2 GIVN Lauren
+2 SURN Evans
+1 SEX F
+1 BIRT
+2 DATE 17 JUN 2000
+2 PLAC Las Vegas, Nevada
+1 FAMC @F115@
+0 @I388@ INDI
+1 NAME Sarah /Martin/
+2 GIVN Sarah
+2 SURN Martin
+1 SEX F
+1 BIRT
+2 DATE 10 AUG 2005
+2 PLAC Beijing, China
+1 FAMC @F116@
+0 @I389@ INDI
+1 NAME Jacob /Mitchell/
+2 GIVN Jacob
+2 SURN Mitchell
+1 SEX M
+1 BIRT
+2 DATE 18 SEP 2016
+2 PLAC Fort Worth, Texas
+1 FAMC @F116@
+0 @I390@ INDI
+1 NAME Lawrence /Rodriguez/
+2 GIVN Lawrence
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 24 APR 2004
+2 PLAC Boston, Massachusetts
+1 FAMC @F116@
+0 @I391@ INDI
+1 NAME Raymond /Davis/
+2 GIVN Raymond
+2 SURN Davis
+1 SEX M
+1 BIRT
+2 DATE 11 JUL 2003
+2 PLAC San Francisco, California
+1 FAMC @F117@
+0 @I392@ INDI
+1 NAME Joyce /Bailey/
+2 GIVN Joyce
+2 SURN Bailey
+1 SEX F
+1 BIRT
+2 DATE 2 JUN 2004
+2 PLAC Athens, Greece
+1 FAMC @F117@
+0 @I393@ INDI
+1 NAME Michelle /Wood/
+2 GIVN Michelle
+2 SURN Wood
+1 SEX F
+1 BIRT
+2 DATE 7 DEC 2000
+2 PLAC Fort Worth, Texas
+1 FAMC @F117@
+0 @I394@ INDI
+1 NAME Frank /Hernandez/
+2 GIVN Frank
+2 SURN Hernandez
+1 SEX M
+1 BIRT
+2 DATE 22 FEB 2004
+2 PLAC Auckland, New Zealand
+1 FAMC @F117@
+0 @I395@ INDI
+1 NAME Donna /White/
+2 GIVN Donna
+2 SURN White
+1 SEX F
+1 BIRT
+2 DATE 16 AUG 2017
+2 PLAC Jacksonville, Florida
+1 FAMC @F117@
+0 @I396@ INDI
+1 NAME Lauren /Cox/
+2 GIVN Lauren
+2 SURN Cox
+1 SEX F
+1 BIRT
+2 DATE 24 AUG 2009
+2 PLAC Melbourne, Australia
+1 FAMC @F118@
+0 @I397@ INDI
+1 NAME Elizabeth /Murphy/
+2 GIVN Elizabeth
+2 SURN Murphy
+1 SEX F
+1 BIRT
+2 DATE 25 DEC 2002
+2 PLAC San Antonio, Texas
+1 FAMC @F118@
+0 @I398@ INDI
+1 NAME Melissa /Robinson/
+2 GIVN Melissa
+2 SURN Robinson
+1 SEX F
+1 BIRT
+2 DATE 28 NOV 2009
+2 PLAC Memphis, Tennessee
+1 FAMC @F119@
+0 @I399@ INDI
+1 NAME Anna /Reyes/
+2 GIVN Anna
+2 SURN Reyes
+1 SEX F
+1 BIRT
+2 DATE 22 FEB 2009
+2 PLAC Las Vegas, Nevada
+1 FAMC @F119@
+0 @I400@ INDI
+1 NAME William /Wood/
+2 GIVN William
+2 SURN Wood
+1 SEX M
+1 BIRT
+2 DATE 24 APR 2024
+2 PLAC San Antonio, Texas
+1 FAMC @F119@
+0 @I401@ INDI
+1 NAME Michael /Phillips/
+2 GIVN Michael
+2 SURN Phillips
+1 SEX M
+1 BIRT
+2 DATE 12 JUL 2000
+2 PLAC Las Vegas, Nevada
+1 FAMC @F120@
+0 @I402@ INDI
+1 NAME William /Russell/
+2 GIVN William
+2 SURN Russell
+1 SEX M
+1 BIRT
+2 DATE 13 APR 2009
+2 PLAC Berlin, Germany
+1 FAMC @F120@
+0 @I403@ INDI
+1 NAME Ryan /Howard/
+2 GIVN Ryan
+2 SURN Howard
+1 SEX M
+1 BIRT
+2 DATE 23 DEC 2022
+2 PLAC Melbourne, Australia
+1 FAMC @F120@
+0 @I404@ INDI
+1 NAME Nathan /Hughes/
+2 GIVN Nathan
+2 SURN Hughes
+1 SEX M
+1 BIRT
+2 DATE 13 APR 2014
+2 PLAC Sydney, Australia
+1 FAMC @F120@
+0 @I405@ INDI
+1 NAME Cynthia /Phillips/
+2 GIVN Cynthia
+2 SURN Phillips
+1 SEX F
+1 BIRT
+2 DATE 3 SEP 2007
+2 PLAC Warsaw, Poland
+1 FAMC @F121@
+0 @I406@ INDI
+1 NAME Christopher /Foster/
+2 GIVN Christopher
+2 SURN Foster
+1 SEX M
+1 BIRT
+2 DATE 8 JUL 2011
+2 PLAC Mumbai, India
+1 FAMC @F121@
+0 @I407@ INDI
+1 NAME Jerry /Lewis/
+2 GIVN Jerry
+2 SURN Lewis
+1 SEX M
+1 BIRT
+2 DATE 18 MAY 2022
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F121@
+0 @I408@ INDI
+1 NAME Terry /Young/
+2 GIVN Terry
+2 SURN Young
+1 SEX M
+1 BIRT
+2 DATE 23 JAN 2016
+2 PLAC Fort Worth, Texas
+1 FAMC @F121@
+0 @I409@ INDI
+1 NAME Joseph /James/
+2 GIVN Joseph
+2 SURN James
+1 SEX M
+1 BIRT
+2 DATE 16 FEB 2008
+2 PLAC Stockholm, Sweden
+1 FAMC @F122@
+0 @I410@ INDI
+1 NAME Jennifer /Reed/
+2 GIVN Jennifer
+2 SURN Reed
+1 SEX F
+1 BIRT
+2 DATE 11 FEB 2002
+2 PLAC New York, New York
+1 FAMC @F122@
+0 @I411@ INDI
+1 NAME Melissa /Parker/
+2 GIVN Melissa
+2 SURN Parker
+1 SEX F
+1 BIRT
+2 DATE 3 SEP 2021
+2 PLAC Boston, Massachusetts
+1 FAMC @F122@
+0 @I412@ INDI
+1 NAME Jacob /Cooper/
+2 GIVN Jacob
+2 SURN Cooper
+1 SEX M
+1 BIRT
+2 DATE 18 FEB 2010
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F122@
+0 @I413@ INDI
+1 NAME Roger /Harris/
+2 GIVN Roger
+2 SURN Harris
+1 SEX M
+1 BIRT
+2 DATE 15 FEB 2010
+2 PLAC London, England
+1 FAMC @F123@
+0 @I414@ INDI
+1 NAME Martha /Morales/
+2 GIVN Martha
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 23 JUN 2008
+2 PLAC Oslo, Norway
+1 FAMC @F123@
+0 @I415@ INDI
+1 NAME Martha /Sanders/
+2 GIVN Martha
+2 SURN Sanders
+1 SEX F
+1 BIRT
+2 DATE 1 OCT 2020
+2 PLAC Mumbai, India
+1 FAMC @F123@
+0 @I416@ INDI
+1 NAME Matthew /Thompson/
+2 GIVN Matthew
+2 SURN Thompson
+1 SEX M
+1 BIRT
+2 DATE 28 NOV 2002
+2 PLAC Stockholm, Sweden
+1 FAMC @F123@
+0 @I417@ INDI
+1 NAME Roger /Gutierrez/
+2 GIVN Roger
+2 SURN Gutierrez
+1 SEX M
+1 BIRT
+2 DATE 9 JAN 2022
+2 PLAC Columbus, Ohio
+1 FAMC @F123@
+0 @I418@ INDI
+1 NAME Henry /Garcia/
+2 GIVN Henry
+2 SURN Garcia
+1 SEX M
+1 BIRT
+2 DATE 26 FEB 2019
+2 PLAC Lisbon, Portugal
+1 FAMC @F124@
+0 @I419@ INDI
+1 NAME Rachel /Davis/
+2 GIVN Rachel
+2 SURN Davis
+1 SEX F
+1 BIRT
+2 DATE 1 OCT 2017
+2 PLAC San Antonio, Texas
+1 FAMC @F124@
+0 @I420@ INDI
+1 NAME Jeffrey /Rodriguez/
+2 GIVN Jeffrey
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 22 SEP 2015
+2 PLAC Prague, Czech Republic
+1 FAMC @F125@
+0 @I421@ INDI
+1 NAME James /Ortiz/
+2 GIVN James
+2 SURN Ortiz
+1 SEX M
+1 BIRT
+2 DATE 7 DEC 2001
+2 PLAC Louisville, Kentucky
+1 FAMC @F125@
+0 @I422@ INDI
+1 NAME Julie /Stewart/
+2 GIVN Julie
+2 SURN Stewart
+1 SEX F
+1 BIRT
+2 DATE 13 JUL 2005
+2 PLAC Mumbai, India
+1 FAMC @F125@
+0 @I423@ INDI
+1 NAME Julie /Brooks/
+2 GIVN Julie
+2 SURN Brooks
+1 SEX F
+1 BIRT
+2 DATE 22 AUG 2005
+2 PLAC Lisbon, Portugal
+1 FAMC @F125@
+0 @I424@ INDI
+1 NAME Donald /Evans/
+2 GIVN Donald
+2 SURN Evans
+1 SEX M
+1 BIRT
+2 DATE 18 NOV 2010
+2 PLAC Oslo, Norway
+1 FAMC @F125@
+0 @I425@ INDI
+1 NAME Evelyn /Morales/
+2 GIVN Evelyn
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 20 MAY 2006
+2 PLAC Memphis, Tennessee
+1 FAMC @F126@
+0 @I426@ INDI
+1 NAME Jacqueline /Morales/
+2 GIVN Jacqueline
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 4 JAN 2005
+2 PLAC Mexico City, Mexico
+1 FAMC @F126@
+0 @I427@ INDI
+1 NAME Margaret /Miller/
+2 GIVN Margaret
+2 SURN Miller
+1 SEX F
+1 BIRT
+2 DATE 22 DEC 2000
+2 PLAC Shanghai, China
+1 FAMC @F126@
+0 @I428@ INDI
+1 NAME Karen /Smith/
+2 GIVN Karen
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 16 OCT 2006
+2 PLAC London, England
+1 FAMC @F126@
+0 @I429@ INDI
+1 NAME Larry /Moore/
+2 GIVN Larry
+2 SURN Moore
+1 SEX M
+1 BIRT
+2 DATE 2 MAY 2020
+2 PLAC San Francisco, California
+1 FAMC @F127@
+0 @I430@ INDI
+1 NAME Gerald /Smith/
+2 GIVN Gerald
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 21 SEP 2006
+2 PLAC Lisbon, Portugal
+1 FAMC @F127@
+0 @I431@ INDI
+1 NAME Olivia /King/
+2 GIVN Olivia
+2 SURN King
+1 SEX F
+1 BIRT
+2 DATE 16 JAN 2003
+2 PLAC San Francisco, California
+1 FAMC @F127@
+0 @I432@ INDI
+1 NAME Larry /Wilson/
+2 GIVN Larry
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 1 MAY 2005
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F128@
+0 @I433@ INDI
+1 NAME George /Williams/
+2 GIVN George
+2 SURN Williams
+1 SEX M
+1 BIRT
+2 DATE 27 NOV 2022
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F128@
+0 @I434@ INDI
+1 NAME Samuel /Martinez/
+2 GIVN Samuel
+2 SURN Martinez
+1 SEX M
+1 BIRT
+2 DATE 21 AUG 2023
+2 PLAC London, England
+1 FAMC @F128@
+0 @I435@ INDI
+1 NAME Anna /Adams/
+2 GIVN Anna
+2 SURN Adams
+1 SEX F
+1 BIRT
+2 DATE 25 SEP 2000
+2 PLAC Indianapolis, Indiana
+1 FAMC @F129@
+0 @I436@ INDI
+1 NAME Gary /Morris/
+2 GIVN Gary
+2 SURN Morris
+1 SEX M
+1 BIRT
+2 DATE 26 MAR 2012
+2 PLAC Toronto, Canada
+1 FAMC @F129@
+0 @I437@ INDI
+1 NAME Melissa /Baker/
+2 GIVN Melissa
+2 SURN Baker
+1 SEX F
+1 BIRT
+2 DATE 25 MAY 2023
+2 PLAC Fort Worth, Texas
+1 FAMC @F129@
+0 @I438@ INDI
+1 NAME Jacob /Turner/
+2 GIVN Jacob
+2 SURN Turner
+1 SEX M
+1 BIRT
+2 DATE 27 APR 2016
+2 PLAC Chicago, Illinois
+1 FAMC @F129@
+0 @I439@ INDI
+1 NAME Susan /Jones/
+2 GIVN Susan
+2 SURN Jones
+1 SEX F
+1 BIRT
+2 DATE 21 MAR 2006
+2 PLAC Athens, Greece
+1 FAMC @F130@
+0 @I440@ INDI
+1 NAME Betty /Fisher/
+2 GIVN Betty
+2 SURN Fisher
+1 SEX F
+1 BIRT
+2 DATE 24 JUL 2012
+2 PLAC Dallas, Texas
+1 FAMC @F130@
+0 @I441@ INDI
+1 NAME Terry /Barnes/
+2 GIVN Terry
+2 SURN Barnes
+1 SEX M
+1 BIRT
+2 DATE 2 FEB 2007
+2 PLAC Stockholm, Sweden
+1 FAMC @F130@
+0 @I442@ INDI
+1 NAME Jennifer /Hernandez/
+2 GIVN Jennifer
+2 SURN Hernandez
+1 SEX F
+1 BIRT
+2 DATE 14 NOV 2016
+2 PLAC Indianapolis, Indiana
+1 FAMC @F130@
+0 @I443@ INDI
+1 NAME Andrea /Morales/
+2 GIVN Andrea
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 15 APR 2015
+2 PLAC Memphis, Tennessee
+1 FAMC @F131@
+0 @I444@ INDI
+1 NAME Diane /Morales/
+2 GIVN Diane
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 24 SEP 2007
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F131@
+0 @I445@ INDI
+1 NAME Jack /Murphy/
+2 GIVN Jack
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 9 SEP 2005
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F131@
+0 @I446@ INDI
+1 NAME Deborah /Cook/
+2 GIVN Deborah
+2 SURN Cook
+1 SEX F
+1 BIRT
+2 DATE 23 APR 2013
+2 PLAC Stockholm, Sweden
+1 FAMC @F131@
+0 @I447@ INDI
+1 NAME Keith /Adams/
+2 GIVN Keith
+2 SURN Adams
+1 SEX M
+1 BIRT
+2 DATE 13 JUL 2008
+2 PLAC Louisville, Kentucky
+1 FAMC @F131@
+0 @I448@ INDI
+1 NAME Virginia /Scott/
+2 GIVN Virginia
+2 SURN Scott
+1 SEX F
+1 BIRT
+2 DATE 7 FEB 2000
+2 PLAC Portland, Oregon
+1 FAMC @F132@
+0 @I449@ INDI
+1 NAME Keith /Mitchell/
+2 GIVN Keith
+2 SURN Mitchell
+1 SEX M
+1 BIRT
+2 DATE 15 AUG 2017
+2 PLAC Charlotte, North Carolina
+1 FAMC @F132@
+0 @I450@ INDI
+1 NAME Stephen /Campbell/
+2 GIVN Stephen
+2 SURN Campbell
+1 SEX M
+1 BIRT
+2 DATE 23 APR 2024
+2 PLAC Athens, Greece
+1 FAMC @F132@
+0 @I451@ INDI
+1 NAME Ryan /Jenkins/
+2 GIVN Ryan
+2 SURN Jenkins
+1 SEX M
+1 BIRT
+2 DATE 24 JAN 2013
+2 PLAC Oslo, Norway
+1 FAMC @F133@
+0 @I452@ INDI
+1 NAME Brenda /Turner/
+2 GIVN Brenda
+2 SURN Turner
+1 SEX F
+1 BIRT
+2 DATE 6 JUL 2017
+2 PLAC Vancouver, Canada
+1 FAMC @F133@
+0 @I453@ INDI
+1 NAME Arthur /Hughes/
+2 GIVN Arthur
+2 SURN Hughes
+1 SEX M
+1 BIRT
+2 DATE 4 AUG 2009
+2 PLAC Los Angeles, California
+1 FAMC @F134@
+0 @I454@ INDI
+1 NAME Ryan /Carter/
+2 GIVN Ryan
+2 SURN Carter
+1 SEX M
+1 BIRT
+2 DATE 27 NOV 2007
+2 PLAC Jacksonville, Florida
+1 FAMC @F134@
+0 @I455@ INDI
+1 NAME Betty /Johnson/
+2 GIVN Betty
+2 SURN Johnson
+1 SEX F
+1 BIRT
+2 DATE 5 SEP 2000
+2 PLAC New York, New York
+1 FAMC @F135@
+0 @I456@ INDI
+1 NAME Aaron /Long/
+2 GIVN Aaron
+2 SURN Long
+1 SEX M
+1 BIRT
+2 DATE 2 JUL 2024
+2 PLAC Beijing, China
+1 FAMC @F135@
+0 @I457@ INDI
+1 NAME Joan /Gray/
+2 GIVN Joan
+2 SURN Gray
+1 SEX F
+1 BIRT
+2 DATE 1 OCT 2009
+2 PLAC Warsaw, Poland
+1 FAMC @F135@
+0 @I458@ INDI
+1 NAME Jerry /Lewis/
+2 GIVN Jerry
+2 SURN Lewis
+1 SEX M
+1 BIRT
+2 DATE 2 MAY 2020
+2 PLAC Detroit, Michigan
+1 FAMC @F135@
+0 @I459@ INDI
+1 NAME Donald /Lopez/
+2 GIVN Donald
+2 SURN Lopez
+1 SEX M
+1 BIRT
+2 DATE 24 AUG 2008
+2 PLAC Baltimore, Maryland
+1 FAMC @F135@
+0 @I460@ INDI
+1 NAME Virginia /King/
+2 GIVN Virginia
+2 SURN King
+1 SEX F
+1 BIRT
+2 DATE 9 SEP 2019
+2 PLAC Shanghai, China
+1 FAMC @F136@
+0 @I461@ INDI
+1 NAME Helen /Parker/
+2 GIVN Helen
+2 SURN Parker
+1 SEX F
+1 BIRT
+2 DATE 15 FEB 2006
+2 PLAC Berlin, Germany
+1 FAMC @F136@
+0 @I462@ INDI
+1 NAME Christine /Wood/
+2 GIVN Christine
+2 SURN Wood
+1 SEX F
+1 BIRT
+2 DATE 16 APR 2013
+2 PLAC Indianapolis, Indiana
+1 FAMC @F137@
+0 @I463@ INDI
+1 NAME Maria /Harris/
+2 GIVN Maria
+2 SURN Harris
+1 SEX F
+1 BIRT
+2 DATE 11 MAY 2019
+2 PLAC Denver, Colorado
+1 FAMC @F137@
+0 @I464@ INDI
+1 NAME Sarah /Sullivan/
+2 GIVN Sarah
+2 SURN Sullivan
+1 SEX F
+1 BIRT
+2 DATE 10 FEB 2020
+2 PLAC Rome, Italy
+1 FAMC @F137@
+0 @I465@ INDI
+1 NAME Christopher /Myers/
+2 GIVN Christopher
+2 SURN Myers
+1 SEX M
+1 BIRT
+2 DATE 21 MAR 2014
+2 PLAC Las Vegas, Nevada
+1 FAMC @F138@
+0 @I466@ INDI
+1 NAME Donald /Robinson/
+2 GIVN Donald
+2 SURN Robinson
+1 SEX M
+1 BIRT
+2 DATE 8 MAR 2023
+2 PLAC Jacksonville, Florida
+1 FAMC @F138@
+0 @I467@ INDI
+1 NAME Diane /Carter/
+2 GIVN Diane
+2 SURN Carter
+1 SEX F
+1 BIRT
+2 DATE 11 AUG 2006
+2 PLAC Houston, Texas
+1 FAMC @F138@
+0 @I468@ INDI
+1 NAME Deborah /Price/
+2 GIVN Deborah
+2 SURN Price
+1 SEX F
+1 BIRT
+2 DATE 27 MAR 2019
+2 PLAC Lisbon, Portugal
+1 FAMC @F139@
+0 @I469@ INDI
+1 NAME Christopher /Russell/
+2 GIVN Christopher
+2 SURN Russell
+1 SEX M
+1 BIRT
+2 DATE 4 OCT 2021
+2 PLAC Vienna, Austria
+1 FAMC @F139@
+0 @I470@ INDI
+1 NAME Diane /Harris/
+2 GIVN Diane
+2 SURN Harris
+1 SEX F
+1 BIRT
+2 DATE 22 MAR 2024
+2 PLAC Louisville, Kentucky
+1 FAMC @F139@
+0 @I471@ INDI
+1 NAME Sandra /Gonzalez/
+2 GIVN Sandra
+2 SURN Gonzalez
+1 SEX F
+1 BIRT
+2 DATE 1 MAY 2010
+2 PLAC Jacksonville, Florida
+1 FAMC @F140@
+0 @I472@ INDI
+1 NAME Cynthia /Kelly/
+2 GIVN Cynthia
+2 SURN Kelly
+1 SEX F
+1 BIRT
+2 DATE 6 APR 2010
+2 PLAC New York, New York
+1 FAMC @F140@
+0 @I473@ INDI
+1 NAME Stephen /Young/
+2 GIVN Stephen
+2 SURN Young
+1 SEX M
+1 BIRT
+2 DATE 11 MAR 2008
+2 PLAC Auckland, New Zealand
+1 FAMC @F140@
+0 @I474@ INDI
+1 NAME Carolyn /Jones/
+2 GIVN Carolyn
+2 SURN Jones
+1 SEX F
+1 BIRT
+2 DATE 19 AUG 2000
+2 PLAC Los Angeles, California
+1 FAMC @F141@
+0 @I475@ INDI
+1 NAME Matthew /James/
+2 GIVN Matthew
+2 SURN James
+1 SEX M
+1 BIRT
+2 DATE 7 APR 2020
+2 PLAC New York, New York
+1 FAMC @F141@
+0 @I476@ INDI
+1 NAME Lawrence /Taylor/
+2 GIVN Lawrence
+2 SURN Taylor
+1 SEX M
+1 BIRT
+2 DATE 12 AUG 2010
+2 PLAC Sydney, Australia
+1 FAMC @F141@
+0 @I477@ INDI
+1 NAME Mark /Robinson/
+2 GIVN Mark
+2 SURN Robinson
+1 SEX M
+1 BIRT
+2 DATE 3 MAY 2011
+2 PLAC Beijing, China
+1 FAMC @F141@
+0 @I478@ INDI
+1 NAME Julie /Gutierrez/
+2 GIVN Julie
+2 SURN Gutierrez
+1 SEX F
+1 BIRT
+2 DATE 23 DEC 2017
+2 PLAC Louisville, Kentucky
+1 FAMC @F141@
+0 @I479@ INDI
+1 NAME Jennifer /Howard/
+2 GIVN Jennifer
+2 SURN Howard
+1 SEX F
+1 BIRT
+2 DATE 21 APR 2015
+2 PLAC Boston, Massachusetts
+1 FAMC @F142@
+0 @I480@ INDI
+1 NAME Carol /Green/
+2 GIVN Carol
+2 SURN Green
+1 SEX F
+1 BIRT
+2 DATE 9 MAR 2012
+2 PLAC Warsaw, Poland
+1 FAMC @F142@
+0 @I481@ INDI
+1 NAME Nicole /Bell/
+2 GIVN Nicole
+2 SURN Bell
+1 SEX F
+1 BIRT
+2 DATE 27 JAN 2000
+2 PLAC Prague, Czech Republic
+1 FAMC @F142@
+0 @I482@ INDI
+1 NAME Henry /Williams/
+2 GIVN Henry
+2 SURN Williams
+1 SEX M
+1 BIRT
+2 DATE 24 FEB 2022
+2 PLAC Mexico City, Mexico
+1 FAMC @F143@
+0 @I483@ INDI
+1 NAME Jacqueline /Turner/
+2 GIVN Jacqueline
+2 SURN Turner
+1 SEX F
+1 BIRT
+2 DATE 3 DEC 2008
+2 PLAC Stockholm, Sweden
+1 FAMC @F143@
+0 @I484@ INDI
+1 NAME Roger /Gomez/
+2 GIVN Roger
+2 SURN Gomez
+1 SEX M
+1 BIRT
+2 DATE 27 JUL 2005
+2 PLAC San Antonio, Texas
+1 FAMC @F143@
+0 @I485@ INDI
+1 NAME Andrea /Jackson/
+2 GIVN Andrea
+2 SURN Jackson
+1 SEX F
+1 BIRT
+2 DATE 23 MAR 2014
+2 PLAC Austin, Texas
+1 FAMC @F144@
+0 @I486@ INDI
+1 NAME Barbara /Thompson/
+2 GIVN Barbara
+2 SURN Thompson
+1 SEX F
+1 BIRT
+2 DATE 7 JUL 2016
+2 PLAC Amsterdam, Netherlands
+1 FAMC @F144@
+0 @I487@ INDI
+1 NAME Carol /Moore/
+2 GIVN Carol
+2 SURN Moore
+1 SEX F
+1 BIRT
+2 DATE 10 MAY 2017
+2 PLAC Madrid, Spain
+1 FAMC @F144@
+0 @I488@ INDI
+1 NAME Brian /Thomas/
+2 GIVN Brian
+2 SURN Thomas
+1 SEX M
+1 BIRT
+2 DATE 9 JAN 2002
+2 PLAC Tokyo, Japan
+1 FAMC @F145@
+0 @I489@ INDI
+1 NAME Lawrence /Gonzalez/
+2 GIVN Lawrence
+2 SURN Gonzalez
+1 SEX M
+1 BIRT
+2 DATE 3 OCT 2020
+2 PLAC San Antonio, Texas
+1 FAMC @F145@
+0 @I490@ INDI
+1 NAME Ashley /Gray/
+2 GIVN Ashley
+2 SURN Gray
+1 SEX F
+1 BIRT
+2 DATE 13 MAR 2021
+2 PLAC San Antonio, Texas
+1 FAMC @F145@
+0 @I491@ INDI
+1 NAME Christine /Ward/
+2 GIVN Christine
+2 SURN Ward
+1 SEX F
+1 BIRT
+2 DATE 27 NOV 2007
+2 PLAC San Antonio, Texas
+1 FAMC @F146@
+0 @I492@ INDI
+1 NAME Keith /Edwards/
+2 GIVN Keith
+2 SURN Edwards
+1 SEX M
+1 BIRT
+2 DATE 3 DEC 2018
+2 PLAC Athens, Greece
+1 FAMC @F146@
+0 @I493@ INDI
+1 NAME Kenneth /Gray/
+2 GIVN Kenneth
+2 SURN Gray
+1 SEX M
+1 BIRT
+2 DATE 22 AUG 2018
+2 PLAC Toronto, Canada
+1 FAMC @F146@
+0 @I494@ INDI
+1 NAME Nicole /Young/
+2 GIVN Nicole
+2 SURN Young
+1 SEX F
+1 BIRT
+2 DATE 12 OCT 2009
+2 PLAC Louisville, Kentucky
+1 FAMC @F147@
+0 @I495@ INDI
+1 NAME Jennifer /Stewart/
+2 GIVN Jennifer
+2 SURN Stewart
+1 SEX F
+1 BIRT
+2 DATE 27 MAY 2023
+2 PLAC Charlotte, North Carolina
+1 FAMC @F147@
+0 @I496@ INDI
+1 NAME Peter /Cooper/
+2 GIVN Peter
+2 SURN Cooper
+1 SEX M
+1 BIRT
+2 DATE 11 JUL 2002
+2 PLAC Mumbai, India
+1 FAMC @F147@
+0 @I497@ INDI
+1 NAME Laura /Stewart/
+2 GIVN Laura
+2 SURN Stewart
+1 SEX F
+1 BIRT
+2 DATE 6 JUN 2024
+2 PLAC Rome, Italy
+1 FAMC @F147@
+0 @I498@ INDI
+1 NAME Douglas /Watson/
+2 GIVN Douglas
+2 SURN Watson
+1 SEX M
+1 BIRT
+2 DATE 25 JAN 2020
+2 PLAC Boston, Massachusetts
+1 FAMC @F147@
+0 @I499@ INDI
+1 NAME Olivia /Harris/
+2 GIVN Olivia
+2 SURN Harris
+1 SEX F
+1 BIRT
+2 DATE 5 JUN 2007
+2 PLAC Nashville, Tennessee
+1 FAMC @F148@
+0 @I500@ INDI
+1 NAME Peter /Green/
+2 GIVN Peter
+2 SURN Green
+1 SEX M
+1 BIRT
+2 DATE 14 APR 2001
+2 PLAC Paris, France
+1 FAMC @F148@
+0 @I501@ INDI
+1 NAME Anna /Peterson/
+2 GIVN Anna
+2 SURN Peterson
+1 SEX F
+1 BIRT
+2 DATE 12 AUG 2007
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F148@
+0 @I502@ INDI
+1 NAME Richard /Phillips/
+2 GIVN Richard
+2 SURN Phillips
+1 SEX M
+1 BIRT
+2 DATE 8 JAN 2013
+2 PLAC Sydney, Australia
+1 FAMC @F148@
+0 @I503@ INDI
+1 NAME Anthony /Gomez/
+2 GIVN Anthony
+2 SURN Gomez
+1 SEX M
+1 BIRT
+2 DATE 25 JUL 2024
+2 PLAC Fort Worth, Texas
+1 FAMC @F149@
+0 @I504@ INDI
+1 NAME Joan /Kelly/
+2 GIVN Joan
+2 SURN Kelly
+1 SEX F
+1 BIRT
+2 DATE 8 JUN 2010
+2 PLAC Boston, Massachusetts
+1 FAMC @F149@
+0 @I505@ INDI
+1 NAME Kimberly /Ward/
+2 GIVN Kimberly
+2 SURN Ward
+1 SEX F
+1 BIRT
+2 DATE 12 MAR 2006
+2 PLAC Los Angeles, California
+1 FAMC @F149@
+0 @I506@ INDI
+1 NAME Amy /Watson/
+2 GIVN Amy
+2 SURN Watson
+1 SEX F
+1 BIRT
+2 DATE 12 FEB 2009
+2 PLAC Jacksonville, Florida
+1 FAMC @F149@
+0 @I507@ INDI
+1 NAME Kenneth /King/
+2 GIVN Kenneth
+2 SURN King
+1 SEX M
+1 BIRT
+2 DATE 16 MAY 2018
+2 PLAC Budapest, Hungary
+1 FAMC @F150@
+0 @I508@ INDI
+1 NAME Dorothy /Turner/
+2 GIVN Dorothy
+2 SURN Turner
+1 SEX F
+1 BIRT
+2 DATE 13 JUN 2005
+2 PLAC Sydney, Australia
+1 FAMC @F150@
+0 @I509@ INDI
+1 NAME Terry /Roberts/
+2 GIVN Terry
+2 SURN Roberts
+1 SEX M
+1 BIRT
+2 DATE 1 JUN 2010
+2 PLAC Portland, Oregon
+1 FAMC @F150@
+0 @I510@ INDI
+1 NAME Lawrence /Peterson/
+2 GIVN Lawrence
+2 SURN Peterson
+1 SEX M
+1 BIRT
+2 DATE 11 MAY 2002
+2 PLAC Portland, Oregon
+1 FAMC @F150@
+0 @I511@ INDI
+1 NAME Jason /Harris/
+2 GIVN Jason
+2 SURN Harris
+1 SEX M
+1 BIRT
+2 DATE 15 OCT 2010
+2 PLAC Jacksonville, Florida
+1 FAMC @F150@
+0 @I512@ INDI
+1 NAME Michelle /Morales/
+2 GIVN Michelle
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 21 MAY 2021
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F150@
+0 @I513@ INDI
+1 NAME Steven /Turner/
+2 GIVN Steven
+2 SURN Turner
+1 SEX M
+1 BIRT
+2 DATE 25 SEP 2001
+2 PLAC Montreal, Canada
+1 FAMC @F151@
+0 @I514@ INDI
+1 NAME Jack /Price/
+2 GIVN Jack
+2 SURN Price
+1 SEX M
+1 BIRT
+2 DATE 21 MAY 2016
+2 PLAC San Jose, California
+1 FAMC @F151@
+0 @I515@ INDI
+1 NAME Dorothy /Smith/
+2 GIVN Dorothy
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 17 FEB 2014
+2 PLAC Sydney, Australia
+1 FAMC @F151@
+0 @I516@ INDI
+1 NAME Megan /Martin/
+2 GIVN Megan
+2 SURN Martin
+1 SEX F
+1 BIRT
+2 DATE 11 AUG 2021
+2 PLAC Nashville, Tennessee
+1 FAMC @F151@
+0 @I517@ INDI
+1 NAME Terry /Barnes/
+2 GIVN Terry
+2 SURN Barnes
+1 SEX M
+1 BIRT
+2 DATE 4 JUL 2023
+2 PLAC Albuquerque, New Mexico
+1 FAMC @F152@
+0 @I518@ INDI
+1 NAME Cheryl /Fisher/
+2 GIVN Cheryl
+2 SURN Fisher
+1 SEX F
+1 BIRT
+2 DATE 26 SEP 2016
+2 PLAC Dallas, Texas
+1 FAMC @F152@
+0 @I519@ INDI
+1 NAME Joan /Clark/
+2 GIVN Joan
+2 SURN Clark
+1 SEX F
+1 BIRT
+2 DATE 17 AUG 2004
+2 PLAC Fort Worth, Texas
+1 FAMC @F152@
+0 @I520@ INDI
+1 NAME Nicholas /Bailey/
+2 GIVN Nicholas
+2 SURN Bailey
+1 SEX M
+1 BIRT
+2 DATE 15 OCT 2022
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F153@
+0 @I521@ INDI
+1 NAME Patricia /Diaz/
+2 GIVN Patricia
+2 SURN Diaz
+1 SEX F
+1 BIRT
+2 DATE 15 DEC 2009
+2 PLAC Stockholm, Sweden
+1 FAMC @F153@
+0 @I522@ INDI
+1 NAME Ruth /Young/
+2 GIVN Ruth
+2 SURN Young
+1 SEX F
+1 BIRT
+2 DATE 1 JUN 2013
+2 PLAC Portland, Oregon
+1 FAMC @F153@
+0 @I523@ INDI
+1 NAME Emily /Taylor/
+2 GIVN Emily
+2 SURN Taylor
+1 SEX F
+1 BIRT
+2 DATE 13 MAR 2017
+2 PLAC Nashville, Tennessee
+1 FAMC @F153@
+0 @I524@ INDI
+1 NAME Adam /Gutierrez/
+2 GIVN Adam
+2 SURN Gutierrez
+1 SEX M
+1 BIRT
+2 DATE 27 AUG 2001
+2 PLAC Copenhagen, Denmark
+1 FAMC @F153@
+0 @I525@ INDI
+1 NAME Matthew /Richardson/
+2 GIVN Matthew
+2 SURN Richardson
+1 SEX M
+1 BIRT
+2 DATE 5 NOV 2003
+2 PLAC Tokyo, Japan
+1 FAMC @F154@
+0 @I526@ INDI
+1 NAME Peter /Parker/
+2 GIVN Peter
+2 SURN Parker
+1 SEX M
+1 BIRT
+2 DATE 27 NOV 2003
+2 PLAC Detroit, Michigan
+1 FAMC @F154@
+0 @I527@ INDI
+1 NAME Carol /Gutierrez/
+2 GIVN Carol
+2 SURN Gutierrez
+1 SEX F
+1 BIRT
+2 DATE 26 OCT 2005
+2 PLAC Auckland, New Zealand
+1 FAMC @F154@
+0 @I528@ INDI
+1 NAME Paul /Walker/
+2 GIVN Paul
+2 SURN Walker
+1 SEX M
+1 BIRT
+2 DATE 9 JUL 2008
+2 PLAC Milwaukee, Wisconsin
+1 FAMC @F155@
+0 @I529@ INDI
+1 NAME Nathan /Rodriguez/
+2 GIVN Nathan
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 18 JUL 2024
+2 PLAC Vancouver, Canada
+1 FAMC @F155@
+0 @I530@ INDI
+1 NAME Laura /Ross/
+2 GIVN Laura
+2 SURN Ross
+1 SEX F
+1 BIRT
+2 DATE 6 OCT 2020
+2 PLAC Dublin, Ireland
+1 FAMC @F156@
+0 @I531@ INDI
+1 NAME Olivia /Baker/
+2 GIVN Olivia
+2 SURN Baker
+1 SEX F
+1 BIRT
+2 DATE 27 JUN 2011
+2 PLAC San Francisco, California
+1 FAMC @F156@
+0 @I532@ INDI
+1 NAME Benjamin /Hernandez/
+2 GIVN Benjamin
+2 SURN Hernandez
+1 SEX M
+1 BIRT
+2 DATE 17 FEB 2014
+2 PLAC Oslo, Norway
+1 FAMC @F157@
+0 @I533@ INDI
+1 NAME Joseph /Garcia/
+2 GIVN Joseph
+2 SURN Garcia
+1 SEX M
+1 BIRT
+2 DATE 22 MAR 2023
+2 PLAC Vienna, Austria
+1 FAMC @F157@
+0 @I534@ INDI
+1 NAME Michelle /James/
+2 GIVN Michelle
+2 SURN James
+1 SEX F
+1 BIRT
+2 DATE 1 SEP 2012
+2 PLAC Nashville, Tennessee
+1 FAMC @F158@
+0 @I535@ INDI
+1 NAME Robert /James/
+2 GIVN Robert
+2 SURN James
+1 SEX M
+1 BIRT
+2 DATE 19 FEB 2013
+2 PLAC Mexico City, Mexico
+1 FAMC @F158@
+0 @I536@ INDI
+1 NAME Michelle /King/
+2 GIVN Michelle
+2 SURN King
+1 SEX F
+1 BIRT
+2 DATE 14 AUG 2021
+2 PLAC New York, New York
+1 FAMC @F158@
+0 @I537@ INDI
+1 NAME Donald /Robinson/
+2 GIVN Donald
+2 SURN Robinson
+1 SEX M
+1 BIRT
+2 DATE 7 OCT 2012
+2 PLAC Seattle, Washington
+1 FAMC @F159@
+0 @I538@ INDI
+1 NAME William /Lee/
+2 GIVN William
+2 SURN Lee
+1 SEX M
+1 BIRT
+2 DATE 24 FEB 2011
+2 PLAC Paris, France
+1 FAMC @F159@
+0 @I539@ INDI
+1 NAME Karen /Kelly/
+2 GIVN Karen
+2 SURN Kelly
+1 SEX F
+1 BIRT
+2 DATE 13 NOV 2024
+2 PLAC Las Vegas, Nevada
+1 FAMC @F160@
+0 @I540@ INDI
+1 NAME Frank /Fisher/
+2 GIVN Frank
+2 SURN Fisher
+1 SEX M
+1 BIRT
+2 DATE 16 MAY 2014
+2 PLAC Seattle, Washington
+1 FAMC @F160@
+0 @I541@ INDI
+1 NAME Martha /Myers/
+2 GIVN Martha
+2 SURN Myers
+1 SEX F
+1 BIRT
+2 DATE 26 SEP 2003
+2 PLAC Vancouver, Canada
+1 FAMC @F161@
+0 @I542@ INDI
+1 NAME Jason /Smith/
+2 GIVN Jason
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 2 FEB 2008
+2 PLAC Tokyo, Japan
+1 FAMC @F161@
+0 @I543@ INDI
+1 NAME Raymond /Kelly/
+2 GIVN Raymond
+2 SURN Kelly
+1 SEX M
+1 BIRT
+2 DATE 6 SEP 2013
+2 PLAC Philadelphia, Pennsylvania
+1 FAMC @F161@
+0 @I544@ INDI
+1 NAME Cheryl /Miller/
+2 GIVN Cheryl
+2 SURN Miller
+1 SEX F
+1 BIRT
+2 DATE 13 AUG 2007
+2 PLAC New York, New York
+1 FAMC @F162@
+0 @I545@ INDI
+1 NAME Adam /Gray/
+2 GIVN Adam
+2 SURN Gray
+1 SEX M
+1 BIRT
+2 DATE 5 FEB 2024
+2 PLAC Nashville, Tennessee
+1 FAMC @F162@
+0 @I546@ INDI
+1 NAME Jose /Roberts/
+2 GIVN Jose
+2 SURN Roberts
+1 SEX M
+1 BIRT
+2 DATE 20 MAR 2007
+2 PLAC Charlotte, North Carolina
+1 FAMC @F162@
+0 @I547@ INDI
+1 NAME Edward /Martinez/
+2 GIVN Edward
+2 SURN Martinez
+1 SEX M
+1 BIRT
+2 DATE 26 AUG 2019
+2 PLAC Berlin, Germany
+1 FAMC @F163@
+0 @I548@ INDI
+1 NAME Stephen /Garcia/
+2 GIVN Stephen
+2 SURN Garcia
+1 SEX M
+1 BIRT
+2 DATE 28 NOV 2022
+2 PLAC Fort Worth, Texas
+1 FAMC @F163@
+0 @I549@ INDI
+1 NAME Mary /Morales/
+2 GIVN Mary
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 12 APR 2016
+2 PLAC Athens, Greece
+1 FAMC @F164@
+0 @I550@ INDI
+1 NAME Matthew /Foster/
+2 GIVN Matthew
+2 SURN Foster
+1 SEX M
+1 BIRT
+2 DATE 3 AUG 2015
+2 PLAC Charlotte, North Carolina
+1 FAMC @F164@
+0 @I551@ INDI
+1 NAME Katherine /Wilson/
+2 GIVN Katherine
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 13 MAR 2015
+2 PLAC Berlin, Germany
+1 FAMC @F165@
+0 @I552@ INDI
+1 NAME Emily /Edwards/
+2 GIVN Emily
+2 SURN Edwards
+1 SEX F
+1 BIRT
+2 DATE 19 SEP 2002
+2 PLAC Charlotte, North Carolina
+1 FAMC @F165@
+0 @I553@ INDI
+1 NAME Sharon /Cooper/
+2 GIVN Sharon
+2 SURN Cooper
+1 SEX F
+1 BIRT
+2 DATE 15 JUN 2013
+2 PLAC Portland, Oregon
+1 FAMC @F165@
+0 @I554@ INDI
+1 NAME Emma /Morris/
+2 GIVN Emma
+2 SURN Morris
+1 SEX F
+1 BIRT
+2 DATE 19 JUL 2000
+2 PLAC Memphis, Tennessee
+1 FAMC @F165@
+0 @I555@ INDI
+1 NAME Evelyn /Foster/
+2 GIVN Evelyn
+2 SURN Foster
+1 SEX F
+1 BIRT
+2 DATE 24 FEB 2024
+2 PLAC Oklahoma City, Oklahoma
+1 FAMC @F166@
+0 @I556@ INDI
+1 NAME Scott /Mitchell/
+2 GIVN Scott
+2 SURN Mitchell
+1 SEX M
+1 BIRT
+2 DATE 1 MAY 2016
+2 PLAC Montreal, Canada
+1 FAMC @F166@
+0 @I557@ INDI
+1 NAME Timothy /Ross/
+2 GIVN Timothy
+2 SURN Ross
+1 SEX M
+1 BIRT
+2 DATE 26 JUL 2007
+2 PLAC Warsaw, Poland
+1 FAMC @F166@
+0 @I558@ INDI
+1 NAME James /Howard/
+2 GIVN James
+2 SURN Howard
+1 SEX M
+1 BIRT
+2 DATE 22 JUN 2012
+2 PLAC Jacksonville, Florida
+1 FAMC @F166@
+0 @I559@ INDI
+1 NAME James /Nelson/
+2 GIVN James
+2 SURN Nelson
+1 SEX M
+1 BIRT
+2 DATE 8 APR 2006
+2 PLAC Copenhagen, Denmark
+1 FAMC @F166@
+0 @I560@ INDI
+1 NAME Donna /Young/
+2 GIVN Donna
+2 SURN Young
+1 SEX F
+1 BIRT
+2 DATE 28 MAR 2017
+2 PLAC Nashville, Tennessee
+1 FAMC @F166@
+0 @I561@ INDI
+1 NAME Maria /Walker/
+2 GIVN Maria
+2 SURN Walker
+1 SEX F
+1 BIRT
+2 DATE 13 FEB 2008
+2 PLAC Dublin, Ireland
+1 FAMC @F167@
+0 @I562@ INDI
+1 NAME Samantha /Morgan/
+2 GIVN Samantha
+2 SURN Morgan
+1 SEX F
+1 BIRT
+2 DATE 21 MAY 2019
+2 PLAC Portland, Oregon
+1 FAMC @F167@
+0 @I563@ INDI
+1 NAME Mark /Stewart/
+2 GIVN Mark
+2 SURN Stewart
+1 SEX M
+1 BIRT
+2 DATE 17 DEC 2008
+2 PLAC Sydney, Australia
+1 FAMC @F167@
+0 @I564@ INDI
+1 NAME Donna /Parker/
+2 GIVN Donna
+2 SURN Parker
+1 SEX F
+1 BIRT
+2 DATE 28 SEP 2009
+2 PLAC Budapest, Hungary
+1 FAMC @F168@
+0 @I565@ INDI
+1 NAME Jerry /Lopez/
+2 GIVN Jerry
+2 SURN Lopez
+1 SEX M
+1 BIRT
+2 DATE 10 SEP 2003
+2 PLAC Louisville, Kentucky
+1 FAMC @F168@
+0 @I566@ INDI
+1 NAME Ryan /Price/
+2 GIVN Ryan
+2 SURN Price
+1 SEX M
+1 BIRT
+2 DATE 10 JAN 2024
+2 PLAC New York, New York
+1 FAMC @F169@
+0 @I567@ INDI
+1 NAME Brandon /Morales/
+2 GIVN Brandon
+2 SURN Morales
+1 SEX M
+1 BIRT
+2 DATE 17 NOV 2018
+2 PLAC San Diego, California
+1 FAMC @F169@
+0 @I568@ INDI
+1 NAME William /Johnson/
+2 GIVN William
+2 SURN Johnson
+1 SEX M
+1 BIRT
+2 DATE 22 JUL 1954
+2 PLAC Austin, Texas
+1 FAMS @F170@
+0 @I569@ INDI
+1 NAME Ashley /Lee/
+2 GIVN Ashley
+2 SURN Lee
+1 SEX F
+1 BIRT
+2 DATE 1 JAN 1966
+2 PLAC Montreal, Canada
+1 FAMC @F170@
+0 @I570@ INDI
+1 NAME Zachary /Hill/
+2 GIVN Zachary
+2 SURN Hill
+1 SEX M
+1 BIRT
+2 DATE 5 MAY 1966
+2 PLAC San Jose, California
+1 FAMC @F170@
+0 @I571@ INDI
+1 NAME Carl /Peterson/
+2 GIVN Carl
+2 SURN Peterson
+1 SEX M
+1 BIRT
+2 DATE 18 JUN 1980
+2 PLAC San Francisco, California
+1 FAMC @F170@
+0 @I572@ INDI
+1 NAME Kelly /Clark/
+2 GIVN Kelly
+2 SURN Clark
+1 SEX F
+1 BIRT
+2 DATE 21 NOV 1972
+2 PLAC Seoul, South Korea
+1 FAMS @F171@
+0 @I573@ INDI
+1 NAME Raymond /Cruz/
+2 GIVN Raymond
+2 SURN Cruz
+1 SEX M
+1 BIRT
+2 DATE 22 JUN 2004
+2 PLAC Los Angeles, California
+1 FAMC @F171@
+0 @I574@ INDI
+1 NAME Jeffrey /Russell/
+2 GIVN Jeffrey
+2 SURN Russell
+1 SEX M
+1 BIRT
+2 DATE 5 MAR 1929
+2 PLAC Seattle, Washington
+1 DEAT
+2 DATE 4 DEC 2019
+2 PLAC Rome, Italy
+1 FAMS @F172@
+0 @I575@ INDI
+1 NAME Andrew /Bennett/
+2 GIVN Andrew
+2 SURN Bennett
+1 SEX M
+1 BIRT
+2 DATE 19 APR 1944
+2 PLAC Las Vegas, Nevada
+1 FAMC @F172@
+0 @I576@ INDI
+1 NAME Cynthia /Lewis/
+2 GIVN Cynthia
+2 SURN Lewis
+1 SEX F
+1 BIRT
+2 DATE 21 JUL 1951
+2 PLAC New York, New York
+1 DEAT
+2 DATE 13 MAR 2027
+2 PLAC Fort Worth, Texas
+1 FAMC @F172@
+0 @I577@ INDI
+1 NAME Susan /Mitchell/
+2 GIVN Susan
+2 SURN Mitchell
+1 SEX F
+1 BIRT
+2 DATE 20 JUL 1922
+2 PLAC Albuquerque, New Mexico
+1 DEAT
+2 DATE 28 JUL 2007
+2 PLAC San Antonio, Texas
+1 FAMS @F173@
+0 @I578@ INDI
+1 NAME Dorothy /Adams/
+2 GIVN Dorothy
+2 SURN Adams
+1 SEX F
+1 BIRT
+2 DATE 3 JUL 1947
+2 PLAC Mexico City, Mexico
+1 DEAT
+2 DATE 21 JUL 2024
+2 PLAC Mexico City, Mexico
+1 FAMC @F173@
+0 @I579@ INDI
+1 NAME Ryan /Peterson/
+2 GIVN Ryan
+2 SURN Peterson
+1 SEX M
+1 BIRT
+2 DATE 17 FEB 1941
+2 PLAC Seoul, South Korea
+1 FAMC @F173@
+0 @I580@ INDI
+1 NAME Lauren /Bailey/
+2 GIVN Lauren
+2 SURN Bailey
+1 SEX F
+1 BIRT
+2 DATE 26 OCT 1933
+2 PLAC Shanghai, China
+1 DEAT
+2 DATE 13 NOV 2020
+2 PLAC Prague, Czech Republic
+1 FAMS @F174@
+0 @I581@ INDI
+1 NAME Daniel /Baker/
+2 GIVN Daniel
+2 SURN Baker
+1 SEX M
+1 BIRT
+2 DATE 18 MAY 1946
+2 PLAC Baltimore, Maryland
+1 FAMC @F174@
+0 @I582@ INDI
+1 NAME Benjamin /Diaz/
+2 GIVN Benjamin
+2 SURN Diaz
+1 SEX M
+1 BIRT
+2 DATE 12 JAN 1940
+2 PLAC Oslo, Norway
+1 FAMC @F174@
+0 @I583@ INDI
+1 NAME Jonathan /Parker/
+2 GIVN Jonathan
+2 SURN Parker
+1 SEX M
+1 BIRT
+2 DATE 5 APR 1949
+2 PLAC Jacksonville, Florida
+1 FAMC @F174@
+0 @I584@ INDI
+1 NAME Kyle /Campbell/
+2 GIVN Kyle
+2 SURN Campbell
+1 SEX M
+1 BIRT
+2 DATE 2 DEC 1978
+2 PLAC Sydney, Australia
+1 FAMS @F175@
+0 @I585@ INDI
+1 NAME Karen /Barnes/
+2 GIVN Karen
+2 SURN Barnes
+1 SEX F
+1 BIRT
+2 DATE 14 OCT 1989
+2 PLAC Portland, Oregon
+1 FAMC @F175@
+0 @I586@ INDI
+1 NAME Rachel /Fisher/
+2 GIVN Rachel
+2 SURN Fisher
+1 SEX F
+1 BIRT
+2 DATE 22 SEP 1995
+2 PLAC Louisville, Kentucky
+1 FAMC @F175@
+0 @I587@ INDI
+1 NAME Sharon /Cruz/
+2 GIVN Sharon
+2 SURN Cruz
+1 SEX F
+1 BIRT
+2 DATE 18 APR 2002
+2 PLAC Warsaw, Poland
+1 FAMC @F175@
+0 @I588@ INDI
+1 NAME Donna /Collins/
+2 GIVN Donna
+2 SURN Collins
+1 SEX F
+1 BIRT
+2 DATE 19 JUN 1932
+2 PLAC Stockholm, Sweden
+1 DEAT
+2 DATE 9 MAY 2002
+2 PLAC Berlin, Germany
+1 FAMS @F176@
+0 @I589@ INDI
+1 NAME Zachary /White/
+2 GIVN Zachary
+2 SURN White
+1 SEX M
+1 BIRT
+2 DATE 2 MAR 1951
+2 PLAC San Francisco, California
+1 FAMC @F176@
+0 @I590@ INDI
+1 NAME Timothy /Hall/
+2 GIVN Timothy
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE 13 SEP 1961
+2 PLAC Denver, Colorado
+1 FAMC @F176@
+0 @I591@ INDI
+1 NAME Patrick /Adams/
+2 GIVN Patrick
+2 SURN Adams
+1 SEX M
+1 BIRT
+2 DATE 13 AUG 1965
+2 PLAC Lisbon, Portugal
+1 FAMC @F176@
+0 @I592@ INDI
+1 NAME Christina /Ortiz/
+2 GIVN Christina
+2 SURN Ortiz
+1 SEX F
+1 BIRT
+2 DATE 11 APR 1940
+2 PLAC Vienna, Austria
+1 DEAT
+2 DATE 16 SEP 2008
+2 PLAC Warsaw, Poland
+1 FAMS @F177@
+0 @I593@ INDI
+1 NAME Jack /Smith/
+2 GIVN Jack
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 22 JUL 1942
+2 PLAC Toronto, Canada
+1 DEAT
+2 DATE 8 APR 2016
+2 PLAC San Jose, California
+1 FAMC @F177@
+0 @I594@ INDI
+1 NAME Donna /Gomez/
+2 GIVN Donna
+2 SURN Gomez
+1 SEX F
+1 BIRT
+2 DATE 1 JAN 1930
+2 PLAC Stockholm, Sweden
+1 DEAT
+2 DATE 15 SEP 2006
+2 PLAC Louisville, Kentucky
+1 FAMS @F178@
+0 @I595@ INDI
+1 NAME Ryan /Campbell/
+2 GIVN Ryan
+2 SURN Campbell
+1 SEX M
+1 BIRT
+2 DATE 4 JUL 1943
+2 PLAC Oslo, Norway
+1 FAMC @F178@
+0 @I596@ INDI
+1 NAME Jacqueline /Anderson/
+2 GIVN Jacqueline
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 7 JUL 1955
+2 PLAC Louisville, Kentucky
+1 FAMC @F178@
+0 @I597@ INDI
+1 NAME Matthew /Bailey/
+2 GIVN Matthew
+2 SURN Bailey
+1 SEX M
+1 BIRT
+2 DATE 16 NOV 1947
+2 PLAC Charlotte, North Carolina
+1 FAMC @F178@
+0 @I598@ INDI
+1 NAME Harold /Watson/
+2 GIVN Harold
+2 SURN Watson
+1 SEX M
+1 BIRT
+2 DATE 19 OCT 1983
+2 PLAC Madrid, Spain
+1 FAMS @F179@
+0 @I599@ INDI
+1 NAME Roger /Morgan/
+2 GIVN Roger
+2 SURN Morgan
+1 SEX M
+1 BIRT
+2 DATE 15 MAR 1999
+2 PLAC Amsterdam, Netherlands
+1 FAMC @F179@
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 MARR
+2 DATE 3 OCT 1915
+2 PLAC Beijing, China
+1 CHIL @I11@
+1 CHIL @I12@
+1 CHIL @I13@
+1 CHIL @I14@
+1 CHIL @I15@
+0 @F2@ FAM
+1 HUSB @I3@
+1 WIFE @I4@
+1 MARR
+2 DATE 16 NOV 1907
+2 PLAC Houston, Texas
+1 CHIL @I16@
+1 CHIL @I17@
+1 CHIL @I18@
+0 @F3@ FAM
+1 HUSB @I5@
+1 WIFE @I6@
+1 MARR
+2 DATE 20 OCT 1918
+2 PLAC Albuquerque, New Mexico
+1 CHIL @I19@
+1 CHIL @I20@
+1 CHIL @I21@
+1 CHIL @I22@
+1 CHIL @I23@
+0 @F4@ FAM
+1 HUSB @I7@
+1 WIFE @I8@
+1 MARR
+2 DATE 4 NOV 1908
+2 PLAC Toronto, Canada
+1 CHIL @I24@
+1 CHIL @I25@
+1 CHIL @I26@
+0 @F5@ FAM
+1 HUSB @I9@
+1 WIFE @I10@
+1 MARR
+2 DATE 3 AUG 1912
+2 PLAC Beijing, China
+1 CHIL @I27@
+1 CHIL @I28@
+0 @F6@ FAM
+1 HUSB @I11@
+1 WIFE @I12@
+1 MARR
+2 DATE 19 JUN 1939
+2 PLAC Madrid, Spain
+1 CHIL @I31@
+1 CHIL @I32@
+1 CHIL @I33@
+0 @F7@ FAM
+1 HUSB @I13@
+1 WIFE @I14@
+1 MARR
+2 DATE 15 SEP 1933
+2 PLAC San Diego, California
+1 CHIL @I34@
+1 CHIL @I35@
+0 @F8@ FAM
+1 HUSB @I15@
+1 WIFE @I16@
+1 MARR
+2 DATE 10 JUL 1926
+2 PLAC Austin, Texas
+1 CHIL @I36@
+1 CHIL @I37@
+1 CHIL @I38@
+0 @F9@ FAM
+1 HUSB @I17@
+1 WIFE @I18@
+1 MARR
+2 DATE 9 OCT 1922
+2 PLAC Houston, Texas
+1 CHIL @I39@
+1 CHIL @I40@
+1 CHIL @I41@
+1 CHIL @I42@
+0 @F10@ FAM
+1 HUSB @I19@
+1 WIFE @I20@
+1 MARR
+2 DATE 17 MAY 1929
+2 PLAC Austin, Texas
+1 CHIL @I43@
+1 CHIL @I44@
+0 @F11@ FAM
+1 HUSB @I21@
+1 WIFE @I22@
+1 MARR
+2 DATE 6 JUL 1933
+2 PLAC Austin, Texas
+1 CHIL @I45@
+1 CHIL @I46@
+0 @F12@ FAM
+1 HUSB @I23@
+1 WIFE @I24@
+1 MARR
+2 DATE 2 NOV 1936
+2 PLAC New York, New York
+1 CHIL @I47@
+1 CHIL @I48@
+0 @F13@ FAM
+1 HUSB @I25@
+1 WIFE @I26@
+1 MARR
+2 DATE 20 NOV 1943
+2 PLAC Mumbai, India
+1 CHIL @I49@
+1 CHIL @I50@
+1 CHIL @I51@
+0 @F14@ FAM
+1 HUSB @I27@
+1 WIFE @I28@
+1 MARR
+2 DATE 8 AUG 1931
+2 PLAC Vienna, Austria
+1 CHIL @I52@
+1 CHIL @I53@
+0 @F15@ FAM
+1 HUSB @I29@
+1 WIFE @I30@
+1 MARR
+2 DATE 16 JAN 1938
+2 PLAC Paris, France
+1 CHIL @I54@
+1 CHIL @I55@
+1 CHIL @I56@
+1 CHIL @I57@
+0 @F16@ FAM
+1 HUSB @I31@
+1 WIFE @I32@
+1 MARR
+2 DATE 8 OCT 1958
+2 PLAC Phoenix, Arizona
+1 CHIL @I66@
+1 CHIL @I67@
+1 CHIL @I68@
+1 CHIL @I69@
+0 @F17@ FAM
+1 HUSB @I33@
+1 WIFE @I34@
+1 MARR
+2 DATE 18 DEC 1948
+2 PLAC Jacksonville, Florida
+1 CHIL @I70@
+1 CHIL @I71@
+1 CHIL @I72@
+1 CHIL @I73@
+1 CHIL @I74@
+0 @F18@ FAM
+1 HUSB @I35@
+1 WIFE @I36@
+1 MARR
+2 DATE 14 NOV 1952
+2 PLAC Albuquerque, New Mexico
+1 CHIL @I75@
+1 CHIL @I76@
+1 CHIL @I77@
+0 @F19@ FAM
+1 HUSB @I37@
+1 WIFE @I38@
+1 MARR
+2 DATE 25 MAY 1947
+2 PLAC Tokyo, Japan
+1 CHIL @I78@
+1 CHIL @I79@
+0 @F20@ FAM
+1 HUSB @I39@
+1 WIFE @I40@
+1 MARR
+2 DATE 4 MAY 1949
+2 PLAC Indianapolis, Indiana
+1 CHIL @I80@
+1 CHIL @I81@
+0 @F21@ FAM
+1 HUSB @I41@
+1 WIFE @I42@
+1 MARR
+2 DATE 3 JAN 1955
+2 PLAC Tokyo, Japan
+1 CHIL @I82@
+1 CHIL @I83@
+0 @F22@ FAM
+1 HUSB @I43@
+1 WIFE @I44@
+1 MARR
+2 DATE 26 MAY 1951
+2 PLAC Stockholm, Sweden
+1 CHIL @I84@
+1 CHIL @I85@
+1 CHIL @I86@
+1 CHIL @I87@
+0 @F23@ FAM
+1 HUSB @I45@
+1 WIFE @I46@
+1 MARR
+2 DATE 22 AUG 1950
+2 PLAC San Antonio, Texas
+1 CHIL @I88@
+1 CHIL @I89@
+1 CHIL @I90@
+0 @F24@ FAM
+1 HUSB @I47@
+1 WIFE @I48@
+1 MARR
+2 DATE 9 JAN 1961
+2 PLAC Amsterdam, Netherlands
+1 CHIL @I91@
+1 CHIL @I92@
+0 @F25@ FAM
+1 HUSB @I49@
+1 WIFE @I50@
+1 MARR
+2 DATE 26 MAY 1950
+2 PLAC Las Vegas, Nevada
+1 CHIL @I93@
+1 CHIL @I94@
+1 CHIL @I95@
+0 @F26@ FAM
+1 HUSB @I51@
+1 WIFE @I52@
+1 MARR
+2 DATE 15 JUN 1943
+2 PLAC Dallas, Texas
+1 CHIL @I96@
+1 CHIL @I97@
+0 @F27@ FAM
+1 HUSB @I53@
+1 WIFE @I54@
+1 MARR
+2 DATE 5 JUN 1951
+2 PLAC Oklahoma City, Oklahoma
+1 CHIL @I98@
+1 CHIL @I99@
+1 CHIL @I100@
+0 @F28@ FAM
+1 HUSB @I55@
+1 WIFE @I56@
+1 MARR
+2 DATE 20 SEP 1946
+2 PLAC Louisville, Kentucky
+1 CHIL @I101@
+1 CHIL @I102@
+1 CHIL @I103@
+1 CHIL @I104@
+1 CHIL @I105@
+0 @F29@ FAM
+1 HUSB @I57@
+1 WIFE @I58@
+1 MARR
+2 DATE 16 MAR 1949
+2 PLAC Rome, Italy
+1 CHIL @I106@
+1 CHIL @I107@
+0 @F30@ FAM
+1 HUSB @I59@
+1 WIFE @I60@
+1 MARR
+2 DATE 2 AUG 1947
+2 PLAC Milwaukee, Wisconsin
+1 CHIL @I108@
+1 CHIL @I109@
+1 CHIL @I110@
+1 CHIL @I111@
+0 @F31@ FAM
+1 HUSB @I61@
+1 WIFE @I62@
+1 MARR
+2 DATE 9 SEP 1945
+2 PLAC Houston, Texas
+1 CHIL @I112@
+1 CHIL @I113@
+0 @F32@ FAM
+1 HUSB @I63@
+1 WIFE @I64@
+1 MARR
+2 DATE 24 FEB 1958
+2 PLAC Stockholm, Sweden
+1 CHIL @I114@
+1 CHIL @I115@
+0 @F33@ FAM
+1 HUSB @I66@
+1 WIFE @I67@
+1 MARR
+2 DATE 14 NOV 1987
+2 PLAC Nashville, Tennessee
+1 CHIL @I116@
+1 CHIL @I117@
+1 CHIL @I118@
+0 @F34@ FAM
+1 HUSB @I68@
+1 WIFE @I69@
+1 MARR
+2 DATE 17 MAY 1985
+2 PLAC Mexico City, Mexico
+1 CHIL @I119@
+1 CHIL @I120@
+1 CHIL @I121@
+1 CHIL @I122@
+1 CHIL @I123@
+0 @F35@ FAM
+1 HUSB @I70@
+1 WIFE @I71@
+1 MARR
+2 DATE 14 NOV 1975
+2 PLAC Warsaw, Poland
+1 CHIL @I124@
+1 CHIL @I125@
+1 CHIL @I126@
+0 @F36@ FAM
+1 HUSB @I72@
+1 WIFE @I73@
+1 MARR
+2 DATE 24 JAN 1970
+2 PLAC Milwaukee, Wisconsin
+1 CHIL @I127@
+1 CHIL @I128@
+1 CHIL @I129@
+1 CHIL @I130@
+0 @F37@ FAM
+1 HUSB @I74@
+1 WIFE @I75@
+1 MARR
+2 DATE 24 NOV 1983
+2 PLAC Shanghai, China
+1 CHIL @I131@
+1 CHIL @I132@
+1 CHIL @I133@
+1 CHIL @I134@
+0 @F38@ FAM
+1 HUSB @I76@
+1 WIFE @I77@
+1 MARR
+2 DATE 21 SEP 1970
+2 PLAC Sydney, Australia
+1 CHIL @I135@
+1 CHIL @I136@
+1 CHIL @I137@
+1 CHIL @I138@
+0 @F39@ FAM
+1 HUSB @I78@
+1 WIFE @I79@
+1 MARR
+2 DATE 6 FEB 1980
+2 PLAC Denver, Colorado
+1 CHIL @I139@
+1 CHIL @I140@
+1 CHIL @I141@
+1 CHIL @I142@
+1 CHIL @I143@
+0 @F40@ FAM
+1 HUSB @I80@
+1 WIFE @I81@
+1 MARR
+2 DATE 19 APR 1975
+2 PLAC Beijing, China
+1 CHIL @I144@
+1 CHIL @I145@
+1 CHIL @I146@
+0 @F41@ FAM
+1 HUSB @I82@
+1 WIFE @I83@
+1 MARR
+2 DATE 26 JUN 1988
+2 PLAC Seoul, South Korea
+1 CHIL @I147@
+1 CHIL @I148@
+0 @F42@ FAM
+1 HUSB @I84@
+1 WIFE @I85@
+1 MARR
+2 DATE 26 JUN 1979
+2 PLAC Mumbai, India
+1 CHIL @I149@
+1 CHIL @I150@
+0 @F43@ FAM
+1 HUSB @I86@
+1 WIFE @I87@
+1 MARR
+2 DATE 26 APR 1978
+2 PLAC San Antonio, Texas
+1 CHIL @I151@
+1 CHIL @I152@
+1 CHIL @I153@
+1 CHIL @I154@
+0 @F44@ FAM
+1 HUSB @I88@
+1 WIFE @I89@
+1 MARR
+2 DATE 7 MAR 1972
+2 PLAC Mexico City, Mexico
+1 CHIL @I155@
+1 CHIL @I156@
+0 @F45@ FAM
+1 HUSB @I90@
+1 WIFE @I91@
+1 MARR
+2 DATE 1 JUN 1985
+2 PLAC Tokyo, Japan
+1 CHIL @I157@
+1 CHIL @I158@
+1 CHIL @I159@
+1 CHIL @I160@
+1 CHIL @I161@
+0 @F46@ FAM
+1 HUSB @I92@
+1 WIFE @I93@
+1 MARR
+2 DATE 28 APR 1966
+2 PLAC Chicago, Illinois
+1 CHIL @I162@
+1 CHIL @I163@
+1 CHIL @I164@
+0 @F47@ FAM
+1 HUSB @I94@
+1 WIFE @I95@
+1 MARR
+2 DATE 2 MAR 1987
+2 PLAC Copenhagen, Denmark
+1 CHIL @I165@
+1 CHIL @I166@
+1 CHIL @I167@
+0 @F48@ FAM
+1 HUSB @I96@
+1 WIFE @I97@
+1 MARR
+2 DATE 11 JUN 1976
+2 PLAC Seattle, Washington
+1 CHIL @I168@
+1 CHIL @I169@
+0 @F49@ FAM
+1 HUSB @I98@
+1 WIFE @I99@
+1 MARR
+2 DATE 12 NOV 1983
+2 PLAC Amsterdam, Netherlands
+1 CHIL @I170@
+1 CHIL @I171@
+1 CHIL @I172@
+1 CHIL @I173@
+0 @F50@ FAM
+1 HUSB @I100@
+1 WIFE @I101@
+1 MARR
+2 DATE 15 NOV 1978
+2 PLAC Lisbon, Portugal
+1 CHIL @I174@
+1 CHIL @I175@
+1 CHIL @I176@
+1 CHIL @I177@
+1 CHIL @I178@
+0 @F51@ FAM
+1 HUSB @I102@
+1 WIFE @I103@
+1 MARR
+2 DATE 21 JUL 1975
+2 PLAC Copenhagen, Denmark
+1 CHIL @I179@
+1 CHIL @I180@
+1 CHIL @I181@
+1 CHIL @I182@
+0 @F52@ FAM
+1 HUSB @I104@
+1 WIFE @I105@
+1 MARR
+2 DATE 26 NOV 1968
+2 PLAC Houston, Texas
+1 CHIL @I183@
+1 CHIL @I184@
+0 @F53@ FAM
+1 HUSB @I106@
+1 WIFE @I107@
+1 MARR
+2 DATE 21 DEC 1964
+2 PLAC Oklahoma City, Oklahoma
+1 CHIL @I185@
+1 CHIL @I186@
+0 @F54@ FAM
+1 HUSB @I108@
+1 WIFE @I109@
+1 MARR
+2 DATE 26 AUG 1978
+2 PLAC Stockholm, Sweden
+1 CHIL @I187@
+1 CHIL @I188@
+1 CHIL @I189@
+1 CHIL @I190@
+0 @F55@ FAM
+1 HUSB @I110@
+1 WIFE @I111@
+1 MARR
+2 DATE 6 OCT 1980
+2 PLAC Beijing, China
+1 CHIL @I191@
+1 CHIL @I192@
+1 CHIL @I193@
+0 @F56@ FAM
+1 HUSB @I112@
+1 WIFE @I113@
+1 MARR
+2 DATE 1 MAY 1973
+2 PLAC San Antonio, Texas
+1 CHIL @I194@
+1 CHIL @I195@
+0 @F57@ FAM
+1 HUSB @I114@
+1 WIFE @I115@
+1 MARR
+2 DATE 26 JUN 1972
+2 PLAC Budapest, Hungary
+1 CHIL @I196@
+1 CHIL @I197@
+1 CHIL @I198@
+1 CHIL @I199@
+0 @F58@ FAM
+1 HUSB @I116@
+1 WIFE @I117@
+1 MARR
+2 DATE 20 NOV 1998
+2 PLAC Mexico City, Mexico
+1 CHIL @I200@
+1 CHIL @I201@
+1 CHIL @I202@
+0 @F59@ FAM
+1 HUSB @I118@
+1 WIFE @I119@
+1 MARR
+2 DATE 23 APR 1999
+2 PLAC Oklahoma City, Oklahoma
+1 CHIL @I203@
+1 CHIL @I204@
+1 CHIL @I205@
+1 CHIL @I206@
+1 CHIL @I207@
+0 @F60@ FAM
+1 HUSB @I120@
+1 WIFE @I121@
+1 MARR
+2 DATE 15 FEB 1992
+2 PLAC Rome, Italy
+1 CHIL @I208@
+1 CHIL @I209@
+1 CHIL @I210@
+1 CHIL @I211@
+1 CHIL @I212@
+1 CHIL @I213@
+0 @F61@ FAM
+1 HUSB @I122@
+1 WIFE @I123@
+1 MARR
+2 DATE 25 OCT 1997
+2 PLAC Nashville, Tennessee
+1 CHIL @I214@
+1 CHIL @I215@
+1 CHIL @I216@
+0 @F62@ FAM
+1 HUSB @I124@
+1 WIFE @I125@
+1 MARR
+2 DATE 6 APR 2007
+2 PLAC Vienna, Austria
+1 CHIL @I217@
+1 CHIL @I218@
+0 @F63@ FAM
+1 HUSB @I126@
+1 WIFE @I127@
+1 MARR
+2 DATE 18 NOV 1997
+2 PLAC Athens, Greece
+1 CHIL @I219@
+1 CHIL @I220@
+1 CHIL @I221@
+1 CHIL @I222@
+0 @F64@ FAM
+1 HUSB @I128@
+1 WIFE @I129@
+1 MARR
+2 DATE 24 FEB 2001
+2 PLAC Memphis, Tennessee
+1 CHIL @I223@
+1 CHIL @I224@
+1 CHIL @I225@
+1 CHIL @I226@
+0 @F65@ FAM
+1 HUSB @I130@
+1 WIFE @I131@
+1 MARR
+2 DATE 12 JUL 1993
+2 PLAC Austin, Texas
+1 CHIL @I227@
+1 CHIL @I228@
+1 CHIL @I229@
+0 @F66@ FAM
+1 HUSB @I132@
+1 WIFE @I133@
+1 MARR
+2 DATE 26 JUL 2012
+2 PLAC Chicago, Illinois
+1 CHIL @I230@
+1 CHIL @I231@
+0 @F67@ FAM
+1 HUSB @I134@
+1 WIFE @I135@
+1 MARR
+2 DATE 6 MAR 2006
+2 PLAC Shanghai, China
+1 CHIL @I232@
+1 CHIL @I233@
+1 CHIL @I234@
+1 CHIL @I235@
+0 @F68@ FAM
+1 HUSB @I136@
+1 WIFE @I137@
+1 MARR
+2 DATE 27 FEB 1994
+2 PLAC Melbourne, Australia
+1 CHIL @I236@
+1 CHIL @I237@
+1 CHIL @I238@
+1 CHIL @I239@
+1 CHIL @I240@
+0 @F69@ FAM
+1 HUSB @I138@
+1 WIFE @I139@
+1 MARR
+2 DATE 15 JUN 2008
+2 PLAC Stockholm, Sweden
+1 CHIL @I241@
+1 CHIL @I242@
+1 CHIL @I243@
+1 CHIL @I244@
+1 CHIL @I245@
+0 @F70@ FAM
+1 HUSB @I140@
+1 WIFE @I141@
+1 MARR
+2 DATE 18 OCT 1996
+2 PLAC Vancouver, Canada
+1 CHIL @I246@
+1 CHIL @I247@
+1 CHIL @I248@
+1 CHIL @I249@
+0 @F71@ FAM
+1 HUSB @I142@
+1 WIFE @I143@
+1 MARR
+2 DATE 20 NOV 2000
+2 PLAC Oklahoma City, Oklahoma
+1 CHIL @I250@
+1 CHIL @I251@
+1 CHIL @I252@
+0 @F72@ FAM
+1 HUSB @I144@
+1 WIFE @I145@
+1 MARR
+2 DATE 13 JAN 2004
+2 PLAC Detroit, Michigan
+1 CHIL @I253@
+1 CHIL @I254@
+1 CHIL @I255@
+0 @F73@ FAM
+1 HUSB @I146@
+1 WIFE @I147@
+1 MARR
+2 DATE 9 NOV 2007
+2 PLAC Columbus, Ohio
+1 CHIL @I256@
+1 CHIL @I257@
+0 @F74@ FAM
+1 HUSB @I148@
+1 WIFE @I149@
+1 MARR
+2 DATE 28 AUG 2000
+2 PLAC Jacksonville, Florida
+1 CHIL @I258@
+1 CHIL @I259@
+1 CHIL @I260@
+1 CHIL @I261@
+1 CHIL @I262@
+1 CHIL @I263@
+0 @F75@ FAM
+1 HUSB @I150@
+1 WIFE @I151@
+1 MARR
+2 DATE 25 NOV 2004
+2 PLAC Nashville, Tennessee
+1 CHIL @I264@
+1 CHIL @I265@
+0 @F76@ FAM
+1 HUSB @I152@
+1 WIFE @I153@
+1 MARR
+2 DATE 18 AUG 2004
+2 PLAC Fort Worth, Texas
+1 CHIL @I266@
+1 CHIL @I267@
+0 @F77@ FAM
+1 HUSB @I154@
+1 WIFE @I155@
+1 MARR
+2 DATE 14 DEC 1999
+2 PLAC Seattle, Washington
+1 CHIL @I268@
+1 CHIL @I269@
+1 CHIL @I270@
+0 @F78@ FAM
+1 HUSB @I156@
+1 WIFE @I157@
+1 MARR
+2 DATE 24 MAY 2000
+2 PLAC Denver, Colorado
+1 CHIL @I271@
+1 CHIL @I272@
+1 CHIL @I273@
+0 @F79@ FAM
+1 HUSB @I158@
+1 WIFE @I159@
+1 MARR
+2 DATE 19 JAN 1992
+2 PLAC Phoenix, Arizona
+1 CHIL @I274@
+1 CHIL @I275@
+1 CHIL @I276@
+1 CHIL @I277@
+1 CHIL @I278@
+1 CHIL @I279@
+0 @F80@ FAM
+1 HUSB @I160@
+1 WIFE @I161@
+1 MARR
+2 DATE 2 AUG 1992
+2 PLAC Oklahoma City, Oklahoma
+1 CHIL @I280@
+1 CHIL @I281@
+1 CHIL @I282@
+1 CHIL @I283@
+1 CHIL @I284@
+0 @F81@ FAM
+1 HUSB @I162@
+1 WIFE @I163@
+1 MARR
+2 DATE 22 OCT 1989
+2 PLAC Indianapolis, Indiana
+1 CHIL @I285@
+1 CHIL @I286@
+1 CHIL @I287@
+1 CHIL @I288@
+0 @F82@ FAM
+1 HUSB @I164@
+1 WIFE @I165@
+1 MARR
+2 DATE 6 MAR 1988
+2 PLAC Sydney, Australia
+1 CHIL @I289@
+1 CHIL @I290@
+0 @F83@ FAM
+1 HUSB @I166@
+1 WIFE @I167@
+1 MARR
+2 DATE 1 SEP 2003
+2 PLAC Milwaukee, Wisconsin
+1 CHIL @I291@
+1 CHIL @I292@
+1 CHIL @I293@
+0 @F84@ FAM
+1 HUSB @I168@
+1 WIFE @I169@
+1 MARR
+2 DATE 8 JAN 2001
+2 PLAC Shanghai, China
+1 CHIL @I294@
+1 CHIL @I295@
+1 CHIL @I296@
+1 CHIL @I297@
+1 CHIL @I298@
+0 @F85@ FAM
+1 HUSB @I170@
+1 WIFE @I171@
+1 MARR
+2 DATE 12 JUL 2012
+2 PLAC London, England
+1 CHIL @I299@
+1 CHIL @I300@
+1 CHIL @I301@
+0 @F86@ FAM
+1 HUSB @I172@
+1 WIFE @I173@
+1 MARR
+2 DATE 24 JUL 2001
+2 PLAC Portland, Oregon
+1 CHIL @I302@
+1 CHIL @I303@
+1 CHIL @I304@
+0 @F87@ FAM
+1 HUSB @I174@
+1 WIFE @I175@
+1 MARR
+2 DATE 24 OCT 1998
+2 PLAC Chicago, Illinois
+1 CHIL @I305@
+1 CHIL @I306@
+1 CHIL @I307@
+1 CHIL @I308@
+0 @F88@ FAM
+1 HUSB @I176@
+1 WIFE @I177@
+1 MARR
+2 DATE 21 NOV 2001
+2 PLAC Dublin, Ireland
+1 CHIL @I309@
+1 CHIL @I310@
+1 CHIL @I311@
+0 @F89@ FAM
+1 HUSB @I178@
+1 WIFE @I179@
+1 MARR
+2 DATE 26 JUL 1989
+2 PLAC Vienna, Austria
+1 CHIL @I312@
+1 CHIL @I313@
+0 @F90@ FAM
+1 HUSB @I180@
+1 WIFE @I181@
+1 MARR
+2 DATE 15 MAY 2001
+2 PLAC Tokyo, Japan
+1 CHIL @I314@
+1 CHIL @I315@
+0 @F91@ FAM
+1 HUSB @I182@
+1 WIFE @I183@
+1 MARR
+2 DATE 17 JUN 2006
+2 PLAC Albuquerque, New Mexico
+1 CHIL @I316@
+1 CHIL @I317@
+1 CHIL @I318@
+0 @F92@ FAM
+1 HUSB @I184@
+1 WIFE @I185@
+1 MARR
+2 DATE 7 NOV 2008
+2 PLAC Auckland, New Zealand
+1 CHIL @I319@
+1 CHIL @I320@
+0 @F93@ FAM
+1 HUSB @I186@
+1 WIFE @I187@
+1 MARR
+2 DATE 21 MAR 2003
+2 PLAC Milwaukee, Wisconsin
+1 CHIL @I321@
+1 CHIL @I322@
+1 CHIL @I323@
+0 @F94@ FAM
+1 HUSB @I188@
+1 WIFE @I189@
+1 MARR
+2 DATE 25 FEB 1995
+2 PLAC Philadelphia, Pennsylvania
+1 CHIL @I324@
+1 CHIL @I325@
+0 @F95@ FAM
+1 HUSB @I190@
+1 WIFE @I191@
+1 MARR
+2 DATE 16 NOV 2005
+2 PLAC Boston, Massachusetts
+1 CHIL @I326@
+1 CHIL @I327@
+0 @F96@ FAM
+1 HUSB @I192@
+1 WIFE @I193@
+1 MARR
+2 DATE 4 AUG 1992
+2 PLAC Melbourne, Australia
+1 CHIL @I328@
+1 CHIL @I329@
+1 CHIL @I330@
+1 CHIL @I331@
+0 @F97@ FAM
+1 HUSB @I194@
+1 WIFE @I195@
+1 MARR
+2 DATE 22 SEP 2011
+2 PLAC Albuquerque, New Mexico
+1 CHIL @I332@
+1 CHIL @I333@
+0 @F98@ FAM
+1 HUSB @I196@
+1 WIFE @I197@
+1 MARR
+2 DATE 28 JUN 1990
+2 PLAC Portland, Oregon
+1 CHIL @I334@
+1 CHIL @I335@
+1 CHIL @I336@
+1 CHIL @I337@
+0 @F99@ FAM
+1 HUSB @I198@
+1 WIFE @I199@
+1 MARR
+2 DATE 14 MAY 2003
+2 PLAC Toronto, Canada
+1 CHIL @I338@
+1 CHIL @I339@
+0 @F100@ FAM
+1 HUSB @I200@
+1 WIFE @I201@
+1 MARR
+2 DATE 4 AUG 2016
+2 PLAC Sydney, Australia
+1 CHIL @I340@
+1 CHIL @I341@
+0 @F101@ FAM
+1 HUSB @I202@
+1 WIFE @I203@
+1 MARR
+2 DATE 10 FEB 2025
+2 PLAC Boston, Massachusetts
+1 CHIL @I342@
+1 CHIL @I343@
+0 @F102@ FAM
+1 HUSB @I204@
+1 WIFE @I205@
+1 MARR
+2 DATE 4 JAN 2030
+2 PLAC Vienna, Austria
+1 CHIL @I344@
+1 CHIL @I345@
+0 @F103@ FAM
+1 HUSB @I206@
+1 WIFE @I207@
+1 MARR
+2 DATE 16 NOV 2030
+2 PLAC Rome, Italy
+1 CHIL @I346@
+1 CHIL @I347@
+0 @F104@ FAM
+1 HUSB @I208@
+1 WIFE @I209@
+1 MARR
+2 DATE 9 OCT 2020
+2 PLAC Prague, Czech Republic
+1 CHIL @I348@
+1 CHIL @I349@
+0 @F105@ FAM
+1 HUSB @I210@
+1 WIFE @I211@
+1 MARR
+2 DATE 10 FEB 2013
+2 PLAC Paris, France
+1 CHIL @I350@
+1 CHIL @I351@
+1 CHIL @I352@
+1 CHIL @I353@
+1 CHIL @I354@
+0 @F106@ FAM
+1 HUSB @I212@
+1 WIFE @I213@
+1 MARR
+2 DATE 13 SEP 2019
+2 PLAC Oklahoma City, Oklahoma
+1 CHIL @I355@
+1 CHIL @I356@
+1 CHIL @I357@
+0 @F107@ FAM
+1 HUSB @I214@
+1 WIFE @I215@
+1 MARR
+2 DATE 1 NOV 2025
+2 PLAC Albuquerque, New Mexico
+1 CHIL @I358@
+1 CHIL @I359@
+1 CHIL @I360@
+0 @F108@ FAM
+1 HUSB @I216@
+1 WIFE @I217@
+1 MARR
+2 DATE 17 JUN 2010
+2 PLAC Charlotte, North Carolina
+1 CHIL @I361@
+1 CHIL @I362@
+0 @F109@ FAM
+1 HUSB @I218@
+1 WIFE @I219@
+1 MARR
+2 DATE 10 APR 2030
+2 PLAC San Antonio, Texas
+1 CHIL @I363@
+1 CHIL @I364@
+1 CHIL @I365@
+0 @F110@ FAM
+1 HUSB @I220@
+1 WIFE @I221@
+1 MARR
+2 DATE 5 JAN 2017
+2 PLAC Chicago, Illinois
+1 CHIL @I366@
+1 CHIL @I367@
+1 CHIL @I368@
+1 CHIL @I369@
+0 @F111@ FAM
+1 HUSB @I222@
+1 WIFE @I223@
+1 MARR
+2 DATE 11 DEC 2014
+2 PLAC Philadelphia, Pennsylvania
+1 CHIL @I370@
+1 CHIL @I371@
+1 CHIL @I372@
+0 @F112@ FAM
+1 HUSB @I224@
+1 WIFE @I225@
+1 MARR
+2 DATE 27 DEC 2023
+2 PLAC Houston, Texas
+1 CHIL @I373@
+1 CHIL @I374@
+1 CHIL @I375@
+1 CHIL @I376@
+1 CHIL @I377@
+0 @F113@ FAM
+1 HUSB @I226@
+1 WIFE @I227@
+1 MARR
+2 DATE 26 DEC 2010
+2 PLAC Seoul, South Korea
+1 CHIL @I378@
+1 CHIL @I379@
+1 CHIL @I380@
+0 @F114@ FAM
+1 HUSB @I228@
+1 WIFE @I229@
+1 MARR
+2 DATE 9 DEC 2012
+2 PLAC Lisbon, Portugal
+1 CHIL @I381@
+1 CHIL @I382@
+0 @F115@ FAM
+1 HUSB @I230@
+1 WIFE @I231@
+1 MARR
+2 DATE 6 AUG 2021
+2 PLAC Berlin, Germany
+1 CHIL @I383@
+1 CHIL @I384@
+1 CHIL @I385@
+1 CHIL @I386@
+1 CHIL @I387@
+0 @F116@ FAM
+1 HUSB @I232@
+1 WIFE @I233@
+1 MARR
+2 DATE 2 MAR 2019
+2 PLAC Auckland, New Zealand
+1 CHIL @I388@
+1 CHIL @I389@
+1 CHIL @I390@
+0 @F117@ FAM
+1 HUSB @I234@
+1 WIFE @I235@
+1 MARR
+2 DATE 6 SEP 2010
+2 PLAC Las Vegas, Nevada
+1 CHIL @I391@
+1 CHIL @I392@
+1 CHIL @I393@
+1 CHIL @I394@
+1 CHIL @I395@
+0 @F118@ FAM
+1 HUSB @I236@
+1 WIFE @I237@
+1 MARR
+2 DATE 16 FEB 2030
+2 PLAC Tokyo, Japan
+1 CHIL @I396@
+1 CHIL @I397@
+0 @F119@ FAM
+1 HUSB @I238@
+1 WIFE @I239@
+1 MARR
+2 DATE 11 JAN 2012
+2 PLAC Prague, Czech Republic
+1 CHIL @I398@
+1 CHIL @I399@
+1 CHIL @I400@
+0 @F120@ FAM
+1 HUSB @I240@
+1 WIFE @I241@
+1 MARR
+2 DATE 15 NOV 2030
+2 PLAC Austin, Texas
+1 CHIL @I401@
+1 CHIL @I402@
+1 CHIL @I403@
+1 CHIL @I404@
+0 @F121@ FAM
+1 HUSB @I242@
+1 WIFE @I243@
+1 MARR
+2 DATE 23 APR 2015
+2 PLAC Copenhagen, Denmark
+1 CHIL @I405@
+1 CHIL @I406@
+1 CHIL @I407@
+1 CHIL @I408@
+0 @F122@ FAM
+1 HUSB @I244@
+1 WIFE @I245@
+1 MARR
+2 DATE 25 JUN 2011
+2 PLAC Fort Worth, Texas
+1 CHIL @I409@
+1 CHIL @I410@
+1 CHIL @I411@
+1 CHIL @I412@
+0 @F123@ FAM
+1 HUSB @I246@
+1 WIFE @I247@
+1 MARR
+2 DATE 3 OCT 2020
+2 PLAC Vienna, Austria
+1 CHIL @I413@
+1 CHIL @I414@
+1 CHIL @I415@
+1 CHIL @I416@
+1 CHIL @I417@
+0 @F124@ FAM
+1 HUSB @I248@
+1 WIFE @I249@
+1 MARR
+2 DATE 13 MAY 2009
+2 PLAC Austin, Texas
+1 CHIL @I418@
+1 CHIL @I419@
+0 @F125@ FAM
+1 HUSB @I250@
+1 WIFE @I251@
+1 MARR
+2 DATE 21 FEB 2019
+2 PLAC Jacksonville, Florida
+1 CHIL @I420@
+1 CHIL @I421@
+1 CHIL @I422@
+1 CHIL @I423@
+1 CHIL @I424@
+0 @F126@ FAM
+1 HUSB @I252@
+1 WIFE @I253@
+1 MARR
+2 DATE 11 JAN 2007
+2 PLAC Vienna, Austria
+1 CHIL @I425@
+1 CHIL @I426@
+1 CHIL @I427@
+1 CHIL @I428@
+0 @F127@ FAM
+1 HUSB @I254@
+1 WIFE @I255@
+1 MARR
+2 DATE 8 SEP 2008
+2 PLAC Dallas, Texas
+1 CHIL @I429@
+1 CHIL @I430@
+1 CHIL @I431@
+0 @F128@ FAM
+1 HUSB @I256@
+1 WIFE @I257@
+1 MARR
+2 DATE 27 FEB 2027
+2 PLAC Jacksonville, Florida
+1 CHIL @I432@
+1 CHIL @I433@
+1 CHIL @I434@
+0 @F129@ FAM
+1 HUSB @I258@
+1 WIFE @I259@
+1 MARR
+2 DATE 14 OCT 2017
+2 PLAC San Jose, California
+1 CHIL @I435@
+1 CHIL @I436@
+1 CHIL @I437@
+1 CHIL @I438@
+0 @F130@ FAM
+1 HUSB @I260@
+1 WIFE @I261@
+1 MARR
+2 DATE 13 DEC 2033
+2 PLAC San Antonio, Texas
+1 CHIL @I439@
+1 CHIL @I440@
+1 CHIL @I441@
+1 CHIL @I442@
+0 @F131@ FAM
+1 HUSB @I262@
+1 WIFE @I263@
+1 MARR
+2 DATE 3 JUL 2014
+2 PLAC Lisbon, Portugal
+1 CHIL @I443@
+1 CHIL @I444@
+1 CHIL @I445@
+1 CHIL @I446@
+1 CHIL @I447@
+0 @F132@ FAM
+1 HUSB @I264@
+1 WIFE @I265@
+1 MARR
+2 DATE 20 JUN 2016
+2 PLAC Tokyo, Japan
+1 CHIL @I448@
+1 CHIL @I449@
+1 CHIL @I450@
+0 @F133@ FAM
+1 HUSB @I266@
+1 WIFE @I267@
+1 MARR
+2 DATE 12 NOV 2030
+2 PLAC Auckland, New Zealand
+1 CHIL @I451@
+1 CHIL @I452@
+0 @F134@ FAM
+1 HUSB @I268@
+1 WIFE @I269@
+1 MARR
+2 DATE 28 SEP 2027
+2 PLAC Vancouver, Canada
+1 CHIL @I453@
+1 CHIL @I454@
+0 @F135@ FAM
+1 HUSB @I270@
+1 WIFE @I271@
+1 MARR
+2 DATE 5 MAY 2015
+2 PLAC Los Angeles, California
+1 CHIL @I455@
+1 CHIL @I456@
+1 CHIL @I457@
+1 CHIL @I458@
+1 CHIL @I459@
+0 @F136@ FAM
+1 HUSB @I272@
+1 WIFE @I273@
+1 MARR
+2 DATE 12 MAY 2012
+2 PLAC Chicago, Illinois
+1 CHIL @I460@
+1 CHIL @I461@
+0 @F137@ FAM
+1 HUSB @I274@
+1 WIFE @I275@
+1 MARR
+2 DATE 25 FEB 2009
+2 PLAC San Francisco, California
+1 CHIL @I462@
+1 CHIL @I463@
+1 CHIL @I464@
+0 @F138@ FAM
+1 HUSB @I276@
+1 WIFE @I277@
+1 MARR
+2 DATE 16 JUN 2021
+2 PLAC Columbus, Ohio
+1 CHIL @I465@
+1 CHIL @I466@
+1 CHIL @I467@
+0 @F139@ FAM
+1 HUSB @I278@
+1 WIFE @I279@
+1 MARR
+2 DATE 9 DEC 2011
+2 PLAC Dallas, Texas
+1 CHIL @I468@
+1 CHIL @I469@
+1 CHIL @I470@
+0 @F140@ FAM
+1 HUSB @I280@
+1 WIFE @I281@
+1 MARR
+2 DATE 18 MAR 2011
+2 PLAC Berlin, Germany
+1 CHIL @I471@
+1 CHIL @I472@
+1 CHIL @I473@
+0 @F141@ FAM
+1 HUSB @I282@
+1 WIFE @I283@
+1 MARR
+2 DATE 2 NOV 2028
+2 PLAC Copenhagen, Denmark
+1 CHIL @I474@
+1 CHIL @I475@
+1 CHIL @I476@
+1 CHIL @I477@
+1 CHIL @I478@
+0 @F142@ FAM
+1 HUSB @I284@
+1 WIFE @I285@
+1 MARR
+2 DATE 10 MAY 2022
+2 PLAC San Antonio, Texas
+1 CHIL @I479@
+1 CHIL @I480@
+1 CHIL @I481@
+0 @F143@ FAM
+1 HUSB @I286@
+1 WIFE @I287@
+1 MARR
+2 DATE 6 DEC 2013
+2 PLAC Denver, Colorado
+1 CHIL @I482@
+1 CHIL @I483@
+1 CHIL @I484@
+0 @F144@ FAM
+1 HUSB @I288@
+1 WIFE @I289@
+1 MARR
+2 DATE 28 SEP 2025
+2 PLAC Stockholm, Sweden
+1 CHIL @I485@
+1 CHIL @I486@
+1 CHIL @I487@
+0 @F145@ FAM
+1 HUSB @I290@
+1 WIFE @I291@
+1 MARR
+2 DATE 28 OCT 2024
+2 PLAC Dallas, Texas
+1 CHIL @I488@
+1 CHIL @I489@
+1 CHIL @I490@
+0 @F146@ FAM
+1 HUSB @I292@
+1 WIFE @I293@
+1 MARR
+2 DATE 1 NOV 2008
+2 PLAC Athens, Greece
+1 CHIL @I491@
+1 CHIL @I492@
+1 CHIL @I493@
+0 @F147@ FAM
+1 HUSB @I294@
+1 WIFE @I295@
+1 MARR
+2 DATE 12 APR 2031
+2 PLAC San Francisco, California
+1 CHIL @I494@
+1 CHIL @I495@
+1 CHIL @I496@
+1 CHIL @I497@
+1 CHIL @I498@
+0 @F148@ FAM
+1 HUSB @I296@
+1 WIFE @I297@
+1 MARR
+2 DATE 3 NOV 2019
+2 PLAC Memphis, Tennessee
+1 CHIL @I499@
+1 CHIL @I500@
+1 CHIL @I501@
+1 CHIL @I502@
+0 @F149@ FAM
+1 HUSB @I298@
+1 WIFE @I299@
+1 MARR
+2 DATE 7 FEB 2022
+2 PLAC Columbus, Ohio
+1 CHIL @I503@
+1 CHIL @I504@
+1 CHIL @I505@
+1 CHIL @I506@
+0 @F150@ FAM
+1 HUSB @I300@
+1 WIFE @I301@
+1 MARR
+2 DATE 27 MAY 2013
+2 PLAC Memphis, Tennessee
+1 CHIL @I507@
+1 CHIL @I508@
+1 CHIL @I509@
+1 CHIL @I510@
+1 CHIL @I511@
+1 CHIL @I512@
+0 @F151@ FAM
+1 HUSB @I302@
+1 WIFE @I303@
+1 MARR
+2 DATE 24 JAN 2013
+2 PLAC Denver, Colorado
+1 CHIL @I513@
+1 CHIL @I514@
+1 CHIL @I515@
+1 CHIL @I516@
+0 @F152@ FAM
+1 HUSB @I304@
+1 WIFE @I305@
+1 MARR
+2 DATE 7 NOV 2015
+2 PLAC Lisbon, Portugal
+1 CHIL @I517@
+1 CHIL @I518@
+1 CHIL @I519@
+0 @F153@ FAM
+1 HUSB @I306@
+1 WIFE @I307@
+1 MARR
+2 DATE 26 MAR 2019
+2 PLAC Albuquerque, New Mexico
+1 CHIL @I520@
+1 CHIL @I521@
+1 CHIL @I522@
+1 CHIL @I523@
+1 CHIL @I524@
+0 @F154@ FAM
+1 HUSB @I308@
+1 WIFE @I309@
+1 MARR
+2 DATE 10 APR 2029
+2 PLAC Seattle, Washington
+1 CHIL @I525@
+1 CHIL @I526@
+1 CHIL @I527@
+0 @F155@ FAM
+1 HUSB @I310@
+1 WIFE @I311@
+1 MARR
+2 DATE 8 FEB 2025
+2 PLAC San Diego, California
+1 CHIL @I528@
+1 CHIL @I529@
+0 @F156@ FAM
+1 HUSB @I312@
+1 WIFE @I313@
+1 MARR
+2 DATE 22 AUG 2026
+2 PLAC Auckland, New Zealand
+1 CHIL @I530@
+1 CHIL @I531@
+0 @F157@ FAM
+1 HUSB @I314@
+1 WIFE @I315@
+1 MARR
+2 DATE 14 JUL 2017
+2 PLAC Boston, Massachusetts
+1 CHIL @I532@
+1 CHIL @I533@
+0 @F158@ FAM
+1 HUSB @I316@
+1 WIFE @I317@
+1 MARR
+2 DATE 4 FEB 2026
+2 PLAC San Diego, California
+1 CHIL @I534@
+1 CHIL @I535@
+1 CHIL @I536@
+0 @F159@ FAM
+1 HUSB @I318@
+1 WIFE @I319@
+1 MARR
+2 DATE 4 SEP 2018
+2 PLAC Madrid, Spain
+1 CHIL @I537@
+1 CHIL @I538@
+0 @F160@ FAM
+1 HUSB @I320@
+1 WIFE @I321@
+1 MARR
+2 DATE 9 MAR 2013
+2 PLAC Lisbon, Portugal
+1 CHIL @I539@
+1 CHIL @I540@
+0 @F161@ FAM
+1 HUSB @I322@
+1 WIFE @I323@
+1 MARR
+2 DATE 18 JUL 2019
+2 PLAC Albuquerque, New Mexico
+1 CHIL @I541@
+1 CHIL @I542@
+1 CHIL @I543@
+0 @F162@ FAM
+1 HUSB @I324@
+1 WIFE @I325@
+1 MARR
+2 DATE 18 AUG 2020
+2 PLAC Sydney, Australia
+1 CHIL @I544@
+1 CHIL @I545@
+1 CHIL @I546@
+0 @F163@ FAM
+1 HUSB @I326@
+1 WIFE @I327@
+1 MARR
+2 DATE 20 APR 2028
+2 PLAC Austin, Texas
+1 CHIL @I547@
+1 CHIL @I548@
+0 @F164@ FAM
+1 HUSB @I328@
+1 WIFE @I329@
+1 MARR
+2 DATE 20 DEC 2009
+2 PLAC Memphis, Tennessee
+1 CHIL @I549@
+1 CHIL @I550@
+0 @F165@ FAM
+1 HUSB @I330@
+1 WIFE @I331@
+1 MARR
+2 DATE 17 AUG 2023
+2 PLAC Auckland, New Zealand
+1 CHIL @I551@
+1 CHIL @I552@
+1 CHIL @I553@
+1 CHIL @I554@
+0 @F166@ FAM
+1 HUSB @I332@
+1 WIFE @I333@
+1 MARR
+2 DATE 12 JAN 2015
+2 PLAC Tokyo, Japan
+1 CHIL @I555@
+1 CHIL @I556@
+1 CHIL @I557@
+1 CHIL @I558@
+1 CHIL @I559@
+1 CHIL @I560@
+0 @F167@ FAM
+1 HUSB @I334@
+1 WIFE @I335@
+1 MARR
+2 DATE 1 MAY 2026
+2 PLAC Milwaukee, Wisconsin
+1 CHIL @I561@
+1 CHIL @I562@
+1 CHIL @I563@
+0 @F168@ FAM
+1 HUSB @I336@
+1 WIFE @I337@
+1 MARR
+2 DATE 14 MAR 2034
+2 PLAC Rome, Italy
+1 CHIL @I564@
+1 CHIL @I565@
+0 @F169@ FAM
+1 HUSB @I338@
+1 WIFE @I339@
+1 MARR
+2 DATE 15 JUN 2020
+2 PLAC Toronto, Canada
+1 CHIL @I566@
+1 CHIL @I567@
+0 @F170@ FAM
+1 HUSB @I568@
+1 WIFE @I95@
+1 MARR
+2 DATE 1 SEP 1976
+2 PLAC San Diego, California
+1 CHIL @I569@
+1 CHIL @I570@
+1 CHIL @I571@
+0 @F171@ FAM
+1 HUSB @I134@
+1 WIFE @I572@
+1 MARR
+2 DATE 3 JAN 2007
+2 PLAC Oslo, Norway
+1 CHIL @I573@
+0 @F172@ FAM
+1 HUSB @I574@
+1 WIFE @I33@
+1 MARR
+2 DATE 7 APR 1955
+2 PLAC Albuquerque, New Mexico
+1 CHIL @I575@
+1 CHIL @I576@
+0 @F173@ FAM
+1 HUSB @I45@
+1 WIFE @I577@
+1 MARR
+2 DATE 23 DEC 1952
+2 PLAC Rome, Italy
+1 CHIL @I578@
+1 CHIL @I579@
+0 @F174@ FAM
+1 HUSB @I36@
+1 WIFE @I580@
+1 MARR
+2 DATE 19 MAY 1957
+2 PLAC Dublin, Ireland
+1 CHIL @I581@
+1 CHIL @I582@
+1 CHIL @I583@
+0 @F175@ FAM
+1 HUSB @I584@
+1 WIFE @I194@
+1 MARR
+2 DATE 27 OCT 2005
+2 PLAC Portland, Oregon
+1 CHIL @I585@
+1 CHIL @I586@
+1 CHIL @I587@
+0 @F176@ FAM
+1 HUSB @I39@
+1 WIFE @I588@
+1 MARR
+2 DATE 21 OCT 1946
+2 PLAC San Diego, California
+1 CHIL @I589@
+1 CHIL @I590@
+1 CHIL @I591@
+0 @F177@ FAM
+1 HUSB @I64@
+1 WIFE @I592@
+1 MARR
+2 DATE 26 MAR 1959
+2 PLAC Lisbon, Portugal
+1 CHIL @I593@
+0 @F178@ FAM
+1 HUSB @I53@
+1 WIFE @I594@
+1 MARR
+2 DATE 10 SEP 1951
+2 PLAC Milwaukee, Wisconsin
+1 CHIL @I595@
+1 CHIL @I596@
+1 CHIL @I597@
+0 @F179@ FAM
+1 HUSB @I598@
+1 WIFE @I199@
+1 MARR
+2 DATE 12 MAR 2006
+2 PLAC Sydney, Australia
+1 CHIL @I599@
+0 TRLR

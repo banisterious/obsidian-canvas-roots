@@ -351,37 +351,49 @@ export class CanvasGenerator {
 	}
 
 	/**
-	 * Gets color for person node based on inferred gender
+	 * Gets color for person node based on sex/gender from frontmatter
+	 * Uses Obsidian's 6 canvas colors:
+	 * 1 = Red, 2 = Orange, 3 = Yellow, 4 = Green, 5 = Blue, 6 = Purple
 	 */
 	private getPersonColor(person: PersonNode): string {
-		// Simple heuristic: check for gendered terms in name/relationships
-		// In future, could read from frontmatter gender field
-		const name = person.name.toLowerCase();
+		// Use sex field from frontmatter if available
+		if (person.sex) {
+			const sex = person.sex.toUpperCase();
+			if (sex === 'M' || sex === 'MALE') {
+				return '4'; // Green for males
+			}
+			if (sex === 'F' || sex === 'FEMALE') {
+				return '6'; // Purple for females
+			}
+		}
 
-		// Default colors (using Obsidian canvas colors)
+		// Fallback: try to infer from name prefixes (legacy support)
+		const name = person.name.toLowerCase();
 		if (name.includes('mr.') || name.includes('sr.') || name.includes('jr.')) {
-			return '4'; // Blue
+			return '4'; // Green
 		}
 		if (name.includes('mrs.') || name.includes('ms.') || name.includes('miss')) {
-			return '5'; // Purple
+			return '6'; // Purple
 		}
 
-		// Default: neutral
-		return '2'; // Gray
+		// Default: neutral gray for unknown gender
+		return '2'; // Orange (neutral)
 	}
 
 	/**
 	 * Gets color for edge based on relationship type
+	 * Uses Obsidian's 6 canvas colors:
+	 * 1 = Red, 2 = Orange, 3 = Yellow, 4 = Green, 5 = Blue, 6 = Purple
 	 */
 	private getEdgeColor(type: 'parent' | 'spouse' | 'child'): string {
 		switch (type) {
 			case 'parent':
 			case 'child':
-				return '1'; // Red for parent-child
+				return '1'; // Red for parent-child relationships
 			case 'spouse':
-				return '6'; // Pink for spouse
+				return '5'; // Blue for spouse relationships
 			default:
-				return '2'; // Gray default
+				return '3'; // Yellow default
 		}
 	}
 

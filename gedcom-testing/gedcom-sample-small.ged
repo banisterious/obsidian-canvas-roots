@@ -1,0 +1,346 @@
+0 HEAD
+1 SOUR Canvas Roots Test
+2 VERS 1.0
+2 NAME Canvas Roots Small Test Family
+1 DEST ANY
+1 DATE 20 NOV 2025
+1 SUBM @SUBM1@
+1 FILE gedcom-sample-small.ged
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+0 @SUBM1@ SUBM
+1 NAME Canvas Roots User
+0 @I1@ INDI
+1 NAME James /Anderson/
+2 GIVN James
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 15 JAN 1960
+2 PLAC Seattle, Washington, USA
+1 FAMS @F1@
+1 FAMC @F10@
+0 @I2@ INDI
+1 NAME Linda /Martinez/
+2 GIVN Linda
+2 SURN Martinez
+1 SEX F
+1 BIRT
+2 DATE 22 MAR 1962
+2 PLAC Los Angeles, California, USA
+1 FAMS @F1@
+1 FAMC @F11@
+0 @I3@ INDI
+1 NAME David /Anderson/
+2 GIVN David
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 8 JUL 1985
+2 PLAC Portland, Oregon, USA
+1 FAMC @F1@
+1 FAMS @F2@
+0 @I4@ INDI
+1 NAME Sarah /Anderson/
+2 GIVN Sarah
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 14 NOV 1987
+2 PLAC Portland, Oregon, USA
+1 FAMC @F1@
+1 FAMS @F3@
+0 @I5@ INDI
+1 NAME Michael /Anderson/
+2 GIVN Michael
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 3 APR 1990
+2 PLAC Portland, Oregon, USA
+1 FAMC @F1@
+1 FAMS @F4@
+0 @I6@ INDI
+1 NAME Emily /Chen/
+2 GIVN Emily
+2 SURN Chen
+1 SEX F
+1 BIRT
+2 DATE 19 SEP 1986
+2 PLAC San Francisco, California, USA
+1 FAMS @F2@
+1 FAMC @F12@
+0 @I7@ INDI
+1 NAME Christopher /Anderson/
+2 GIVN Christopher
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 12 FEB 2010
+2 PLAC Seattle, Washington, USA
+1 FAMC @F2@
+0 @I8@ INDI
+1 NAME Sophia /Anderson/
+2 GIVN Sophia
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 28 JUN 2012
+2 PLAC Seattle, Washington, USA
+1 FAMC @F2@
+0 @I9@ INDI
+1 NAME Ryan /Thompson/
+2 GIVN Ryan
+2 SURN Thompson
+1 SEX M
+1 BIRT
+2 DATE 5 DEC 1988
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F3@
+1 FAMC @F13@
+0 @I10@ INDI
+1 NAME Olivia /Thompson/
+2 GIVN Olivia
+2 SURN Thompson
+1 SEX F
+1 BIRT
+2 DATE 18 MAY 2013
+2 PLAC Boston, Massachusetts, USA
+1 FAMC @F3@
+0 @I11@ INDI
+1 NAME Emma /Thompson/
+2 GIVN Emma
+2 SURN Thompson
+1 SEX F
+1 BIRT
+2 DATE 7 OCT 2015
+2 PLAC Boston, Massachusetts, USA
+1 FAMC @F3@
+0 @I12@ INDI
+1 NAME Jessica /Lee/
+2 GIVN Jessica
+2 SURN Lee
+1 SEX F
+1 BIRT
+2 DATE 25 AUG 1991
+2 PLAC Austin, Texas, USA
+1 FAMS @F4@
+1 FAMC @F14@
+0 @I13@ INDI
+1 NAME Noah /Anderson/
+2 GIVN Noah
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 9 MAR 2016
+2 PLAC Austin, Texas, USA
+1 FAMC @F4@
+0 @I14@ INDI
+1 NAME Robert /Anderson/
+2 GIVN Robert
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 10 MAY 1930
+2 PLAC Chicago, Illinois, USA
+1 DEAT
+2 DATE 15 JAN 2005
+2 PLAC Seattle, Washington, USA
+1 FAMS @F10@
+0 @I15@ INDI
+1 NAME Margaret /Wilson/
+2 GIVN Margaret
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 3 AUG 1932
+2 PLAC Minneapolis, Minnesota, USA
+1 DEAT
+2 DATE 22 JUL 2010
+2 PLAC Seattle, Washington, USA
+1 FAMS @F10@
+0 @I16@ INDI
+1 NAME Carlos /Martinez/
+2 GIVN Carlos
+2 SURN Martinez
+1 SEX M
+1 BIRT
+2 DATE 18 FEB 1935
+2 PLAC El Paso, Texas, USA
+1 DEAT
+2 DATE 8 NOV 2012
+2 PLAC Los Angeles, California, USA
+1 FAMS @F11@
+0 @I17@ INDI
+1 NAME Rosa /Garcia/
+2 GIVN Rosa
+2 SURN Garcia
+1 SEX F
+1 BIRT
+2 DATE 27 DEC 1938
+2 PLAC San Diego, California, USA
+1 FAMS @F11@
+0 @I18@ INDI
+1 NAME Wei /Chen/
+2 GIVN Wei
+2 SURN Chen
+1 SEX M
+1 BIRT
+2 DATE 14 JUN 1955
+2 PLAC Taipei, Taiwan
+1 FAMS @F12@
+0 @I19@ INDI
+1 NAME Mei /Liu/
+2 GIVN Mei
+2 SURN Liu
+1 SEX F
+1 BIRT
+2 DATE 9 SEP 1958
+2 PLAC Shanghai, China
+1 FAMS @F12@
+0 @I20@ INDI
+1 NAME William /Thompson/
+2 GIVN William
+2 SURN Thompson
+1 SEX M
+1 BIRT
+2 DATE 22 APR 1960
+2 PLAC New York, New York, USA
+1 FAMS @F13@
+0 @I21@ INDI
+1 NAME Patricia /O'Brien/
+2 GIVN Patricia
+2 SURN O'Brien
+1 SEX F
+1 BIRT
+2 DATE 11 OCT 1963
+2 PLAC Dublin, Ireland
+1 FAMS @F13@
+0 @I22@ INDI
+1 NAME Daniel /Lee/
+2 GIVN Daniel
+2 SURN Lee
+1 SEX M
+1 BIRT
+2 DATE 6 JAN 1965
+2 PLAC Seoul, South Korea
+1 FAMS @F14@
+0 @I23@ INDI
+1 NAME Amy /Park/
+2 GIVN Amy
+2 SURN Park
+1 SEX F
+1 BIRT
+2 DATE 30 JUL 1968
+2 PLAC Busan, South Korea
+1 FAMS @F14@
+0 @I24@ INDI
+1 NAME Jennifer /Anderson/
+2 GIVN Jennifer
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 12 DEC 1963
+2 PLAC Chicago, Illinois, USA
+1 FAMC @F10@
+0 @I25@ INDI
+1 NAME Thomas /Anderson/
+2 GIVN Thomas
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 7 MAR 1965
+2 PLAC Chicago, Illinois, USA
+1 FAMC @F10@
+0 @I26@ INDI
+1 NAME Maria /Martinez/
+2 GIVN Maria
+2 SURN Martinez
+1 SEX F
+1 BIRT
+2 DATE 4 MAY 1964
+2 PLAC El Paso, Texas, USA
+1 FAMC @F11@
+0 @I27@ INDI
+1 NAME Juan /Martinez/
+2 GIVN Juan
+2 SURN Martinez
+1 SEX M
+1 BIRT
+2 DATE 19 AUG 1966
+2 PLAC Los Angeles, California, USA
+1 FAMC @F11@
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 MARR
+2 DATE 12 JUN 1984
+2 PLAC Seattle, Washington, USA
+1 CHIL @I3@
+1 CHIL @I4@
+1 CHIL @I5@
+0 @F2@ FAM
+1 HUSB @I3@
+1 WIFE @I6@
+1 MARR
+2 DATE 5 SEP 2009
+2 PLAC San Francisco, California, USA
+1 CHIL @I7@
+1 CHIL @I8@
+0 @F3@ FAM
+1 HUSB @I9@
+1 WIFE @I4@
+1 MARR
+2 DATE 22 NOV 2012
+2 PLAC Boston, Massachusetts, USA
+1 CHIL @I10@
+1 CHIL @I11@
+0 @F4@ FAM
+1 HUSB @I5@
+1 WIFE @I12@
+1 MARR
+2 DATE 8 JUL 2015
+2 PLAC Austin, Texas, USA
+1 CHIL @I13@
+0 @F10@ FAM
+1 HUSB @I14@
+1 WIFE @I15@
+1 MARR
+2 DATE 3 APR 1955
+2 PLAC Chicago, Illinois, USA
+1 CHIL @I1@
+1 CHIL @I24@
+1 CHIL @I25@
+0 @F11@ FAM
+1 HUSB @I16@
+1 WIFE @I17@
+1 MARR
+2 DATE 15 FEB 1960
+2 PLAC El Paso, Texas, USA
+1 CHIL @I2@
+1 CHIL @I26@
+1 CHIL @I27@
+0 @F12@ FAM
+1 HUSB @I18@
+1 WIFE @I19@
+1 MARR
+2 DATE 20 MAY 1980
+2 PLAC San Francisco, California, USA
+1 CHIL @I6@
+0 @F13@ FAM
+1 HUSB @I20@
+1 WIFE @I21@
+1 MARR
+2 DATE 14 JUN 1985
+2 PLAC Boston, Massachusetts, USA
+1 CHIL @I9@
+0 @F14@ FAM
+1 HUSB @I22@
+1 WIFE @I23@
+1 MARR
+2 DATE 10 OCT 1990
+2 PLAC Austin, Texas, USA
+1 CHIL @I12@
+0 TRLR

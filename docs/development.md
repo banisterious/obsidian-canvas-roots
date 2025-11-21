@@ -508,8 +508,80 @@ Example:
 - **gedcom-sample-xlarge.ged:** 599 people, 7 generations (extreme stress test)
 
 **Documentation:**
-- `gedcom_testing/README.md` - Comprehensive testing guide with success criteria
+- `gedcom-testing/TESTING.md` - Comprehensive testing guide with success criteria
 - Includes methodology, metrics to track, and expected challenges
+- **Note:** All individuals in test files are entirely fictional
+
+### Canvas Color Enhancements (2025-11-20)
+
+**Enhanced:** Gender-based node coloring using all 6 available Canvas colors.
+
+**Implemented Features:**
+- **Gender Detection:** Reads `sex` or `gender` field from YAML frontmatter
+  - Male (M/MALE): Canvas color 4 (Green)
+  - Female (F/FEMALE): Canvas color 6 (Purple)
+  - Unknown/Neutral: Canvas color 2 (Orange)
+- **GEDCOM Compatibility:** Supports standard GEDCOM SEX tag values (M, F, U)
+- **Fallback Support:** Legacy name-based detection (Mr., Mrs., etc.) still works
+- **Enhanced Edge Colors:**
+  - Parent-child relationships: Canvas color 1 (Red)
+  - Spouse relationships: Canvas color 5 (Blue)
+  - Default edges: Canvas color 3 (Yellow)
+
+**Technical Details:**
+- Added `sex` field to `PersonNode` interface
+- Updated `extractPersonNode()` to extract sex/gender from frontmatter
+- Enhanced `getPersonColor()` to prioritize frontmatter over name heuristics
+- Updated `getEdgeColor()` to use more distinctive colors
+- All 6 Obsidian Canvas colors now utilized for visual clarity
+
+**Files Modified:**
+- `src/core/family-graph.ts` - Added sex field to PersonNode interface and extraction
+- `src/core/canvas-generator.ts` - Enhanced color assignment logic
+
+**Benefits:**
+- More accurate gender representation using GEDCOM-standard data
+- Better visual differentiation using full color palette
+- Maintains compatibility with existing vaults (graceful degradation)
+- Prepares foundation for future customizable color schemes
+
+### Privacy and Gender Identity Protection (2025-11-20)
+
+**Enhanced:** Data model to support inclusive gender identity and privacy protection.
+
+**Implemented Features:**
+- **Gender vs Sex Separation:**
+  - `sex`: GEDCOM-compatible biological sex field (M/F/U) for data interchange
+  - `gender`: Free-form gender identity field (e.g., "Woman", "Non-binary", "Transgender man")
+  - `pronouns`: Optional preferred pronouns (e.g., "she/her", "they/them", "he/him")
+- **Deadname Protection:**
+  - `name` field always represents current, chosen name
+  - `_previous_names` array for historical names (underscore = private/sensitive)
+  - Plugin will never display underscore-prefixed fields in UI or search
+  - Export warnings when private fields are included
+- **Privacy Field Convention:**
+  - Any field with underscore prefix (`_`) is private/sensitive
+  - Excluded from person picker, search results, canvas labels
+  - Requires explicit confirmation for exports
+  - Examples: `_previous_names`, `_medical_notes`, `_adoption_details`
+- **Inclusive Language:**
+  - All documentation and UI uses respectful, inclusive language
+  - Designed to serve all users regardless of gender identity or family structure
+
+**Files Modified:**
+- `docs/specification.md` - Added §2.1.2 Privacy and Identity Protection section
+- `docs/development.md` - This documentation
+
+**Rationale:**
+- Respects transgender and non-binary individuals' dignity
+- Separates GEDCOM biological data from personal identity
+- Protects sensitive historical information
+- Aligns with LGBTQIA+ ally values and inclusive design principles
+
+**Future Enhancements:**
+- User preference settings for color coding (by sex, gender, or disabled)
+- Privacy mode for exports (strip all underscore-prefixed fields)
+- Pronoun support in custom reports and documentation generation
 
 ## Dual Storage System
 

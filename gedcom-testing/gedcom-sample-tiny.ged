@@ -1,0 +1,159 @@
+0 HEAD
+1 SOUR Canvas Roots Test
+2 VERS 1.0
+2 NAME Canvas Roots Sample Family
+1 DEST ANY
+1 DATE 19 NOV 2025
+1 SUBM @SUBM1@
+1 FILE sample-family.ged
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+0 @SUBM1@ SUBM
+1 NAME Canvas Roots User
+0 @I1@ INDI
+1 NAME John /Smith/
+2 GIVN John
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 15 MAR 1950
+2 PLAC Boston, Massachusetts, USA
+1 DEAT
+2 DATE 22 JUL 2020
+2 PLAC Portland, Maine, USA
+1 FAMS @F1@
+1 FAMC @F3@
+0 @I2@ INDI
+1 NAME Mary /Johnson/
+2 GIVN Mary
+2 SURN Johnson
+1 SEX F
+1 BIRT
+2 DATE 8 JUN 1952
+2 PLAC Chicago, Illinois, USA
+1 FAMS @F1@
+1 FAMC @F4@
+0 @I3@ INDI
+1 NAME Robert /Smith/
+2 GIVN Robert
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 12 APR 1975
+2 PLAC Seattle, Washington, USA
+1 FAMC @F1@
+1 FAMS @F2@
+0 @I4@ INDI
+1 NAME Jennifer /Smith/
+2 GIVN Jennifer
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 3 SEP 1978
+2 PLAC Seattle, Washington, USA
+1 FAMC @F1@
+0 @I5@ INDI
+1 NAME Sarah /Williams/
+2 GIVN Sarah
+2 SURN Williams
+1 SEX F
+1 BIRT
+2 DATE 22 NOV 1977
+2 PLAC Austin, Texas, USA
+1 FAMS @F2@
+0 @I6@ INDI
+1 NAME Emily /Smith/
+2 GIVN Emily
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 5 JAN 2005
+2 PLAC Denver, Colorado, USA
+1 FAMC @F2@
+0 @I7@ INDI
+1 NAME Michael /Smith/
+2 GIVN Michael
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 18 AUG 2008
+2 PLAC Denver, Colorado, USA
+1 FAMC @F2@
+0 @I8@ INDI
+1 NAME Thomas /Smith/
+2 GIVN Thomas
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 5 FEB 1920
+2 PLAC New York, New York, USA
+1 DEAT
+2 DATE 14 NOV 1995
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F3@
+0 @I9@ INDI
+1 NAME Elizabeth /Brown/
+2 GIVN Elizabeth
+2 SURN Brown
+1 SEX F
+1 BIRT
+2 DATE 12 MAY 1925
+2 PLAC Philadelphia, Pennsylvania, USA
+1 DEAT
+2 DATE 8 MAR 2010
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F3@
+0 @I10@ INDI
+1 NAME James /Johnson/
+2 GIVN James
+2 SURN Johnson
+1 SEX M
+1 BIRT
+2 DATE 28 SEP 1922
+2 PLAC Detroit, Michigan, USA
+1 DEAT
+2 DATE 3 JAN 1998
+2 PLAC Chicago, Illinois, USA
+1 FAMS @F4@
+0 @I11@ INDI
+1 NAME Margaret /Davis/
+2 GIVN Margaret
+2 SURN Davis
+1 SEX F
+1 BIRT
+2 DATE 14 DEC 1928
+2 PLAC Milwaukee, Wisconsin, USA
+1 FAMS @F4@
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 MARR
+2 DATE 14 JUN 1974
+2 PLAC Las Vegas, Nevada, USA
+1 CHIL @I3@
+1 CHIL @I4@
+0 @F2@ FAM
+1 HUSB @I3@
+1 WIFE @I5@
+1 MARR
+2 DATE 25 AUG 2002
+2 PLAC Maui, Hawaii, USA
+1 CHIL @I6@
+1 CHIL @I7@
+0 @F3@ FAM
+1 HUSB @I8@
+1 WIFE @I9@
+1 MARR
+2 DATE 10 APR 1948
+2 PLAC Boston, Massachusetts, USA
+1 CHIL @I1@
+0 @F4@ FAM
+1 HUSB @I10@
+1 WIFE @I11@
+1 MARR
+2 DATE 5 MAY 1950
+2 PLAC Chicago, Illinois, USA
+1 CHIL @I2@
+0 TRLR

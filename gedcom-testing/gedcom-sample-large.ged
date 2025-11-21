@@ -1,0 +1,2038 @@
+0 HEAD
+1 SOUR Canvas Roots Test
+2 VERS 1.0
+2 NAME Canvas Roots Large Test Family
+1 DEST ANY
+1 DATE 20 NOV 2025
+1 SUBM @SUBM1@
+1 FILE gedcom-sample-large.ged
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+0 @SUBM1@ SUBM
+1 NAME Canvas Roots User
+0 @I1@ INDI
+1 NAME Heinrich /Mueller/
+2 GIVN Heinrich
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 12 MAR 1895
+2 PLAC Munich, Bavaria, Germany
+1 DEAT
+2 DATE 8 JUN 1972
+2 PLAC Hamburg, Germany
+1 FAMS @F1@
+0 @I2@ INDI
+1 NAME Greta /Schmidt/
+2 GIVN Greta
+2 SURN Schmidt
+1 SEX F
+1 BIRT
+2 DATE 23 AUG 1898
+2 PLAC Berlin, Germany
+1 DEAT
+2 DATE 15 NOV 1975
+2 PLAC Hamburg, Germany
+1 FAMS @F1@
+0 @I3@ INDI
+1 NAME Giovanni /Rossi/
+2 GIVN Giovanni
+2 SURN Rossi
+1 SEX M
+1 BIRT
+2 DATE 5 FEB 1892
+2 PLAC Rome, Italy
+1 DEAT
+2 DATE 22 APR 1968
+2 PLAC Naples, Italy
+1 FAMS @F2@
+0 @I4@ INDI
+1 NAME Maria /Bianchi/
+2 GIVN Maria
+2 SURN Bianchi
+1 SEX F
+1 BIRT
+2 DATE 18 SEP 1896
+2 PLAC Florence, Italy
+1 DEAT
+2 DATE 3 DEC 1970
+2 PLAC Naples, Italy
+1 FAMS @F2@
+0 @I5@ INDI
+1 NAME Hiroshi /Tanaka/
+2 GIVN Hiroshi
+2 SURN Tanaka
+1 SEX M
+1 BIRT
+2 DATE 30 JAN 1900
+2 PLAC Tokyo, Japan
+1 DEAT
+2 DATE 12 MAR 1978
+2 PLAC Osaka, Japan
+1 FAMS @F3@
+0 @I6@ INDI
+1 NAME Yuki /Yamamoto/
+2 GIVN Yuki
+2 SURN Yamamoto
+1 SEX F
+1 BIRT
+2 DATE 14 JUL 1903
+2 PLAC Kyoto, Japan
+1 DEAT
+2 DATE 28 SEP 1982
+2 PLAC Osaka, Japan
+1 FAMS @F3@
+0 @I7@ INDI
+1 NAME Patrick /O'Brien/
+2 GIVN Patrick
+2 SURN O'Brien
+1 SEX M
+1 BIRT
+2 DATE 7 MAR 1897
+2 PLAC Dublin, Ireland
+1 DEAT
+2 DATE 19 JAN 1971
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F4@
+0 @I8@ INDI
+1 NAME Bridget /Kelly/
+2 GIVN Bridget
+2 SURN Kelly
+1 SEX F
+1 BIRT
+2 DATE 22 NOV 1901
+2 PLAC Cork, Ireland
+1 DEAT
+2 DATE 5 AUG 1976
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F4@
+0 @I9@ INDI
+1 NAME Carlos /Rodriguez/
+2 GIVN Carlos
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 3 MAY 1894
+2 PLAC Mexico City, Mexico
+1 DEAT
+2 DATE 11 FEB 1969
+2 PLAC San Antonio, Texas, USA
+1 FAMS @F5@
+0 @I10@ INDI
+1 NAME Elena /Garcia/
+2 GIVN Elena
+2 SURN Garcia
+1 SEX F
+1 BIRT
+2 DATE 16 OCT 1899
+2 PLAC Guadalajara, Mexico
+1 DEAT
+2 DATE 27 MAY 1973
+2 PLAC San Antonio, Texas, USA
+1 FAMS @F5@
+0 @I11@ INDI
+1 NAME Lars /Andersson/
+2 GIVN Lars
+2 SURN Andersson
+1 SEX M
+1 BIRT
+2 DATE 9 DEC 1896
+2 PLAC Stockholm, Sweden
+1 DEAT
+2 DATE 4 JUL 1974
+2 PLAC Minneapolis, Minnesota, USA
+1 FAMS @F6@
+0 @I12@ INDI
+1 NAME Astrid /Lindgren/
+2 GIVN Astrid
+2 SURN Lindgren
+1 SEX F
+1 BIRT
+2 DATE 25 APR 1902
+2 PLAC Gothenburg, Sweden
+1 DEAT
+2 DATE 14 DEC 1979
+2 PLAC Minneapolis, Minnesota, USA
+1 FAMS @F6@
+0 @I13@ INDI
+1 NAME Friedrich /Mueller/
+2 GIVN Friedrich
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 18 JUN 1920
+2 PLAC Hamburg, Germany
+1 DEAT
+2 DATE 9 MAR 1998
+2 PLAC Frankfurt, Germany
+1 FAMS @F7@
+1 FAMS @F8@
+1 FAMC @F1@
+0 @I14@ INDI
+1 NAME Anna /Mueller/
+2 GIVN Anna
+2 SURN Mueller
+1 SEX F
+1 BIRT
+2 DATE 3 FEB 1922
+2 PLAC Hamburg, Germany
+1 DEAT
+2 DATE 22 AUG 2005
+2 PLAC Berlin, Germany
+1 FAMS @F9@
+1 FAMC @F1@
+0 @I15@ INDI
+1 NAME Klaus /Mueller/
+2 GIVN Klaus
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 11 NOV 1925
+2 PLAC Hamburg, Germany
+1 DEAT
+2 DATE 17 JAN 2001
+2 PLAC Munich, Bavaria, Germany
+1 FAMS @F10@
+1 FAMC @F1@
+0 @I16@ INDI
+1 NAME Sofia /Rossi/
+2 GIVN Sofia
+2 SURN Rossi
+1 SEX F
+1 BIRT
+2 DATE 28 SEP 1918
+2 PLAC Naples, Italy
+1 DEAT
+2 DATE 5 MAY 2000
+2 PLAC Milan, Italy
+1 FAMS @F11@
+1 FAMC @F2@
+0 @I17@ INDI
+1 NAME Marco /Rossi/
+2 GIVN Marco
+2 SURN Rossi
+1 SEX M
+1 BIRT
+2 DATE 14 APR 1921
+2 PLAC Naples, Italy
+1 DEAT
+2 DATE 30 OCT 1995
+2 PLAC Venice, Italy
+1 FAMS @F12@
+1 FAMC @F2@
+0 @I18@ INDI
+1 NAME Lucia /Rossi/
+2 GIVN Lucia
+2 SURN Rossi
+1 SEX F
+1 BIRT
+2 DATE 7 JUL 1924
+2 PLAC Naples, Italy
+1 DEAT
+2 DATE 19 DEC 2008
+2 PLAC Rome, Italy
+1 FAMS @F13@
+1 FAMC @F2@
+0 @I19@ INDI
+1 NAME Kenji /Tanaka/
+2 GIVN Kenji
+2 SURN Tanaka
+1 SEX M
+1 BIRT
+2 DATE 2 JAN 1928
+2 PLAC Osaka, Japan
+1 DEAT
+2 DATE 11 JUN 2010
+2 PLAC Tokyo, Japan
+1 FAMS @F14@
+1 FAMC @F3@
+0 @I20@ INDI
+1 NAME Sakura /Tanaka/
+2 GIVN Sakura
+2 SURN Tanaka
+1 SEX F
+1 BIRT
+2 DATE 19 MAR 1930
+2 PLAC Osaka, Japan
+1 FAMS @F15@
+1 FAMC @F3@
+0 @I21@ INDI
+1 NAME Sean /O'Brien/
+2 GIVN Sean
+2 SURN O'Brien
+1 SEX M
+1 BIRT
+2 DATE 8 AUG 1923
+2 PLAC Boston, Massachusetts, USA
+1 DEAT
+2 DATE 25 NOV 2003
+2 PLAC Portland, Maine, USA
+1 FAMS @F16@
+1 FAMC @F4@
+0 @I22@ INDI
+1 NAME Kathleen /O'Brien/
+2 GIVN Kathleen
+2 SURN O'Brien
+1 SEX F
+1 BIRT
+2 DATE 15 DEC 1926
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F17@
+1 FAMC @F4@
+0 @I23@ INDI
+1 NAME Miguel /Rodriguez/
+2 GIVN Miguel
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 27 FEB 1919
+2 PLAC San Antonio, Texas, USA
+1 DEAT
+2 DATE 8 APR 1997
+2 PLAC Houston, Texas, USA
+1 FAMS @F18@
+1 FAMC @F5@
+0 @I24@ INDI
+1 NAME Carmen /Rodriguez/
+2 GIVN Carmen
+2 SURN Rodriguez
+1 SEX F
+1 BIRT
+2 DATE 4 MAY 1922
+2 PLAC San Antonio, Texas, USA
+1 FAMS @F19@
+1 FAMC @F5@
+0 @I25@ INDI
+1 NAME Rosa /Rodriguez/
+2 GIVN Rosa
+2 SURN Rodriguez
+1 SEX F
+1 BIRT
+2 DATE 10 SEP 1925
+2 PLAC San Antonio, Texas, USA
+1 DEAT
+2 DATE 3 JAN 2007
+2 PLAC Austin, Texas, USA
+1 FAMS @F20@
+1 FAMC @F5@
+0 @I26@ INDI
+1 NAME Erik /Andersson/
+2 GIVN Erik
+2 SURN Andersson
+1 SEX M
+1 BIRT
+2 DATE 21 JUN 1927
+2 PLAC Minneapolis, Minnesota, USA
+1 FAMS @F21@
+1 FAMC @F6@
+0 @I27@ INDI
+1 NAME Ingrid /Andersson/
+2 GIVN Ingrid
+2 SURN Andersson
+1 SEX F
+1 BIRT
+2 DATE 13 OCT 1929
+2 PLAC Minneapolis, Minnesota, USA
+1 FAMS @F22@
+1 FAMC @F6@
+0 @I28@ INDI
+1 NAME Helga /Weber/
+2 GIVN Helga
+2 SURN Weber
+1 SEX F
+1 BIRT
+2 DATE 5 MAR 1923
+2 PLAC Cologne, Germany
+1 DEAT
+2 DATE 12 JUL 1985
+2 PLAC Frankfurt, Germany
+1 FAMS @F7@
+0 @I29@ INDI
+1 NAME Petra /Hoffman/
+2 GIVN Petra
+2 SURN Hoffman
+1 SEX F
+1 BIRT
+2 DATE 22 SEP 1930
+2 PLAC Stuttgart, Germany
+1 FAMS @F8@
+0 @I30@ INDI
+1 NAME Hans /Becker/
+2 GIVN Hans
+2 SURN Becker
+1 SEX M
+1 BIRT
+2 DATE 17 JAN 1920
+2 PLAC Vienna, Austria
+1 DEAT
+2 DATE 29 NOV 2002
+2 PLAC Berlin, Germany
+1 FAMS @F9@
+0 @I31@ INDI
+1 NAME Wolfgang /Schneider/
+2 GIVN Wolfgang
+2 SURN Schneider
+1 SEX M
+1 BIRT
+2 DATE 9 APR 1924
+2 PLAC Zurich, Switzerland
+1 DEAT
+2 DATE 16 MAR 2006
+2 PLAC Munich, Bavaria, Germany
+1 FAMS @F10@
+0 @I32@ INDI
+1 NAME Antonio /Conti/
+2 GIVN Antonio
+2 SURN Conti
+1 SEX M
+1 BIRT
+2 DATE 3 AUG 1916
+2 PLAC Genoa, Italy
+1 DEAT
+2 DATE 7 SEP 1994
+2 PLAC Milan, Italy
+1 FAMS @F11@
+0 @I33@ INDI
+1 NAME Isabella /Marino/
+2 GIVN Isabella
+2 SURN Marino
+1 SEX F
+1 BIRT
+2 DATE 28 DEC 1919
+2 PLAC Palermo, Sicily, Italy
+1 DEAT
+2 DATE 21 FEB 1999
+2 PLAC Venice, Italy
+1 FAMS @F12@
+0 @I34@ INDI
+1 NAME Vincenzo /Romano/
+2 GIVN Vincenzo
+2 SURN Romano
+1 SEX M
+1 BIRT
+2 DATE 11 MAY 1922
+2 PLAC Turin, Italy
+1 DEAT
+2 DATE 4 OCT 2004
+2 PLAC Rome, Italy
+1 FAMS @F13@
+0 @I35@ INDI
+1 NAME Yuki /Sato/
+2 GIVN Yuki
+2 SURN Sato
+1 SEX F
+1 BIRT
+2 DATE 6 FEB 1926
+2 PLAC Hiroshima, Japan
+1 FAMS @F14@
+0 @I36@ INDI
+1 NAME Takeshi /Suzuki/
+2 GIVN Takeshi
+2 SURN Suzuki
+1 SEX M
+1 BIRT
+2 DATE 24 JUL 1928
+2 PLAC Nagoya, Japan
+1 FAMS @F15@
+0 @I37@ INDI
+1 NAME Margaret /Walsh/
+2 GIVN Margaret
+2 SURN Walsh
+1 SEX F
+1 BIRT
+2 DATE 13 NOV 1925
+2 PLAC New York, New York, USA
+1 DEAT
+2 DATE 18 APR 2009
+2 PLAC Portland, Maine, USA
+1 FAMS @F16@
+0 @I38@ INDI
+1 NAME Thomas /Murphy/
+2 GIVN Thomas
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 8 JAN 1924
+2 PLAC Chicago, Illinois, USA
+1 DEAT
+2 DATE 9 JUL 2001
+2 PLAC Seattle, Washington, USA
+1 FAMS @F17@
+0 @I39@ INDI
+1 NAME Isabel /Fernandez/
+2 GIVN Isabel
+2 SURN Fernandez
+1 SEX F
+1 BIRT
+2 DATE 2 JUN 1918
+2 PLAC Barcelona, Spain
+1 DEAT
+2 DATE 15 DEC 1996
+2 PLAC Houston, Texas, USA
+1 FAMS @F18@
+0 @I40@ INDI
+1 NAME Diego /Morales/
+2 GIVN Diego
+2 SURN Morales
+1 SEX M
+1 BIRT
+2 DATE 19 SEP 1920
+2 PLAC Buenos Aires, Argentina
+1 FAMS @F19@
+0 @I41@ INDI
+1 NAME Juan /Santos/
+2 GIVN Juan
+2 SURN Santos
+1 SEX M
+1 BIRT
+2 DATE 26 MAR 1923
+2 PLAC Lima, Peru
+1 DEAT
+2 DATE 1 AUG 2005
+2 PLAC Austin, Texas, USA
+1 FAMS @F20@
+0 @I42@ INDI
+1 NAME Kristina /Johansson/
+2 GIVN Kristina
+2 SURN Johansson
+1 SEX F
+1 BIRT
+2 DATE 14 OCT 1929
+2 PLAC Oslo, Norway
+1 FAMS @F21@
+0 @I43@ INDI
+1 NAME Robert /Thompson/
+2 GIVN Robert
+2 SURN Thompson
+1 SEX M
+1 BIRT
+2 DATE 7 DEC 1927
+2 PLAC Detroit, Michigan, USA
+1 FAMS @F22@
+0 @I44@ INDI
+1 NAME Werner /Mueller/
+2 GIVN Werner
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 15 MAY 1948
+2 PLAC Frankfurt, Germany
+1 FAMS @F23@
+1 FAMC @F7@
+0 @I45@ INDI
+1 NAME Margarete /Mueller/
+2 GIVN Margarete
+2 SURN Mueller
+1 SEX F
+1 BIRT
+2 DATE 8 SEP 1950
+2 PLAC Frankfurt, Germany
+1 FAMS @F24@
+1 FAMC @F7@
+0 @I46@ INDI
+1 NAME Jurgen /Mueller/
+2 GIVN Jurgen
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 3 JAN 1952
+2 PLAC Frankfurt, Germany
+1 FAMS @F25@
+1 FAMS @F26@
+1 FAMS @F27@
+1 FAMC @F8@
+0 @I47@ INDI
+1 NAME Dieter /Mueller/
+2 GIVN Dieter
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 22 JUL 1955
+2 PLAC Frankfurt, Germany
+1 FAMS @F28@
+1 FAMC @F8@
+0 @I48@ INDI
+1 NAME Ulrike /Becker/
+2 GIVN Ulrike
+2 SURN Becker
+1 SEX F
+1 BIRT
+2 DATE 11 NOV 1946
+2 PLAC Berlin, Germany
+1 FAMS @F29@
+1 FAMC @F9@
+0 @I49@ INDI
+1 NAME Helmut /Becker/
+2 GIVN Helmut
+2 SURN Becker
+1 SEX M
+1 BIRT
+2 DATE 29 APR 1949
+2 PLAC Berlin, Germany
+1 FAMS @F30@
+1 FAMC @F9@
+0 @I50@ INDI
+1 NAME Katrin /Schneider/
+2 GIVN Katrin
+2 SURN Schneider
+1 SEX F
+1 BIRT
+2 DATE 17 FEB 1951
+2 PLAC Munich, Bavaria, Germany
+1 FAMS @F31@
+1 FAMC @F10@
+0 @I51@ INDI
+1 NAME Stefan /Schneider/
+2 GIVN Stefan
+2 SURN Schneider
+1 SEX M
+1 BIRT
+2 DATE 5 OCT 1953
+2 PLAC Munich, Bavaria, Germany
+1 FAMS @F32@
+1 FAMC @F10@
+0 @I52@ INDI
+1 NAME Francesca /Conti/
+2 GIVN Francesca
+2 SURN Conti
+1 SEX F
+1 BIRT
+2 DATE 12 MAR 1943
+2 PLAC Milan, Italy
+1 DEAT
+2 DATE 6 JUN 2015
+2 PLAC Florence, Italy
+1 FAMS @F33@
+1 FAMC @F11@
+0 @I53@ INDI
+1 NAME Gabriella /Conti/
+2 GIVN Gabriella
+2 SURN Conti
+1 SEX F
+1 BIRT
+2 DATE 27 AUG 1946
+2 PLAC Milan, Italy
+1 FAMS @F34@
+1 FAMC @F11@
+0 @I54@ INDI
+1 NAME Paolo /Marino/
+2 GIVN Paolo
+2 SURN Marino
+1 SEX M
+1 BIRT
+2 DATE 9 JAN 1945
+2 PLAC Venice, Italy
+1 FAMS @F35@
+1 FAMC @F12@
+0 @I55@ INDI
+1 NAME Alessandro /Marino/
+2 GIVN Alessandro
+2 SURN Marino
+1 SEX M
+1 BIRT
+2 DATE 18 JUN 1948
+2 PLAC Venice, Italy
+1 FAMS @F36@
+1 FAMC @F12@
+0 @I56@ INDI
+1 NAME Chiara /Romano/
+2 GIVN Chiara
+2 SURN Romano
+1 SEX F
+1 BIRT
+2 DATE 4 DEC 1950
+2 PLAC Rome, Italy
+1 FAMS @F37@
+1 FAMC @F13@
+0 @I57@ INDI
+1 NAME Lorenzo /Romano/
+2 GIVN Lorenzo
+2 SURN Romano
+1 SEX M
+1 BIRT
+2 DATE 23 FEB 1954
+2 PLAC Rome, Italy
+1 FAMS @F38@
+1 FAMC @F13@
+0 @I58@ INDI
+1 NAME Haruto /Tanaka/
+2 GIVN Haruto
+2 SURN Tanaka
+1 SEX M
+1 BIRT
+2 DATE 8 MAY 1956
+2 PLAC Tokyo, Japan
+1 FAMS @F39@
+1 FAMC @F14@
+0 @I59@ INDI
+1 NAME Aiko /Tanaka/
+2 GIVN Aiko
+2 SURN Tanaka
+1 SEX F
+1 BIRT
+2 DATE 14 SEP 1959
+2 PLAC Tokyo, Japan
+1 FAMS @F40@
+1 FAMC @F14@
+0 @I60@ INDI
+1 NAME Daichi /Suzuki/
+2 GIVN Daichi
+2 SURN Suzuki
+1 SEX M
+1 BIRT
+2 DATE 2 APR 1958
+2 PLAC Sapporo, Japan
+1 FAMS @F41@
+1 FAMC @F15@
+0 @I61@ INDI
+1 NAME Michael /O'Brien/
+2 GIVN Michael
+2 SURN O'Brien
+1 SEX M
+1 BIRT
+2 DATE 19 JUL 1952
+2 PLAC Portland, Maine, USA
+1 FAMS @F42@
+1 FAMC @F16@
+0 @I62@ INDI
+1 NAME Colleen /O'Brien/
+2 GIVN Colleen
+2 SURN O'Brien
+1 SEX F
+1 BIRT
+2 DATE 6 NOV 1955
+2 PLAC Portland, Maine, USA
+1 FAMS @F43@
+1 FAMC @F16@
+0 @I63@ INDI
+1 NAME Patrick /Murphy/
+2 GIVN Patrick
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 21 MAR 1950
+2 PLAC Seattle, Washington, USA
+1 FAMS @F44@
+1 FAMC @F17@
+0 @I64@ INDI
+1 NAME Daniel /Rodriguez/
+2 GIVN Daniel
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 13 AUG 1947
+2 PLAC Houston, Texas, USA
+1 FAMS @F45@
+1 FAMC @F18@
+0 @I65@ INDI
+1 NAME Sofia /Rodriguez/
+2 GIVN Sofia
+2 SURN Rodriguez
+1 SEX F
+1 BIRT
+2 DATE 28 DEC 1949
+2 PLAC Houston, Texas, USA
+1 FAMS @F46@
+1 FAMC @F18@
+0 @I66@ INDI
+1 NAME Ana /Morales/
+2 GIVN Ana
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 7 FEB 1951
+2 PLAC Phoenix, Arizona, USA
+1 FAMS @F47@
+1 FAMC @F19@
+0 @I67@ INDI
+1 NAME Luis /Morales/
+2 GIVN Luis
+2 SURN Morales
+1 SEX M
+1 BIRT
+2 DATE 16 OCT 1954
+2 PLAC Phoenix, Arizona, USA
+1 FAMS @F48@
+1 FAMC @F19@
+0 @I68@ INDI
+1 NAME Maria /Santos/
+2 GIVN Maria
+2 SURN Santos
+1 SEX F
+1 BIRT
+2 DATE 30 MAY 1953
+2 PLAC Austin, Texas, USA
+1 FAMS @F49@
+1 FAMC @F20@
+0 @I69@ INDI
+1 NAME Sven /Andersson/
+2 GIVN Sven
+2 SURN Andersson
+1 SEX M
+1 BIRT
+2 DATE 11 JAN 1957
+2 PLAC Chicago, Illinois, USA
+1 FAMS @F50@
+1 FAMC @F21@
+0 @I70@ INDI
+1 NAME Linda /Thompson/
+2 GIVN Linda
+2 SURN Thompson
+1 SEX F
+1 BIRT
+2 DATE 24 APR 1960
+2 PLAC Milwaukee, Wisconsin, USA
+1 FAMS @F51@
+1 FAMC @F22@
+0 @I71@ INDI
+1 NAME Monika /Fischer/
+2 GIVN Monika
+2 SURN Fischer
+1 SEX F
+1 BIRT
+2 DATE 9 JUN 1950
+2 PLAC Dusseldorf, Germany
+1 FAMS @F23@
+0 @I72@ INDI
+1 NAME Klaus /Wagner/
+2 GIVN Klaus
+2 SURN Wagner
+1 SEX M
+1 BIRT
+2 DATE 18 MAR 1952
+2 PLAC Leipzig, Germany
+1 FAMS @F24@
+0 @I73@ INDI
+1 NAME Sabine /Koch/
+2 GIVN Sabine
+2 SURN Koch
+1 SEX F
+1 BIRT
+2 DATE 5 SEP 1954
+2 PLAC Dresden, Germany
+1 FAMS @F25@
+0 @I74@ INDI
+1 NAME Renate /Bauer/
+2 GIVN Renate
+2 SURN Bauer
+1 SEX F
+1 BIRT
+2 DATE 12 JAN 1960
+2 PLAC Nuremberg, Germany
+1 FAMS @F26@
+0 @I75@ INDI
+1 NAME Brigitte /Schulz/
+2 GIVN Brigitte
+2 SURN Schulz
+1 SEX F
+1 BIRT
+2 DATE 27 JUL 1965
+2 PLAC Bremen, Germany
+1 FAMS @F27@
+0 @I76@ INDI
+1 NAME Heike /Richter/
+2 GIVN Heike
+2 SURN Richter
+1 SEX F
+1 BIRT
+2 DATE 3 NOV 1957
+2 PLAC Hanover, Germany
+1 FAMS @F28@
+0 @I77@ INDI
+1 NAME Peter /Krause/
+2 GIVN Peter
+2 SURN Krause
+1 SEX M
+1 BIRT
+2 DATE 16 FEB 1948
+2 PLAC Bonn, Germany
+1 FAMS @F29@
+0 @I78@ INDI
+1 NAME Andrea /Klein/
+2 GIVN Andrea
+2 SURN Klein
+1 SEX F
+1 BIRT
+2 DATE 22 AUG 1951
+2 PLAC Essen, Germany
+1 FAMS @F30@
+0 @I79@ INDI
+1 NAME Thomas /Wolf/
+2 GIVN Thomas
+2 SURN Wolf
+1 SEX M
+1 BIRT
+2 DATE 8 DEC 1953
+2 PLAC Dortmund, Germany
+1 FAMS @F31@
+0 @I80@ INDI
+1 NAME Claudia /Neumann/
+2 GIVN Claudia
+2 SURN Neumann
+1 SEX F
+1 BIRT
+2 DATE 14 MAY 1955
+2 PLAC Stuttgart, Germany
+1 FAMS @F32@
+0 @I81@ INDI
+1 NAME Luca /Ferrari/
+2 GIVN Luca
+2 SURN Ferrari
+1 SEX M
+1 BIRT
+2 DATE 7 SEP 1945
+2 PLAC Bologna, Italy
+1 FAMS @F33@
+0 @I82@ INDI
+1 NAME Matteo /Ricci/
+2 GIVN Matteo
+2 SURN Ricci
+1 SEX M
+1 BIRT
+2 DATE 19 JAN 1948
+2 PLAC Verona, Italy
+1 FAMS @F34@
+0 @I83@ INDI
+1 NAME Elena /Costa/
+2 GIVN Elena
+2 SURN Costa
+1 SEX F
+1 BIRT
+2 DATE 25 JUL 1947
+2 PLAC Padua, Italy
+1 FAMS @F35@
+0 @I84@ INDI
+1 NAME Giulia /Gallo/
+2 GIVN Giulia
+2 SURN Gallo
+1 SEX F
+1 BIRT
+2 DATE 10 NOV 1950
+2 PLAC Trieste, Italy
+1 FAMS @F36@
+0 @I85@ INDI
+1 NAME Marco /Bruno/
+2 GIVN Marco
+2 SURN Bruno
+1 SEX M
+1 BIRT
+2 DATE 2 MAR 1952
+2 PLAC Bari, Italy
+1 FAMS @F37@
+0 @I86@ INDI
+1 NAME Silvia /Colombo/
+2 GIVN Silvia
+2 SURN Colombo
+1 SEX F
+1 BIRT
+2 DATE 17 JUN 1956
+2 PLAC Genoa, Italy
+1 FAMS @F38@
+0 @I87@ INDI
+1 NAME Emi /Nakamura/
+2 GIVN Emi
+2 SURN Nakamura
+1 SEX F
+1 BIRT
+2 DATE 29 APR 1958
+2 PLAC Fukuoka, Japan
+1 FAMS @F39@
+0 @I88@ INDI
+1 NAME Ryota /Kobayashi/
+2 GIVN Ryota
+2 SURN Kobayashi
+1 SEX M
+1 BIRT
+2 DATE 13 DEC 1961
+2 PLAC Yokohama, Japan
+1 FAMS @F40@
+0 @I89@ INDI
+1 NAME Hana /Watanabe/
+2 GIVN Hana
+2 SURN Watanabe
+1 SEX F
+1 BIRT
+2 DATE 6 AUG 1960
+2 PLAC Sendai, Japan
+1 FAMS @F41@
+0 @I90@ INDI
+1 NAME Jennifer /Collins/
+2 GIVN Jennifer
+2 SURN Collins
+1 SEX F
+1 BIRT
+2 DATE 21 FEB 1954
+2 PLAC Providence, Rhode Island, USA
+1 FAMS @F42@
+0 @I91@ INDI
+1 NAME Brian /Anderson/
+2 GIVN Brian
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 11 OCT 1957
+2 PLAC Burlington, Vermont, USA
+1 FAMS @F43@
+0 @I92@ INDI
+1 NAME Rebecca /Sullivan/
+2 GIVN Rebecca
+2 SURN Sullivan
+1 SEX F
+1 BIRT
+2 DATE 26 MAR 1952
+2 PLAC Tacoma, Washington, USA
+1 FAMS @F44@
+0 @I93@ INDI
+1 NAME Angela /Chen/
+2 GIVN Angela
+2 SURN Chen
+1 SEX F
+1 BIRT
+2 DATE 15 JUL 1949
+2 PLAC San Francisco, California, USA
+1 FAMS @F45@
+0 @I94@ INDI
+1 NAME Carlos /Ortiz/
+2 GIVN Carlos
+2 SURN Ortiz
+1 SEX M
+1 BIRT
+2 DATE 8 DEC 1951
+2 PLAC Los Angeles, California, USA
+1 FAMS @F46@
+0 @I95@ INDI
+1 NAME Roberto /Vargas/
+2 GIVN Roberto
+2 SURN Vargas
+1 SEX M
+1 BIRT
+2 DATE 3 MAY 1953
+2 PLAC Albuquerque, New Mexico, USA
+1 FAMS @F47@
+0 @I96@ INDI
+1 NAME Patricia /Delgado/
+2 GIVN Patricia
+2 SURN Delgado
+1 SEX F
+1 BIRT
+2 DATE 19 SEP 1956
+2 PLAC El Paso, Texas, USA
+1 FAMS @F48@
+0 @I97@ INDI
+1 NAME Eduardo /Silva/
+2 GIVN Eduardo
+2 SURN Silva
+1 SEX M
+1 BIRT
+2 DATE 28 JAN 1955
+2 PLAC Miami, Florida, USA
+1 FAMS @F49@
+0 @I98@ INDI
+1 NAME Emma /Nielsen/
+2 GIVN Emma
+2 SURN Nielsen
+1 SEX F
+1 BIRT
+2 DATE 12 NOV 1959
+2 PLAC Madison, Wisconsin, USA
+1 FAMS @F50@
+0 @I99@ INDI
+1 NAME David /Wilson/
+2 GIVN David
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 7 APR 1962
+2 PLAC Green Bay, Wisconsin, USA
+1 FAMS @F51@
+0 @I100@ INDI
+1 NAME Maximilian /Mueller/
+2 GIVN Maximilian
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 14 MAR 1978
+2 PLAC Hamburg, Germany
+1 FAMC @F23@
+0 @I101@ INDI
+1 NAME Sophia /Mueller/
+2 GIVN Sophia
+2 SURN Mueller
+1 SEX F
+1 BIRT
+2 DATE 22 JUN 1980
+2 PLAC Hamburg, Germany
+1 FAMC @F23@
+0 @I102@ INDI
+1 NAME Felix /Wagner/
+2 GIVN Felix
+2 SURN Wagner
+1 SEX M
+1 BIRT
+2 DATE 8 SEP 1982
+2 PLAC Leipzig, Germany
+1 FAMC @F24@
+0 @I103@ INDI
+1 NAME Hannah /Wagner/
+2 GIVN Hannah
+2 SURN Wagner
+1 SEX F
+1 BIRT
+2 DATE 17 DEC 1985
+2 PLAC Leipzig, Germany
+1 FAMC @F24@
+0 @I104@ INDI
+1 NAME Jonas /Mueller/
+2 GIVN Jonas
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 3 FEB 1981
+2 PLAC Frankfurt, Germany
+1 FAMC @F25@
+0 @I105@ INDI
+1 NAME Lena /Mueller/
+2 GIVN Lena
+2 SURN Mueller
+1 SEX F
+1 BIRT
+2 DATE 11 APR 1983
+2 PLAC Frankfurt, Germany
+1 FAMC @F25@
+0 @I106@ INDI
+1 NAME Noah /Mueller/
+2 GIVN Noah
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 25 JUL 1987
+2 PLAC Nuremberg, Germany
+1 FAMC @F26@
+0 @I107@ INDI
+1 NAME Mia /Mueller/
+2 GIVN Mia
+2 SURN Mueller
+1 SEX F
+1 BIRT
+2 DATE 9 NOV 1989
+2 PLAC Nuremberg, Germany
+1 FAMC @F26@
+0 @I108@ INDI
+1 NAME Leon /Mueller/
+2 GIVN Leon
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 16 MAY 1992
+2 PLAC Bremen, Germany
+1 FAMC @F27@
+0 @I109@ INDI
+1 NAME Emma /Mueller/
+2 GIVN Emma
+2 SURN Mueller
+1 SEX F
+1 BIRT
+2 DATE 2 SEP 1995
+2 PLAC Bremen, Germany
+1 FAMC @F27@
+0 @I110@ INDI
+1 NAME Paul /Mueller/
+2 GIVN Paul
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 19 JAN 1998
+2 PLAC Bremen, Germany
+1 FAMC @F27@
+0 @I111@ INDI
+1 NAME Lukas /Mueller/
+2 GIVN Lukas
+2 SURN Mueller
+1 SEX M
+1 BIRT
+2 DATE 7 MAR 1985
+2 PLAC Hanover, Germany
+1 FAMC @F28@
+0 @I112@ INDI
+1 NAME Anna /Mueller/
+2 GIVN Anna
+2 SURN Mueller
+1 SEX F
+1 BIRT
+2 DATE 14 AUG 1988
+2 PLAC Hanover, Germany
+1 FAMC @F28@
+0 @I113@ INDI
+1 NAME Tobias /Krause/
+2 GIVN Tobias
+2 SURN Krause
+1 SEX M
+1 BIRT
+2 DATE 21 OCT 1975
+2 PLAC Berlin, Germany
+1 FAMC @F29@
+0 @I114@ INDI
+1 NAME Sarah /Krause/
+2 GIVN Sarah
+2 SURN Krause
+1 SEX F
+1 BIRT
+2 DATE 5 DEC 1977
+2 PLAC Berlin, Germany
+1 FAMC @F29@
+0 @I115@ INDI
+1 NAME Michael /Becker/
+2 GIVN Michael
+2 SURN Becker
+1 SEX M
+1 BIRT
+2 DATE 12 FEB 1979
+2 PLAC Cologne, Germany
+1 FAMC @F30@
+0 @I116@ INDI
+1 NAME Laura /Becker/
+2 GIVN Laura
+2 SURN Becker
+1 SEX F
+1 BIRT
+2 DATE 29 MAY 1982
+2 PLAC Cologne, Germany
+1 FAMC @F30@
+0 @I117@ INDI
+1 NAME Simon /Wolf/
+2 GIVN Simon
+2 SURN Wolf
+1 SEX M
+1 BIRT
+2 DATE 18 JUL 1980
+2 PLAC Munich, Bavaria, Germany
+1 FAMC @F31@
+0 @I118@ INDI
+1 NAME Julia /Wolf/
+2 GIVN Julia
+2 SURN Wolf
+1 SEX F
+1 BIRT
+2 DATE 6 SEP 1983
+2 PLAC Munich, Bavaria, Germany
+1 FAMC @F31@
+0 @I119@ INDI
+1 NAME David /Schneider/
+2 GIVN David
+2 SURN Schneider
+1 SEX M
+1 BIRT
+2 DATE 23 NOV 1981
+2 PLAC Stuttgart, Germany
+1 FAMC @F32@
+0 @I120@ INDI
+1 NAME Marie /Schneider/
+2 GIVN Marie
+2 SURN Schneider
+1 SEX F
+1 BIRT
+2 DATE 11 APR 1985
+2 PLAC Stuttgart, Germany
+1 FAMC @F32@
+0 @I121@ INDI
+1 NAME Alessandro /Ferrari/
+2 GIVN Alessandro
+2 SURN Ferrari
+1 SEX M
+1 BIRT
+2 DATE 15 MAR 1972
+2 PLAC Florence, Italy
+1 FAMC @F33@
+0 @I122@ INDI
+1 NAME Valentina /Ferrari/
+2 GIVN Valentina
+2 SURN Ferrari
+1 SEX F
+1 BIRT
+2 DATE 8 JUL 1975
+2 PLAC Florence, Italy
+1 FAMC @F33@
+0 @I123@ INDI
+1 NAME Leonardo /Ricci/
+2 GIVN Leonardo
+2 SURN Ricci
+1 SEX M
+1 BIRT
+2 DATE 2 DEC 1976
+2 PLAC Milan, Italy
+1 FAMC @F34@
+0 @I124@ INDI
+1 NAME Beatrice /Ricci/
+2 GIVN Beatrice
+2 SURN Ricci
+1 SEX F
+1 BIRT
+2 DATE 19 MAY 1979
+2 PLAC Milan, Italy
+1 FAMC @F34@
+0 @I125@ INDI
+1 NAME Filippo /Costa/
+2 GIVN Filippo
+2 SURN Costa
+1 SEX M
+1 BIRT
+2 DATE 27 SEP 1974
+2 PLAC Venice, Italy
+1 FAMC @F35@
+0 @I126@ INDI
+1 NAME Elisa /Costa/
+2 GIVN Elisa
+2 SURN Costa
+1 SEX F
+1 BIRT
+2 DATE 14 JAN 1977
+2 PLAC Venice, Italy
+1 FAMC @F35@
+0 @I127@ INDI
+1 NAME Giovanni /Marino/
+2 GIVN Giovanni
+2 SURN Marino
+1 SEX M
+1 BIRT
+2 DATE 6 APR 1978
+2 PLAC Rome, Italy
+1 FAMC @F36@
+0 @I128@ INDI
+1 NAME Serena /Marino/
+2 GIVN Serena
+2 SURN Marino
+1 SEX F
+1 BIRT
+2 DATE 22 AUG 1981
+2 PLAC Rome, Italy
+1 FAMC @F36@
+0 @I129@ INDI
+1 NAME Federico /Bruno/
+2 GIVN Federico
+2 SURN Bruno
+1 SEX M
+1 BIRT
+2 DATE 10 NOV 1980
+2 PLAC Naples, Italy
+1 FAMC @F37@
+0 @I130@ INDI
+1 NAME Camilla /Bruno/
+2 GIVN Camilla
+2 SURN Bruno
+1 SEX F
+1 BIRT
+2 DATE 3 FEB 1983
+2 PLAC Naples, Italy
+1 FAMC @F37@
+0 @I131@ INDI
+1 NAME Riccardo /Romano/
+2 GIVN Riccardo
+2 SURN Romano
+1 SEX M
+1 BIRT
+2 DATE 17 JUN 1984
+2 PLAC Turin, Italy
+1 FAMC @F38@
+0 @I132@ INDI
+1 NAME Martina /Romano/
+2 GIVN Martina
+2 SURN Romano
+1 SEX F
+1 BIRT
+2 DATE 29 SEP 1987
+2 PLAC Turin, Italy
+1 FAMC @F38@
+0 @I133@ INDI
+1 NAME Yuto /Tanaka/
+2 GIVN Yuto
+2 SURN Tanaka
+1 SEX M
+1 BIRT
+2 DATE 5 MAY 1986
+2 PLAC Tokyo, Japan
+1 FAMC @F39@
+0 @I134@ INDI
+1 NAME Hinata /Tanaka/
+2 GIVN Hinata
+2 SURN Tanaka
+1 SEX F
+1 BIRT
+2 DATE 18 OCT 1989
+2 PLAC Tokyo, Japan
+1 FAMC @F39@
+0 @I135@ INDI
+1 NAME Sota /Kobayashi/
+2 GIVN Sota
+2 SURN Kobayashi
+1 SEX M
+1 BIRT
+2 DATE 12 MAR 1990
+2 PLAC Osaka, Japan
+1 FAMC @F40@
+0 @I136@ INDI
+1 NAME Mei /Kobayashi/
+2 GIVN Mei
+2 SURN Kobayashi
+1 SEX F
+1 BIRT
+2 DATE 7 JUL 1993
+2 PLAC Osaka, Japan
+1 FAMC @F40@
+0 @I137@ INDI
+1 NAME Ren /Suzuki/
+2 GIVN Ren
+2 SURN Suzuki
+1 SEX M
+1 BIRT
+2 DATE 24 NOV 1988
+2 PLAC Sapporo, Japan
+1 FAMC @F41@
+0 @I138@ INDI
+1 NAME Haru /Suzuki/
+2 GIVN Haru
+2 SURN Suzuki
+1 SEX F
+1 BIRT
+2 DATE 16 APR 1992
+2 PLAC Sapporo, Japan
+1 FAMC @F41@
+0 @I139@ INDI
+1 NAME Connor /O'Brien/
+2 GIVN Connor
+2 SURN O'Brien
+1 SEX M
+1 BIRT
+2 DATE 9 AUG 1983
+2 PLAC Portland, Maine, USA
+1 FAMC @F42@
+0 @I140@ INDI
+1 NAME Erin /O'Brien/
+2 GIVN Erin
+2 SURN O'Brien
+1 SEX F
+1 BIRT
+2 DATE 3 DEC 1986
+2 PLAC Portland, Maine, USA
+1 FAMC @F42@
+0 @I141@ INDI
+1 NAME Liam /Anderson/
+2 GIVN Liam
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 21 FEB 1985
+2 PLAC Burlington, Vermont, USA
+1 FAMC @F43@
+0 @I142@ INDI
+1 NAME Maeve /Anderson/
+2 GIVN Maeve
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 14 JUN 1988
+2 PLAC Burlington, Vermont, USA
+1 FAMC @F43@
+0 @I143@ INDI
+1 NAME Ryan /Murphy/
+2 GIVN Ryan
+2 SURN Murphy
+1 SEX M
+1 BIRT
+2 DATE 7 SEP 1979
+2 PLAC Seattle, Washington, USA
+1 FAMC @F44@
+0 @I144@ INDI
+1 NAME Kayla /Murphy/
+2 GIVN Kayla
+2 SURN Murphy
+1 SEX F
+1 BIRT
+2 DATE 26 JAN 1982
+2 PLAC Seattle, Washington, USA
+1 FAMC @F44@
+0 @I145@ INDI
+1 NAME Marcus /Rodriguez/
+2 GIVN Marcus
+2 SURN Rodriguez
+1 SEX M
+1 BIRT
+2 DATE 11 NOV 1976
+2 PLAC San Diego, California, USA
+1 FAMC @F45@
+0 @I146@ INDI
+1 NAME Jasmine /Rodriguez/
+2 GIVN Jasmine
+2 SURN Rodriguez
+1 SEX F
+1 BIRT
+2 DATE 5 MAR 1980
+2 PLAC San Diego, California, USA
+1 FAMC @F45@
+0 @I147@ INDI
+1 NAME Diego /Ortiz/
+2 GIVN Diego
+2 SURN Ortiz
+1 SEX M
+1 BIRT
+2 DATE 19 JUL 1981
+2 PLAC Los Angeles, California, USA
+1 FAMC @F46@
+0 @I148@ INDI
+1 NAME Isabella /Ortiz/
+2 GIVN Isabella
+2 SURN Ortiz
+1 SEX F
+1 BIRT
+2 DATE 28 SEP 1984
+2 PLAC Los Angeles, California, USA
+1 FAMC @F46@
+0 @I149@ INDI
+1 NAME Gabriel /Vargas/
+2 GIVN Gabriel
+2 SURN Vargas
+1 SEX M
+1 BIRT
+2 DATE 2 DEC 1982
+2 PLAC Phoenix, Arizona, USA
+1 FAMC @F47@
+0 @I150@ INDI
+1 NAME Lucia /Vargas/
+2 GIVN Lucia
+2 SURN Vargas
+1 SEX F
+1 BIRT
+2 DATE 17 APR 1985
+2 PLAC Phoenix, Arizona, USA
+1 FAMC @F47@
+0 @I151@ INDI
+1 NAME Adrian /Morales/
+2 GIVN Adrian
+2 SURN Morales
+1 SEX M
+1 BIRT
+2 DATE 23 AUG 1987
+2 PLAC Dallas, Texas, USA
+1 FAMC @F48@
+0 @I152@ INDI
+1 NAME Valentina /Morales/
+2 GIVN Valentina
+2 SURN Morales
+1 SEX F
+1 BIRT
+2 DATE 10 JAN 1990
+2 PLAC Dallas, Texas, USA
+1 FAMC @F48@
+0 @I153@ INDI
+1 NAME Sebastian /Silva/
+2 GIVN Sebastian
+2 SURN Silva
+1 SEX M
+1 BIRT
+2 DATE 6 MAY 1984
+2 PLAC Miami, Florida, USA
+1 FAMC @F49@
+0 @I154@ INDI
+1 NAME Daniela /Silva/
+2 GIVN Daniela
+2 SURN Silva
+1 SEX F
+1 BIRT
+2 DATE 15 NOV 1987
+2 PLAC Miami, Florida, USA
+1 FAMC @F49@
+0 @I155@ INDI
+1 NAME Oscar /Andersson/
+2 GIVN Oscar
+2 SURN Andersson
+1 SEX M
+1 BIRT
+2 DATE 29 MAR 1988
+2 PLAC Chicago, Illinois, USA
+1 FAMC @F50@
+0 @I156@ INDI
+1 NAME Astrid /Andersson/
+2 GIVN Astrid
+2 SURN Andersson
+1 SEX F
+1 BIRT
+2 DATE 12 SEP 1991
+2 PLAC Chicago, Illinois, USA
+1 FAMC @F50@
+0 @I157@ INDI
+1 NAME Ethan /Wilson/
+2 GIVN Ethan
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 4 JUN 1995
+2 PLAC Madison, Wisconsin, USA
+1 FAMC @F51@
+0 @I158@ INDI
+1 NAME Olivia /Wilson/
+2 GIVN Olivia
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 18 DEC 1998
+2 PLAC Madison, Wisconsin, USA
+1 FAMC @F51@
+0 @I159@ INDI
+1 NAME Benjamin /Wilson/
+2 GIVN Benjamin
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 22 FEB 2001
+2 PLAC Madison, Wisconsin, USA
+1 FAMC @F51@
+0 @I160@ INDI
+1 NAME Emma /Wilson/
+2 GIVN Emma
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 9 JUL 2003
+2 PLAC Madison, Wisconsin, USA
+1 FAMC @F51@
+0 @I161@ INDI
+1 NAME Noah /Wilson/
+2 GIVN Noah
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 15 OCT 2006
+2 PLAC Madison, Wisconsin, USA
+1 FAMC @F51@
+0 @I162@ INDI
+1 NAME Sophia /Wilson/
+2 GIVN Sophia
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 3 MAR 2009
+2 PLAC Madison, Wisconsin, USA
+1 FAMC @F51@
+0 @I163@ INDI
+1 NAME Mason /Wilson/
+2 GIVN Mason
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 28 AUG 2012
+2 PLAC Madison, Wisconsin, USA
+1 FAMC @F51@
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 MARR
+2 DATE 5 JUN 1918
+2 PLAC Hamburg, Germany
+1 CHIL @I13@
+1 CHIL @I14@
+1 CHIL @I15@
+0 @F2@ FAM
+1 HUSB @I3@
+1 WIFE @I4@
+1 MARR
+2 DATE 12 SEP 1917
+2 PLAC Rome, Italy
+1 CHIL @I16@
+1 CHIL @I17@
+1 CHIL @I18@
+0 @F3@ FAM
+1 HUSB @I5@
+1 WIFE @I6@
+1 MARR
+2 DATE 8 APR 1927
+2 PLAC Tokyo, Japan
+1 CHIL @I19@
+1 CHIL @I20@
+0 @F4@ FAM
+1 HUSB @I7@
+1 WIFE @I8@
+1 MARR
+2 DATE 14 FEB 1922
+2 PLAC Boston, Massachusetts, USA
+1 CHIL @I21@
+1 CHIL @I22@
+0 @F5@ FAM
+1 HUSB @I9@
+1 WIFE @I10@
+1 MARR
+2 DATE 3 OCT 1918
+2 PLAC San Antonio, Texas, USA
+1 CHIL @I23@
+1 CHIL @I24@
+1 CHIL @I25@
+0 @F6@ FAM
+1 HUSB @I11@
+1 WIFE @I12@
+1 MARR
+2 DATE 22 JUL 1926
+2 PLAC Minneapolis, Minnesota, USA
+1 CHIL @I26@
+1 CHIL @I27@
+0 @F7@ FAM
+1 HUSB @I13@
+1 WIFE @I28@
+1 MARR
+2 DATE 18 MAY 1946
+2 PLAC Frankfurt, Germany
+1 CHIL @I44@
+1 CHIL @I45@
+0 @F8@ FAM
+1 HUSB @I13@
+1 WIFE @I29@
+1 MARR
+2 DATE 3 SEP 1951
+2 PLAC Frankfurt, Germany
+1 CHIL @I46@
+1 CHIL @I47@
+0 @F9@ FAM
+1 HUSB @I30@
+1 WIFE @I14@
+1 MARR
+2 DATE 11 JUL 1945
+2 PLAC Berlin, Germany
+1 CHIL @I48@
+1 CHIL @I49@
+0 @F10@ FAM
+1 HUSB @I31@
+1 WIFE @I15@
+1 MARR
+2 DATE 25 MAR 1950
+2 PLAC Munich, Bavaria, Germany
+1 CHIL @I50@
+1 CHIL @I51@
+0 @F11@ FAM
+1 HUSB @I32@
+1 WIFE @I16@
+1 MARR
+2 DATE 9 JUN 1942
+2 PLAC Milan, Italy
+1 CHIL @I52@
+1 CHIL @I53@
+0 @F12@ FAM
+1 HUSB @I17@
+1 WIFE @I33@
+1 MARR
+2 DATE 16 AUG 1944
+2 PLAC Venice, Italy
+1 CHIL @I54@
+1 CHIL @I55@
+0 @F13@ FAM
+1 HUSB @I34@
+1 WIFE @I18@
+1 MARR
+2 DATE 7 SEP 1949
+2 PLAC Rome, Italy
+1 CHIL @I56@
+1 CHIL @I57@
+0 @F14@ FAM
+1 HUSB @I19@
+1 WIFE @I35@
+1 MARR
+2 DATE 14 NOV 1954
+2 PLAC Tokyo, Japan
+1 CHIL @I58@
+1 CHIL @I59@
+0 @F15@ FAM
+1 HUSB @I36@
+1 WIFE @I20@
+1 MARR
+2 DATE 28 APR 1957
+2 PLAC Kyoto, Japan
+1 CHIL @I60@
+0 @F16@ FAM
+1 HUSB @I21@
+1 WIFE @I37@
+1 MARR
+2 DATE 5 JUN 1951
+2 PLAC Portland, Maine, USA
+1 CHIL @I61@
+1 CHIL @I62@
+0 @F17@ FAM
+1 HUSB @I38@
+1 WIFE @I22@
+1 MARR
+2 DATE 19 SEP 1949
+2 PLAC Seattle, Washington, USA
+1 CHIL @I63@
+0 @F18@ FAM
+1 HUSB @I23@
+1 WIFE @I39@
+1 MARR
+2 DATE 12 FEB 1946
+2 PLAC Houston, Texas, USA
+1 CHIL @I64@
+1 CHIL @I65@
+0 @F19@ FAM
+1 HUSB @I40@
+1 WIFE @I24@
+1 MARR
+2 DATE 27 JUL 1950
+2 PLAC Phoenix, Arizona, USA
+1 CHIL @I66@
+1 CHIL @I67@
+0 @F20@ FAM
+1 HUSB @I41@
+1 WIFE @I25@
+1 MARR
+2 DATE 8 MAY 1952
+2 PLAC Austin, Texas, USA
+1 CHIL @I68@
+0 @F21@ FAM
+1 HUSB @I26@
+1 WIFE @I42@
+1 MARR
+2 DATE 16 OCT 1956
+2 PLAC Chicago, Illinois, USA
+1 CHIL @I69@
+0 @F22@ FAM
+1 HUSB @I43@
+1 WIFE @I27@
+1 MARR
+2 DATE 3 DEC 1959
+2 PLAC Milwaukee, Wisconsin, USA
+1 CHIL @I70@
+0 @F23@ FAM
+1 HUSB @I44@
+1 WIFE @I71@
+1 MARR
+2 DATE 22 AUG 1977
+2 PLAC Hamburg, Germany
+1 CHIL @I100@
+1 CHIL @I101@
+0 @F24@ FAM
+1 HUSB @I72@
+1 WIFE @I45@
+1 MARR
+2 DATE 14 MAY 1981
+2 PLAC Leipzig, Germany
+1 CHIL @I102@
+1 CHIL @I103@
+0 @F25@ FAM
+1 HUSB @I46@
+1 WIFE @I73@
+1 MARR
+2 DATE 9 JUL 1980
+2 PLAC Frankfurt, Germany
+1 CHIL @I104@
+1 CHIL @I105@
+0 @F26@ FAM
+1 HUSB @I46@
+1 WIFE @I74@
+1 MARR
+2 DATE 18 MAR 1986
+2 PLAC Nuremberg, Germany
+1 CHIL @I106@
+1 CHIL @I107@
+0 @F27@ FAM
+1 HUSB @I46@
+1 WIFE @I75@
+1 MARR
+2 DATE 5 SEP 1991
+2 PLAC Bremen, Germany
+1 CHIL @I108@
+1 CHIL @I109@
+1 CHIL @I110@
+0 @F28@ FAM
+1 HUSB @I47@
+1 WIFE @I76@
+1 MARR
+2 DATE 11 NOV 1984
+2 PLAC Hanover, Germany
+1 CHIL @I111@
+1 CHIL @I112@
+0 @F29@ FAM
+1 HUSB @I77@
+1 WIFE @I48@
+1 MARR
+2 DATE 28 JUN 1974
+2 PLAC Berlin, Germany
+1 CHIL @I113@
+1 CHIL @I114@
+0 @F30@ FAM
+1 HUSB @I49@
+1 WIFE @I78@
+1 MARR
+2 DATE 15 APR 1978
+2 PLAC Cologne, Germany
+1 CHIL @I115@
+1 CHIL @I116@
+0 @F31@ FAM
+1 HUSB @I79@
+1 WIFE @I50@
+1 MARR
+2 DATE 6 AUG 1979
+2 PLAC Munich, Bavaria, Germany
+1 CHIL @I117@
+1 CHIL @I118@
+0 @F32@ FAM
+1 HUSB @I51@
+1 WIFE @I80@
+1 MARR
+2 DATE 19 SEP 1980
+2 PLAC Stuttgart, Germany
+1 CHIL @I119@
+1 CHIL @I120@
+0 @F33@ FAM
+1 HUSB @I81@
+1 WIFE @I52@
+1 MARR
+2 DATE 3 JUN 1971
+2 PLAC Florence, Italy
+1 CHIL @I121@
+1 CHIL @I122@
+0 @F34@ FAM
+1 HUSB @I82@
+1 WIFE @I53@
+1 MARR
+2 DATE 12 SEP 1975
+2 PLAC Milan, Italy
+1 CHIL @I123@
+1 CHIL @I124@
+0 @F35@ FAM
+1 HUSB @I54@
+1 WIFE @I83@
+1 MARR
+2 DATE 24 MAY 1973
+2 PLAC Venice, Italy
+1 CHIL @I125@
+1 CHIL @I126@
+0 @F36@ FAM
+1 HUSB @I55@
+1 WIFE @I84@
+1 MARR
+2 DATE 7 OCT 1977
+2 PLAC Rome, Italy
+1 CHIL @I127@
+1 CHIL @I128@
+0 @F37@ FAM
+1 HUSB @I85@
+1 WIFE @I56@
+1 MARR
+2 DATE 16 DEC 1979
+2 PLAC Naples, Italy
+1 CHIL @I129@
+1 CHIL @I130@
+0 @F38@ FAM
+1 HUSB @I57@
+1 WIFE @I86@
+1 MARR
+2 DATE 29 JUL 1983
+2 PLAC Turin, Italy
+1 CHIL @I131@
+1 CHIL @I132@
+0 @F39@ FAM
+1 HUSB @I58@
+1 WIFE @I87@
+1 MARR
+2 DATE 8 SEP 1985
+2 PLAC Tokyo, Japan
+1 CHIL @I133@
+1 CHIL @I134@
+0 @F40@ FAM
+1 HUSB @I88@
+1 WIFE @I59@
+1 MARR
+2 DATE 14 NOV 1989
+2 PLAC Osaka, Japan
+1 CHIL @I135@
+1 CHIL @I136@
+0 @F41@ FAM
+1 HUSB @I60@
+1 WIFE @I89@
+1 MARR
+2 DATE 21 JUN 1987
+2 PLAC Sapporo, Japan
+1 CHIL @I137@
+1 CHIL @I138@
+0 @F42@ FAM
+1 HUSB @I61@
+1 WIFE @I90@
+1 MARR
+2 DATE 3 AUG 1982
+2 PLAC Portland, Maine, USA
+1 CHIL @I139@
+1 CHIL @I140@
+0 @F43@ FAM
+1 HUSB @I91@
+1 WIFE @I62@
+1 MARR
+2 DATE 17 MAY 1984
+2 PLAC Burlington, Vermont, USA
+1 CHIL @I141@
+1 CHIL @I142@
+0 @F44@ FAM
+1 HUSB @I63@
+1 WIFE @I92@
+1 MARR
+2 DATE 9 SEP 1978
+2 PLAC Seattle, Washington, USA
+1 CHIL @I143@
+1 CHIL @I144@
+0 @F45@ FAM
+1 HUSB @I64@
+1 WIFE @I93@
+1 MARR
+2 DATE 25 JUN 1975
+2 PLAC San Diego, California, USA
+1 CHIL @I145@
+1 CHIL @I146@
+0 @F46@ FAM
+1 HUSB @I94@
+1 WIFE @I65@
+1 MARR
+2 DATE 11 OCT 1980
+2 PLAC Los Angeles, California, USA
+1 CHIL @I147@
+1 CHIL @I148@
+0 @F47@ FAM
+1 HUSB @I95@
+1 WIFE @I66@
+1 MARR
+2 DATE 8 DEC 1981
+2 PLAC Phoenix, Arizona, USA
+1 CHIL @I149@
+1 CHIL @I150@
+0 @F48@ FAM
+1 HUSB @I67@
+1 WIFE @I96@
+1 MARR
+2 DATE 15 MAY 1986
+2 PLAC Dallas, Texas, USA
+1 CHIL @I151@
+1 CHIL @I152@
+0 @F49@ FAM
+1 HUSB @I97@
+1 WIFE @I68@
+1 MARR
+2 DATE 22 SEP 1983
+2 PLAC Miami, Florida, USA
+1 CHIL @I153@
+1 CHIL @I154@
+0 @F50@ FAM
+1 HUSB @I69@
+1 WIFE @I98@
+1 MARR
+2 DATE 6 JUL 1987
+2 PLAC Chicago, Illinois, USA
+1 CHIL @I155@
+1 CHIL @I156@
+0 @F51@ FAM
+1 HUSB @I99@
+1 WIFE @I70@
+1 MARR
+2 DATE 14 AUG 1994
+2 PLAC Madison, Wisconsin, USA
+1 CHIL @I157@
+1 CHIL @I158@
+1 CHIL @I159@
+1 CHIL @I160@
+1 CHIL @I161@
+1 CHIL @I162@
+1 CHIL @I163@
+0 TRLR
