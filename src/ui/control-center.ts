@@ -1258,7 +1258,7 @@ export class ControlCenterModal extends Modal {
 
 		const allTreesBtn = allTreesSection.createEl('button', {
 			cls: 'crc-btn crc-btn--secondary crc-mt-2',
-			text: 'Generate All Trees'
+			text: 'Generate all trees'
 		});
 		const allTreesIcon = createLucideIcon('git-branch', 16);
 		allTreesBtn.prepend(allTreesIcon);
@@ -1386,7 +1386,7 @@ export class ControlCenterModal extends Modal {
 						`${disconnectedCount} people are not connected to ${familyTree.root.name} ` +
 						`through family relationships.\n\n` +
 						`This usually means your vault has multiple separate family trees. ` +
-						`Use the "Generate All Trees" command to create canvases for all family groups at once.`;
+						`Use the "Generate all trees" command to create canvases for all family groups at once.`;
 
 					new Notice(msg, 0); // 0 = persist until user dismisses
 				}
@@ -1571,7 +1571,7 @@ export class ControlCenterModal extends Modal {
 				const helpText = results.createEl('p', {
 					cls: 'crc-text-muted crc-mt-2'
 				});
-				helpText.innerHTML = `This file contains multiple separate family trees. After import, use the <strong>"Generate All Trees"</strong> command to create canvases for all family groups.`;
+				helpText.innerHTML = `This file contains multiple separate family trees. After import, use the <strong>"Generate all trees"</strong> command to create canvases for all family groups.`;
 			}
 
 			// Action buttons

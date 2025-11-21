@@ -61,7 +61,7 @@ export default class CanvasRootsPlugin extends Plugin {
 		// Add command: Generate All Trees (for multi-family vaults)
 		this.addCommand({
 			id: 'generate-all-trees',
-			name: 'Generate All Trees',
+			name: 'Generate all trees',
 			callback: () => {
 				this.generateAllTrees();
 			}
