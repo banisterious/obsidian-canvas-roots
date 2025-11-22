@@ -305,6 +305,6 @@ Canvas Roots is in active development with core functionality in place:
 - Obsidian Bases template with one-click creation (6 pre-configured views for family data management)
 
 **In Progress:**
-- Collection management and tree detection
+- Collection management (folder-based auto-discovery)
 
 The plugin reads the vault's file structure and applies specialized family tree layout algorithms to safely write positional data into Canvas JSON files. The `cr_id` field ensures stable identity mapping between notes and canvas nodes.

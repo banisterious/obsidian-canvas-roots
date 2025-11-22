@@ -31,31 +31,30 @@ This document outlines features that are planned but not yet implemented in the 
 
 ---
 
-### Multi-Family Detection UI
+### Multi-Family Detection UI ✅ IMPLEMENTED
 
-**Status:** Backend working, UI partially implemented
+**Status:** Fully implemented (v0.1.1)
 
-**Current State:**
+**Features Working:**
 - Multi-family detection works correctly (backend detects disconnected family components)
-- Disconnected family notice IS displayed when generating full family trees
+- Visual family group sidebar in Tree Generation tab's person picker
+- Shows "Family 1", "Family 2", etc. with person counts for each group
+- "All families" tab to view everyone at once
+- Clicking a family tab filters person list to show only that family's members
+- Disconnected family notice displayed after generating full family trees
 - Notice shows: "Full Family Tree shows X of Y people. Z people are not connected..."
 
-**What's Missing:**
-- No visual family group browser/sidebar in Control Center
-- No clickable family group navigation in person picker
-- No pre-generation summary showing all detected family groups
+**How to Use:**
+1. Open Control Center → Tree Generation tab
+2. If multiple families detected, sidebar appears automatically
+3. Click a family group tab to browse only that family
+4. Select root person from filtered list
+5. Generate tree for that specific family
 
-**Impact:**
-- Users see the notice **after** generating a tree, not before
-- No easy way to browse which families exist before generation
-- Manual trial-and-error to find root person for each family
+**Alternative:**
+- Use "Generate all trees" command to automatically create canvases for all family groups at once
 
-**Workarounds:**
-1. Use "Generate all trees" command to automatically create canvases for all family groups
-2. Check the disconnected family notice after generating to see how many groups exist
-3. Trial different root persons until you find representatives from each family
-
-**Testing Results:** Malformed GEDCOM test showed this works correctly - detected 8 of 13 disconnected people and displayed appropriate notice.
+**Testing Results:** Malformed GEDCOM test showed this works correctly - detected 8 of 13 disconnected people, displayed family groups in sidebar, and showed appropriate notice after generation.
 
 ---
 
