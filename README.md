@@ -11,7 +11,7 @@ The core approach is hybrid: the plugin uses specialized family tree layout algo
 
 ## ✨ Key Features
 
-### Available in Alpha (v0.1.0)
+### Available in Alpha (v0.1.1)
 
 - **GEDCOM Import:** Import family trees from standard GEDCOM (.ged) files with robust error handling. Handles malformed data gracefully with sensible defaults, preserving special characters and relationships. Supports files from popular genealogy software (Gramps, Ancestry, FamilySearch, etc.).
 
@@ -302,6 +302,7 @@ Canvas Roots is in active development with core functionality in place:
 - Integrated generation workflow with single-card interface
 - Full tree generation with spacing optimization and multi-family support
 - Comprehensive canvas styling options: node coloring (gender/generation/monochrome), arrow styles, edge colors
+- Obsidian Bases template with one-click creation (6 pre-configured views for family data management)
 
 **In Progress:**
 - Collection management and tree detection
