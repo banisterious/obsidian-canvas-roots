@@ -1495,8 +1495,9 @@ class ControlCenterModal extends Modal {
 |--------|------|------|---------|
 | `status` | Status | `activity` | Vault statistics, data quality report |
 | `quick-actions` | Quick Actions | `zap` | Primary commands (Generate Tree, Re-Layout, etc.) |
+| `quick-settings` | Canvas Settings | `settings` | Canvas layout and arrow styling settings |
 | `data-entry` | Data Entry | `user-plus` | Create new person notes with relationship linking |
-| `tree-generation` | Tree Generation | `git-branch` | Layout settings, filters, visual styling |
+| `tree-generation` | Tree Generation | `git-branch` | Tree type, filters, and generation options |
 | `gedcom` | GEDCOM | `file-text` | Import/export operations, merge tools |
 | `person-detail` | Person Details | `user` | Person Detail Panel settings and quick access |
 | `advanced` | Advanced | `settings` | Reference numbering, obfuscation, advanced features |
@@ -1614,6 +1615,64 @@ const TAB_CONFIGS = [
    - Master volume/visibility toggles
    - Quick preset selection
    - Active overlay indicator
+
+##### Canvas Settings Tab
+
+**Purpose:** Adjust canvas layout dimensions and arrow styling for visual customization
+
+**Content:**
+
+1. **Layout Settings Card:**
+   ```
+   ┌─────────────────────────────────────┐
+   │ Layout Settings                     │
+   ├─────────────────────────────────────┤
+   │ Horizontal Spacing: [400] px        │
+   │ Vertical Spacing:   [250] px        │
+   │                                     │
+   │ Node Width:  [200] px               │
+   │ Node Height: [100] px               │
+   │                                     │
+   │ ℹ Changes apply to new trees        │
+   │ Use "Re-layout" for existing canvases│
+   └─────────────────────────────────────┘
+   ```
+
+2. **Arrow Styling Card:** *(Implemented 2025-11-22)*
+   ```
+   ┌─────────────────────────────────────┐
+   │ Arrow Styling                       │
+   ├─────────────────────────────────────┤
+   │ Parent → Child Arrows:              │
+   │ [Directed (→)            ▼]         │
+   │                                     │
+   │ Spouse Arrows:                      │
+   │ [Undirected (—)          ▼]         │
+   │                                     │
+   │ Options:                            │
+   │ • Directed (→) - Single arrow       │
+   │ • Bidirectional (↔) - Both ends     │
+   │ • Undirected (—) - No arrows        │
+   └─────────────────────────────────────┘
+   ```
+
+**Arrow Style Modes:**
+
+| Style | Visual | Use Case |
+|-------|--------|----------|
+| **Directed** | `→` | Default for parent-child relationships. Arrow points from parent to child, showing generational flow. |
+| **Bidirectional** | `↔` | Arrows on both ends. Useful for emphasizing reciprocal relationships or spouse connections. |
+| **Undirected** | `—` | Just lines, no arrows. Default for spouse relationships. Creates cleaner look when direction isn't meaningful. |
+
+**JSON Canvas Compliance:**
+
+Arrow styling uses the JSON Canvas 1.0 spec's `fromEnd` and `toEnd` properties:
+- `fromEnd`: `'none'` or `'arrow'` (start of edge)
+- `toEnd`: `'none'` or `'arrow'` (end of edge)
+
+**Defaults:**
+- Parent-child: Directed (`fromEnd: 'none'`, `toEnd: 'arrow'`)
+- Spouse: Undirected (`fromEnd: 'none'`, `toEnd: 'none'`)
 
 ##### Data Entry Tab
 

@@ -9,6 +9,7 @@ import { FamilyTree, PersonNode } from './family-graph';
 import { LayoutEngine, LayoutOptions } from './layout-engine';
 import { FamilyChartLayoutEngine } from './family-chart-layout';
 import { getLogger } from './logging';
+import type { ArrowStyle } from '../settings';
 
 const logger = getLogger('CanvasGenerator');
 
@@ -28,17 +29,16 @@ interface CanvasNode {
 }
 
 /**
- * Obsidian Canvas edge
+ * Obsidian Canvas edge (JSON Canvas 1.0 spec compliant)
  */
 interface CanvasEdge {
 	id: string;
-	styleAttributes?: Record<string, unknown>;
-	fromFloating?: boolean;
-	toFloating?: boolean;
 	fromNode: string;
-	fromSide: 'top' | 'right' | 'bottom' | 'left';
+	fromSide?: 'top' | 'right' | 'bottom' | 'left';
+	fromEnd?: 'none' | 'arrow';
 	toNode: string;
-	toSide: 'top' | 'right' | 'bottom' | 'left';
+	toSide?: 'top' | 'right' | 'bottom' | 'left';
+	toEnd?: 'none' | 'arrow';
 	color?: string;
 	label?: string;
 }
@@ -110,6 +110,12 @@ export interface CanvasGenerationOptions extends LayoutOptions {
 
 	/** Optional metadata to embed in canvas (for smart re-layout) */
 	canvasRootsMetadata?: CanvasRootsMetadata;
+
+	/** Arrow style for parent-child relationships */
+	parentChildArrowStyle?: ArrowStyle;
+
+	/** Arrow style for spouse relationships */
+	spouseArrowStyle?: ArrowStyle;
 }
 
 /**
@@ -141,7 +147,9 @@ export class CanvasGenerator {
 			treeType: options.treeType ?? 'descendant' as const,
 			colorByGender: options.colorByGender ?? true,
 			showLabels: options.showLabels ?? true,
-			useFamilyChartLayout: options.useFamilyChartLayout ?? true
+			useFamilyChartLayout: options.useFamilyChartLayout ?? true,
+			parentChildArrowStyle: options.parentChildArrowStyle ?? 'directed' as const,
+			spouseArrowStyle: options.spouseArrowStyle ?? 'undirected' as const
 		};
 		const metadata = options.canvasRootsMetadata;
 
@@ -320,6 +328,8 @@ export class CanvasGenerator {
 			colorByGender: boolean;
 			showLabels: boolean;
 			useFamilyChartLayout: boolean;
+			parentChildArrowStyle: ArrowStyle;
+			spouseArrowStyle: ArrowStyle;
 		}
 	): CanvasEdge[] {
 		const edges: CanvasEdge[] = [];
@@ -390,21 +400,44 @@ export class CanvasGenerator {
 				}
 			}
 
+			// Determine arrow endpoints based on relationship type and settings
+			const arrowStyle = edge.type === 'parent' 
+				? options.parentChildArrowStyle
+				: options.spouseArrowStyle;
+			const [fromEnd, toEnd] = this.getArrowEndpoints(arrowStyle);
+
 			edges.push({
 				id: this.generateId(),
-				styleAttributes: {},
-				fromFloating: false,
-				toFloating: false,
 				fromNode: fromCanvasId,
 				fromSide,
+				fromEnd,
 				toNode: toCanvasId,
 				toSide,
+				toEnd,
 				color: this.getEdgeColor(edge.type),
 				label: options.showLabels ? this.getEdgeLabel(edge.type) : undefined
 			});
 		}
 
 		return edges;
+	}
+
+	/**
+	 * Converts ArrowStyle to Canvas edge endpoint values
+	 * @param style - Arrow style setting
+	 * @returns Tuple of [fromEnd, toEnd] values
+	 */
+	private getArrowEndpoints(style: ArrowStyle): ['none' | 'arrow', 'none' | 'arrow'] {
+		switch (style) {
+			case 'directed':
+				return ['none', 'arrow'];  // Standard: → (arrow pointing forward)
+			case 'bidirectional':
+				return ['arrow', 'arrow']; // Both ends: ↔ (arrows on both ends)
+			case 'undirected':
+				return ['none', 'none'];   // No arrows: — (just a line)
+			default:
+				return ['none', 'arrow'];  // Fallback to directed
+		}
 	}
 
 	/**

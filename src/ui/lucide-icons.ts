@@ -75,9 +75,9 @@ export const TAB_CONFIGS: TabConfig[] = [
 	},
 	{
 		id: 'quick-settings',
-		name: 'Quick Settings',
+		name: 'Canvas Settings',
 		icon: 'settings',
-		description: 'Commonly adjusted layout settings'
+		description: 'Canvas layout and arrow styling settings'
 	},
 	{
 		id: 'data-entry',

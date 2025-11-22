@@ -9,7 +9,7 @@ import { CanvasGenerator, CanvasData, CanvasGenerationOptions } from '../core/ca
 import { getLogger, LoggerFactory, type LogLevel } from '../core/logging';
 import { GedcomImporter } from '../gedcom/gedcom-importer';
 import { BidirectionalLinker } from '../core/bidirectional-linker';
-import type { RecentTreeInfo, RecentImportInfo } from '../settings';
+import type { RecentTreeInfo, RecentImportInfo, ArrowStyle } from '../settings';
 
 const logger = getLogger('ControlCenter');
 
@@ -1085,14 +1085,14 @@ export class ControlCenterModal extends Modal {
 		const container = this.contentContainer;
 
 		// Title
-		const title = container.createEl('h2', { text: 'Quick settings' });
+		const title = container.createEl('h2', { text: 'Canvas settings' });
 		title.style.marginTop = '0';
 
 		// Intro text with re-layout feature note
 		const intro = container.createEl('p', {
 			cls: 'crc-text-muted crc-mb-3'
 		});
-		intro.innerHTML = 'Adjust commonly changed layout settings. Changes apply immediately to new tree generations. ' +
+		intro.innerHTML = 'Adjust canvas layout and arrow styling. Changes apply immediately to new tree generations. ' +
 			'<strong>To apply to existing canvases:</strong> right-click the canvas file and select "Re-layout family tree".';
 
 		// Layout Settings Card
@@ -1252,6 +1252,88 @@ export class ControlCenterModal extends Modal {
 		});
 
 		container.appendChild(layoutCard);
+
+		// Arrow Styling Card
+		const arrowCard = this.createCard({
+			title: 'Arrow styling',
+			icon: 'link'
+		});
+
+		const arrowContent = arrowCard.querySelector('.crc-card__content') as HTMLElement;
+
+		// Parent-Child Arrow Style
+		const parentArrowGroup = arrowContent.createDiv({ cls: 'crc-form-group' });
+		const parentArrowLabel = parentArrowGroup.createEl('label', {
+			cls: 'crc-form-label',
+			text: 'Parent → child arrows'
+		});
+		parentArrowLabel.htmlFor = 'quick-parent-arrow';
+
+		const parentArrowSelect = parentArrowGroup.createEl('select', {
+			cls: 'crc-form-input',
+			attr: { id: 'quick-parent-arrow' }
+		}) as HTMLSelectElement;
+
+		[
+			{ value: 'directed', label: 'Directed (→) - Single arrow pointing to child' },
+			{ value: 'bidirectional', label: 'Bidirectional (↔) - Arrows on both ends' },
+			{ value: 'undirected', label: 'Undirected (—) - No arrows' }
+		].forEach(opt => {
+			parentArrowSelect.createEl('option', {
+				value: opt.value,
+				text: opt.label
+			});
+		});
+		parentArrowSelect.value = this.plugin.settings.parentChildArrowStyle;
+
+		parentArrowGroup.createEl('p', {
+			cls: 'crc-form-help',
+			text: 'Arrow style for parent-child relationships. Default: Directed'
+		});
+
+		parentArrowSelect.addEventListener('change', async () => {
+			this.plugin.settings.parentChildArrowStyle = parentArrowSelect.value as ArrowStyle;
+			await this.plugin.saveSettings();
+			new Notice('Parent-child arrow style updated');
+		});
+
+		// Spouse Arrow Style
+		const spouseArrowGroup = arrowContent.createDiv({ cls: 'crc-form-group' });
+		const spouseArrowLabel = spouseArrowGroup.createEl('label', {
+			cls: 'crc-form-label',
+			text: 'Spouse arrows'
+		});
+		spouseArrowLabel.htmlFor = 'quick-spouse-arrow';
+
+		const spouseArrowSelect = spouseArrowGroup.createEl('select', {
+			cls: 'crc-form-input',
+			attr: { id: 'quick-spouse-arrow' }
+		}) as HTMLSelectElement;
+
+		[
+			{ value: 'directed', label: 'Directed (→) - Single arrow' },
+			{ value: 'bidirectional', label: 'Bidirectional (↔) - Arrows on both ends' },
+			{ value: 'undirected', label: 'Undirected (—) - No arrows' }
+		].forEach(opt => {
+			spouseArrowSelect.createEl('option', {
+				value: opt.value,
+				text: opt.label
+			});
+		});
+		spouseArrowSelect.value = this.plugin.settings.spouseArrowStyle;
+
+		spouseArrowGroup.createEl('p', {
+			cls: 'crc-form-help',
+			text: 'Arrow style for spouse relationships. Default: Undirected (cleaner look)'
+		});
+
+		spouseArrowSelect.addEventListener('change', async () => {
+			this.plugin.settings.spouseArrowStyle = spouseArrowSelect.value as ArrowStyle;
+			await this.plugin.saveSettings();
+			new Notice('Spouse arrow style updated');
+		});
+
+		container.appendChild(arrowCard);
 
 		// Link to full settings
 		const fullSettingsBtn = container.createEl('button', {
@@ -1762,6 +1844,8 @@ export class ControlCenterModal extends Modal {
 				colorByGender: true,
 				showLabels: true,
 				useFamilyChartLayout: true,  // Use family-chart for proper spouse handling
+				parentChildArrowStyle: this.plugin.settings.parentChildArrowStyle,
+				spouseArrowStyle: this.plugin.settings.spouseArrowStyle,
 				canvasRootsMetadata: {
 					plugin: 'canvas-roots',
 					generation: {

@@ -18,6 +18,14 @@ export interface RecentImportInfo {
 	timestamp: number;
 }
 
+/**
+ * Arrow style for relationship edges
+ * - 'directed': Single arrow pointing to child/target (default)
+ * - 'bidirectional': Arrows on both ends
+ * - 'undirected': No arrows (just lines)
+ */
+export type ArrowStyle = 'directed' | 'bidirectional' | 'undirected';
+
 export interface CanvasRootsSettings {
 	defaultNodeWidth: number;
 	defaultNodeHeight: number;
@@ -29,6 +37,9 @@ export interface CanvasRootsSettings {
 	logLevel: LogLevel;
 	recentTrees: RecentTreeInfo[];
 	recentImports: RecentImportInfo[];
+	// Arrow styling
+	parentChildArrowStyle: ArrowStyle;
+	spouseArrowStyle: ArrowStyle;
 }
 
 export const DEFAULT_SETTINGS: CanvasRootsSettings = {
@@ -43,7 +54,10 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	logExportPath: '',
 	logLevel: 'debug',
 	recentTrees: [],
-	recentImports: []
+	recentImports: [],
+	// Arrow styling defaults
+	parentChildArrowStyle: 'directed',  // Parent → Child with single arrow
+	spouseArrowStyle: 'undirected'      // Spouse — Spouse with no arrows (cleaner look)
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {
