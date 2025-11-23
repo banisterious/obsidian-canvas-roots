@@ -1,0 +1,496 @@
+# Canvas Roots: User Guide
+
+> **Version:** v0.1.1-alpha
+> **Last Updated:** 2025-11-22
+
+This guide covers the complete workflow for using Canvas Roots to create and maintain family trees in Obsidian.
+
+---
+
+## Table of Contents
+
+1. [Getting Started](#getting-started)
+2. [Data Entry](#data-entry)
+3. [Generating Trees](#generating-trees)
+4. [Maintaining Trees](#maintaining-trees)
+5. [GEDCOM Import](#gedcom-import)
+6. [Advanced Styling](#advanced-styling)
+7. [Tips & Best Practices](#tips--best-practices)
+
+---
+
+## Getting Started
+
+Canvas Roots transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas.
+
+**Prerequisites:**
+- Obsidian v1.7.2 or later
+- Canvas Roots plugin installed and enabled
+
+**Basic Workflow:**
+1. Enter your family data (individual notes or GEDCOM import)
+2. Generate tree using Control Center
+3. View and interact with the canvas
+4. Regenerate after making edits
+
+---
+
+## Data Entry
+
+### Option A: Individual Markdown Notes
+
+Create individual notes for each person with YAML frontmatter containing relationship data.
+
+**Required Fields:**
+- `cr_id`: Unique identifier (UUID format recommended)
+- `name`: Person's name
+
+**Optional Relationship Fields:**
+- `father`: Wikilink to father's note
+- `father_id`: Father's `cr_id` value
+- `mother`: Wikilink to mother's note
+- `mother_id`: Mother's `cr_id` value
+- `spouse`: Wikilink(s) to spouse(s)
+- `spouse_id`: Spouse `cr_id` value(s)
+- `children`: Array of wikilinks to children
+- `children_id`: Array of children's `cr_id` values
+
+**Optional Date Fields:**
+- `born` or `birth_date`: Birth date (YYYY-MM-DD format recommended)
+- `died` or `death_date`: Death date (YYYY-MM-DD format recommended)
+
+**Example Person Note:**
+
+```yaml
+---
+cr_id: abc-123-def-456
+name: John Robert Smith
+father: "[[John Smith Sr]]"
+father_id: xyz-789-uvw-012
+mother: "[[Jane Doe]]"
+mother_id: pqr-345-stu-678
+spouse: ["[[Mary Jones]]"]
+spouse_id: ["mno-901-jkl-234"]
+children: ["[[Bob Smith]]", "[[Alice Smith]]"]
+children_id: ["def-456-ghi-789", "abc-123-xyz-456"]
+born: 1888-05-15
+died: 1952-08-20
+---
+
+# Research Notes
+
+[Your biographical research, sources, and notes here...]
+```
+
+**Multiple Spouse Support:**
+
+For complex marital histories, use indexed spouse properties:
+
+```yaml
+---
+cr_id: abc-123-def-456
+name: John Robert Smith
+# First spouse
+spouse1: "[[Jane Doe]]"
+spouse1_id: "jane-cr-id-123"
+spouse1_marriage_date: "1985-06-15"
+spouse1_divorce_date: "1992-03-20"
+spouse1_marriage_status: divorced
+spouse1_marriage_location: "Boston, MA"
+
+# Second spouse
+spouse2: "[[Mary Johnson]]"
+spouse2_id: "mary-cr-id-456"
+spouse2_marriage_date: "1995-08-10"
+spouse2_marriage_status: current
+spouse2_marriage_location: "Seattle, WA"
+---
+```
+
+See [specification.md §6.1](specification.md) for complete marriage metadata documentation.
+
+### Option B: Obsidian Bases (Recommended for Bulk Entry)
+
+Use [Obsidian Bases](https://help.obsidian.md/bases) to manage multiple family members in a spreadsheet-like table interface.
+
+**Advantages:**
+- Edit multiple people at once
+- Sort and filter by any field
+- Copy/paste from spreadsheets
+- Bulk updates and corrections
+
+**Getting Started:**
+1. Open Control Center → Quick Actions
+2. Click "Create Bases template"
+3. Edit family data in the table views
+4. Changes automatically sync to person notes
+
+See [bases-integration.md](bases-integration.md) for detailed instructions and templates.
+
+---
+
+## Generating Trees
+
+### Step 1: Open Control Center
+
+**Method 1: Command Palette**
+1. Press `Ctrl/Cmd + P`
+2. Type "Canvas Roots: Open Control Center"
+3. Press Enter
+
+**Method 2: Ribbon Icon (if enabled)**
+- Click the Canvas Roots icon in the left sidebar
+
+### Step 2: Navigate to Tree Generation Tab
+
+Click the **Tree Generation** tab at the top of the Control Center modal.
+
+### Step 3: Select Root Person
+
+**Using the Person Browser:**
+1. **Search**: Type in the search box to filter by name
+2. **Sort**: Click column headers to sort by name or birth year
+3. **Click**: Select any person as the tree's root
+4. Birth/death years appear next to names for identification
+
+**Using Family Groups (Multi-Family Vaults):**
+- If you have disconnected family groups, use the sidebar
+- Shows "Family 1", "Family 2", etc. with person counts
+- Click any family to select its representative person
+
+### Step 4: Configure Tree Options
+
+**Tree Type:**
+- **Ancestors**: Shows parents, grandparents, etc. (pedigree chart)
+- **Descendants**: Shows children, grandchildren, etc.
+- **Full**: Shows both ancestors and descendants
+
+**Generations:**
+- **All generations**: Include everyone related to root person
+- **Limit generations**: Set maximum number of generations (1-10)
+
+**Spouses:**
+- **Include spouses**: Show spouse relationships in the tree
+- **Exclude spouses**: Show only blood relationships
+
+**Layout:**
+- **Vertical**: Generations flow top-to-bottom (traditional pedigree)
+- **Horizontal**: Generations flow left-to-right (compact for wide screens)
+
+**Spacing:**
+- **Horizontal spacing**: Distance between nodes side-by-side
+- **Vertical spacing**: Distance between generations
+- Adjust in Canvas Settings tab
+
+### Step 5: Generate
+
+**Single Tree:**
+1. Enter an optional canvas name (defaults to "Family Tree - [Root Person]")
+2. Click **Generate family tree**
+3. Canvas opens automatically
+
+**All Trees (Multi-Family Vaults):**
+1. Click **Generate all trees**
+2. Creates separate canvas for each disconnected family group
+3. Files named "Family Tree [N] - [Representative Name].canvas"
+
+The plugin calculates optimal positions using the [family-chart](https://github.com/donatso/family-chart) library and creates the canvas.
+
+---
+
+## Maintaining Trees
+
+### Regenerating After Edits
+
+After editing relationship data in person notes, refresh your canvas to see the changes.
+
+**Method 1: Right-Click Menu (Recommended)**
+1. Right-click on the canvas tab (or file in sidebar, or three-dot menu ⋮)
+2. Select **"Regenerate canvas"**
+
+**Method 2: Command Palette**
+1. Open the canvas you want to regenerate
+2. Press `Ctrl/Cmd + P`
+3. Type "Canvas Roots: Regenerate canvas"
+4. Press Enter
+
+**Method 3: Keyboard Shortcut**
+1. Go to Settings → Hotkeys
+2. Search for "Regenerate canvas"
+3. Assign a custom hotkey (e.g., `Ctrl+Shift+R`)
+4. Use the hotkey while viewing any canvas
+
+### What Regeneration Does
+
+The regenerate command:
+- ✅ Reads current relationship data from person notes
+- ✅ Preserves original tree settings (type, generations, spouses) from canvas metadata
+- ✅ Allows changing layout direction while preserving other settings
+- ✅ Applies current spacing, sizing, and styling settings
+- ✅ Updates the canvas in-place (non-destructive)
+- ✅ Uses the latest layout algorithm
+
+**Preserved Settings:**
+- Root person
+- Tree type (ancestors/descendants/full)
+- Generation limits
+- Spouse inclusion
+
+**Applied Settings:**
+- Current spacing values
+- Node coloring scheme
+- Arrow styles
+- Edge colors
+- Spouse edge display preferences
+
+### Common Regeneration Scenarios
+
+**When to Regenerate:**
+- Added new spouses, children, or parents to person notes
+- Corrected relationship errors (wrong parents, etc.)
+- Changed spacing or styling settings
+- Imported or edited data via GEDCOM or Bases
+- Want to switch layout direction (vertical ↔ horizontal)
+- Testing different color schemes
+
+**Workflow Example:**
+1. Import GEDCOM file (creates person notes)
+2. Generate initial tree
+3. Research and add missing relationships in person notes
+4. Right-click canvas → "Regenerate canvas"
+5. Tree updates with new relationships
+
+---
+
+## GEDCOM Import
+
+Canvas Roots can import standard GEDCOM (`.ged`) files from genealogy software.
+
+### Importing a GEDCOM File
+
+**Using Control Center:**
+1. Open Control Center → Data Entry tab
+2. Click **Import GEDCOM**
+3. Select your `.ged` file
+4. Configure import options:
+   - Target folder for person notes
+   - UUID handling (preserve or generate new)
+5. Click **Import**
+
+**What Happens:**
+- Creates one Markdown note per individual
+- Generates structured YAML frontmatter with relationships
+- Preserves `_UUID` tags as `cr_id` when present
+- Creates bidirectional relationship links
+- Handles duplicate detection across multiple imports
+
+**Supported GEDCOM Tags:**
+- `INDI` - Individuals
+- `NAME` - Person names
+- `BIRT`/`DEAT` - Birth and death events
+- `DATE` - Event dates
+- `PLAC` - Event locations
+- `FAMC`/`FAMS` - Family relationships
+- `SEX` - Gender
+- `_UUID` - Preserved as `cr_id`
+
+**Marriage Metadata (Enhanced Spouse Support):**
+- `MARR` - Marriage events → `spouse1_marriage_date`
+- `DIV` - Divorce events → `spouse1_divorce_date`
+- `PLAC` - Marriage locations → `spouse1_marriage_location`
+
+See [specification.md §5](specification.md) for complete GEDCOM integration details.
+
+### After Import
+
+1. **Review imported notes** in your configured person folder
+2. **Add research notes** below the frontmatter in each file
+3. **Generate tree** using Control Center → Tree Generation
+
+### Duplicate Handling
+
+If you import the same GEDCOM multiple times:
+- Existing `cr_id` values are preserved
+- Relationships are updated (not duplicated)
+- New individuals are added
+- Warnings appear for conflicts
+
+---
+
+## Advanced Styling
+
+### Built-in Canvas Roots Styling
+
+Canvas Roots provides styling options within the JSON Canvas standard.
+
+**Access Settings:**
+- Control Center → Canvas Settings tab
+- Or: Settings → Canvas Roots → Canvas styling
+
+**Node Coloring Schemes:**
+- **Gender**: Green for male, purple for female (genealogy convention)
+- **Generation**: Different color per generation level (creates visual layers)
+- **Monochrome**: No coloring (neutral, clean look)
+
+**Arrow Styles:**
+- **Directed (→)**: Single arrow pointing to child/target
+- **Bidirectional (↔)**: Arrows on both ends
+- **Undirected (—)**: No arrows (just lines)
+
+Configure separately for:
+- Parent-child relationships (default: directed)
+- Spouse relationships (default: undirected)
+
+**Edge Colors:**
+Choose from Obsidian's 6 preset colors or theme default:
+- Red, Orange, Yellow, Green, Cyan, Purple, None
+
+**Spouse Edge Display:**
+By default, spouse relationships are indicated by positioning only. Optionally show spouse edges with marriage metadata:
+
+1. Enable "Show spouse edges" toggle
+2. Choose label format:
+   - None (no labels)
+   - Date only (e.g., "m. 1985")
+   - Date and location (e.g., "m. 1985 | Boston, MA")
+   - Full details (e.g., "m. 1985 | Boston, MA | div. 1992")
+
+**Applying Styling:**
+- Settings apply to newly generated trees automatically
+- For existing trees: right-click → "Regenerate canvas"
+
+### Advanced Canvas Plugin
+
+For styling beyond the JSON Canvas spec, use the [Advanced Canvas](https://github.com/Developer-Mike/obsidian-advanced-canvas) plugin.
+
+**Additional Features:**
+- Border styles (dashed, dotted)
+- Custom shapes (circles, hexagons)
+- Enhanced visual effects (shadows, gradients)
+
+**Installation:**
+1. Install Advanced Canvas from Community Plugins
+2. Both plugins work independently
+3. Canvas Roots handles layout, Advanced Canvas handles advanced styling
+
+**Workflow:**
+1. Generate tree with Canvas Roots (handles positioning)
+2. Apply standard styling via Canvas Roots settings
+3. Optionally apply advanced styling with Advanced Canvas
+4. Use "Regenerate canvas" to update tree structure while preserving Advanced Canvas styling
+
+**Note:** Advanced Canvas features may not be portable to other Canvas viewers.
+
+---
+
+## Tips & Best Practices
+
+### Data Management
+
+**Use `cr_id` UUIDs:**
+- Generate unique UUIDs for stable identification
+- Enable auto-generation in settings for new notes
+- Preserves relationships when files are renamed/moved
+
+**Organize Person Notes:**
+- Store in dedicated folder (e.g., "People" or "Family")
+- Configure folder in Settings → Canvas Roots
+- Use consistent naming (e.g., "John Smith.md")
+
+**Leverage Obsidian Bases:**
+- Bulk edit relationships and dates
+- Sort by birth year to find gaps
+- Filter by generation or family line
+- Export to CSV for backup
+
+### Tree Generation
+
+**Start Small:**
+- Generate tree for one ancestor first
+- Test layout and styling options
+- Expand to full family trees once satisfied
+
+**Multi-Family Vaults:**
+- Use "Generate all trees" for batch creation
+- Canvas Roots auto-detects disconnected groups
+- Each family gets its own canvas
+
+**Experiment with Layout:**
+- Try both vertical and horizontal directions
+- Adjust spacing for different screen sizes
+- Use generation limits for focused views
+
+### Styling
+
+**Choose Appropriate Color Schemes:**
+- Gender coloring: Traditional genealogy charts
+- Generation coloring: Emphasize generational layers
+- Monochrome: Clean, professional presentations
+
+**Spouse Edge Visibility:**
+- Default (hidden): Clean, minimal look
+- Date-only: Show marriage years for context
+- Full details: Comprehensive for research/documentation
+
+### Performance
+
+**Large Trees (100+ people):**
+- Use generation limits for initial exploration
+- Generate focused subtrees (ancestors OR descendants)
+- Regenerate only when necessary
+
+**Canvas Navigation:**
+- Use Obsidian's Canvas pan/zoom controls
+- Double-click nodes to open person notes
+- Right-click canvas background for context menu
+
+### Workflow Integration
+
+**Research Workflow:**
+1. Import GEDCOM or create initial notes
+2. Generate tree to visualize relationships
+3. Research individuals and add notes
+4. Update relationships as you discover new information
+5. Regenerate canvas to reflect updates
+
+**Collaboration:**
+- Share vault with collaborators
+- Use git for version control
+- GEDCOM export (planned) will enable sharing with non-Obsidian users
+
+---
+
+## Troubleshooting
+
+**Tree not generating?**
+- Check that root person has `cr_id` value
+- Verify relationships use valid `cr_id` references
+- Enable debug logging in Settings → Canvas Roots → Logging
+
+**Missing people in tree?**
+- Ensure `cr_id` values match between relationships
+- Check generation limits (may exclude distant relatives)
+- Verify spouse inclusion setting if spouses are missing
+
+**Layout issues?**
+- Try different spacing values
+- Switch between vertical/horizontal layout
+- Regenerate with latest settings
+
+**GEDCOM import problems?**
+- Check file is valid GEDCOM format
+- Review import log for errors
+- Try smaller GEDCOM file first to test
+
+For more help, see [troubleshooting section](development.md#troubleshooting) in the development guide or open an issue on [GitHub](https://github.com/banisterious/obsidian-canvas-roots/issues).
+
+---
+
+## Next Steps
+
+- Read [specification.md](specification.md) for complete technical details
+- Review [bases-integration.md](bases-integration.md) for bulk data management
+- Check [roadmap.md](roadmap.md) for upcoming features
+- Join discussions on [GitHub](https://github.com/banisterious/obsidian-canvas-roots)
+
+**Happy tree building!** 🌳
