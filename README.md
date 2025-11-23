@@ -35,11 +35,11 @@ This plugin is designed for genealogists, historians, and world-builders. It tra
 
 - **Context Menu Actions:** Right-click person notes to add relationships, validate data integrity, or find canvases. Right-click folders to scan for relationship issues or import GEDCOM files. Right-click canvas files to regenerate or view statistics. Full desktop and mobile support.
 
+- **Collections & Groups:** Organize and browse people using auto-detected family groups (with customizable group names) or user-defined collections. Filter tree generation by collection and view cross-collection connections to identify bridge people connecting different parts of your family network.
+
 ### Planned Features
 
 See [Roadmap](docs/roadmap.md) for detailed feature descriptions and development priorities.
-
-- **Collections Management:** Automatic detection and organization of disconnected family groups
 - **GEDCOM Export:** Round-trip export back to .ged format
 - **Reference Numbering:** Ahnentafel and Dollarhide-Cole genealogical numbering systems
 - **Person Detail Panel:** Rich inline person information with relationship visualization

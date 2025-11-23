@@ -1,7 +1,7 @@
 # Canvas Roots: User Guide
 
-> **Version:** v0.1.1-alpha
-> **Last Updated:** 2025-11-22
+> **Version:** v0.1.2-alpha
+> **Last Updated:** 2025-11-23
 
 This guide covers the complete workflow for using Canvas Roots to create and maintain family trees in Obsidian.
 
@@ -11,11 +11,12 @@ This guide covers the complete workflow for using Canvas Roots to create and mai
 
 1. [Getting Started](#getting-started)
 2. [Data Entry](#data-entry)
-3. [Generating Trees](#generating-trees)
-4. [Maintaining Trees](#maintaining-trees)
-5. [GEDCOM Import](#gedcom-import)
-6. [Advanced Styling](#advanced-styling)
-7. [Tips & Best Practices](#tips--best-practices)
+3. [Collections & Groups](#collections--groups)
+4. [Generating Trees](#generating-trees)
+5. [Maintaining Trees](#maintaining-trees)
+6. [GEDCOM Import](#gedcom-import)
+7. [Advanced Styling](#advanced-styling)
+8. [Tips & Best Practices](#tips--best-practices)
 
 ---
 
@@ -126,6 +127,120 @@ Use [Obsidian Bases](https://help.obsidian.md/bases) to manage multiple family m
 4. Changes automatically sync to person notes
 
 See [bases-integration.md](bases-integration.md) for detailed instructions and templates.
+
+---
+
+## Collections & Groups
+
+Canvas Roots provides two complementary ways to organize people in your vault:
+
+### Group Names (Auto-Detected Families)
+
+Canvas Roots automatically detects disconnected family groups by analyzing relationship connections. These are the people who share biological/marital relationships.
+
+**How It Works:**
+- Runs automatically in the background
+- Based on actual relationship data (father, mother, spouse, children)
+- Always up-to-date (recomputed on demand)
+- Zero configuration required
+
+**Customizing Group Names:**
+
+By default, groups are named "Family 1", "Family 2", etc. You can customize these names:
+
+1. **Via Context Menu:**
+   - Right-click any person note
+   - Select "Set group name"
+   - Enter a custom name (e.g., "Smith Family Tree")
+
+2. **Via YAML Frontmatter:**
+   ```yaml
+   ---
+   collection_name: "Smith Family Tree"
+   ---
+   ```
+
+**Note:** The `collection_name` property sets the display name for the entire connected family group. If multiple people in the same group have different names, the most common one is used.
+
+### Collections (User-Defined Organization)
+
+Collections let you create custom groupings independent of biological relationships. Use these for:
+- Organizing by lineage (e.g., "Paternal Line", "Maternal Line")
+- Grouping by generation (e.g., "First Generation", "My Generation")
+- World-building categories (e.g., "House Stark", "The Council")
+- Any other organizational scheme that makes sense for your research
+
+**Creating Collections:**
+
+1. **Via Context Menu:**
+   - Right-click any person note
+   - Select "Add to collection"
+   - Enter or select a collection name
+
+2. **Via YAML Frontmatter:**
+   ```yaml
+   ---
+   collection: "Paternal Line"
+   ---
+   ```
+
+3. **Via Obsidian Bases:**
+   - Edit the `collection` property directly in table views
+   - Bulk assign collections to multiple people at once
+
+### Browsing Collections & Groups
+
+Open Control Center → **Collections** tab to browse and organize:
+
+**Browse Modes:**
+- **All people**: Complete list of everyone in your vault
+- **Detected families**: Auto-detected groups with custom names
+- **My collections**: Your user-defined collections
+
+**Cross-Collection Connections:**
+
+When you have 2+ collections, Canvas Roots automatically detects "bridge people" who connect different collections through their relationships.
+
+**Example:**
+```
+Collections:
+  • Paternal Line (40 people)
+  • Maternal Line (35 people)
+
+Bridge People:
+  • You (connects Paternal ↔ Maternal via parents)
+  • Your siblings (2 links)
+```
+
+### Using Collections in Tree Generation
+
+Filter generated trees by collection membership:
+
+1. Open Control Center → Tree Generation tab
+2. Configure your tree settings
+3. **Filter by collection**: Select a specific collection (optional)
+   - Leave as "All collections" for unfiltered trees
+   - Select a collection to include only those people
+4. Generate tree
+
+**When to Use Collection Filtering:**
+- Generate trees for specific branches (e.g., only paternal ancestors)
+- Visualize a single lineage or faction
+- Create focused trees for presentations or research
+- Separate fictional characters by house/organization
+
+### Groups vs Collections: Quick Comparison
+
+| Feature | Group Names | Collections |
+|---------|-------------|-------------|
+| **Purpose** | Identify connected families | Organize for your needs |
+| **Detection** | Automatic (from relationships) | Manual (you assign) |
+| **Property** | `collection_name` | `collection` |
+| **Zero Config** | ✅ Yes | ❌ Optional |
+| **Use Cases** | Multi-family vaults, auto-naming | Lineages, generations, factions |
+| **Example** | "Smith Family Tree" | "Paternal Line" |
+
+**Pro Tip:** Use both together! Group names for automated organization, collections for your custom research categories.
 
 ---
 

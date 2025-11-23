@@ -1,9 +1,10 @@
 # Collections Architecture Decision Record
 
-**Status:** Approved
+**Status:** Implemented (Phases 1-2 complete, Phase 3 partial)
 **Date:** 2025-11-22
+**Last Updated:** 2025-11-23
 **Decision Makers:** Core development team
-**Affects:** v0.2.0+ (Collections Management feature)
+**Affects:** v0.1.2+ (Collections Management feature)
 
 ---
 
@@ -501,63 +502,74 @@ extendedRelationships:
 
 ## Implementation Phases
 
-### **Phase 1: Collection Naming (Minimal)**
+### **Phase 1: Collection Naming (Minimal)** ✅ **COMPLETED (v0.1.2)**
 
 **Scope:** Support `collection_name` property for detected components
 
 **Implementation:**
-1. Modify `getFamilyComponents()` to check for `collection_name`
-2. Use as display label in sidebar
-3. Update documentation
+1. ✅ Modified `getFamilyComponents()` to check for `collection_name`
+2. ✅ Used as display label in sidebar
+3. ✅ Updated documentation
+4. ✅ Renamed UI to "group name" for clarity (per user feedback)
+5. ✅ Added context menu option: "Set group name"
 
 **Result:**
-- "Family 1" → "Smith Family" (if anyone sets collection_name)
-- Zero new code beyond name lookup
+- "Family 1" → "Smith Family" (when anyone sets collection_name)
+- Zero config required for basic users
 - Works with existing UI
 
-**Effort:** Low (few hours)
+**Shipped:** v0.1.2
 
 ---
 
-### **Phase 2: User Collections (Power Users)**
+### **Phase 2: User Collections (Power Users)** ✅ **COMPLETED (v0.1.2)**
 
 **Scope:** Add `collection` property + UI
 
 **Implementation:**
-1. Add `collection` property support to PersonNode
-2. Create `getUserCollections()` method
-3. Add "My collections" option to tree generation UI
-4. Update Bases template with collection property
-5. Add collection filtering to person browser
+1. ✅ Added `collection` property support to PersonNode
+2. ✅ Created `getUserCollections()` method
+3. ✅ Added "My collections" option to Collections tab UI
+4. ✅ Added context menu option: "Add to collection"
+5. ✅ Implemented collection filtering in person browser
+6. ✅ Added comprehensive Guide tab documentation explaining groups vs collections
 
 **Result:**
-- Users can assign custom collections
-- Browse/filter by user collections
-- Editable in Bases
+- Users can assign custom collections via context menu or YAML
+- Browse/filter by user collections in Collections tab
+- Editable in Bases (via `collection` property)
 - Works alongside detected components
+- Clear UI distinction: "Group name" vs "Collection"
 
-**Effort:** Medium (1-2 days)
+**Shipped:** v0.1.2
 
 ---
 
-### **Phase 3: Cross-Collection Features (Advanced)**
+### **Phase 3: Cross-Collection Features (Advanced)** ⚠️ **PARTIALLY COMPLETED (v0.1.2)**
 
 **Scope:** Connection detection, dashboards, multi-collection trees
 
 **Implementation:**
-1. Implement `detectCollectionConnections()`
-2. Create collection dashboard view
-3. Add "Include connected collections" option to tree generation
-4. Color-code multi-collection canvases
-5. Show bridge people in UI
+1. ✅ Implemented `detectCollectionConnections()` - finds bridge people between collections
+2. ✅ Added cross-collection connection display in Collections tab
+3. ✅ Implemented collection filtering for tree generation
+4. ✅ Added collection filter dropdown in Tree Generation tab
+5. ❌ Color-coding multi-collection canvases (not yet implemented)
+6. ❌ Collection overview canvas with links (not yet implemented)
+7. ❌ Automatic index canvas creation (not yet implemented)
 
-**Result:**
-- Visual connection maps
-- Cross-collection tree generation
-- Bridge person indicators
-- Collection analytics
+**Completed:**
+- Cross-collection connection detection and display
+- Collection filtering for all tree types (ancestors, descendants, full)
+- Bridge person identification with relationship counts
+- Shows top 3 bridge people per connection with "+X more"
 
-**Effort:** High (3-5 days)
+**Remaining for Phase 3:**
+- Color-code canvas nodes by collection (optional enhancement)
+- Generate collection overview/index canvases
+- Collection analytics dashboard
+
+**Shipped:** Partial in v0.1.2 (core features complete)
 
 ---
 
@@ -705,7 +717,7 @@ We could use `#collection/name` tags instead of `collection` property.
 
 ## Decision Outcome
 
-**Chosen Option:** Option C - Smart Hybrid
+**Chosen Option:** Option C - Smart Hybrid ✅
 
 **Rationale:**
 1. Meets all requirements (no folders, no tags, zero config)
@@ -715,19 +727,33 @@ We could use `#collection/name` tags instead of `collection` property.
 5. Extensible for world-building use cases
 6. Aligns with Obsidian's philosophy (notes first, structure emergent)
 
-**Implementation Priority:**
-- Phase 1: Ship with v0.2.0 (collection naming)
-- Phase 2: v0.3.0 (user collections)
-- Phase 3: v0.4.0+ (cross-collection features)
+**Implementation Status:**
+- ✅ Phase 1: Shipped with v0.1.2 (collection naming → "group names")
+- ✅ Phase 2: Shipped with v0.1.2 (user collections with context menus)
+- ⚠️ Phase 3: Partially shipped with v0.1.2 (connection detection + tree filtering complete)
+
+**What's Implemented (v0.1.2):**
+- Auto-detected family groups with customizable group names (`collection_name` property)
+- User-defined collections (`collection` property) for manual organization
+- Context menu actions: "Set group name" and "Add to collection"
+- Collections tab with three browse modes: All people, Detected families, My collections
+- Cross-collection connection detection showing bridge people
+- Collection filtering in tree generation (all tree types)
+- Comprehensive Guide tab documentation
+
+**Remaining for Phase 3:**
+- Color-coded multi-collection canvases
+- Collection overview/index canvas generation
+- Collection analytics dashboard
 
 **Next Steps:**
-1. Update specification.md §3.4 with user-facing design
-2. Update development.md with implementation notes
-3. Implement Phase 1 when ready
-4. Gather user feedback before Phase 2
+1. ✅ Update documentation (README, architecture docs)
+2. Gather user feedback on implemented features
+3. Implement remaining Phase 3 features based on demand
+4. Consider extended relationships for world-building (future)
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2025-11-22
-**Status:** Approved ✅
+**Document Version:** 2.0
+**Last Updated:** 2025-11-23
+**Status:** Implemented (Phases 1-2), Partial (Phase 3) ✅
