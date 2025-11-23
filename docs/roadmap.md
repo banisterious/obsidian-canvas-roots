@@ -7,9 +7,24 @@ Canvas Roots is in active alpha development with core functionality in place and
 
 ---
 
-## 🎯 Current Status (v0.1.2)
+## 🎯 Released Versions
 
-### ✅ Implemented Features
+### v0.1.2-alpha (Current)
+
+**Context Menu Actions:**
+- Person notes: Add relationships, validate data integrity, find on canvases
+- Folders: Set as people folder, import GEDCOM, scan for relationship issues
+- Canvas files: Regenerate trees, view statistics
+- Full desktop and mobile support
+
+### v0.1.1-alpha
+
+**Tree Statistics & Regeneration:**
+- Tree statistics modal showing person count, generation depth, edge counts
+- Canvas regeneration with options to preserve/update layout and styling
+- Context menu integration for canvas files
+
+### v0.1.0-alpha
 
 **Core Functionality:**
 - TypeScript-based plugin foundation with Obsidian API integration
@@ -20,52 +35,42 @@ Canvas Roots is in active alpha development with core functionality in place and
 - Structured logging system with export capability
 
 **Tree Generation:**
-- Genealogical layout engine using [family-chart](https://github.com/donatso/family-chart) library for automated positioning
-- Canvas generation from person notes with proper handling of complex relationships
+- Genealogical layout engine using [family-chart](https://github.com/donatso/family-chart) library
+- Canvas generation from person notes with complex relationship handling
 - Multiple tree types: ancestors (pedigree), descendants, full family tree
 - Generation limits and spouse inclusion controls
 - Vertical and horizontal layout directions
-
-**Canvas Management:**
-- Canvas regeneration command for updating existing trees with current data
-- Context menu integration (right-click on canvas files, tabs, or three-dot menu)
-- Metadata preservation during regeneration
-- Re-layout command with settings integration
 
 **UI & Workflow:**
 - Streamlined Tree Generation tab with inline person browser
 - Person search, sort, and filter capabilities
 - Multi-family detection and automatic family group organization
 - "Generate all trees" command for batch tree creation
-- Integrated generation workflow with single-card interface
 
 **Styling & Customization:**
 - Comprehensive canvas styling options within JSON Canvas spec
 - Node coloring: gender-based, generation-based, or monochrome
 - Arrow styles: directed, bidirectional, undirected
 - Edge colors for parent-child and spouse relationships
-- Settings interface for layout customization and logging control
 
 **Multiple Spouse Support:**
 - Flat indexed YAML properties (`spouse1`, `spouse2`, etc.)
 - Marriage metadata: dates, locations, status (divorced, widowed, etc.)
 - Optional spouse edge display with configurable labels
-- Canvas Settings toggle for showing/hiding spouse edges
 - Label formats: none, date-only, date-location, full
 
 **Data Management:**
 - Obsidian Bases template with one-click creation
 - 6 pre-configured views for family data management
 - YAML-first data storage for maximum compatibility
-- Robust error handling in GEDCOM import
 
 ---
 
-## 🚧 In Progress
+## 🚧 In Active Development
 
-### Collections Management (v0.2.0-beta)
+### Collections Management
 
-**Phase 1: Component Naming**
+**Component Naming:**
 - Add `collection_name` property support to person notes
 - Update UI to show custom names instead of "Family 1", "Family 2"
 - Implement naming conflict resolution (most common name wins)
@@ -81,25 +86,7 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 
 ## 📋 Planned Features
 
-### Phase 1.5: Context Menu Actions (v0.1.2-alpha)
-
-**Person Notes (Right-click):**
-- "Add relationship..." - Quick submenu to add parent, spouse, or child using person picker (✅ Implemented)
-- "Validate relationships" - Check for broken cr_id references and orphaned links (✅ Implemented)
-- "Find on canvas" - Jump to this person on any canvas where they appear (✅ Implemented)
-
-**Folders (Right-click):**
-- "Set as people folder" - One-click configuration of settings.peopleFolder (✅ Implemented)
-- "Import GEDCOM to this folder" - Pre-select folder for GEDCOM import (✅ Implemented)
-- "Scan for relationship issues" - Batch validation of all person notes in folder (✅ Implemented)
-
-**Canvas Files (Right-click on tab/file):**
-- "Regenerate canvas" - Re-run layout algorithm with current relationship data (✅ Implemented)
-- "Show tree statistics" - Quick modal with person count, generation depth, edge count (✅ Implemented)
-
-> **Note:** Canvas views don't currently support context menus inside the canvas editor itself (Obsidian API limitation). All canvas actions must be accessed by right-clicking the canvas file tab or in the file explorer.
-
-### Phase 2: Collections (v0.3.0-beta)
+### Collections
 
 - User collections with `collection` YAML property
 - Collections tab in Control Center
@@ -107,14 +94,14 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 - Cross-collection connection detection
 - Obsidian Bases integration for bulk collection editing
 
-### Phase 3: GEDCOM Export (v0.4.0)
+### GEDCOM Export
 
 - Round-trip GEDCOM export back to `.ged` format
 - UUID preservation in GEDCOM export
 - Collection codes in GEDCOM output
 - Sharing with other genealogy software
 
-### Phase 4: Reference Numbering (v0.5.0)
+### Reference Numbering Systems
 
 - Ahnentafel numbering system support
 - Dollarhide-Cole numbering system support
@@ -122,29 +109,29 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 - Automatic number assignment and display
 - Integration with Obsidian Properties panel
 
-### Phase 5: Advanced UI (v0.6.0)
+### Advanced UI
 
-- Person Detail Panel with relationship visualization (integrate with "View person details" context menu)
+- Person Detail Panel with relationship visualization
 - Rich inline person information display
 - Quick editing capabilities
 - D3 tree preview with real-time layout configuration
 - Interactive tree preview before canvas export
 - Canvas export as image/PDF
 
-### Phase 6: Privacy & Obfuscation (v0.7.0)
+### Privacy & Obfuscation
 
 - Optional data obfuscation for exports
 - PII protection for canvas display
 - Living person privacy controls
 - Configurable obfuscation rules
 
-### Phase 6: Batch Operations (v0.7.0)
+### Batch Operations
 
-- "Generate all family trees" folder action - Create canvases for all detected components
+- "Generate all family trees" folder action
 - Batch tree generation with progress tracking
 - Folder-level statistics and health reports
 
-### Phase 7: World-Building Features (v1.0.0)
+### World-Building Features
 
 - Visual grouping by house/faction
 - Dual relationship trees (biological vs. political)
@@ -180,36 +167,6 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 
 ---
 
-## 🎓 Feature Phases by Version
-
-### Alpha (v0.1.x) - Core Features ✅
-- GEDCOM import
-- Tree generation with family-chart layout
-- Canvas regeneration
-- Basic styling options
-- Obsidian Bases template
-- Multiple spouse support
-
-### Beta (v0.2.x - v0.4.x) - Essential Features 🚧
-- Collections management (v0.2.x)
-- GEDCOM export (v0.3.x)
-- Reference numbering (v0.4.x)
-
-### Release Candidate (v0.5.x - v0.9.x) - Advanced Features 📋
-- Person detail panel (v0.5.x)
-- D3 tree preview (v0.6.x)
-- Privacy controls (v0.7.x)
-- DataView integration (v0.8.x)
-- Performance optimization (v0.9.x)
-
-### Stable (v1.0.0+) - Complete Platform 🔮
-- World-building features
-- Full genealogical feature set
-- Community plugin directory listing
-- Production-ready stability
-
----
-
 ## 📊 Known Limitations
 
 See [known-limitations.md](known-limitations.md) for a complete list of current limitations and workarounds.
@@ -236,17 +193,18 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for development setup and contribution
 
 ---
 
-## 📅 Release Schedule
+## 📅 Release Philosophy
 
 Canvas Roots follows semantic versioning:
 - **Patch releases (v0.1.x):** Bug fixes, minor improvements
 - **Minor releases (v0.x.0):** New features, backward compatible
 - **Major releases (v1.0.0+):** Breaking changes, major milestones
 
-Target release cadence:
-- Alpha patch releases: As needed for critical fixes
-- Beta minor releases: Every 2-4 weeks
-- Stable releases: When feature-complete and thoroughly tested
+Features are prioritized based on:
+- User feedback and requests
+- Genealogical standards compliance
+- Foundation for future features
+- Development complexity vs. value
 
 ---
 
