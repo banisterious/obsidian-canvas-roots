@@ -81,6 +81,21 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 
 ## 📋 Planned Features
 
+### Phase 1.5: Context Menu Actions (v0.1.2-alpha)
+
+**Person Notes (Right-click):**
+- "Add relationship..." - Quick submenu to add parent, spouse, or child using person picker
+- "Validate relationships" - Check for broken cr_id references and orphaned links
+- "Find on canvas" - Jump to this person on any canvas where they appear
+
+**Folders (Right-click):**
+- "Set as people folder" - One-click configuration of settings.peopleFolder
+- "Import GEDCOM to this folder" - Pre-select folder for GEDCOM import
+- "Scan for relationship issues" - Batch validation of all person notes in folder
+
+**Canvas Files (Right-click):**
+- "Show tree statistics" - Quick modal with person count, generation depth, edge count
+
 ### Phase 2: Collections (v0.3.0-beta)
 
 - User collections with `collection` YAML property
@@ -106,11 +121,12 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 
 ### Phase 5: Advanced UI (v0.6.0)
 
-- Person Detail Panel with relationship visualization
+- Person Detail Panel with relationship visualization (integrate with "View person details" context menu)
 - Rich inline person information display
 - Quick editing capabilities
 - D3 tree preview with real-time layout configuration
 - Interactive tree preview before canvas export
+- Canvas export as image/PDF
 
 ### Phase 6: Privacy & Obfuscation (v0.7.0)
 
@@ -118,6 +134,12 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 - PII protection for canvas display
 - Living person privacy controls
 - Configurable obfuscation rules
+
+### Phase 6: Batch Operations (v0.7.0)
+
+- "Generate all family trees" folder action - Create canvases for all detected components
+- Batch tree generation with progress tracking
+- Folder-level statistics and health reports
 
 ### Phase 7: World-Building Features (v1.0.0)
 

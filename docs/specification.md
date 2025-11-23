@@ -4181,6 +4181,102 @@ Founded in 1630, Boston was a major center for...
 
 ---
 
+## 6.5. Context Menu Actions
+
+**Status:** 🔴 Planned (v0.1.2-alpha)
+
+**Purpose:** Provide quick-access context menu actions for person notes, folders, and canvas files to streamline common workflows.
+
+### 6.5.1 Person Note Context Menu
+
+Right-click actions for person notes (files with `cr_id` frontmatter):
+
+**"Add relationship..." (Submenu):**
+- **"Add parent"** - Opens PersonPicker, adds selected person to `father`/`mother` field
+- **"Add spouse"** - Opens PersonPicker, adds selected person to next available `spouseN` field
+- **"Add child"** - Opens PersonPicker, adds selected person to `children` array
+- All actions update both wikilink and `_id` fields (dual storage)
+- Shows success Notice with relationship details
+
+**"Validate relationships":**
+- Checks all `_id` references (father_id, mother_id, spouse_id, children_id)
+- Verifies each `cr_id` exists in vault
+- Identifies orphaned wikilinks (link exists but no matching `cr_id`)
+- Displays results in modal with "Jump to note" buttons for each issue
+- Shows success Notice if no issues found
+
+**"Find on canvas":**
+- Searches all `.canvas` files for nodes containing this person's file path
+- If found: opens canvas and centers viewport on the node
+- If multiple canvases: shows selection modal
+- If not found: shows Notice "Person not found on any canvas"
+
+### 6.5.2 Folder Context Menu
+
+Right-click actions for folders:
+
+**"Set as people folder":**
+- Updates `settings.peopleFolder` to clicked folder's path
+- Saves settings
+- Shows Notice: "People folder set to: [folder path]"
+- Simple one-click alternative to manual settings configuration
+
+**"Import GEDCOM to this folder":**
+- Opens GEDCOM import dialog (Data Entry tab)
+- Pre-fills target folder field with clicked folder path
+- User proceeds with normal GEDCOM import workflow
+
+**"Scan for relationship issues":**
+- Batch validation of all person notes (files with `cr_id`) in folder
+- Same validation logic as individual "Validate relationships"
+- Displays summary modal:
+  - Total person notes scanned
+  - Number of files with issues
+  - List of issues grouped by file
+  - "Jump to note" buttons
+- Progress indicator for large folders
+
+### 6.5.3 Canvas File Context Menu
+
+Right-click actions for `.canvas` files (in addition to existing "Regenerate canvas"):
+
+**"Show tree statistics":**
+- Displays modal with canvas metadata and computed statistics:
+  - Canvas name
+  - Root person (from canvas metadata)
+  - Total nodes (person count)
+  - Total edges (relationship count)
+  - Generation depth (max distance from root)
+  - Tree type (ancestors/descendants/full)
+  - Generation limit (if applicable)
+  - Spouse inclusion setting
+  - Created date (from canvas metadata if available)
+- Read-only information display
+- Simple, lightweight implementation
+
+### 6.5.4 Implementation Notes
+
+**Technical Approach:**
+- All actions registered via `workspace.on('file-menu')` event
+- Person note actions: check for `cr_id` in metadata cache before showing
+- Folder actions: check if TFolder, show for all folders
+- Canvas actions: check for `.canvas` extension
+- Reuse existing components: PersonPicker, Notice, Modal classes
+
+**UI Guidelines:**
+- Add separator before Canvas Roots menu items
+- Use Lucide icons for visual clarity
+- Group related actions together
+- Follow Obsidian's context menu patterns
+
+**Error Handling:**
+- Validate file/folder existence before operations
+- Show user-friendly error messages via Notice
+- Log errors to console with context
+- Gracefully handle edge cases (empty folders, invalid canvases)
+
+---
+
 ## 7. World-Building and Organizational Features
 
 **Purpose:** Extend Canvas Roots beyond traditional genealogy to support fantasy world-building, historical dynasties, corporate succession tracking, and institutional evolution.
