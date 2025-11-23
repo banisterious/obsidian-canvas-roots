@@ -278,6 +278,16 @@ export default class CanvasRootsPlugin extends Plugin {
 											await this.promptSetCollectionName(file);
 										});
 								});
+
+								// Set collection
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Set collection')
+										.setIcon('folder')
+										.onClick(async () => {
+											await this.promptSetCollection(file);
+										});
+								});
 							});
 						} else {
 							// Mobile: flat menu with prefix
@@ -368,6 +378,15 @@ export default class CanvasRootsPlugin extends Plugin {
 									.setIcon('tag')
 									.onClick(async () => {
 										await this.promptSetCollectionName(file);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Set collection')
+									.setIcon('folder')
+									.onClick(async () => {
+										await this.promptSetCollection(file);
 									});
 							});
 						}
@@ -578,6 +597,94 @@ export default class CanvasRootsPlugin extends Plugin {
 				new Notice(collectionName
 					? `Collection name set to "${collectionName}"`
 					: 'Collection name removed'
+				);
+
+				modal.close();
+				resolve();
+			});
+
+			const cancelBtn = buttonContainer.createEl('button', {
+				text: 'Cancel'
+			});
+			cancelBtn.addEventListener('click', () => {
+				modal.close();
+				resolve();
+			});
+
+			// Allow Enter key to save
+			input.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter') {
+					saveBtn.click();
+				} else if (e.key === 'Escape') {
+					cancelBtn.click();
+				}
+			});
+
+			modal.open();
+
+			// Focus the input
+			setTimeout(() => {
+				input.focus();
+				input.select();
+			}, 50);
+		});
+	}
+
+	private async promptSetCollection(file: TFile): Promise<void> {
+		// Get current collection if it exists
+		const cache = this.app.metadataCache.getFileCache(file);
+		const currentCollection = cache?.frontmatter?.collection || '';
+
+		return new Promise((resolve) => {
+			const modal = new Modal(this.app);
+			modal.titleEl.setText('Set collection');
+
+			modal.contentEl.createEl('p', {
+				text: 'Enter a collection to organize this person (e.g., "Paternal Line", "House Stark", "1800s Branch"):'
+			});
+
+			const inputContainer = modal.contentEl.createDiv({ cls: 'setting-item-control' });
+			const input = inputContainer.createEl('input', {
+				type: 'text',
+				placeholder: 'e.g., "Paternal Line", "Maternal Branch"',
+				value: currentCollection
+			});
+			input.style.width = '100%';
+			input.style.marginTop = '8px';
+
+			const helpText = modal.contentEl.createEl('p', {
+				text: 'Collections let you organize people across family groups. Leave empty to remove.',
+				cls: 'setting-item-description'
+			});
+			helpText.style.marginTop = '8px';
+			helpText.style.fontSize = '0.9em';
+			helpText.style.color = 'var(--text-muted)';
+
+			const buttonContainer = modal.contentEl.createDiv({ cls: 'modal-button-container' });
+			buttonContainer.style.display = 'flex';
+			buttonContainer.style.gap = '8px';
+			buttonContainer.style.justifyContent = 'flex-end';
+			buttonContainer.style.marginTop = '16px';
+
+			const saveBtn = buttonContainer.createEl('button', {
+				text: 'Save',
+				cls: 'mod-cta'
+			});
+			saveBtn.addEventListener('click', async () => {
+				const collection = input.value.trim();
+
+				// Update or remove collection in frontmatter
+				await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+					if (collection) {
+						frontmatter.collection = collection;
+					} else {
+						delete frontmatter.collection;
+					}
+				});
+
+				new Notice(collection
+					? `Collection set to "${collection}"`
+					: 'Collection removed'
 				);
 
 				modal.close();

@@ -208,6 +208,9 @@ export class ControlCenterModal extends Modal {
 			case 'data-entry':
 				this.showDataEntryTab();
 				break;
+			case 'collections':
+				this.showCollectionsTab();
+				break;
 			case 'tree-generation':
 				this.showTreeGenerationTab();
 				break;
@@ -2558,6 +2561,163 @@ export class ControlCenterModal extends Modal {
 		} catch (error) {
 			logger.error('gedcom', `GEDCOM import failed: ${error.message}`);
 			new Notice(`Failed to import GEDCOM: ${error.message}`);
+		}
+	}
+
+	/**
+	 * Show Collections tab
+	 */
+	private async showCollectionsTab(): Promise<void> {
+		const container = this.contentContainer;
+
+		// Browse Mode Card
+		const browseCard = this.createCard({
+			title: 'Browse by',
+			icon: 'folder',
+			subtitle: 'Choose how to organize and view people'
+		});
+
+		const browseContent = browseCard.createDiv({ cls: 'crc-card__content' });
+
+		// Browse mode selection
+		const browseModes = [
+			{ id: 'all', label: 'All people', description: 'Show everyone in the vault' },
+			{ id: 'families', label: 'Detected families', description: 'Auto-detected family groups' },
+			{ id: 'collections', label: 'My collections', description: 'User-defined collections' }
+		];
+
+		let selectedMode = 'families'; // Default to families
+
+		browseModes.forEach(mode => {
+			const modeOption = browseContent.createDiv({ cls: 'crc-radio-option' });
+
+			const radio = modeOption.createEl('input', {
+				type: 'radio',
+				attr: { name: 'browse-mode', value: mode.id }
+			});
+			radio.checked = mode.id === selectedMode;
+
+			const label = modeOption.createEl('label');
+			label.createEl('div', { cls: 'crc-radio-label', text: mode.label });
+			label.createEl('div', { cls: 'crc-radio-description', text: mode.description });
+
+			radio.addEventListener('change', async () => {
+				if (radio.checked) {
+					selectedMode = mode.id;
+					await this.updateCollectionsList(container, selectedMode);
+				}
+			});
+		});
+
+		container.appendChild(browseCard);
+
+		// Collections List Card
+		await this.updateCollectionsList(container, selectedMode);
+	}
+
+	/**
+	 * Update the collections list based on selected browse mode
+	 */
+	private async updateCollectionsList(container: HTMLElement, mode: string): Promise<void> {
+		// Remove existing list card if present
+		const existingList = container.querySelector('.crc-collections-list');
+		if (existingList) {
+			existingList.remove();
+		}
+
+		const graphService = new FamilyGraphService(this.app);
+
+		if (mode === 'all') {
+			// Show all people
+			await graphService.getTotalPeopleCount(); // This loads the cache
+			const allPeople = graphService.getAllPeople();
+
+			const listCard = this.createCard({
+				title: `All people (${allPeople.length})`,
+				icon: 'users',
+				subtitle: 'Everyone in your vault'
+			});
+			listCard.addClass('crc-collections-list');
+
+			const listContent = listCard.createDiv({ cls: 'crc-card__content' });
+			listContent.createEl('p', {
+				cls: 'crc-text--muted',
+				text: `Found ${allPeople.length} ${allPeople.length === 1 ? 'person' : 'people'} in your vault.`
+			});
+
+			container.appendChild(listCard);
+
+		} else if (mode === 'families') {
+			// Show detected families
+			const components = await graphService.findAllFamilyComponents();
+
+			const listCard = this.createCard({
+				title: `Detected families (${components.length})`,
+				icon: 'users',
+				subtitle: 'Auto-detected family groups'
+			});
+			listCard.addClass('crc-collections-list');
+
+			const listContent = listCard.createDiv({ cls: 'crc-card__content' });
+
+			if (components.length === 0) {
+				listContent.createEl('p', {
+					cls: 'crc-text--muted',
+					text: 'No families found. Add some person notes to get started.'
+				});
+			} else {
+				components.forEach((component, index) => {
+					const familyItem = listContent.createDiv({ cls: 'crc-collection-item' });
+
+					const familyName = component.collectionName || `Family ${index + 1}`;
+					const familyHeader = familyItem.createDiv({ cls: 'crc-collection-header' });
+					familyHeader.createEl('strong', { text: familyName });
+					familyHeader.createEl('span', {
+						cls: 'crc-badge',
+						text: `${component.size} ${component.size === 1 ? 'person' : 'people'}`
+					});
+
+					familyItem.createEl('div', {
+						cls: 'crc-text--muted',
+						text: `Representative: ${component.representative.name}`
+					});
+				});
+			}
+
+			container.appendChild(listCard);
+
+		} else if (mode === 'collections') {
+			// Show user collections
+			const collections = await graphService.getUserCollections();
+
+			const listCard = this.createCard({
+				title: `My collections (${collections.length})`,
+				icon: 'folder',
+				subtitle: 'User-defined collections'
+			});
+			listCard.addClass('crc-collections-list');
+
+			const listContent = listCard.createDiv({ cls: 'crc-card__content' });
+
+			if (collections.length === 0) {
+				listContent.createEl('p', {
+					cls: 'crc-text--muted',
+					text: 'No collections yet. Right-click a person note and select "Set collection" to create one.'
+				});
+			} else {
+				collections.forEach(collection => {
+					const collectionItem = listContent.createDiv({ cls: 'crc-collection-item' });
+
+					const collectionHeader = collectionItem.createDiv({ cls: 'crc-collection-header' });
+					collectionHeader.createEl('strong', { text: collection.name });
+					collectionHeader.createEl('span', {
+						cls: 'crc-badge',
+						text: `${collection.size} ${collection.size === 1 ? 'person' : 'people'}`
+					});
+				});
+			}
+
+			container.appendChild(listCard);
 		}
 	}
 

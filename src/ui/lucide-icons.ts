@@ -93,6 +93,12 @@ export const TAB_CONFIGS: TabConfig[] = [
 		description: 'Create new person notes'
 	},
 	{
+		id: 'collections',
+		name: 'Collections',
+		icon: 'folder',
+		description: 'Browse and organize family groups and collections'
+	},
+	{
 		id: 'tree-generation',
 		name: 'Tree Generation',
 		icon: 'git-branch',

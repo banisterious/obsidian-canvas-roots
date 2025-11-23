@@ -33,6 +33,9 @@ export interface PersonNode {
 
 	// Collection naming (optional)
 	collectionName?: string;
+
+	// User-defined collection (optional)
+	collection?: string;
 }
 
 /**
@@ -205,7 +208,7 @@ export class FamilyGraphService {
 		const components: Array<{ representative: PersonNode; size: number; people: PersonNode[]; collectionName?: string }> = [];
 
 		// BFS to find each connected component
-		for (const [crId, person] of this.personCache) {
+		for (const [crId] of this.personCache) {
 			if (visited.has(crId)) continue;
 
 			const component: PersonNode[] = [];
@@ -260,6 +263,44 @@ export class FamilyGraphService {
 		components.sort((a, b) => b.size - a.size);
 
 		return components;
+	}
+
+	/**
+	 * Gets all user-defined collections
+	 * Returns collections grouped by the 'collection' property
+	 */
+	async getUserCollections(): Promise<Array<{ name: string; people: PersonNode[]; size: number }>> {
+		// Ensure cache is loaded
+		if (this.personCache.size === 0) {
+			await this.loadPersonCache();
+		}
+
+		const peopleByCollection = new Map<string, PersonNode[]>();
+
+		// Group people by their collection property
+		for (const person of this.personCache.values()) {
+			if (person.collection) {
+				if (!peopleByCollection.has(person.collection)) {
+					peopleByCollection.set(person.collection, []);
+				}
+				peopleByCollection.get(person.collection)!.push(person);
+			}
+		}
+
+		// Convert to array and add size
+		const collections = Array.from(peopleByCollection.entries()).map(([name, people]) => ({
+			name,
+			people,
+			size: people.length
+		}));
+
+		// Sort by size (largest first), then alphabetically
+		collections.sort((a, b) => {
+			if (b.size !== a.size) return b.size - a.size;
+			return a.name.localeCompare(b.name);
+		});
+
+		return collections;
 	}
 
 	/**
@@ -574,7 +615,8 @@ export class FamilyGraphService {
 			spouseCrIds,
 			spouses, // Enhanced spouse relationships with metadata (if present)
 			childrenCrIds, // Now populated from frontmatter
-			collectionName: fm.collection_name // Optional collection name
+			collectionName: fm.collection_name, // Optional collection name
+			collection: fm.collection // Optional user-defined collection
 		};
 	}
 
