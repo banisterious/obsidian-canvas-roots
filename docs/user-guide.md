@@ -1,6 +1,6 @@
 # Canvas Roots: User Guide
 
-> **Version:** v0.1.2-alpha
+> **Version:** v0.2.1-beta
 > **Last Updated:** 2025-11-23
 
 This guide covers the complete workflow for using Canvas Roots to create and maintain family trees in Obsidian.
@@ -16,7 +16,8 @@ This guide covers the complete workflow for using Canvas Roots to create and mai
 5. [Maintaining Trees](#maintaining-trees)
 6. [GEDCOM Import](#gedcom-import)
 7. [Advanced Styling](#advanced-styling)
-8. [Tips & Best Practices](#tips--best-practices)
+8. [Excalidraw Export](#excalidraw-export)
+9. [Tips & Best Practices](#tips--best-practices)
 
 ---
 
@@ -495,6 +496,113 @@ For styling beyond the JSON Canvas spec, use the [Advanced Canvas](https://githu
 4. Use "Regenerate canvas" to update tree structure while preserving Advanced Canvas styling
 
 **Note:** Advanced Canvas features may not be portable to other Canvas viewers.
+
+---
+
+## Excalidraw Export
+
+Canvas Roots can export family tree canvases to [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) format, enabling manual annotation, hand-drawn styling, and freeform customization while preserving the genealogical layout.
+
+### Why Export to Excalidraw?
+
+Excalidraw provides drawing capabilities not available in standard Canvas:
+
+- **Annotations**: Add handwritten notes, highlights, and comments directly on the tree
+- **Custom styling**: Apply hand-drawn aesthetics, colors, and shapes
+- **Additional elements**: Draw family crests, photo frames, decorative borders
+- **Presentation mode**: Create polished diagrams for sharing or presentation
+- **Whiteboard features**: Collaborative editing and real-time drawing
+
+The export preserves your tree's structure (node positions, colors, connections) while converting to an editable Excalidraw drawing.
+
+### How to Export
+
+**Method 1: Context Menu (Recommended)**
+1. Right-click on the canvas tab, file, or three-dot menu
+2. Select **"Export to Excalidraw"**
+3. The Excalidraw file opens automatically in a new tab
+
+**Method 2: Command Palette**
+1. Open the canvas you want to export
+2. Press `Ctrl/Cmd + P`
+3. Type "Canvas Roots: Export to Excalidraw"
+4. Press Enter
+
+### What Gets Exported
+
+**Preserved from Canvas:**
+- ✅ Node positions (automatically normalized to positive coordinates)
+- ✅ Node sizes and dimensions
+- ✅ Node colors (converted to Excalidraw color scheme)
+- ✅ Person names as text labels
+- ✅ Relationship connections as arrows
+- ✅ Family tree structure and layout
+
+**Converted to Excalidraw Format:**
+- Canvas nodes → Excalidraw rectangles
+- Node labels → Excalidraw text elements
+- Edges → Excalidraw arrows
+- Colors → Excalidraw-compatible color palette
+
+**File Structure:**
+The exported `.excalidraw.md` file contains:
+- Text elements list (for search/indexing)
+- Complete Excalidraw JSON drawing data
+- Obsidian-compatible markdown format
+
+### After Export
+
+Once exported, you can:
+
+1. **Edit in Excalidraw**: Double-click the `.excalidraw.md` file to open in Excalidraw plugin
+2. **Annotate freely**: Add drawings, shapes, text, and colors
+3. **Customize styling**: Change fonts, line styles, hand-drawn effects
+4. **Share or present**: Export as PNG, SVG, or share the markdown file
+
+**Important Notes:**
+- The exported Excalidraw file is a **one-time snapshot** of the Canvas tree
+- Changes to person notes or relationships **will not update** the Excalidraw file
+- To update: re-export from Canvas after regenerating the tree
+- Excalidraw edits are preserved in the `.excalidraw.md` file itself
+
+### Workflow Example
+
+**Research → Canvas → Excalidraw → Presentation**
+
+1. **Build tree in Canvas**: Use Canvas Roots to generate and style your family tree
+2. **Export to Excalidraw**: Convert the structured tree to editable drawing
+3. **Annotate and enhance**: Add photos, dates, notes, decorative elements
+4. **Present or share**: Export polished diagram for presentations or publications
+
+**Iterative Updates:**
+
+1. Research and update person notes with new relationships
+2. Regenerate Canvas tree to reflect updates
+3. Re-export to Excalidraw (creates new file or overwrites)
+4. Re-apply annotations as needed
+
+### Requirements
+
+- [Excalidraw plugin](https://github.com/zsviczian/obsidian-excalidraw-plugin) must be installed and enabled
+- Canvas file must be a valid Canvas Roots-generated family tree
+- Excalidraw files are stored alongside Canvas files (same vault location)
+
+### Troubleshooting
+
+**Excalidraw file appears blank:**
+- Ensure Excalidraw plugin is installed and up-to-date
+- Check Canvas Roots version (export fixes in v0.2.1+)
+- Try re-exporting the Canvas
+
+**Nodes positioned incorrectly:**
+- Canvas Roots automatically normalizes negative coordinates to positive space
+- If issues persist, try regenerating the Canvas first, then re-export
+
+**Missing connections:**
+- Verify the Canvas tree generated correctly before export
+- Check that all person nodes have valid relationships
+
+For more help, see [troubleshooting section](#troubleshooting) or open an issue on [GitHub](https://github.com/banisterious/obsidian-canvas-roots/issues).
 
 ---
 
