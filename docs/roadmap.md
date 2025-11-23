@@ -93,6 +93,8 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 - Collection filtering and statistics
 - Cross-collection connection detection
 - Obsidian Bases integration for bulk collection editing
+- Collection overview canvas with links to all family trees
+- Automatic index canvas creation when generating multiple trees
 
 ### GEDCOM Export
 
@@ -130,6 +132,14 @@ See [architecture/collections.md](architecture/collections.md) for complete ADR.
 - "Generate all family trees" folder action
 - Batch tree generation with progress tracking
 - Folder-level statistics and health reports
+
+### Canvas Navigation & Organization
+
+- Split large canvases by branch, generation, or geography
+- Linked branch canvases with navigation nodes
+- Ancestor/descendant canvas linking for same root person
+- Canvas-to-canvas file nodes for easy navigation
+- Master overview canvases with links to detailed views
 
 ### World-Building Features
 
