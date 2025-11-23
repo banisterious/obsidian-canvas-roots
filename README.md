@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-> **⚠️ Alpha Status (v0.1.1):** Canvas Roots is in early alpha release. Core features are stable and well-tested (GEDCOM import, tree generation, canvas styling), but some advanced features are not yet implemented. See [Roadmap](docs/roadmap.md) for details.
+> **⚠️ Alpha Status (v0.1.2):** Canvas Roots is in early alpha release. Core features are stable and well-tested (GEDCOM import, tree generation, canvas styling), but some advanced features are not yet implemented. See [Roadmap](docs/roadmap.md) for details.
 
 **Canvas Roots** is an Obsidian plugin that automatically generates complex family trees directly onto the Canvas using specialized genealogical layout algorithms for non-overlapping, relationship-aware positioning.
 
@@ -9,7 +9,7 @@ This plugin is designed for genealogists, historians, and world-builders. It tra
 
 ## ✨ Key Features
 
-### Available in Alpha (v0.1.1)
+### Available in Alpha (v0.1.2)
 
 - **GEDCOM Import:** Import family trees from standard GEDCOM (.ged) files with robust error handling. Supports files from popular genealogy software (Gramps, Ancestry, FamilySearch, etc.).
 
@@ -32,6 +32,8 @@ This plugin is designed for genealogists, historians, and world-builders. It tra
 - **Dual Storage System:** Combines human-friendly wikilinks with persistent `cr_id` references for robust relationship tracking that survives file renames and moves.
 
 - **YAML-First Data:** Uses native YAML frontmatter for maximum compatibility with Dataview, Bases, and other Obsidian tools.
+
+- **Context Menu Actions:** Right-click person notes to add relationships, validate data integrity, or find canvases. Right-click folders to scan for relationship issues or import GEDCOM files. Right-click canvas files to regenerate or view statistics. Full desktop and mobile support.
 
 ### Planned Features
 
