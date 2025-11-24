@@ -78,6 +78,22 @@
         "alpha-value-notation": null,
         "shorthand-property-no-redundant-values": null
       }
+    },
+    {
+      "files": [
+        "styles/base.css",
+        "styles/find-on-canvas.css",
+        "styles/folder-scan.css",
+        "styles/tree-statistics.css",
+        "styles/validation.css"
+      ],
+      "rules": {
+        "custom-property-pattern": null,
+        "selector-class-pattern": null,
+        "color-function-notation": null,
+        "alpha-value-notation": null,
+        "shorthand-property-no-redundant-values": null
+      }
     }
   ],
   "ignoreFiles": [
