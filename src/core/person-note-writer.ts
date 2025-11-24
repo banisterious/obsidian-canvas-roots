@@ -74,23 +74,14 @@ export async function createPersonNote(
 	// Generate cr_id if not provided
 	const crId = person.crId || generateCrId();
 
-	// Build frontmatter
+	// Build frontmatter with essential properties
+	// Essential properties are always included (per Guide documentation)
 	const frontmatter: Record<string, any> = {
-		cr_id: crId
+		cr_id: crId,
+		name: person.name || '',
+		born: person.birthDate || '',
+		died: person.deathDate || ''
 	};
-
-	// Add optional fields
-	if (person.name) {
-		frontmatter.name = person.name;
-	}
-
-	if (person.birthDate) {
-		frontmatter.born = person.birthDate;
-	}
-
-	if (person.deathDate) {
-		frontmatter.died = person.deathDate;
-	}
 
 	if (person.birthPlace) {
 		frontmatter.birth_place = person.birthPlace;
@@ -193,6 +184,24 @@ export async function createPersonNote(
 			}
 			logger.debug('children', `Added (id only): ${JSON.stringify(person.childCrId)}`);
 		}
+	}
+
+	// Ensure all essential properties are present (even if empty)
+	// This matches the "Add essential properties" feature expectations
+	if (!('father' in frontmatter) && !('father_id' in frontmatter)) {
+		frontmatter.father = '';
+	}
+	if (!('mother' in frontmatter) && !('mother_id' in frontmatter)) {
+		frontmatter.mother = '';
+	}
+	if (!('spouse' in frontmatter) && !('spouse_id' in frontmatter)) {
+		frontmatter.spouses = [];
+	}
+	if (!('children' in frontmatter) && !('children_id' in frontmatter)) {
+		frontmatter.children = [];
+	}
+	if (!('group_name' in frontmatter)) {
+		frontmatter.group_name = '';
 	}
 
 	logger.debug('frontmatter', `Final: ${JSON.stringify(frontmatter)}`);

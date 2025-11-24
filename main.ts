@@ -277,17 +277,6 @@ export default class CanvasRootsPlugin extends Plugin {
 
 								submenu.addSeparator();
 
-								submenu.addItem((subItem) => {
-									subItem
-										.setTitle('Add essential properties')
-										.setIcon('file-plus')
-										.onClick(async () => {
-											await this.addEssentialProperties([file]);
-										});
-								});
-
-								submenu.addSeparator();
-
 								// Add relationship submenu
 								const relationshipSubmenu = submenu.addItem((subItem) => {
 									return subItem
@@ -516,6 +505,50 @@ export default class CanvasRootsPlugin extends Plugin {
 							});
 						}
 					}
+
+					// Add essential properties option for ALL markdown files
+					// (appears outside the cr_id check so it works on blank notes too)
+					const fileCache = this.app.metadataCache.getFileCache(file);
+					const frontmatter = fileCache?.frontmatter || {};
+
+					// Check if all essential properties exist
+					// Note: Relationships can be stored as wikilinks OR _id properties (dual storage)
+					const hasAllProperties =
+						frontmatter.cr_id &&
+						frontmatter.name &&
+						('born' in frontmatter) &&
+						('died' in frontmatter) &&
+						(('father' in frontmatter) || ('father_id' in frontmatter)) &&
+						(('mother' in frontmatter) || ('mother_id' in frontmatter)) &&
+						(('spouses' in frontmatter) || ('spouse' in frontmatter) || ('spouse_id' in frontmatter)) &&
+						(('children' in frontmatter) || ('children_id' in frontmatter)) &&
+						('group_name' in frontmatter);
+
+					// Only show if missing some properties
+					if (!hasAllProperties) {
+						menu.addSeparator();
+
+						if (useSubmenu) {
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential properties')
+									.setIcon('file-plus')
+									.onClick(async () => {
+										await this.addEssentialProperties([file]);
+									});
+							});
+						} else {
+							// Mobile
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential properties')
+									.setIcon('file-plus')
+									.onClick(async () => {
+										await this.addEssentialProperties([file]);
+									});
+							});
+						}
+					}
 				}
 
 				// Folders: Set as people folder
@@ -655,6 +688,53 @@ export default class CanvasRootsPlugin extends Plugin {
 								});
 						});
 					}
+				}
+			})
+		);
+
+		// Add context menu for multi-file selections
+		this.registerEvent(
+			this.app.workspace.on('files-menu', (menu, files) => {
+				// Only show for multiple markdown files
+				const markdownFiles = files.filter(f => f instanceof TFile && f.extension === 'md') as TFile[];
+
+				if (markdownFiles.length === 0) return;
+
+				// Check if any files are missing essential properties
+				let hasMissingProperties = false;
+				for (const file of markdownFiles) {
+					const fileCache = this.app.metadataCache.getFileCache(file);
+					const frontmatter = fileCache?.frontmatter || {};
+
+					// Check if all essential properties exist (accounting for dual storage)
+					const hasAllProperties =
+						frontmatter.cr_id &&
+						frontmatter.name &&
+						('born' in frontmatter) &&
+						('died' in frontmatter) &&
+						(('father' in frontmatter) || ('father_id' in frontmatter)) &&
+						(('mother' in frontmatter) || ('mother_id' in frontmatter)) &&
+						(('spouses' in frontmatter) || ('spouse' in frontmatter) || ('spouse_id' in frontmatter)) &&
+						(('children' in frontmatter) || ('children_id' in frontmatter)) &&
+						('group_name' in frontmatter);
+
+					if (!hasAllProperties) {
+						hasMissingProperties = true;
+						break;
+					}
+				}
+
+				// Only show menu item if at least one file is missing properties
+				if (hasMissingProperties) {
+					menu.addSeparator();
+					menu.addItem((item) => {
+						item
+							.setTitle(`Canvas Roots: Add essential properties (${markdownFiles.length} files)`)
+							.setIcon('file-plus')
+							.onClick(async () => {
+								await this.addEssentialProperties(markdownFiles);
+							});
+					});
 				}
 			})
 		);
