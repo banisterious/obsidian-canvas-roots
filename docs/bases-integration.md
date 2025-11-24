@@ -351,16 +351,48 @@ Don't try to make one view do everything. Create specialized views for different
 - Creating complex narrative content
 - Linking to external research
 
-### Bi-Directional Sync
+### Bidirectional Relationship Sync
 
-If you enable bi-directional relationship sync in Canvas Roots settings:
+Canvas Roots automatically maintains reciprocal relationships to ensure data consistency across your family tree.
 
-1. Edit `father: [[John]]` in a Base
-2. Canvas Roots automatically adds `child: [[Current Note]]` to John's note
-3. The change appears immediately in the Base (if John is visible)
-4. The Canvas tree reflects the new relationship when re-laid out
+**How It Works:**
 
-This ensures relationship consistency across your entire tree.
+When bidirectional sync is enabled (default), editing relationships in Bases automatically updates both person notes:
+
+1. Edit `father: [[John Smith]]` in a Bases row for Alice
+2. Canvas Roots automatically adds `children: [[Alice]]` to John's note
+3. The change appears immediately in Bases (if John is visible in the table)
+4. Canvas trees automatically reflect the bidirectional relationship
+
+**What Gets Synced:**
+
+- **Parent → Child**: Setting `father`/`mother` adds person to parent's `children` array
+- **Spouse ↔ Spouse**: Adding `spouse` creates reciprocal spouse link in both notes
+- **Indexed Spouses**: Full support for `spouse1`, `spouse2`, etc. with `spouse1_id`, `spouse2_id`
+
+**Enabling/Disabling:**
+
+Go to Settings → Canvas Roots → Data section:
+
+- **Enable bidirectional relationship sync**: Master toggle (default: ON)
+- **Sync on file modify**: Auto-sync when editing notes or Bases (default: ON)
+
+When sync is enabled, relationship changes made anywhere (Bases, frontmatter editor, or programmatically) are automatically propagated.
+
+**Example Workflow:**
+
+```yaml
+# In Bases, edit Alice's row:
+father: [[John Smith]]
+
+# Canvas Roots automatically updates John Smith's note:
+children: ["[[Alice]]"]
+children_id: ["alice-cr-id-123"]
+
+# Both changes are immediate and bidirectional
+```
+
+This ensures relationship consistency across your entire tree and eliminates manual duplicate entry.
 
 ## Additional Resources
 
