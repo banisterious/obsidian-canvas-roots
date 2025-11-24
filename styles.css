@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-11-24 21:53:02 UTC
+ * - Generated: 2025-11-24 21:57:38 UTC
  * - Components: 15 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -187,7 +187,7 @@
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 1556 lines, 28.55 KB */
+/* Component Size: 1615 lines, 29.79 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -1717,6 +1717,65 @@
 }
 
 /**
+ * Export control with dropdown
+ */
+.crc-preview-export {
+  position: relative;
+  display: inline-block;
+}
+
+.crc-preview-export-btn {
+  padding: 4px 12px;
+  font-size: 13px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--interactive-normal);
+  color: var(--text-normal);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.crc-preview-export-btn:hover {
+  background: var(--interactive-hover);
+  border-color: var(--interactive-accent);
+}
+
+.crc-preview-export-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  min-width: 150px;
+}
+
+.crc-preview-export-option {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-normal);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.crc-preview-export-option:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-preview-export-option:first-child {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.crc-preview-export-option:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/**
  * Preview tooltip
  */
 .crc-preview-tooltip {
@@ -2246,11 +2305,11 @@
    ========================================================================== */
 
 /*
- * Build completed: 2025-11-24 21:53:02 UTC
+ * Build completed: 2025-11-24 21:57:38 UTC
  * Components processed: 15
- * Total lines: 2088
- * Total size: 37.49 KB
- * Build duration: 0.01 seconds
+ * Total lines: 2147
+ * Total size: 38.73 KB
+ * Build duration: 0.02 seconds
  *
  * Component breakdown:
  * - variables.css: 31 lines, 0.72 KB
@@ -2260,7 +2319,7 @@
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 1556 lines, 28.55 KB
+ * - modals.css: 1615 lines, 29.79 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB
  * - find-on-canvas.css: 114 lines, 1.97 KB

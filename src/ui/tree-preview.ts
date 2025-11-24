@@ -498,6 +498,130 @@ export class TreePreviewRenderer {
 	}
 
 	/**
+	 * Export preview as PNG image
+	 */
+	async exportAsPNG(): Promise<void> {
+		if (!this.svgElement) {
+			throw new Error('No preview to export');
+		}
+
+		// Clone SVG and prepare for export
+		const svgClone = this.svgElement.cloneNode(true) as SVGElement;
+
+		// Get SVG bounds
+		const bbox = this.svgElement.getBoundingClientRect();
+		const width = bbox.width;
+		const height = bbox.height;
+
+		// Set explicit dimensions on clone
+		svgClone.setAttribute('width', width.toString());
+		svgClone.setAttribute('height', height.toString());
+
+		// Serialize SVG to string
+		const svgString = new XMLSerializer().serializeToString(svgClone);
+		const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+		const url = URL.createObjectURL(svgBlob);
+
+		// Create image and canvas
+		const img = new Image();
+		const canvas = document.createElement('canvas');
+		const scale = 2; // 2x resolution for better quality
+		canvas.width = width * scale;
+		canvas.height = height * scale;
+		const ctx = canvas.getContext('2d');
+
+		if (!ctx) {
+			throw new Error('Failed to get canvas context');
+		}
+
+		// Wait for image to load
+		await new Promise<void>((resolve, reject) => {
+			img.onload = () => {
+				// Scale and draw
+				ctx.scale(scale, scale);
+				ctx.drawImage(img, 0, 0);
+				URL.revokeObjectURL(url);
+
+				// Convert to blob and download
+				canvas.toBlob((blob) => {
+					if (!blob) {
+						reject(new Error('Failed to create PNG blob'));
+						return;
+					}
+					this.downloadBlob(blob, 'tree-preview.png');
+					resolve();
+				}, 'image/png');
+			};
+			img.onerror = () => {
+				URL.revokeObjectURL(url);
+				reject(new Error('Failed to load SVG image'));
+			};
+			img.src = url;
+		});
+	}
+
+	/**
+	 * Export preview as SVG file
+	 */
+	exportAsSVG(): void {
+		if (!this.svgElement) {
+			throw new Error('No preview to export');
+		}
+
+		// Clone SVG
+		const svgClone = this.svgElement.cloneNode(true) as SVGElement;
+
+		// Get computed styles and inline them
+		this.inlineStyles(svgClone);
+
+		// Get SVG bounds
+		const bbox = this.svgElement.getBoundingClientRect();
+		svgClone.setAttribute('width', bbox.width.toString());
+		svgClone.setAttribute('height', bbox.height.toString());
+
+		// Add XML namespace if not present
+		if (!svgClone.getAttribute('xmlns')) {
+			svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+		}
+
+		// Serialize and download
+		const svgString = new XMLSerializer().serializeToString(svgClone);
+		const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+		this.downloadBlob(blob, 'tree-preview.svg');
+	}
+
+	/**
+	 * Inline computed styles into SVG elements for export
+	 */
+	private inlineStyles(element: Element): void {
+		const computedStyle = window.getComputedStyle(element);
+		const styleString = Array.from(computedStyle).reduce((str, property) => {
+			return `${str}${property}:${computedStyle.getPropertyValue(property)};`;
+		}, '');
+
+		if (element instanceof SVGElement) {
+			element.setAttribute('style', styleString);
+		}
+
+		// Recursively inline styles for children
+		Array.from(element.children).forEach(child => this.inlineStyles(child));
+	}
+
+	/**
+	 * Download a blob as a file
+	 */
+	private downloadBlob(blob: Blob, filename: string): void {
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+
+	/**
 	 * Cleanup resources (call when disposing the renderer)
 	 */
 	dispose(): void {

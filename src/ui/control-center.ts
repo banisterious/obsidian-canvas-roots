@@ -2426,6 +2426,39 @@ export class ControlCenterModal extends Modal {
 			}
 		}
 
+		// Export button with dropdown
+		const exportControl = previewControlsRow.createDiv({ cls: 'crc-preview-export' });
+		const exportBtn = exportControl.createEl('button', {
+			text: 'Export',
+			cls: 'crc-preview-export-btn'
+		});
+
+		// Create dropdown menu (hidden by default)
+		const exportDropdown = exportControl.createDiv({ cls: 'crc-preview-export-dropdown' });
+		exportDropdown.style.display = 'none';
+
+		const exportPNG = exportDropdown.createEl('div', {
+			text: 'Export as PNG',
+			cls: 'crc-preview-export-option'
+		});
+
+		const exportSVG = exportDropdown.createEl('div', {
+			text: 'Export as SVG',
+			cls: 'crc-preview-export-option'
+		});
+
+		// Toggle dropdown on button click
+		exportBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const isVisible = exportDropdown.style.display === 'block';
+			exportDropdown.style.display = isVisible ? 'none' : 'block';
+		});
+
+		// Close dropdown when clicking outside
+		document.addEventListener('click', () => {
+			exportDropdown.style.display = 'none';
+		});
+
 		// Preview container
 		this.treePreviewContainer = previewContent.createDiv({
 			cls: 'crc-tree-preview-container'
@@ -2458,6 +2491,27 @@ export class ControlCenterModal extends Modal {
 		colorSchemeSelect.addEventListener('change', () => {
 			const scheme = colorSchemeSelect.value as ColorScheme;
 			this.treePreviewRenderer?.setColorScheme(scheme);
+		});
+
+		// Wire up export options
+		exportPNG.addEventListener('click', async () => {
+			try {
+				await this.treePreviewRenderer?.exportAsPNG();
+				new Notice('Preview exported as PNG');
+				exportDropdown.style.display = 'none';
+			} catch (err) {
+				new Notice('Failed to export preview: ' + (err as Error).message);
+			}
+		});
+
+		exportSVG.addEventListener('click', () => {
+			try {
+				this.treePreviewRenderer?.exportAsSVG();
+				new Notice('Preview exported as SVG');
+				exportDropdown.style.display = 'none';
+			} catch (err) {
+				new Notice('Failed to export preview: ' + (err as Error).message);
+			}
 		});
 
 		// Wire up preview button
