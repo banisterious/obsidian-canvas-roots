@@ -1,7 +1,7 @@
 # Canvas Roots: User Guide
 
 > **Version:** v0.2.1-beta
-> **Last Updated:** 2025-11-23
+> **Last Updated:** 2025-01-23
 
 This guide covers the complete workflow for using Canvas Roots to create and maintain family trees in Obsidian.
 
@@ -11,13 +11,14 @@ This guide covers the complete workflow for using Canvas Roots to create and mai
 
 1. [Getting Started](#getting-started)
 2. [Data Entry](#data-entry)
-3. [Collections & Groups](#collections--groups)
-4. [Generating Trees](#generating-trees)
-5. [Maintaining Trees](#maintaining-trees)
-6. [GEDCOM Import](#gedcom-import)
-7. [Advanced Styling](#advanced-styling)
-8. [Excalidraw Export](#excalidraw-export)
-9. [Tips & Best Practices](#tips--best-practices)
+3. [Bidirectional Relationship Sync](#bidirectional-relationship-sync)
+4. [Collections & Groups](#collections--groups)
+5. [Generating Trees](#generating-trees)
+6. [Maintaining Trees](#maintaining-trees)
+7. [GEDCOM Import](#gedcom-import)
+8. [Advanced Styling](#advanced-styling)
+9. [Excalidraw Export](#excalidraw-export)
+10. [Tips & Best Practices](#tips--best-practices)
 
 ---
 
@@ -128,6 +129,107 @@ Use [Obsidian Bases](https://help.obsidian.md/bases) to manage multiple family m
 4. Changes automatically sync to person notes
 
 See [bases-integration.md](bases-integration.md) for detailed instructions and templates.
+
+---
+
+## Bidirectional Relationship Sync
+
+Canvas Roots automatically maintains **reciprocal relationships** across your family tree to ensure data consistency. When you create or delete a relationship in one person's note, the inverse relationship is automatically updated in the related person's note.
+
+### How It Works
+
+When bidirectional sync is **enabled** (default), relationship changes automatically update both person notes:
+
+**Example - Adding a parent:**
+1. You edit Alice's note and set `father: [[John Smith]]`
+2. Canvas Roots automatically adds `children: [[Alice]]` to John's note
+3. Both notes now reflect the bidirectional relationship
+4. Changes appear immediately in Bases (if both people are visible in the table)
+5. Canvas trees automatically reflect the relationship
+
+**Example - Deleting a parent:**
+1. You clear Alice's `father` field (remove `[[John Smith]]`)
+2. Canvas Roots automatically removes Alice from John's `children` array
+3. The reciprocal link is cleaned up automatically
+
+### What Gets Synced
+
+- **Parent → Child**: Setting `father`/`mother` automatically adds person to parent's `children` array (with both wikilink and `children_id`)
+- **Spouse ↔ Spouse**: Adding `spouse` creates reciprocal spouse link in both notes (both simple and indexed formats)
+- **Indexed Spouses**: Full support for `spouse1`, `spouse2`, etc. with corresponding `spouse1_id`, `spouse2_id`
+- **Deletions**: Removing a relationship automatically removes the reciprocal link
+- **Marriage Metadata**: Indexed spouse deletion also cleans up associated marriage dates, locations, and divorce dates
+
+### Sync Triggers
+
+Bidirectional sync activates in these situations:
+
+- **File edits**: When you edit relationships in Bases, frontmatter editor, or note body
+- **Data entry**: When you create new person notes with relationships via Control Center
+- **GEDCOM imports**: After importing a GEDCOM file, all relationships are automatically synced across all imported person notes
+- **External editors**: When you edit files externally (VS Code, Vim, etc.) while Obsidian is running
+
+### Enable or Disable
+
+Go to **Settings → Canvas Roots → Data** section:
+
+- **Enable bidirectional relationship sync**: Master toggle (default: **ON**)
+- **Sync on file modify**: Auto-sync when editing notes or Bases (default: **ON**)
+
+When sync is enabled, relationship changes made anywhere (Bases, frontmatter editor, external editors, or programmatically) are automatically propagated to both person notes.
+
+**Note:** Disabling "Sync on file modify" while keeping the master toggle enabled means sync will only occur during specific operations like GEDCOM import and manual data entry via Control Center.
+
+### Known Limitations
+
+Bidirectional sync works by tracking relationship changes over time. There are a few edge cases to be aware of:
+
+1. **First edit after plugin load**: The first time you edit a person note after loading/reloading Obsidian, only additions will be synced (not deletions). This is because the plugin doesn't have a previous state to compare against yet. Subsequent edits will sync both additions and deletions correctly.
+
+2. **Sync disabled during deletion**: If you disable bidirectional sync (or "Sync on file modify"), delete relationships, and then re-enable sync, the reciprocal links won't be automatically cleaned up. You'll need to manually remove them or use the "Validate relationships" command to find orphaned links.
+
+3. **Bulk external edits**: If you edit many files externally (e.g., in VS Code) while Obsidian is closed, the sync will only see the final state when you reload Obsidian, not the intermediate changes.
+
+These limitations are expected behavior and don't affect normal usage. The sync works reliably for day-to-day editing in Obsidian, Bases, or external editors while Obsidian is running.
+
+### Best Practices
+
+**Do:**
+- ✅ Keep bidirectional sync enabled for automatic relationship maintenance
+- ✅ Edit relationships in Bases or frontmatter editor with sync enabled
+- ✅ Use "Validate relationships" command periodically to catch any inconsistencies
+- ✅ Trust the sync to maintain reciprocal relationships automatically
+
+**Don't:**
+- ❌ Manually maintain reciprocal relationships (let the sync do it for you)
+- ❌ Disable sync unless you have a specific reason and understand the implications
+- ❌ Bulk edit files externally while Obsidian is closed if you need deletion tracking
+
+### Troubleshooting
+
+**Problem:** Reciprocal relationships aren't being created.
+
+**Solutions:**
+- Verify bidirectional sync is enabled in Settings → Canvas Roots → Data
+- Check that "Sync on file modify" is enabled
+- Ensure the person notes have valid `cr_id` fields
+- Check console logs (open Developer Tools) for sync errors
+
+**Problem:** Orphaned relationships after deleting.
+
+**Solutions:**
+- Use "Validate relationships" command to find orphaned links
+- Ensure sync was enabled when you made the deletion
+- Manually clean up orphaned links if sync was disabled during deletion
+
+**Problem:** Sync not working with external editor.
+
+**Solutions:**
+- Ensure Obsidian is running when editing externally
+- Wait for Obsidian to detect file changes (usually automatic)
+- Check that files have valid frontmatter with `cr_id`
+
+For more detailed information about bidirectional sync with Bases integration, see [bases-integration.md](bases-integration.md).
 
 ---
 

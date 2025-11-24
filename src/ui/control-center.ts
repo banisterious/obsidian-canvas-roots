@@ -1302,6 +1302,69 @@ export class ControlCenterModal extends Modal {
 
 		container.appendChild(gedcomExportCard);
 
+		// Bidirectional Relationship Sync Card
+		const bidirectionalSyncCard = this.createCard({
+			title: 'Bidirectional relationship sync',
+			icon: 'refresh-cw'
+		});
+		const bidirectionalSyncContent = bidirectionalSyncCard.querySelector('.crc-card__content') as HTMLElement;
+
+		bidirectionalSyncContent.createEl('p', {
+			text: 'Canvas Roots automatically maintains reciprocal relationships to ensure data consistency across your family tree.',
+			cls: 'crc-mb-3'
+		});
+
+		// How It Works
+		const howItWorksSection = bidirectionalSyncContent.createDiv({ cls: 'crc-mb-4' });
+		howItWorksSection.createEl('h4', { text: 'How it works', cls: 'crc-mb-2' });
+		howItWorksSection.createEl('p', {
+			text: 'When enabled (default), editing relationships automatically updates both person notes:',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+
+		const howItWorksList = howItWorksSection.createEl('ul', { cls: 'crc-mb-2' });
+		howItWorksList.createEl('li', { text: 'Set someone as a parent → automatically added as child in parent\'s note' });
+		howItWorksList.createEl('li', { text: 'Add a spouse → reciprocal spouse link created in both notes' });
+		howItWorksList.createEl('li', { text: 'Delete a relationship → reciprocal link automatically removed' });
+		howItWorksList.createEl('li', { text: 'Works with Bases edits, frontmatter changes, and external editors' });
+
+		// What Gets Synced
+		const whatSyncedSection = bidirectionalSyncContent.createDiv({ cls: 'crc-mb-4' });
+		whatSyncedSection.createEl('h4', { text: 'What gets synced', cls: 'crc-mb-2' });
+
+		const whatSyncedList = whatSyncedSection.createEl('ul');
+		whatSyncedList.createEl('li', { text: 'Parent → Child: Setting father/mother adds person to parent\'s children array' });
+		whatSyncedList.createEl('li', { text: 'Spouse ↔ Spouse: Adding spouse creates reciprocal link in both notes' });
+		whatSyncedList.createEl('li', { text: 'Indexed spouses: Full support for spouse1, spouse2, etc.' });
+		whatSyncedList.createEl('li', { text: 'Deletions: Removing a relationship removes the reciprocal link' });
+
+		// Settings
+		const settingsSection = bidirectionalSyncContent.createDiv({ cls: 'crc-mb-4' });
+		settingsSection.createEl('h4', { text: 'Enable or disable', cls: 'crc-mb-2' });
+		settingsSection.createEl('p', {
+			text: 'Go to Settings → Canvas Roots → Data section:',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+
+		const settingsList = settingsSection.createEl('ul');
+		settingsList.createEl('li', { text: 'Enable bidirectional relationship sync: Master toggle (default: ON)' });
+		settingsList.createEl('li', { text: 'Sync on file modify: Auto-sync when editing notes (default: ON)' });
+
+		// Known Limitations
+		const limitationsSection = bidirectionalSyncContent.createDiv({ cls: 'crc-info-box' });
+		limitationsSection.createEl('strong', { text: 'Known limitations:' });
+		const limitationsList = limitationsSection.createEl('ul', { cls: 'crc-mt-2' });
+		limitationsList.createEl('li', { text: 'First edit after plugin load: Only additions synced (no previous state to compare)' });
+		limitationsList.createEl('li', { text: 'Sync disabled during deletion: Reciprocal links won\'t be auto-cleaned' });
+		limitationsList.createEl('li', { text: 'Bulk external edits while Obsidian closed: Only final state is synced' });
+
+		limitationsSection.createEl('p', {
+			text: 'These are expected behaviors and don\'t affect normal usage. Sync works reliably for day-to-day editing.',
+			cls: 'crc-mt-2 crc-text-muted crc-font-italic'
+		});
+
+		container.appendChild(bidirectionalSyncCard);
+
 		// Common Tasks Card
 		const tasksCard = this.createCard({
 			title: 'Common tasks',
