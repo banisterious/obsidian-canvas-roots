@@ -393,6 +393,12 @@ Click the **Tree Generation** tab at the top of the Control Center modal.
 - **Vertical**: Generations flow top-to-bottom (traditional pedigree)
 - **Horizontal**: Generations flow left-to-right (compact for wide screens)
 
+**Layout Algorithm:**
+- **Standard**: Default family-chart layout with proper spouse handling (default spacing)
+- **Compact**: 50% tighter spacing for large trees (ideal for 50+ people)
+- **Timeline**: Chronological positioning by birth year (X-axis = time, Y-axis = generation)
+- **Hourglass**: Root person centered with ancestors above and descendants below
+
 **Spacing:**
 - **Horizontal spacing**: Distance between nodes side-by-side
 - **Vertical spacing**: Distance between generations

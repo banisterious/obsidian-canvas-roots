@@ -8,6 +8,8 @@
 import { FamilyTree, PersonNode } from './family-graph';
 import { LayoutEngine, LayoutOptions } from './layout-engine';
 import { FamilyChartLayoutEngine } from './family-chart-layout';
+import { TimelineLayoutEngine } from './timeline-layout';
+import { HourglassLayoutEngine } from './hourglass-layout';
 import { getLogger } from './logging';
 import type { ArrowStyle, SpouseEdgeLabelFormat } from '../settings';
 import type { SpouseRelationship } from '../models/person';
@@ -150,10 +152,14 @@ export interface CanvasGenerationOptions extends LayoutOptions {
 export class CanvasGenerator {
 	private layoutEngine: LayoutEngine;
 	private familyChartLayoutEngine: FamilyChartLayoutEngine;
+	private timelineLayoutEngine: TimelineLayoutEngine;
+	private hourglassLayoutEngine: HourglassLayoutEngine;
 
 	constructor() {
 		this.layoutEngine = new LayoutEngine();
 		this.familyChartLayoutEngine = new FamilyChartLayoutEngine();
+		this.timelineLayoutEngine = new TimelineLayoutEngine();
+		this.hourglassLayoutEngine = new HourglassLayoutEngine();
 	}
 
 	/**
@@ -218,10 +224,21 @@ export class CanvasGenerator {
 			effectiveNodeColorScheme: effectiveStyles.nodeColorScheme
 		});
 
-		// Choose layout engine based on option
-		const layoutResult = opts.useFamilyChartLayout
-			? this.familyChartLayoutEngine.calculateLayout(familyTree, opts)
-			: this.layoutEngine.calculateLayout(familyTree, opts);
+		// Choose layout engine based on layout type
+		let layoutResult;
+		if (layoutType === 'timeline') {
+			// Timeline layout: position by birth year
+			layoutResult = this.timelineLayoutEngine.calculateLayout(familyTree, opts);
+		} else if (layoutType === 'hourglass') {
+			// Hourglass layout: ancestors above, descendants below
+			layoutResult = this.hourglassLayoutEngine.calculateLayout(familyTree, opts);
+		} else if (opts.useFamilyChartLayout) {
+			// Standard/compact: use family-chart for proper spouse handling
+			layoutResult = this.familyChartLayoutEngine.calculateLayout(familyTree, opts);
+		} else {
+			// Fallback: use D3 hierarchical layout
+			layoutResult = this.layoutEngine.calculateLayout(familyTree, opts);
+		}
 
 		// Generate canvas nodes
 		const canvasNodes: CanvasNode[] = [];

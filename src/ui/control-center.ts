@@ -1190,6 +1190,74 @@ export class ControlCenterModal extends Modal {
 
 		container.appendChild(rootPersonCard);
 
+		// Layout Algorithms Card
+		const layoutCard = this.createCard({
+			title: 'Layout algorithms',
+			icon: 'layout'
+		});
+		const layoutContent = layoutCard.querySelector('.crc-card__content') as HTMLElement;
+
+		layoutContent.createEl('p', {
+			text: 'Canvas Roots offers multiple layout algorithms to visualize your family tree in different ways.',
+			cls: 'crc-mb-3'
+		});
+
+		// Standard Layout
+		const standardSection = layoutContent.createDiv({ cls: 'crc-mb-4' });
+		standardSection.createEl('h4', { text: 'Standard', cls: 'crc-mb-2' });
+		standardSection.createEl('p', {
+			text: 'The default family-chart layout with proper spouse handling and hierarchical positioning.',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+
+		// Compact Layout
+		const compactSection = layoutContent.createDiv({ cls: 'crc-mb-4' });
+		compactSection.createEl('h4', { text: 'Compact', cls: 'crc-mb-2' });
+		compactSection.createEl('p', {
+			text: '50% tighter spacing (both horizontal and vertical) - ideal for large family trees.',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+		const compactDetails = compactSection.createEl('ul');
+		compactDetails.createEl('li', { text: 'Same layout algorithm as Standard' });
+		compactDetails.createEl('li', { text: 'Reduces canvas size for better overview' });
+		compactDetails.createEl('li', { text: 'Best for trees with 50+ people' });
+
+		// Timeline Layout
+		const timelineSection = layoutContent.createDiv({ cls: 'crc-mb-4' });
+		timelineSection.createEl('h4', { text: 'Timeline', cls: 'crc-mb-2' });
+		timelineSection.createEl('p', {
+			text: 'Positions people chronologically by birth year, showing which family members were alive during the same time period.',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+		const timelineDetails = timelineSection.createEl('ul');
+		timelineDetails.createEl('li', { text: 'X-axis: Birth year (chronological)' });
+		timelineDetails.createEl('li', { text: 'Y-axis: Generation number' });
+		timelineDetails.createEl('li', { text: 'Estimates positions for missing birth dates' });
+		timelineDetails.createEl('li', { text: 'Falls back to generation layout if no dates available' });
+
+		// Hourglass Layout
+		const hourglassSection = layoutContent.createDiv({ cls: 'crc-mb-4' });
+		hourglassSection.createEl('h4', { text: 'Hourglass', cls: 'crc-mb-2' });
+		hourglassSection.createEl('p', {
+			text: 'Focuses on a single person\'s complete lineage, with ancestors above and descendants below.',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+		const hourglassDetails = hourglassSection.createEl('ul');
+		hourglassDetails.createEl('li', { text: 'Root person centered at Y=0' });
+		hourglassDetails.createEl('li', { text: 'Ancestors positioned above (negative Y)' });
+		hourglassDetails.createEl('li', { text: 'Descendants positioned below (positive Y)' });
+		hourglassDetails.createEl('li', { text: 'Each generation horizontally centered' });
+
+		// How to Select
+		const selectSection = layoutContent.createDiv({ cls: 'crc-info-box' });
+		selectSection.createEl('strong', { text: 'How to select a layout:' });
+		selectSection.createEl('p', {
+			text: 'In the Tree Generation tab, use the "Layout algorithm" dropdown to choose your preferred layout. Canvas filenames will automatically include the layout type (e.g., "Family Tree - John Smith (timeline).canvas").',
+			cls: 'crc-mt-2'
+		});
+
+		container.appendChild(layoutCard);
+
 		// Advanced Collections Features Card
 		const advancedCollectionsCard = this.createCard({
 			title: 'Advanced collections features',
@@ -2237,15 +2305,9 @@ export class ControlCenterModal extends Modal {
 				dropdown
 					.addOption('standard', 'Standard (default spacing)')
 					.addOption('compact', 'Compact (50% tighter for large trees)')
-					.addOption('timeline', 'Timeline (coming soon)')
-					.addOption('hourglass', 'Hourglass (coming soon)')
+					.addOption('timeline', 'Timeline (chronological by birth year)')
+					.addOption('hourglass', 'Hourglass (ancestors above, descendants below)')
 					.setValue(this.plugin.settings.defaultLayoutType);
-				// Disable upcoming layouts
-				Array.from(dropdown.selectEl.options).forEach(option => {
-					if (option.value === 'timeline' || option.value === 'hourglass') {
-						option.disabled = true;
-					}
-				});
 			});
 
 		// Horizontal spacing
@@ -2642,7 +2704,9 @@ export class ControlCenterModal extends Modal {
 			// Determine canvas file name
 			let fileName = canvasFileName.trim();
 			if (!fileName) {
-				fileName = `Family Tree - ${rootPersonField.name}`;
+				// Auto-generate filename with layout type
+				const layoutSuffix = layoutType === 'standard' ? '' : ` (${layoutType})`;
+				fileName = `Family Tree - ${rootPersonField.name}${layoutSuffix}`;
 			}
 			if (!fileName.endsWith('.canvas')) {
 				fileName += '.canvas';
@@ -4294,7 +4358,7 @@ export class ControlCenterModal extends Modal {
 		});
 		nameGroup.createDiv({
 			cls: 'crc-form-help',
-			text: 'Leave blank for auto-naming: "Family Tree - [Root Person Name]"'
+			text: 'Leave blank for auto-naming: "Family Tree - [Root Person Name] ([layout])"'
 		});
 
 		// Generate button
