@@ -398,6 +398,7 @@ Canvas Roots can import standard GEDCOM (`.ged`) files from genealogy software.
 - Generates structured YAML frontmatter with relationships
 - Preserves `_UUID` tags as `cr_id` when present
 - Creates bidirectional relationship links
+- Automatically syncs all relationships after import (if bidirectional sync is enabled)
 - Handles duplicate detection across multiple imports
 
 **Supported GEDCOM Tags:**
@@ -419,9 +420,10 @@ See [specification.md §5](specification.md) for complete GEDCOM integration det
 
 ### After Import
 
-1. **Review imported notes** in your configured person folder
-2. **Add research notes** below the frontmatter in each file
-3. **Generate tree** using Control Center → Tree Generation
+1. **Wait for sync completion** - If bidirectional sync is enabled, Canvas Roots automatically processes all imported relationships to ensure reciprocal links (e.g., when a person has a father, the father's note is updated with that person as a child). Progress notifications show sync status.
+2. **Review imported notes** in your configured person folder
+3. **Add research notes** below the frontmatter in each file
+4. **Generate tree** using Control Center → Tree Generation
 
 ### Duplicate Handling
 

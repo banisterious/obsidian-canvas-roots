@@ -379,6 +379,11 @@ Go to Settings → Canvas Roots → Data section:
 
 When sync is enabled, relationship changes made anywhere (Bases, frontmatter editor, or programmatically) are automatically propagated.
 
+**Sync Triggers:**
+
+- **File edits**: When you edit relationships in Bases or frontmatter (if "Sync on file modify" is enabled)
+- **GEDCOM imports**: After importing a GEDCOM file, all relationships are automatically synced across all imported person notes
+
 **Example Workflow:**
 
 ```yaml
@@ -391,6 +396,15 @@ children_id: ["alice-cr-id-123"]
 
 # Both changes are immediate and bidirectional
 ```
+
+**GEDCOM Import Workflow:**
+
+When importing a GEDCOM file with bidirectional sync enabled:
+
+1. Import completes and creates all person notes with relationship data
+2. Canvas Roots automatically syncs all relationships across all imported people
+3. Progress notification shows sync status (e.g., "Syncing relationships: 50/200 people processed")
+4. Completion notice confirms all relationships are bidirectional
 
 This ensures relationship consistency across your entire tree and eliminates manual duplicate entry.
 
