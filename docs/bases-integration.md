@@ -369,6 +369,7 @@ When bidirectional sync is enabled (default), editing relationships in Bases aut
 - **Parent → Child**: Setting `father`/`mother` adds person to parent's `children` array
 - **Spouse ↔ Spouse**: Adding `spouse` creates reciprocal spouse link in both notes
 - **Indexed Spouses**: Full support for `spouse1`, `spouse2`, etc. with `spouse1_id`, `spouse2_id`
+- **Deletions**: Removing a relationship automatically removes the reciprocal link (e.g., deleting `father` removes person from parent's `children`)
 
 **Enabling/Disabling:**
 
@@ -384,8 +385,9 @@ When sync is enabled, relationship changes made anywhere (Bases, frontmatter edi
 - **File edits**: When you edit relationships in Bases or frontmatter (if "Sync on file modify" is enabled)
 - **GEDCOM imports**: After importing a GEDCOM file, all relationships are automatically synced across all imported person notes
 
-**Example Workflow:**
+**Example Workflows:**
 
+**Adding a Relationship:**
 ```yaml
 # In Bases, edit Alice's row:
 father: [[John Smith]]
@@ -395,6 +397,16 @@ children: ["[[Alice]]"]
 children_id: ["alice-cr-id-123"]
 
 # Both changes are immediate and bidirectional
+```
+
+**Deleting a Relationship:**
+```yaml
+# In Bases, clear Alice's father field:
+father:  # (empty)
+
+# Canvas Roots automatically removes Alice from John Smith's note:
+# "Alice" removed from children array
+# "alice-cr-id-123" removed from children_id array
 ```
 
 **GEDCOM Import Workflow:**
