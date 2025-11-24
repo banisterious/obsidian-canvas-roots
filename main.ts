@@ -21,6 +21,7 @@ const logger = getLogger('CanvasRootsPlugin');
 export default class CanvasRootsPlugin extends Plugin {
 	settings: CanvasRootsSettings;
 	private fileModifyEventRef: EventRef | null = null;
+	private bidirectionalLinker: BidirectionalLinker | null = null;
 
 	async onload() {
 		console.log('Loading Canvas Roots plugin');
@@ -561,6 +562,34 @@ export default class CanvasRootsPlugin extends Plugin {
 
 		// Register file modification handler for bidirectional sync
 		this.registerFileModificationHandler();
+
+		// Initialize bidirectional relationship snapshots
+		// This enables deletion detection from the first edit after plugin load
+		if (this.settings.enableBidirectionalSync) {
+			this.initializeBidirectionalSnapshots();
+		}
+	}
+
+	/**
+	 * Initialize bidirectional relationship snapshots for all person notes
+	 * Runs asynchronously after a short delay to avoid blocking plugin startup
+	 */
+	private initializeBidirectionalSnapshots() {
+		// Create the shared bidirectional linker instance
+		if (!this.bidirectionalLinker) {
+			this.bidirectionalLinker = new BidirectionalLinker(this.app);
+		}
+
+		// Run after a 1-second delay to not impact plugin load performance
+		setTimeout(async () => {
+			try {
+				await this.bidirectionalLinker!.initializeSnapshots();
+			} catch (error) {
+				logger.error('snapshot-init', 'Failed to initialize relationship snapshots', {
+					error: error.message
+				});
+			}
+		}, 1000);
 	}
 
 	/**
@@ -595,8 +624,11 @@ export default class CanvasRootsPlugin extends Plugin {
 
 				// Sync relationships for this file
 				try {
-					const bidirectionalLinker = new BidirectionalLinker(this.app);
-					await bidirectionalLinker.syncRelationships(file);
+					// Create shared instance if not exists
+					if (!this.bidirectionalLinker) {
+						this.bidirectionalLinker = new BidirectionalLinker(this.app);
+					}
+					await this.bidirectionalLinker.syncRelationships(file);
 				} catch (error) {
 					logger.error('file-watcher', 'Failed to sync relationships on file modify', {
 						file: file.path,

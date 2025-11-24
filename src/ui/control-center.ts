@@ -1354,7 +1354,6 @@ export class ControlCenterModal extends Modal {
 		const limitationsSection = bidirectionalSyncContent.createDiv({ cls: 'crc-info-box' });
 		limitationsSection.createEl('strong', { text: 'Known limitations:' });
 		const limitationsList = limitationsSection.createEl('ul', { cls: 'crc-mt-2' });
-		limitationsList.createEl('li', { text: 'First edit after plugin load: Only additions synced (no previous state to compare)' });
 		limitationsList.createEl('li', { text: 'Sync disabled during deletion: Reciprocal links won\'t be auto-cleaned' });
 		limitationsList.createEl('li', { text: 'Bulk external edits while Obsidian closed: Only final state is synced' });
 

@@ -37,6 +37,32 @@ export class BidirectionalLinker {
 	constructor(private app: App) {}
 
 	/**
+	 * Initialize relationship snapshots for all person notes in the vault
+	 * This should be called on plugin load to enable deletion detection from the first edit
+	 *
+	 * Runs asynchronously to avoid blocking plugin initialization
+	 */
+	async initializeSnapshots(): Promise<void> {
+		logger.info('snapshot-init', 'Initializing relationship snapshots for all person notes');
+
+		const files = this.app.vault.getMarkdownFiles();
+		let snapshotCount = 0;
+
+		for (const file of files) {
+			const cache = this.app.metadataCache.getFileCache(file);
+			if (!cache?.frontmatter?.cr_id) {
+				continue;
+			}
+
+			// Capture current state without syncing
+			this.updateSnapshot(file.path, cache.frontmatter);
+			snapshotCount++;
+		}
+
+		logger.info('snapshot-init', `Initialized ${snapshotCount} relationship snapshots`);
+	}
+
+	/**
 	 * Synchronize relationships after a person note is created or updated
 	 *
 	 * This should be called whenever:

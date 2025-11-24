@@ -184,11 +184,9 @@ When sync is enabled, relationship changes made anywhere (Bases, frontmatter edi
 
 Bidirectional sync works by tracking relationship changes over time. There are a few edge cases to be aware of:
 
-1. **First edit after plugin load**: The first time you edit a person note after loading/reloading Obsidian, only additions will be synced (not deletions). This is because the plugin doesn't have a previous state to compare against yet. Subsequent edits will sync both additions and deletions correctly.
+1. **Sync disabled during deletion**: If you disable bidirectional sync (or "Sync on file modify"), delete relationships, and then re-enable sync, the reciprocal links won't be automatically cleaned up. You'll need to manually remove them or use the "Validate relationships" command to find orphaned links.
 
-2. **Sync disabled during deletion**: If you disable bidirectional sync (or "Sync on file modify"), delete relationships, and then re-enable sync, the reciprocal links won't be automatically cleaned up. You'll need to manually remove them or use the "Validate relationships" command to find orphaned links.
-
-3. **Bulk external edits**: If you edit many files externally (e.g., in VS Code) while Obsidian is closed, the sync will only see the final state when you reload Obsidian, not the intermediate changes.
+2. **Bulk external edits**: If you edit many files externally (e.g., in VS Code) while Obsidian is closed, the sync will only see the final state when you reload Obsidian, not the intermediate changes.
 
 These limitations are expected behavior and don't affect normal usage. The sync works reliably for day-to-day editing in Obsidian, Bases, or external editors while Obsidian is running.
 
