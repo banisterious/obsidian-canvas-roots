@@ -4,16 +4,36 @@ import { getLogger } from './logging';
 const logger = getLogger('BidirectionalLinker');
 
 /**
+ * Snapshot of relationship fields for deletion detection
+ */
+interface RelationshipSnapshot {
+	father?: string;
+	mother?: string;
+	spouse?: string | string[];
+	children?: string | string[];
+	// Indexed spouse properties
+	[key: `spouse${number}`]: string | undefined;
+}
+
+/**
  * Service for maintaining bidirectional relationship links between person notes
  *
  * Ensures that when a relationship is created in one direction,
  * the inverse relationship is automatically created in the other direction.
  *
+ * Also handles relationship deletions - when a relationship is removed from one note,
+ * the reciprocal relationship is removed from the other note.
+ *
  * Examples:
  * - father: [[John]] in Jane's note → children: [[Jane]] in John's note
  * - spouse: [[Jane]] in John's note → spouse: [[John]] in Jane's note
+ * - Removing father from Jane → removes Jane from John's children
  */
 export class BidirectionalLinker {
+	// Track previous relationship snapshots for deletion detection
+	// Map of file path → relationship snapshot
+	private relationshipSnapshots: Map<string, RelationshipSnapshot> = new Map();
+
 	constructor(private app: App) {}
 
 	/**
@@ -49,6 +69,14 @@ export class BidirectionalLinker {
 					file: personFile.path
 				});
 				return;
+			}
+
+			// Get previous snapshot for deletion detection
+			const previousSnapshot = this.relationshipSnapshots.get(personFile.path);
+
+			// Detect and sync deletions if we have a previous snapshot
+			if (previousSnapshot) {
+				await this.syncDeletions(previousSnapshot, frontmatter, personFile, personName, personCrId);
 			}
 
 			// Sync father relationship
@@ -103,6 +131,9 @@ export class BidirectionalLinker {
 				await this.syncSpouse(spouse.link, personFile, personName, personCrId, spouse.index);
 			}
 
+			// Update snapshot for future deletion detection
+			this.updateSnapshot(personFile.path, frontmatter);
+
 			logger.info('bidirectional-linking', 'Relationship sync completed', {
 				file: personFile.path,
 				spouseCount: spousesToSync.length
@@ -114,6 +145,83 @@ export class BidirectionalLinker {
 			});
 			new Notice(`Failed to sync relationships: ${error.message}`);
 		}
+	}
+
+	/**
+	 * Detect and sync relationship deletions by comparing previous and current frontmatter
+	 */
+	private async syncDeletions(
+		previousSnapshot: RelationshipSnapshot,
+		currentFrontmatter: any,
+		personFile: TFile,
+		personName: string,
+		personCrId: string
+	): Promise<void> {
+		// Check for deleted father relationship
+		if (previousSnapshot.father && !currentFrontmatter.father) {
+			await this.removeChildFromParent(previousSnapshot.father, personFile, personName, personCrId);
+		}
+
+		// Check for deleted mother relationship
+		if (previousSnapshot.mother && !currentFrontmatter.mother) {
+			await this.removeChildFromParent(previousSnapshot.mother, personFile, personName, personCrId);
+		}
+
+		// Check for deleted spouse relationships (simple format)
+		const previousSpouses = this.extractSpouseLinks(previousSnapshot.spouse);
+		const currentSpouses = this.extractSpouseLinks(currentFrontmatter.spouse);
+
+		for (const previousSpouse of previousSpouses) {
+			if (!currentSpouses.includes(previousSpouse)) {
+				await this.removeSpouseLink(previousSpouse, personFile, personName, personCrId);
+			}
+		}
+
+		// Check for deleted indexed spouse relationships
+		for (let i = 1; i <= 10; i++) { // Check up to spouse10
+			const key = `spouse${i}` as keyof RelationshipSnapshot;
+			const previousSpouse = previousSnapshot[key];
+			const currentSpouse = currentFrontmatter[key];
+
+			if (previousSpouse && typeof previousSpouse === 'string' && !currentSpouse) {
+				await this.removeSpouseLink(previousSpouse, personFile, personName, personCrId);
+			}
+		}
+	}
+
+	/**
+	 * Extract spouse links as array from spouse property (handles both single and array format)
+	 */
+	private extractSpouseLinks(spouse: string | string[] | undefined): string[] {
+		if (!spouse) return [];
+		return Array.isArray(spouse) ? spouse : [spouse];
+	}
+
+	/**
+	 * Update the relationship snapshot for a person
+	 */
+	private updateSnapshot(filePath: string, frontmatter: any): void {
+		const snapshot: RelationshipSnapshot = {
+			father: frontmatter.father,
+			mother: frontmatter.mother,
+			spouse: frontmatter.spouse,
+			children: frontmatter.children
+		};
+
+		// Capture indexed spouse properties
+		for (let i = 1; i <= 10; i++) {
+			const key = `spouse${i}`;
+			if (frontmatter[key]) {
+				(snapshot as any)[key] = frontmatter[key];
+			}
+		}
+
+		this.relationshipSnapshots.set(filePath, snapshot);
+
+		logger.debug('bidirectional-linking', 'Updated relationship snapshot', {
+			filePath,
+			snapshot
+		});
 	}
 
 	/**
@@ -327,6 +435,100 @@ export class BidirectionalLinker {
 	}
 
 	/**
+	 * Remove a child from a parent's children array (handles deletion sync)
+	 */
+	private async removeChildFromParent(
+		parentLink: string,
+		childFile: TFile,
+		childName: string,
+		childCrId: string
+	): Promise<void> {
+		const parentFile = this.resolveLink(parentLink, childFile);
+		if (!parentFile) {
+			logger.warn('bidirectional-linking', 'Parent file not found for deletion sync', {
+				parentLink,
+				childFile: childFile.path
+			});
+			return;
+		}
+
+		// Remove from both children and children_id arrays
+		await this.removeFromArrayField(parentFile, 'children', `[[${childName}]]`);
+		await this.removeFromArrayField(parentFile, 'children', `[[${childFile.basename}]]`); // Handle basename variant
+		await this.removeFromArrayField(parentFile, 'children_id', childCrId);
+
+		logger.info('bidirectional-linking', 'Removed child from parent (deletion sync)', {
+			parentFile: parentFile.path,
+			childFile: childFile.path,
+			childName,
+			childCrId
+		});
+	}
+
+	/**
+	 * Remove spouse link from the other spouse's note (handles deletion sync)
+	 */
+	private async removeSpouseLink(
+		spouseLink: string,
+		personFile: TFile,
+		personName: string,
+		personCrId: string
+	): Promise<void> {
+		const spouseFile = this.resolveLink(spouseLink, personFile);
+		if (!spouseFile) {
+			logger.warn('bidirectional-linking', 'Spouse file not found for deletion sync', {
+				spouseLink,
+				personFile: personFile.path
+			});
+			return;
+		}
+
+		const spouseCache = this.app.metadataCache.getFileCache(spouseFile);
+		if (!spouseCache?.frontmatter) {
+			logger.warn('bidirectional-linking', 'Spouse has no frontmatter for deletion sync', {
+				spouseFile: spouseFile.path
+			});
+			return;
+		}
+
+		// Remove from simple spouse/spouse_id arrays
+		await this.removeFromArrayField(spouseFile, 'spouse', `[[${personName}]]`);
+		await this.removeFromArrayField(spouseFile, 'spouse', `[[${personFile.basename}]]`); // Handle basename variant
+		await this.removeFromArrayField(spouseFile, 'spouse_id', personCrId);
+
+		// Remove from indexed spouse properties (spouse1, spouse2, etc.)
+		for (let i = 1; i <= 10; i++) {
+			const key = `spouse${i}`;
+			const idKey = `spouse${i}_id`;
+
+			if (spouseCache.frontmatter[idKey] === personCrId) {
+				// Remove this indexed spouse entry
+				await this.removeField(spouseFile, key);
+				await this.removeField(spouseFile, idKey);
+
+				// Also remove associated marriage metadata if present
+				await this.removeField(spouseFile, `${key}_marriage_date`);
+				await this.removeField(spouseFile, `${key}_marriage_location`);
+				await this.removeField(spouseFile, `${key}_divorce_date`);
+
+				logger.info('bidirectional-linking', 'Removed indexed spouse bidirectional link (deletion sync)', {
+					spouseFile: spouseFile.path,
+					personFile: personFile.path,
+					index: i
+				});
+				break;
+			}
+		}
+
+		logger.info('bidirectional-linking', 'Removed spouse bidirectional link (deletion sync)', {
+			spouseFile: spouseFile.path,
+			personFile: personFile.path,
+			personName,
+			personCrId
+		});
+	}
+
+	/**
 	 * Resolve a wikilink to a TFile
 	 */
 	private resolveLink(link: string, sourceFile: TFile): TFile | null {
@@ -469,6 +671,154 @@ export class BidirectionalLinker {
 			lines.splice(frontmatterEnd, 0, ...newLines);
 		} else {
 			lines.splice(frontmatterEnd, 0, `${fieldName}: ${value}`);
+		}
+
+		// Write back
+		await this.app.vault.modify(file, lines.join('\n'));
+	}
+
+	/**
+	 * Remove a value from an array field in frontmatter
+	 */
+	private async removeFromArrayField(
+		file: TFile,
+		fieldName: string,
+		value: string
+	): Promise<void> {
+		const content = await this.app.vault.read(file);
+		const lines = content.split('\n');
+
+		// Find frontmatter boundaries
+		let frontmatterStart = -1;
+		let frontmatterEnd = -1;
+
+		for (let i = 0; i < lines.length; i++) {
+			if (lines[i].trim() === '---') {
+				if (frontmatterStart === -1) {
+					frontmatterStart = i;
+				} else {
+					frontmatterEnd = i;
+					break;
+				}
+			}
+		}
+
+		if (frontmatterStart === -1 || frontmatterEnd === -1) {
+			logger.error('bidirectional-linking', 'Could not find frontmatter for removal', {
+				file: file.path
+			});
+			return;
+		}
+
+		// Find the field
+		let fieldLineIndex = -1;
+		for (let i = frontmatterStart + 1; i < frontmatterEnd; i++) {
+			if (lines[i].startsWith(`${fieldName}:`)) {
+				fieldLineIndex = i;
+				break;
+			}
+		}
+
+		if (fieldLineIndex === -1) {
+			// Field doesn't exist, nothing to remove
+			return;
+		}
+
+		// Check if it's an array field
+		const fieldLine = lines[fieldLineIndex];
+		const isArrayField = fieldLine.trim().endsWith(':') || fieldLine.includes('[');
+
+		if (isArrayField) {
+			// Remove the specific value from array
+			const linesToRemove: number[] = [];
+
+			for (let i = fieldLineIndex + 1; i < frontmatterEnd; i++) {
+				const line = lines[i].trim();
+				if (line.startsWith('- ')) {
+					// Check if this line contains the value to remove
+					if (line.includes(value)) {
+						linesToRemove.push(i);
+					}
+				} else if (!line.startsWith('#')) {
+					// Not a comment, must be next field
+					break;
+				}
+			}
+
+			// Remove lines in reverse order to maintain indices
+			for (let i = linesToRemove.length - 1; i >= 0; i--) {
+				lines.splice(linesToRemove[i], 1);
+			}
+
+			// Check if array is now empty and remove field entirely if so
+			const remainingItems = [];
+			for (let i = fieldLineIndex + 1; i < lines.length; i++) {
+				if (lines[i].trim().startsWith('- ')) {
+					remainingItems.push(i);
+				} else if (!lines[i].trim().startsWith('#') && lines[i].trim() !== '---') {
+					break;
+				}
+			}
+
+			if (remainingItems.length === 0) {
+				// Array is empty, remove the field entirely
+				lines.splice(fieldLineIndex, 1);
+			}
+		} else {
+			// Single value field - check if it matches and remove if so
+			const fieldValue = fieldLine.split(':')[1]?.trim();
+			if (fieldValue === value) {
+				lines.splice(fieldLineIndex, 1);
+			}
+		}
+
+		// Write back
+		await this.app.vault.modify(file, lines.join('\n'));
+	}
+
+	/**
+	 * Remove a field entirely from frontmatter
+	 */
+	private async removeField(
+		file: TFile,
+		fieldName: string
+	): Promise<void> {
+		const content = await this.app.vault.read(file);
+		const lines = content.split('\n');
+
+		// Find frontmatter boundaries
+		let frontmatterStart = -1;
+		let frontmatterEnd = -1;
+
+		for (let i = 0; i < lines.length; i++) {
+			if (lines[i].trim() === '---') {
+				if (frontmatterStart === -1) {
+					frontmatterStart = i;
+				} else {
+					frontmatterEnd = i;
+					break;
+				}
+			}
+		}
+
+		if (frontmatterStart === -1 || frontmatterEnd === -1) {
+			logger.error('bidirectional-linking', 'Could not find frontmatter for field removal', {
+				file: file.path
+			});
+			return;
+		}
+
+		// Find and remove the field and its array items if any
+		for (let i = frontmatterStart + 1; i < frontmatterEnd; i++) {
+			if (lines[i].startsWith(`${fieldName}:`)) {
+				// Found the field, remove it and any array items
+				let j = i + 1;
+				while (j < frontmatterEnd && lines[j].trim().startsWith('- ')) {
+					j++;
+				}
+				lines.splice(i, j - i);
+				break;
+			}
 		}
 
 		// Write back
