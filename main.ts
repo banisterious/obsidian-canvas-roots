@@ -165,6 +165,18 @@ export default class CanvasRootsPlugin extends Plugin {
 										await this.exportCanvasToExcalidraw(file);
 									});
 							});
+
+							submenu.addSeparator();
+
+							submenu.addItem((subItem) => {
+								subItem
+									.setTitle('More options...')
+									.setIcon('settings')
+									.onClick(() => {
+										const modal = new ControlCenterModal(this.app, this);
+										modal.openToTab('tree-generation');
+									});
+							});
 						});
 					} else {
 						// Mobile: flat menu with prefix
@@ -223,15 +235,46 @@ export default class CanvasRootsPlugin extends Plugin {
 									.setIcon('git-fork')
 									.setSubmenu();
 
-								submenu.addItem((subItem) => {
-									subItem
-										.setTitle('Generate family tree')
+								// Generate tree submenu
+								const generateTreeSubmenu = submenu.addItem((subItem) => {
+									return subItem
+										.setTitle('Generate tree')
 										.setIcon('git-fork')
+										.setSubmenu();
+								});
+
+								generateTreeSubmenu.addItem((genItem) => {
+									genItem
+										.setTitle('Generate Canvas tree')
+										.setIcon('layout')
 										.onClick(async () => {
 											const modal = new ControlCenterModal(this.app, this);
 											await modal.openWithPerson(file);
 										});
 								});
+
+								generateTreeSubmenu.addItem((genItem) => {
+									genItem
+										.setTitle('Generate Excalidraw tree')
+										.setIcon('pencil')
+										.onClick(async () => {
+											await this.generateExcalidrawTreeForPerson(file);
+										});
+								});
+
+								submenu.addSeparator();
+
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('More options...')
+										.setIcon('settings')
+										.onClick(async () => {
+											const modal = new ControlCenterModal(this.app, this);
+											await modal.openWithPerson(file);
+										});
+								});
+
+								submenu.addSeparator();
 
 								// Add relationship submenu
 								const relationshipSubmenu = submenu.addItem((subItem) => {
@@ -1228,6 +1271,106 @@ export default class CanvasRootsPlugin extends Plugin {
 		} catch (error) {
 			console.error('Error exporting to Excalidraw:', error);
 			new Notice(`Failed to export to Excalidraw: ${error.message}`);
+		}
+	}
+
+	/**
+	 * Generate an Excalidraw tree directly from a person note
+	 * Uses default settings for quick generation
+	 */
+	private async generateExcalidrawTreeForPerson(personFile: TFile) {
+		try {
+			new Notice('Generating Excalidraw tree...');
+
+			// Get person info from file metadata
+			const cache = this.app.metadataCache.getFileCache(personFile);
+			if (!cache?.frontmatter?.cr_id) {
+				new Notice('Invalid person note: missing cr_id');
+				return;
+			}
+
+			const rootCrId = cache.frontmatter.cr_id;
+			const rootName = cache.frontmatter.name || personFile.basename;
+
+			// Generate tree with default settings
+			const graphService = new FamilyGraphService(this.app);
+			const familyTree = await graphService.generateTree({
+				rootCrId,
+				treeType: 'full',
+				maxGenerations: 5,
+				includeSpouses: true
+			});
+
+			if (!familyTree) {
+				new Notice('Failed to generate tree: root person not found');
+				return;
+			}
+
+			// Generate canvas with default options
+			const canvasGenerator = new CanvasGenerator();
+			const canvasData = canvasGenerator.generateCanvas(familyTree, {
+				direction: 'vertical',
+				nodeSpacingX: 300,
+				nodeSpacingY: 200,
+				layoutType: this.settings.defaultLayoutType,
+				nodeColorScheme: this.settings.nodeColorScheme,
+				showLabels: true,
+				useFamilyChartLayout: true,
+				parentChildArrowStyle: this.settings.parentChildArrowStyle,
+				spouseArrowStyle: this.settings.spouseArrowStyle,
+				parentChildEdgeColor: this.settings.parentChildEdgeColor,
+				spouseEdgeColor: this.settings.spouseEdgeColor,
+				showSpouseEdges: this.settings.showSpouseEdges,
+				spouseEdgeLabelFormat: this.settings.spouseEdgeLabelFormat
+			});
+
+			// Create temporary canvas file
+			const tempCanvasName = `temp-${Date.now()}.canvas`;
+			const tempCanvasPath = `${personFile.parent?.path || ''}/${tempCanvasName}`;
+			const tempCanvasFile = await this.app.vault.create(tempCanvasPath, JSON.stringify(canvasData, null, '\t'));
+
+			// Export to Excalidraw
+			const exporter = new ExcalidrawExporter(this.app);
+			const result = await exporter.exportToExcalidraw({
+				canvasFile: tempCanvasFile,
+				preserveColors: true,
+				fontSize: 16,
+				strokeWidth: 2
+			});
+
+			// Delete temporary canvas file
+			await this.app.vault.delete(tempCanvasFile);
+
+			if (!result.success) {
+				new Notice(`Export failed: ${result.errors.join(', ')}`);
+				return;
+			}
+
+			// Save Excalidraw file
+			const outputFileName = `Family Tree - ${rootName}.excalidraw.md`;
+			const outputPath = `${personFile.parent?.path || ''}/${outputFileName}`;
+
+			// Check if file exists and create unique name if needed
+			let finalPath = outputPath;
+			let counter = 1;
+			while (this.app.vault.getAbstractFileByPath(finalPath)) {
+				finalPath = `${personFile.parent?.path || ''}/Family Tree - ${rootName} (${counter}).excalidraw.md`;
+				counter++;
+			}
+
+			await this.app.vault.create(finalPath, result.excalidrawContent!);
+
+			new Notice(`Generated Excalidraw tree with ${result.elementsExported} elements`);
+
+			// Open the newly created file
+			const excalidrawFile = this.app.vault.getAbstractFileByPath(finalPath);
+			if (excalidrawFile instanceof TFile) {
+				const leaf = this.app.workspace.getLeaf(false);
+				await leaf.openFile(excalidrawFile);
+			}
+		} catch (error) {
+			console.error('Error generating Excalidraw tree:', error);
+			new Notice(`Failed to generate Excalidraw tree: ${error.message}`);
 		}
 	}
 
