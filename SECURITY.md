@@ -229,7 +229,7 @@ Canvas Roots includes comprehensive data obfuscation capabilities designed to pr
 - **Educational Materials**: Create teaching examples protecting all living individuals
 - **Collaborative Research**: Share tree structure with researchers who need patterns, not names
 
-See the [Technical Specification §5.6](docs/specification.md#56-privacy-and-data-obfuscation) for complete details.
+Data obfuscation features are planned for a future release. See [roadmap.md](docs/roadmap.md) for details.
 
 ## Future Security Enhancements
 

@@ -110,8 +110,6 @@ spouse2_marriage_location: "Seattle, WA"
 ---
 ```
 
-See [specification.md §6.1](specification.md) for complete marriage metadata documentation.
-
 ### Option B: Obsidian Bases (Recommended for Bulk Entry)
 
 Use [Obsidian Bases](https://help.obsidian.md/bases) to manage multiple family members in a spreadsheet-like table interface.
@@ -522,8 +520,6 @@ Canvas Roots can import standard GEDCOM (`.ged`) files from genealogy software.
 - `DIV` - Divorce events → `spouse1_divorce_date`
 - `PLAC` - Marriage locations → `spouse1_marriage_location`
 
-See [specification.md §5](specification.md) for complete GEDCOM integration details.
-
 ### After Import
 
 1. **Wait for sync completion** - If bidirectional sync is enabled, Canvas Roots automatically processes all imported relationships to ensure reciprocal links (e.g., when a person has a father, the father's note is updated with that person as a child). Progress notifications show sync status.
@@ -819,9 +815,9 @@ For more help, see [troubleshooting section](development.md#troubleshooting) in 
 
 ## Next Steps
 
-- Read [specification.md](specification.md) for complete technical details
 - Review [bases-integration.md](bases-integration.md) for bulk data management
 - Check [roadmap.md](roadmap.md) for upcoming features
+- Read [development.md](development.md) for technical details and architecture
 - Join discussions on [GitHub](https://github.com/banisterious/obsidian-canvas-roots)
 
 **Happy tree building!** 🌳

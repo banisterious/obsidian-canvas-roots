@@ -71,9 +71,9 @@ canvas-roots/
 │   ├── control-center.css     # Control Center styling ✓
 │   └── modals.css             # Modal styling
 ├── docs/                      # Documentation
-│   ├── specification.md       # Complete technical spec ✓
 │   ├── development.md         # This file
-│   ├── css-system.md          # CSS build pipeline
+│   ├── user-guide.md          # Complete user documentation ✓
+│   ├── roadmap.md             # Released and planned features ✓
 │   └── ...
 ├── manifest.json              # Obsidian plugin metadata
 ├── package.json               # NPM configuration
@@ -202,7 +202,7 @@ canvas-roots/
 - Both systems coexist independently
 - Zero configuration required (flat vaults fully supported)
 
-See [specification.md](specification.md) §3.4 for complete collections specification.
+See [docs/architecture/collections.md](architecture/collections.md) for complete collections architecture.
 
 ## Implementation Priority
 
@@ -215,7 +215,7 @@ When contributing or implementing features for collections support, follow this 
    - Update `extractPersonNode()` to read `group_name` from frontmatter
 
 2. **Update FamilyGraphService** (src/core/family-graph.ts)
-   - Add `findCollectionName()` helper method (see specification.md §3.4.2)
+   - Add `findCollectionName()` helper method
    - Update `getFamilyComponents()` to populate `displayName` from `group_name`
    - Implement naming conflict resolution (most common name wins)
 
@@ -496,7 +496,7 @@ collection: "Paternal Line"  # or "House Stark", etc.
 - Obsidian Bases compatible for bulk collection assignment
 - Self-healing architecture prevents data staleness
 
-**Specification:** See [specification.md](specification.md) §3.4 Collections and Dataset Management
+**Architecture:** See [docs/architecture/collections.md](architecture/collections.md) for complete implementation details
 
 ---
 
@@ -730,7 +730,6 @@ collection: "Paternal Line"  # or "House Stark", etc.
   - Added `.crc-btn--large` for prominent full-width buttons (lines 490-495)
 
 **Documentation Updated:**
-- `docs/specification.md` - Updated Tree Generation Tab section with new layout
 - `README.md` - Updated workflow instructions for new streamlined process
 
 **UX Benefits:**
@@ -877,7 +876,6 @@ collection: "Paternal Line"  # or "House Stark", etc.
   - Designed to serve all users regardless of gender identity or family structure
 
 **Files Modified:**
-- `docs/specification.md` - Added §2.1.2 Privacy and Identity Protection section
 - `docs/development.md` - This documentation
 
 **Rationale:**

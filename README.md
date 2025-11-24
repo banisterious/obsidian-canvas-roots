@@ -165,7 +165,6 @@ For complete workflow details, see the [User Guide](docs/user-guide.md).
 - **[Security Policy](SECURITY.md)** - PII handling and data privacy best practices
 
 ### For Developers
-- **[Technical Specification](docs/specification.md)** - Complete data models, features, and GEDCOM integration
 - **[Contributing Guide](CONTRIBUTING.md)** - Development setup and contribution process
 - **[Development Guide](docs/development.md)** - Build commands, testing, and architecture
 - **[Coding Standards](docs/developer/coding-standards.md)** - TypeScript and CSS standards

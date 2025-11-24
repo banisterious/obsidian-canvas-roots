@@ -1,8 +1,16 @@
 # Canvas Roots Plugin - Technical Specification
 
+> **ARCHIVED:** This document was archived on 2025-11-24 as it represents a v2.0 draft specification that was never implemented. The plugin went in a different direction using the family-chart library instead of D3.js, and many planned features described here were not developed.
+>
+> **For current technical documentation, see:**
+> - [README.md](../README.md) - User guide and feature overview
+> - [User Guide](../user-guide.md) - Complete workflow documentation
+> - [Roadmap](../roadmap.md) - Released and planned features
+> - [Development Guide](../development.md) - Architecture and implementation details
+
 **Version:** 2.0
 **Last Updated:** 2025-11-20
-**Status:** Draft
+**Status:** Draft (Archived)
 
 ---
 
