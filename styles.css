@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-11-24 21:44:50 UTC
+ * - Generated: 2025-11-24 21:53:02 UTC
  * - Components: 15 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -187,7 +187,7 @@
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 1498 lines, 27.46 KB */
+/* Component Size: 1556 lines, 28.55 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -1687,6 +1687,64 @@
   cursor: pointer;
 }
 
+/**
+ * Color scheme selector
+ */
+.crc-preview-color-scheme {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crc-preview-color-scheme-label {
+  font-size: 13px;
+  color: var(--text-normal);
+  white-space: nowrap;
+}
+
+.crc-preview-color-scheme-select {
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--interactive-normal);
+  color: var(--text-normal);
+  cursor: pointer;
+}
+
+.crc-preview-color-scheme-select:hover {
+  background: var(--interactive-hover);
+}
+
+/**
+ * Preview tooltip
+ */
+.crc-preview-tooltip {
+  position: fixed;
+  z-index: 10000;
+  padding: 8px 12px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  line-height: 1.5;
+  pointer-events: none;
+  max-width: 300px;
+  color: var(--text-normal);
+}
+
+.crc-preview-tooltip strong {
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.crc-preview-tooltip em {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
 
 /* End of modals.css */
 
@@ -2188,11 +2246,11 @@
    ========================================================================== */
 
 /*
- * Build completed: 2025-11-24 21:44:50 UTC
+ * Build completed: 2025-11-24 21:53:02 UTC
  * Components processed: 15
- * Total lines: 2030
- * Total size: 36.4 KB
- * Build duration: 0.02 seconds
+ * Total lines: 2088
+ * Total size: 37.49 KB
+ * Build duration: 0.01 seconds
  *
  * Component breakdown:
  * - variables.css: 31 lines, 0.72 KB
@@ -2202,7 +2260,7 @@
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 1498 lines, 27.46 KB
+ * - modals.css: 1556 lines, 28.55 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB
  * - find-on-canvas.css: 114 lines, 1.97 KB

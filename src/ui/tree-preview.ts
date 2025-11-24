@@ -8,6 +8,7 @@ import { LayoutOptions, LayoutResult, NodePosition } from '../core/layout-engine
 import { FamilyChartLayoutEngine } from '../core/family-chart-layout';
 import { TimelineLayoutEngine } from '../core/timeline-layout';
 import { HourglassLayoutEngine } from '../core/hourglass-layout';
+import type { ColorScheme } from '../settings';
 
 /**
  * Renders interactive SVG preview of family trees
@@ -24,10 +25,13 @@ export class TreePreviewRenderer {
 	private isDragging: boolean = false;
 	private dragStartX: number = 0;
 	private dragStartY: number = 0;
+	private colorScheme: ColorScheme = 'gender';
+	private tooltipElement: HTMLElement | null = null;
 
 	constructor(container: HTMLElement) {
 		this.container = container;
 		this.setupPanZoom();
+		this.setupTooltip();
 	}
 
 	/**
@@ -73,6 +77,16 @@ export class TreePreviewRenderer {
 	}
 
 	/**
+	 * Setup tooltip element for hover interactions
+	 */
+	private setupTooltip(): void {
+		this.tooltipElement = document.createElement('div');
+		this.tooltipElement.addClass('crc-preview-tooltip');
+		this.tooltipElement.style.display = 'none';
+		document.body.appendChild(this.tooltipElement);
+	}
+
+	/**
 	 * Update SVG transform for pan/zoom
 	 */
 	private updateTransform(): void {
@@ -83,6 +97,32 @@ export class TreePreviewRenderer {
 		g.setAttribute('transform',
 			`translate(${this.currentTranslateX}, ${this.currentTranslateY}) scale(${this.currentScale})`
 		);
+	}
+
+	/**
+	 * Get node color based on current color scheme
+	 */
+	private getNodeColor(pos: NodePosition): string {
+		switch (this.colorScheme) {
+			case 'gender': {
+				const sex = pos.person.sex?.toLowerCase();
+				if (sex === 'm' || sex === 'male') {
+					return '#4ade80'; // Green (Obsidian color 4)
+				} else if (sex === 'f' || sex === 'female') {
+					return '#c084fc'; // Purple (Obsidian color 6)
+				}
+				return '#94a3b8'; // Neutral gray
+			}
+			case 'generation': {
+				// Use generation number to assign colors
+				const colors = ['#ef4444', '#f97316', '#eab308', '#4ade80', '#06b6d4', '#c084fc'];
+				const colorIndex = Math.abs((pos.generation ?? 0) % colors.length);
+				return colors[colorIndex];
+			}
+			case 'monochrome':
+			default:
+				return '#94a3b8'; // Neutral gray
+		}
 	}
 
 	/**
@@ -182,6 +222,7 @@ export class TreePreviewRenderer {
 			// Create node group
 			const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 			nodeGroup.setAttribute('class', 'crc-preview-node');
+			nodeGroup.setAttribute('data-cr-id', pos.crId);
 
 			// Create rectangle
 			const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -191,6 +232,12 @@ export class TreePreviewRenderer {
 			rect.setAttribute('height', previewHeight.toString());
 			rect.setAttribute('rx', '4');
 			rect.setAttribute('class', 'crc-preview-node-rect');
+
+			// Apply color based on scheme
+			const fillColor = this.getNodeColor(pos);
+			rect.setAttribute('fill', fillColor);
+			rect.setAttribute('fill-opacity', '0.3');
+			rect.setAttribute('stroke', fillColor);
 
 			// Create text label (just name, no dates in preview)
 			const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -205,6 +252,19 @@ export class TreePreviewRenderer {
 			if (!this.showLabels) {
 				text.setAttribute('display', 'none');
 			}
+
+			// Add hover interactions
+			nodeGroup.addEventListener('mouseenter', (e: MouseEvent) => {
+				this.showTooltip(pos, e);
+				rect.setAttribute('fill-opacity', '0.5');
+			});
+			nodeGroup.addEventListener('mouseleave', () => {
+				this.hideTooltip();
+				rect.setAttribute('fill-opacity', '0.3');
+			});
+			nodeGroup.addEventListener('mousemove', (e: MouseEvent) => {
+				this.updateTooltipPosition(e);
+			});
 
 			nodeGroup.appendChild(rect);
 			nodeGroup.appendChild(text);
@@ -299,12 +359,59 @@ export class TreePreviewRenderer {
 	}
 
 	/**
+	 * Show tooltip for a person node
+	 */
+	private showTooltip(pos: NodePosition, event: MouseEvent): void {
+		if (!this.tooltipElement) return;
+
+		const person = pos.person;
+		let tooltipContent = `<strong>${person.name}</strong>`;
+
+		// Add dates if available
+		if (person.birthDate || person.deathDate) {
+			tooltipContent += '<br>';
+			if (person.birthDate) tooltipContent += `b. ${person.birthDate}`;
+			if (person.birthDate && person.deathDate) tooltipContent += ' | ';
+			if (person.deathDate) tooltipContent += `d. ${person.deathDate}`;
+		}
+
+		// Add generation
+		if (pos.generation !== undefined) {
+			tooltipContent += `<br><em>Generation ${pos.generation}</em>`;
+		}
+
+		this.tooltipElement.innerHTML = tooltipContent;
+		this.tooltipElement.style.display = 'block';
+		this.updateTooltipPosition(event);
+	}
+
+	/**
+	 * Hide tooltip
+	 */
+	private hideTooltip(): void {
+		if (!this.tooltipElement) return;
+		this.tooltipElement.style.display = 'none';
+	}
+
+	/**
+	 * Update tooltip position based on mouse event
+	 */
+	private updateTooltipPosition(event: MouseEvent): void {
+		if (!this.tooltipElement) return;
+
+		const offset = 15;
+		this.tooltipElement.style.left = `${event.clientX + offset}px`;
+		this.tooltipElement.style.top = `${event.clientY + offset}px`;
+	}
+
+	/**
 	 * Clear the preview
 	 */
 	clear(): void {
 		this.container.empty();
 		this.svgElement = null;
 		this.currentLayout = null;
+		this.hideTooltip();
 		this.resetView();
 	}
 
@@ -354,9 +461,50 @@ export class TreePreviewRenderer {
 	}
 
 	/**
+	 * Set color scheme and re-render nodes if preview exists
+	 */
+	setColorScheme(scheme: ColorScheme): void {
+		this.colorScheme = scheme;
+
+		// Re-apply colors to existing nodes if preview is rendered
+		if (!this.svgElement || !this.currentLayout) return;
+
+		const g = this.svgElement.querySelector('.crc-tree-preview-content');
+		if (!g) return;
+
+		// Update each node's color
+		const nodes = g.querySelectorAll('.crc-preview-node');
+		nodes.forEach((nodeGroup) => {
+			const crId = nodeGroup.getAttribute('data-cr-id');
+			if (!crId) return;
+
+			const pos = this.currentLayout!.positions.find(p => p.crId === crId);
+			if (!pos) return;
+
+			const rect = nodeGroup.querySelector('rect');
+			if (!rect) return;
+
+			const fillColor = this.getNodeColor(pos);
+			rect.setAttribute('fill', fillColor);
+			rect.setAttribute('stroke', fillColor);
+		});
+	}
+
+	/**
 	 * Get current layout result (for debugging/testing)
 	 */
 	getLayout(): LayoutResult | null {
 		return this.currentLayout;
+	}
+
+	/**
+	 * Cleanup resources (call when disposing the renderer)
+	 */
+	dispose(): void {
+		this.clear();
+		if (this.tooltipElement) {
+			this.tooltipElement.remove();
+			this.tooltipElement = null;
+		}
 	}
 }

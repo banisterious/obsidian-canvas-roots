@@ -1495,3 +1495,61 @@
 .crc-preview-checkbox {
   cursor: pointer;
 }
+
+/**
+ * Color scheme selector
+ */
+.crc-preview-color-scheme {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crc-preview-color-scheme-label {
+  font-size: 13px;
+  color: var(--text-normal);
+  white-space: nowrap;
+}
+
+.crc-preview-color-scheme-select {
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--interactive-normal);
+  color: var(--text-normal);
+  cursor: pointer;
+}
+
+.crc-preview-color-scheme-select:hover {
+  background: var(--interactive-hover);
+}
+
+/**
+ * Preview tooltip
+ */
+.crc-preview-tooltip {
+  position: fixed;
+  z-index: 10000;
+  padding: 8px 12px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  line-height: 1.5;
+  pointer-events: none;
+  max-width: 300px;
+  color: var(--text-normal);
+}
+
+.crc-preview-tooltip strong {
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.crc-preview-tooltip em {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 11px;
+}

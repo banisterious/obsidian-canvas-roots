@@ -2399,6 +2399,33 @@ export class ControlCenterModal extends Modal {
 			attr: { for: 'preview-labels-toggle' }
 		});
 
+		// Color scheme selector
+		const colorSchemeControl = previewControlsRow.createDiv({ cls: 'crc-preview-color-scheme' });
+		colorSchemeControl.createEl('label', {
+			text: 'Color scheme:',
+			cls: 'crc-preview-color-scheme-label'
+		});
+		const colorSchemeSelect = colorSchemeControl.createEl('select', {
+			cls: 'crc-preview-color-scheme-select dropdown'
+		});
+
+		// Add color scheme options
+		const colorSchemes = [
+			{ value: 'gender', label: 'Gender' },
+			{ value: 'generation', label: 'Generation' },
+			{ value: 'monochrome', label: 'Monochrome' }
+		];
+
+		for (const scheme of colorSchemes) {
+			const option = colorSchemeSelect.createEl('option', {
+				text: scheme.label,
+				value: scheme.value
+			});
+			if (scheme.value === this.plugin.settings.nodeColorScheme) {
+				option.selected = true;
+			}
+		}
+
 		// Preview container
 		this.treePreviewContainer = previewContent.createDiv({
 			cls: 'crc-tree-preview-container'
@@ -2406,6 +2433,8 @@ export class ControlCenterModal extends Modal {
 
 		// Initialize preview renderer
 		this.treePreviewRenderer = new TreePreviewRenderer(this.treePreviewContainer);
+		// Set initial color scheme from settings
+		this.treePreviewRenderer.setColorScheme(this.plugin.settings.nodeColorScheme);
 
 		// Wire up zoom controls
 		zoomInBtn.addEventListener('click', () => {
@@ -2423,6 +2452,12 @@ export class ControlCenterModal extends Modal {
 		// Wire up label toggle
 		labelCheckbox.addEventListener('change', () => {
 			this.treePreviewRenderer?.toggleLabels(labelCheckbox.checked);
+		});
+
+		// Wire up color scheme selector
+		colorSchemeSelect.addEventListener('change', () => {
+			const scheme = colorSchemeSelect.value as ColorScheme;
+			this.treePreviewRenderer?.setColorScheme(scheme);
 		});
 
 		// Wire up preview button
