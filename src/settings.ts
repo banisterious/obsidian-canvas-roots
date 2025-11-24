@@ -79,6 +79,9 @@ export interface CanvasRootsSettings {
 	// Marriage metadata display
 	showSpouseEdges: boolean;
 	spouseEdgeLabelFormat: SpouseEdgeLabelFormat;
+	// Bidirectional relationship sync
+	enableBidirectionalSync: boolean;
+	syncOnFileModify: boolean;
 }
 
 export const DEFAULT_SETTINGS: CanvasRootsSettings = {
@@ -105,7 +108,10 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	spouseEdgeColor: 'none',            // No color - use theme default (clean, subtle)
 	// Marriage metadata display defaults
 	showSpouseEdges: false,             // Default: OFF (clean look, no spouse edges)
-	spouseEdgeLabelFormat: 'date-only'  // When enabled, show just marriage date
+	spouseEdgeLabelFormat: 'date-only', // When enabled, show just marriage date
+	// Bidirectional relationship sync defaults
+	enableBidirectionalSync: true,      // Default: ON - automatically sync relationships
+	syncOnFileModify: true              // Default: ON - sync when files are modified
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {
@@ -216,6 +222,33 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					this.plugin.settings.autoGenerateCrId = value;
 					await this.plugin.saveSettings();
 				}));
+
+		new Setting(containerEl)
+			.setName('Enable bidirectional relationship sync')
+			.setDesc('Automatically maintain reciprocal relationships (e.g., when you set someone as a parent, that person is automatically added as a child in the parent\'s note)')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enableBidirectionalSync)
+				.onChange(async (value) => {
+					this.plugin.settings.enableBidirectionalSync = value;
+					await this.plugin.saveSettings();
+					// Re-register file modification handler with new settings
+					(this.plugin as any).registerFileModificationHandler?.();
+					// Refresh display to update disabled state
+					this.display();
+				}));
+
+		new Setting(containerEl)
+			.setName('Sync on file modify')
+			.setDesc('Automatically sync relationships when person notes are edited (works with Bases table edits)')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.syncOnFileModify)
+				.onChange(async (value) => {
+					this.plugin.settings.syncOnFileModify = value;
+					await this.plugin.saveSettings();
+					// Re-register file modification handler with new settings
+					(this.plugin as any).registerFileModificationHandler?.();
+				})
+				.setDisabled(!this.plugin.settings.enableBidirectionalSync));
 
 		// Canvas styling
 		new Setting(containerEl)

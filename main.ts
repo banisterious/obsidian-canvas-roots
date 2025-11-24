@@ -1,4 +1,4 @@
-import { Plugin, Notice, TFile, TFolder, Menu, Platform, Modal } from 'obsidian';
+import { Plugin, Notice, TFile, TFolder, Menu, Platform, Modal, EventRef } from 'obsidian';
 import { CanvasRootsSettings, DEFAULT_SETTINGS, CanvasRootsSettingTab } from './src/settings';
 import { ControlCenterModal } from './src/ui/control-center';
 import { RegenerateOptionsModal } from './src/ui/regenerate-options-modal';
@@ -9,14 +9,18 @@ import { RelationshipValidator } from './src/core/relationship-validator';
 import { ValidationResultsModal } from './src/ui/validation-results-modal';
 import { FindOnCanvasModal } from './src/ui/find-on-canvas-modal';
 import { FolderScanModal } from './src/ui/folder-scan-modal';
-import { LoggerFactory } from './src/core/logging';
+import { LoggerFactory, getLogger } from './src/core/logging';
 import { FamilyGraphService } from './src/core/family-graph';
 import { CanvasGenerator } from './src/core/canvas-generator';
 import { BASE_TEMPLATE } from './src/constants/base-template';
 import { ExcalidrawExporter } from './src/excalidraw/excalidraw-exporter';
+import { BidirectionalLinker } from './src/core/bidirectional-linker';
+
+const logger = getLogger('CanvasRootsPlugin');
 
 export default class CanvasRootsPlugin extends Plugin {
 	settings: CanvasRootsSettings;
+	private fileModifyEventRef: EventRef | null = null;
 
 	async onload() {
 		console.log('Loading Canvas Roots plugin');
@@ -554,10 +558,64 @@ export default class CanvasRootsPlugin extends Plugin {
 				}
 			})
 		);
+
+		// Register file modification handler for bidirectional sync
+		this.registerFileModificationHandler();
+	}
+
+	/**
+	 * Register event handler for file modifications to auto-sync relationships
+	 */
+	private registerFileModificationHandler() {
+		// Unregister existing handler if present
+		if (this.fileModifyEventRef) {
+			this.app.metadataCache.offref(this.fileModifyEventRef);
+			this.fileModifyEventRef = null;
+		}
+
+		// Register new handler if sync is enabled
+		if (this.settings.enableBidirectionalSync && this.settings.syncOnFileModify) {
+			logger.debug('file-watcher', 'Registering file modification handler for bidirectional sync');
+
+			this.fileModifyEventRef = this.app.metadataCache.on('changed', async (file: TFile) => {
+				// Only process markdown files
+				if (file.extension !== 'md') {
+					return;
+				}
+
+				// Only process files with cr_id (person notes)
+				const cache = this.app.metadataCache.getFileCache(file);
+				if (!cache?.frontmatter?.cr_id) {
+					return;
+				}
+
+				logger.debug('file-watcher', 'Person note modified, syncing relationships', {
+					file: file.path
+				});
+
+				// Sync relationships for this file
+				try {
+					const bidirectionalLinker = new BidirectionalLinker(this.app);
+					await bidirectionalLinker.syncRelationships(file);
+				} catch (error) {
+					logger.error('file-watcher', 'Failed to sync relationships on file modify', {
+						file: file.path,
+						error: error.message
+					});
+				}
+			});
+
+			this.registerEvent(this.fileModifyEventRef);
+		}
 	}
 
 	async onunload() {
 		console.log('Unloading Canvas Roots plugin');
+
+		// Clean up event handlers
+		if (this.fileModifyEventRef) {
+			this.app.metadataCache.offref(this.fileModifyEventRef);
+		}
 	}
 
 	async loadSettings() {

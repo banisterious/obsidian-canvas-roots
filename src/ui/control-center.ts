@@ -1970,9 +1970,11 @@ export class ControlCenterModal extends Modal {
 				openAfterCreate: openNote
 			});
 
-			// Sync bidirectional relationships
-			const bidirectionalLinker = new BidirectionalLinker(this.app);
-			await bidirectionalLinker.syncRelationships(file);
+			// Sync bidirectional relationships if enabled
+			if (this.plugin.settings.enableBidirectionalSync) {
+				const bidirectionalLinker = new BidirectionalLinker(this.app);
+				await bidirectionalLinker.syncRelationships(file);
+			}
 
 			// Show success message
 			new Notice(`✅ Created person note: ${file.basename}`);
