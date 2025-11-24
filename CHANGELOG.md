@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **UI Consolidation**: Streamlined tree generation and export workflows
+  - Renamed "Tree Generation" tab to "Tree Output" to reflect both generation and export capabilities
+  - Added "Export Tree" section with Excalidraw export instructions
+  - Created "Generate tree" submenu in person note context menus with two quick actions:
+    - "Generate Canvas tree" - Opens Tree Output tab with full control over settings
+    - "Generate Excalidraw tree" - Instantly generates Excalidraw tree with sensible defaults
+  - Hybrid approach: Canvas generation for full control, Excalidraw for speed
+
+- **Essential Properties Feature**: Bulk-add essential properties to person notes
+  - Context menu action "Add essential properties" for single or multiple markdown files
+  - Adds all 9 essential properties if missing: `cr_id`, `name`, `born`, `died`, `father`, `mother`, `spouses`, `children`, `group_name`
+  - Smart visibility: Only shows for files missing some properties
+  - Multi-file selection support with file count indicator
+  - Non-destructive: Preserves existing data, only adds missing properties
+
+- **Complete Person Notes by Default**: All person note creation now includes essential properties
+  - Person notes created via Data Entry tab include all essential properties
+  - GEDCOM imports create complete person notes with all essential properties
+  - Properties use empty strings or arrays when data is unavailable
+  - Ensures consistency between manually created and imported notes
+
 - **Alternative Layout Algorithms**: Choose from four layout algorithms to visualize family trees in different ways
   - **Standard**: Traditional family-chart layout with proper spouse handling (default)
   - **Compact**: 50% tighter spacing for large trees (ideal for 50+ people)

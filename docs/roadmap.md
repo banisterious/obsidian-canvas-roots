@@ -1,7 +1,7 @@
 # Canvas Roots: Development Roadmap
 
-> **Last Updated:** 2025-11-23
-> **Current Version:** v0.2.0-beta
+> **Last Updated:** 2025-11-24
+> **Current Version:** v0.2.3-beta
 
 Canvas Roots is in beta with core functionality complete and stable. Advanced features and enhancements are planned for future releases.
 
@@ -9,7 +9,30 @@ Canvas Roots is in beta with core functionality complete and stable. Advanced fe
 
 ## 🎯 Released Versions
 
-### v0.2.0-beta (Current)
+### v0.2.3-beta (Current)
+
+**Alternative Layout Algorithms:**
+- Standard, Compact, Timeline, and Hourglass layout algorithms
+- Auto-generated canvas filenames with layout type suffix
+- Layout type stored in canvas metadata for regeneration
+
+**UI Consolidation:**
+- Renamed "Tree Generation" to "Tree Output" tab
+- Added "Generate tree" submenu in person note context menus
+- Hybrid workflow: Canvas (full control) vs Excalidraw (instant generation)
+
+**Essential Properties:**
+- "Add essential properties" context menu action for single/multi-file selections
+- All person note creation includes 9 essential properties by default
+- Complete person notes from GEDCOM imports
+
+### v0.2.2-beta
+
+**Bidirectional Relationship Sync:**
+- Automatic reciprocal relationship maintenance
+- Works with Bases edits, frontmatter changes, and external editors
+
+### v0.2.0-beta
 
 **Beta Release:**
 - Transitioned from alpha to beta status
