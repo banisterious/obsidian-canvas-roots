@@ -1,7 +1,7 @@
 # Canvas Roots: Development Roadmap
 
-> **Last Updated:** 2025-11-24
-> **Current Version:** v0.2.3-beta
+> **Last Updated:** 2025-11-25
+> **Current Version:** v0.2.5
 
 Canvas Roots is in beta with core functionality complete and stable. Advanced features and enhancements are planned for future releases.
 
@@ -9,7 +9,30 @@ Canvas Roots is in beta with core functionality complete and stable. Advanced fe
 
 ## 🎯 Released Versions
 
-### v0.2.3-beta (Current)
+### v0.2.5 (Current)
+
+**Relationship Calculator:**
+- Calculate relationship between any two people in the family graph
+- BFS pathfinding algorithm finds shortest path through family connections
+- Relationship naming with proper genealogical terms (cousin, uncle, etc.)
+- Support for cousins with removal (1st cousin once removed, 2nd cousin twice removed)
+- In-law relationship detection (parent-in-law, sibling-in-law, etc.)
+- Common ancestor identification for collateral relationships
+- Visual path display showing the chain of relationships
+- Copy result to clipboard functionality
+- Command palette entry: "Calculate relationship between people"
+- Context menu entry on person notes for quick access
+
+### v0.2.4
+
+**Community Plugin Submission:**
+- Prepared plugin for Obsidian community plugin directory
+- Fixed manifest validation issues (removed "Obsidian" from description, corrected authorUrl)
+- Standardized version numbering (removed -beta suffix for community compatibility)
+- Added GitHub issue templates with privacy guidance for genealogical data
+- Updated security documentation
+
+### v0.2.3
 
 **Interactive Tree Preview:**
 - Real-time SVG preview with pan/zoom controls
@@ -256,14 +279,6 @@ Compute and track multi-generational lineages from marked root persons to enable
 - Complex succession rules
 - Fantasy dynasties and corporate succession tracking
 - Geographic grouping and timeline support
-
-### Relationship Calculator
-
-- "How is Person A related to Person B?" relationship calculator
-- Show all paths between any two people
-- Degree of relationship display (2nd cousin once removed, etc.)
-- Common ancestor identification
-- Relationship path visualization
 
 ### Family Statistics Dashboard
 
