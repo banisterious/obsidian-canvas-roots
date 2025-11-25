@@ -61,7 +61,7 @@ export class FindOnCanvasModal extends Modal {
 		const emptyState = container.createDiv({ cls: 'cr-find-empty' });
 
 		const icon = createLucideIcon('search', 48);
-		icon.style.opacity = '0.3';
+		icon.addClass('cr-icon--muted');
 		emptyState.appendChild(icon);
 
 		emptyState.createEl('p', {

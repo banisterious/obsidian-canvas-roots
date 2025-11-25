@@ -146,11 +146,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 			.setHeading();
 
 		// Regenerate canvas feature info
-		const regenerateInfo = containerEl.createDiv({ cls: 'setting-item-description' });
-		regenerateInfo.style.marginBottom = '1em';
-		regenerateInfo.style.padding = '0.75em';
-		regenerateInfo.style.background = 'var(--background-secondary)';
-		regenerateInfo.style.borderRadius = '4px';
+		const regenerateInfo = containerEl.createDiv({ cls: 'setting-item-description cr-info-box' });
 		regenerateInfo.innerHTML = '<strong>💡 Tip:</strong> After changing layout settings, right-click any existing canvas file and select ' +
 			'<strong>"Regenerate canvas"</strong> to apply the new settings.';
 
@@ -269,11 +265,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 			.setHeading();
 
 		// Styling tip
-		const stylingInfo = containerEl.createDiv({ cls: 'setting-item-description' });
-		stylingInfo.style.marginBottom = '1em';
-		stylingInfo.style.padding = '0.75em';
-		stylingInfo.style.background = 'var(--background-secondary)';
-		stylingInfo.style.borderRadius = '4px';
+		const stylingInfo = containerEl.createDiv({ cls: 'setting-item-description cr-info-box' });
 		stylingInfo.innerHTML = '<strong>💡 Tip:</strong> After changing styling settings, right-click any existing canvas file and select ' +
 			'<strong>"Regenerate canvas"</strong> to apply the new settings.';
 

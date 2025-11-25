@@ -483,10 +483,10 @@ export class ControlCenterModal extends Modal {
 		this.contentContainer.empty();
 
 		// Title
-		const title = this.contentContainer.createEl('h2', {
-			text: 'Generate all trees - Results'
+		this.contentContainer.createEl('h2', {
+			text: 'Generate all trees - Results',
+			cls: 'cr-card-title--no-margin'
 		});
-		title.style.marginTop = '0';
 
 		// Summary stats
 		const summaryCard = this.createCard({
@@ -1753,8 +1753,7 @@ export class ControlCenterModal extends Modal {
 		const container = this.contentContainer;
 
 		// Title
-		const title = container.createEl('h2', { text: 'Canvas settings' });
-		title.style.marginTop = '0';
+		container.createEl('h2', { text: 'Canvas settings', cls: 'cr-card-title--no-margin' });
 
 		// Intro text with re-layout feature note
 		const intro = container.createEl('p', {
@@ -2183,8 +2182,7 @@ export class ControlCenterModal extends Modal {
 		const container = this.contentContainer;
 
 		// Title
-		const title = container.createEl('h2', { text: 'Tree output' });
-		title.style.marginTop = '0';
+		container.createEl('h2', { text: 'Tree output', cls: 'cr-card-title--no-margin' });
 
 		// Intro text
 		container.createEl('p', {

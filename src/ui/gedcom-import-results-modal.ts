@@ -33,7 +33,7 @@ export class GedcomImportResultsModal extends Modal {
 		const statsDiv = contentEl.createDiv({ cls: 'cr-import-stats' });
 
 		const successIcon = this.result.success ? createLucideIcon('check', 24) : createLucideIcon('alert-circle', 24);
-		successIcon.style.color = this.result.success ? 'var(--color-green)' : 'var(--color-red)';
+		successIcon.addClass(this.result.success ? 'cr-icon--success' : 'cr-icon--error');
 		statsDiv.appendChild(successIcon);
 
 		const statsText = statsDiv.createDiv({ cls: 'cr-import-stats__text' });
@@ -69,7 +69,7 @@ export class GedcomImportResultsModal extends Modal {
 			const warningsSection = contentEl.createDiv({ cls: 'cr-import-section' });
 			const warningsHeader = warningsSection.createDiv({ cls: 'cr-import-section__header' });
 			const warnIcon = createLucideIcon('alert-triangle', 18);
-			warnIcon.style.color = 'var(--color-orange)';
+			warnIcon.addClass('cr-icon--warning');
 			warningsHeader.appendChild(warnIcon);
 			warningsHeader.createEl('span', {
 				text: ` ${this.validation.warnings.length} Warning${this.validation.warnings.length === 1 ? '' : 's'}`,
@@ -94,7 +94,7 @@ export class GedcomImportResultsModal extends Modal {
 			const errorsSection = contentEl.createDiv({ cls: 'cr-import-section' });
 			const errorsHeader = errorsSection.createDiv({ cls: 'cr-import-section__header' });
 			const errorIcon = createLucideIcon('x', 18);
-			errorIcon.style.color = 'var(--color-red)';
+			errorIcon.addClass('cr-icon--error');
 			errorsHeader.appendChild(errorIcon);
 			errorsHeader.createEl('span', {
 				text: ` ${this.result.errors.length} Error${this.result.errors.length === 1 ? '' : 's'}`,

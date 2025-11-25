@@ -17,7 +17,7 @@ This document tracks issues identified through analysis of Obsidian plugin PR re
 | Priority | Category | Count | Status |
 |----------|----------|-------|--------|
 | HIGH | require() imports | 4 | ✅ Complete |
-| MEDIUM | Inline styles | 57 | Pending |
+| MEDIUM | Inline styles | 57→31 | ✅ Partial (dynamic styles remain) |
 | MEDIUM | Explicit `any` types | 16 | Pending |
 | LOW | Untyped catch errors | 36 | Pending |
 | LOW | Debug console.log statements | 30+ | Pending |
@@ -70,41 +70,57 @@ Refactored log export functionality to use Obsidian's vault API instead of Node.
 
 ---
 
-## Category 2: Inline Styles
+## Category 2: Inline Styles ✅ PARTIAL
 
 **Priority:** MEDIUM
-**Issue:** Reviewers prefer CSS classes over direct style manipulation (`element.style.property = value`).
+**Status:** ✅ Reduced from 57 to 31 (remaining are dynamic/necessary)
 
-### Summary by File
+### Original Issue
 
-| File | Count | Types |
-|------|-------|-------|
-| src/ui/control-center.ts | ~30 | Display toggles, progress bars, visibility |
-| src/ui/tree-preview.ts | 9 | Cursor states, tooltip positioning |
-| src/settings.ts | 8 | Info box styling |
-| src/ui/lucide-icons.ts | 6 | Icon sizing |
-| src/ui/validation-results-modal.ts | 6 | Icon colors |
-| src/ui/gedcom-import-results-modal.ts | 3 | Icon colors |
-| src/ui/find-on-canvas-modal.ts | 1 | Icon opacity |
-| src/ui/folder-scan-modal.ts | 2 | Icon styling |
+Reviewers prefer CSS classes over direct style manipulation (`element.style.property = value`).
 
-### Fix Strategy
+### Resolution
 
-1. **Dynamic/Interactive styles (KEEP):** Some inline styles are necessary:
-   - Cursor changes during drag (`grab`/`grabbing`)
-   - Tooltip positioning (follows mouse)
-   - Progress bar width (percentage-based)
-   - Visibility toggles (`display: none/block`)
+Created CSS utility classes in `styles/modals.css`:
 
-2. **Static styles (MOVE TO CSS):**
-   - Info box styling in settings.ts
-   - Icon sizing in lucide-icons.ts
-   - Icon colors in modals
+```css
+/* Icon color utilities */
+.cr-icon--success { color: var(--color-green); }
+.cr-icon--warning { color: var(--color-orange); }
+.cr-icon--error { color: var(--color-red); }
+.cr-icon--muted { opacity: 0.3; }
 
-3. **Create CSS classes:**
-   - `.cr-icon--success`, `.cr-icon--error`, `.cr-icon--warning` for colored icons
-   - `.cr-info-box` for info box styling
-   - `.cr-hidden`, `.cr-visible` for visibility toggles
+/* Text color utilities */
+.cr-text--success { color: var(--color-green); }
+.cr-text--error { color: var(--color-red); }
+
+/* Info box styling */
+.cr-info-box { margin-bottom: 1em; padding: 0.75em; background: var(--background-secondary); border-radius: 4px; }
+
+/* Card title without top margin */
+.cr-card-title--no-margin { margin-top: 0; }
+
+/* Lucide icon container styling */
+.cr-lucide-icon { display: inline-flex; align-items: center; justify-content: center; }
+```
+
+**Files updated:**
+- `src/settings.ts` - Info boxes now use `.cr-info-box` class
+- `src/ui/validation-results-modal.ts` - Icons use `.cr-icon--*` classes
+- `src/ui/gedcom-import-results-modal.ts` - Icons use `.cr-icon--*` classes
+- `src/ui/find-on-canvas-modal.ts` - Empty state icon uses `.cr-icon--muted`
+- `src/ui/folder-scan-modal.ts` - Icons use `.cr-icon--*` classes
+- `src/ui/lucide-icons.ts` - Uses `.cr-lucide-icon` for flex display
+- `src/ui/control-center.ts` - Titles use `.cr-card-title--no-margin`
+
+### Remaining Inline Styles (31 - necessary)
+
+These must remain as inline styles due to dynamic/calculated values:
+- **Progress bars** - Width is percentage-based (`${percent}%`)
+- **Tooltip positioning** - Position based on mouse coordinates
+- **Icon sizing** - Dynamic size parameter
+- **Display toggles** - Interactive visibility changes
+- **Cursor states** - Changes during drag interactions
 
 ---
 

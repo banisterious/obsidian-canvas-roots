@@ -88,7 +88,7 @@ export class FolderScanModal extends Modal {
 		const emptyState = container.createDiv({ cls: 'cr-scan-empty' });
 
 		const icon = createLucideIcon('users', 48);
-		icon.style.opacity = '0.3';
+		icon.addClass('cr-icon--muted');
 		emptyState.appendChild(icon);
 
 		emptyState.createEl('p', {
@@ -171,7 +171,7 @@ export class FolderScanModal extends Modal {
 					const resultHeader = resultItem.createDiv({ cls: 'cr-scan-result__header' });
 
 					const icon = createLucideIcon('alert-triangle', 16);
-					icon.style.color = 'var(--color-orange)';
+					icon.addClass('cr-icon--warning');
 					resultHeader.appendChild(icon);
 
 					resultHeader.createEl('span', {

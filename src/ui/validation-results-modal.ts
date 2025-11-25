@@ -31,22 +31,22 @@ export class ValidationResultsModal extends Modal {
 
 		if (this.result.isValid) {
 			const successIcon = createLucideIcon('check', 20);
-			successIcon.style.color = 'var(--color-green)';
+			successIcon.addClass('cr-icon--success');
 			summary.appendChild(successIcon);
 			summary.createEl('span', {
 				text: ' No issues found',
 				cls: 'cr-validation-summary__text'
 			});
-			summary.style.color = 'var(--color-green)';
+			summary.addClass('cr-text--success');
 		} else {
 			const errorIcon = createLucideIcon('alert-circle', 20);
-			errorIcon.style.color = 'var(--color-red)';
+			errorIcon.addClass('cr-icon--error');
 			summary.appendChild(errorIcon);
 			summary.createEl('span', {
 				text: ` Found ${this.result.issues.length} issue${this.result.issues.length === 1 ? '' : 's'}`,
 				cls: 'cr-validation-summary__text'
 			});
-			summary.style.color = 'var(--color-red)';
+			summary.addClass('cr-text--error');
 		}
 
 		// Issues list
@@ -59,7 +59,7 @@ export class ValidationResultsModal extends Modal {
 				// Issue icon and number
 				const issueHeader = issueItem.createDiv({ cls: 'cr-validation-issue__header' });
 				const warningIcon = createLucideIcon('alert-triangle', 16);
-				warningIcon.style.color = 'var(--color-orange)';
+				warningIcon.addClass('cr-icon--warning');
 				issueHeader.appendChild(warningIcon);
 				issueHeader.createEl('span', {
 					text: ` Issue ${index + 1}`,

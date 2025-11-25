@@ -1612,3 +1612,67 @@
   color: var(--text-muted);
   font-size: 11px;
 }
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+/* Display utilities */
+.cr-hidden {
+  display: none !important;
+}
+
+/* Icon color utilities */
+.cr-icon--success {
+  color: var(--color-green);
+}
+
+.cr-icon--warning {
+  color: var(--color-orange);
+}
+
+.cr-icon--error {
+  color: var(--color-red);
+}
+
+.cr-icon--muted {
+  opacity: 0.3;
+}
+
+/* Text color utilities */
+.cr-text--success {
+  color: var(--color-green);
+}
+
+.cr-text--error {
+  color: var(--color-red);
+}
+
+/* Info box styling */
+.cr-info-box {
+  margin-bottom: 1em;
+  padding: 0.75em;
+  background: var(--background-secondary);
+  border-radius: 4px;
+}
+
+/* Card title without top margin */
+.cr-card-title--no-margin {
+  margin-top: 0;
+}
+
+/* Cursor utilities for interactive elements */
+.cr-cursor--grab {
+  cursor: grab;
+}
+
+.cr-cursor--grabbing {
+  cursor: grabbing;
+}
+
+/* Lucide icon container styling */
+.cr-lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

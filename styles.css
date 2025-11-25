@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-11-25 16:50:07 UTC
+ * - Generated: 2025-11-25 16:55:54 UTC
  * - Components: 15 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -187,7 +187,7 @@
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 1615 lines, 29.79 KB */
+/* Component Size: 1679 lines, 30.85 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -1804,6 +1804,70 @@
   font-size: 11px;
 }
 
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+/* Display utilities */
+.cr-hidden {
+  display: none !important;
+}
+
+/* Icon color utilities */
+.cr-icon--success {
+  color: var(--color-green);
+}
+
+.cr-icon--warning {
+  color: var(--color-orange);
+}
+
+.cr-icon--error {
+  color: var(--color-red);
+}
+
+.cr-icon--muted {
+  opacity: 0.3;
+}
+
+/* Text color utilities */
+.cr-text--success {
+  color: var(--color-green);
+}
+
+.cr-text--error {
+  color: var(--color-red);
+}
+
+/* Info box styling */
+.cr-info-box {
+  margin-bottom: 1em;
+  padding: 0.75em;
+  background: var(--background-secondary);
+  border-radius: 4px;
+}
+
+/* Card title without top margin */
+.cr-card-title--no-margin {
+  margin-top: 0;
+}
+
+/* Cursor utilities for interactive elements */
+.cr-cursor--grab {
+  cursor: grab;
+}
+
+.cr-cursor--grabbing {
+  cursor: grabbing;
+}
+
+/* Lucide icon container styling */
+.cr-lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 /* End of modals.css */
 
@@ -2305,10 +2369,10 @@
    ========================================================================== */
 
 /*
- * Build completed: 2025-11-25 16:50:07 UTC
+ * Build completed: 2025-11-25 16:55:54 UTC
  * Components processed: 15
- * Total lines: 2147
- * Total size: 38.73 KB
+ * Total lines: 2211
+ * Total size: 39.79 KB
  * Build duration: 0.01 seconds
  *
  * Component breakdown:
@@ -2319,7 +2383,7 @@
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 1615 lines, 29.79 KB
+ * - modals.css: 1679 lines, 30.85 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB
  * - find-on-canvas.css: 114 lines, 1.97 KB

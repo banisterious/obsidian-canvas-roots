@@ -134,12 +134,9 @@ export const TAB_CONFIGS: TabConfig[] = [
  */
 export function createLucideIcon(iconName: LucideIconName, size: number = 20): HTMLElement {
 	const iconEl = document.createElement('span');
-	iconEl.addClass('crc-icon');
+	iconEl.addClass('crc-icon', 'cr-lucide-icon');
 	iconEl.style.width = `${size}px`;
 	iconEl.style.height = `${size}px`;
-	iconEl.style.display = 'inline-flex';
-	iconEl.style.alignItems = 'center';
-	iconEl.style.justifyContent = 'center';
 
 	setIcon(iconEl, iconName);
 
@@ -155,12 +152,9 @@ export function createLucideIcon(iconName: LucideIconName, size: number = 20): H
  */
 export function setLucideIcon(element: HTMLElement, iconName: LucideIconName, size: number = 20): void {
 	element.empty();
-	element.addClass('crc-icon');
+	element.addClass('crc-icon', 'cr-lucide-icon');
 	element.style.width = `${size}px`;
 	element.style.height = `${size}px`;
-	element.style.display = 'inline-flex';
-	element.style.alignItems = 'center';
-	element.style.justifyContent = 'center';
 
 	setIcon(element, iconName);
 }
