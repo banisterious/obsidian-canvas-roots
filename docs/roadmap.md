@@ -251,6 +251,40 @@ Compute and track multi-generational lineages from marked root persons to enable
 - Quick editing capabilities
 - Canvas export as image/PDF
 
+### Interactive Family Chart View
+
+A dedicated Obsidian leaf view that renders the full family-chart library interactively, complementing the static canvas output.
+
+**Core Features:**
+- Persistent leaf view (sidebar, new tab, or split pane)
+- Full family-chart interactivity: pan, zoom, click-to-focus, node expansion/collapse
+- Bidirectional sync with markdown notes (chart edits update frontmatter, frontmatter changes reflect in chart)
+- Click node to open person note
+- Auto-save edits (consistent with Obsidian behavior)
+
+**Editing Capabilities:**
+- Right-click node for quick actions (add parent, add child, add spouse, remove relationship)
+- Inline editing of basic fields (name, dates) with sync back to notes
+- Drag-and-drop rearrangement (where family-chart supports it)
+
+**Visualization Options:**
+- All layout algorithms (standard, compact, timeline, hourglass)
+- Color schemes (gender, generation, monochrome, collection-based)
+- Node detail level (minimal, standard, detailed)
+- Filtering by collection, generation range, or living/deceased status
+- Search and highlight within the chart
+
+**Integration:**
+- Command: "Open family chart view"
+- Context menu on person notes: "Show in family chart"
+- Link from canvas nodes to focus in chart view
+- Export (PNG, SVG) directly from the view
+- Settings for default view configuration
+
+**Potential Enhancements:**
+- Multiple chart views open simultaneously (different root persons)
+- Linked views that stay synchronized
+
 ### Privacy & Obfuscation
 
 - Optional data obfuscation for exports
