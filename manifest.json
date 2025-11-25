@@ -1,10 +1,10 @@
 {
 	"id": "canvas-roots",
 	"name": "Canvas Roots",
-	"version": "0.2.3-beta",
+	"version": "0.2.4",
 	"minAppVersion": "1.7.2",
-	"description": "Generate genealogical family trees on Obsidian Canvas with automated layout, GEDCOM import/export, and comprehensive styling options.",
+	"description": "Generate genealogical family trees on Canvas with automated layout, GEDCOM import/export, and comprehensive styling options.",
 	"author": "banisterious",
-	"authorUrl": "https://github.com/banisterious/obsidian-canvas-roots",
+	"authorUrl": "https://github.com/banisterious",
 	"isDesktopOnly": false
 }
