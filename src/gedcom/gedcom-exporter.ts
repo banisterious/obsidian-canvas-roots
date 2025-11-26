@@ -8,6 +8,7 @@ import { App, Notice } from 'obsidian';
 import { FamilyGraphService, type PersonNode } from '../core/family-graph';
 import { getLogger } from '../core/logging';
 import { getErrorMessage } from '../core/error-utils';
+import { PrivacyService, type PrivacySettings } from '../core/privacy-service';
 
 const logger = getLogger('GedcomExporter');
 
@@ -32,6 +33,9 @@ export interface GedcomExportOptions {
 
 	/** Source version for GEDCOM header */
 	sourceVersion?: string;
+
+	/** Privacy settings for protecting living persons */
+	privacySettings?: PrivacySettings;
 }
 
 /**
@@ -44,6 +48,10 @@ export interface GedcomExportResult {
 	errors: string[];
 	gedcomContent?: string;
 	fileName: string;
+	/** Number of living persons excluded due to privacy settings */
+	privacyExcluded?: number;
+	/** Number of living persons with obfuscated data */
+	privacyObfuscated?: number;
 }
 
 /**
@@ -79,8 +87,15 @@ export class GedcomExporter {
 			individualsExported: 0,
 			familiesExported: 0,
 			errors: [],
-			fileName: options.fileName || 'export'
+			fileName: options.fileName || 'export',
+			privacyExcluded: 0,
+			privacyObfuscated: 0
 		};
+
+		// Create privacy service if settings provided
+		const privacyService = options.privacySettings
+			? new PrivacyService(options.privacySettings)
+			: null;
 
 		try {
 			new Notice('Reading person notes...');
@@ -109,11 +124,47 @@ export class GedcomExporter {
 				}
 			}
 
+			// Apply privacy filtering if enabled
+			if (privacyService && options.privacySettings?.enablePrivacyProtection) {
+				const beforeCount = filteredPeople.length;
+
+				// Count obfuscated (living but not excluded)
+				for (const person of filteredPeople) {
+					const privacyResult = privacyService.applyPrivacy({
+						name: person.name,
+						birthDate: person.birthDate,
+						deathDate: person.deathDate
+					});
+					if (privacyResult.isProtected && !privacyResult.excludeFromOutput) {
+						result.privacyObfuscated = (result.privacyObfuscated || 0) + 1;
+					}
+				}
+
+				// Filter out excluded people (privacy format = 'hidden')
+				if (options.privacySettings.privacyDisplayFormat === 'hidden') {
+					filteredPeople = filteredPeople.filter(person => {
+						const privacyResult = privacyService.applyPrivacy({
+							name: person.name,
+							birthDate: person.birthDate,
+							deathDate: person.deathDate
+						});
+						return !privacyResult.excludeFromOutput;
+					});
+					result.privacyExcluded = beforeCount - filteredPeople.length;
+					logger.info('export', `Privacy: excluded ${result.privacyExcluded} living persons`);
+				}
+
+				if (result.privacyObfuscated && result.privacyObfuscated > 0) {
+					logger.info('export', `Privacy: obfuscating ${result.privacyObfuscated} living persons`);
+				}
+			}
+
 			// Build GEDCOM content
 			new Notice('Generating GEDCOM data...');
 			const gedcomContent = this.buildGedcomContent(
 				filteredPeople,
-				options
+				options,
+				privacyService
 			);
 
 			// Count families
@@ -141,7 +192,8 @@ export class GedcomExporter {
 	 */
 	private buildGedcomContent(
 		people: PersonNode[],
-		options: GedcomExportOptions
+		options: GedcomExportOptions,
+		privacyService: PrivacyService | null
 	): string {
 		const lines: string[] = [];
 
@@ -166,7 +218,8 @@ export class GedcomExporter {
 				person,
 				gedcomId,
 				crIdToGedcomId,
-				options
+				options,
+				privacyService
 			));
 		}
 
@@ -222,25 +275,37 @@ export class GedcomExporter {
 	private buildIndividualRecord(
 		person: PersonNode,
 		gedcomId: string,
-		crIdToGedcomId: Map<string, string>,
-		options: GedcomExportOptions
+		_crIdToGedcomId: Map<string, string>,
+		options: GedcomExportOptions,
+		privacyService: PrivacyService | null
 	): string[] {
 		const lines: string[] = [];
 
+		// Check privacy status
+		const privacyResult = privacyService?.applyPrivacy({
+			name: person.name,
+			birthDate: person.birthDate,
+			deathDate: person.deathDate
+		});
+
 		lines.push(`0 @${gedcomId}@ INDI`);
 
-		// Name
-		const name = person.name || 'Unknown';
-		const gedcomName = this.formatNameForGedcom(name);
+		// Name (possibly obfuscated)
+		const displayName = privacyResult?.isProtected
+			? privacyResult.displayName
+			: (person.name || 'Unknown');
+		const gedcomName = this.formatNameForGedcom(displayName);
 		lines.push(`1 NAME ${gedcomName}`);
 
-		// Parse given/surname if possible
-		const nameParts = this.parseNameParts(name);
-		if (nameParts.given) {
-			lines.push(`2 GIVN ${nameParts.given}`);
-		}
-		if (nameParts.surname) {
-			lines.push(`2 SURN ${nameParts.surname}`);
+		// Parse given/surname if possible (only if not obfuscated)
+		if (!privacyResult?.isProtected) {
+			const nameParts = this.parseNameParts(displayName);
+			if (nameParts.given) {
+				lines.push(`2 GIVN ${nameParts.given}`);
+			}
+			if (nameParts.surname) {
+				lines.push(`2 SURN ${nameParts.surname}`);
+			}
 		}
 
 		// Sex (infer from relationships or default to unknown)
@@ -249,21 +314,22 @@ export class GedcomExporter {
 			lines.push(`1 SEX ${sex}`);
 		}
 
-		// Birth
-		if (person.birthDate || person.birthPlace) {
+		// Birth (hide if protected and hideDetailsForLiving is enabled)
+		const showBirthDetails = !privacyResult?.isProtected || privacyResult.showBirthDate;
+		if (showBirthDetails && (person.birthDate || person.birthPlace)) {
 			lines.push('1 BIRT');
-			if (person.birthDate) {
+			if (person.birthDate && (!privacyResult?.isProtected || privacyResult.showBirthDate)) {
 				const birthDate = this.formatDateForGedcom(person.birthDate);
 				if (birthDate) {
 					lines.push(`2 DATE ${birthDate}`);
 				}
 			}
-			if (person.birthPlace) {
+			if (person.birthPlace && (!privacyResult?.isProtected || privacyResult.showBirthPlace)) {
 				lines.push(`2 PLAC ${person.birthPlace}`);
 			}
 		}
 
-		// Death
+		// Death (always show - living persons won't have death data anyway)
 		if (person.deathDate || person.deathPlace) {
 			lines.push('1 DEAT');
 			if (person.deathDate) {
@@ -277,8 +343,8 @@ export class GedcomExporter {
 			}
 		}
 
-		// Occupation
-		if (person.occupation) {
+		// Occupation (hide for protected persons)
+		if (person.occupation && !privacyResult?.isProtected) {
 			lines.push(`1 OCCU ${person.occupation}`);
 		}
 

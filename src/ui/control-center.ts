@@ -3566,7 +3566,13 @@ export class ControlCenterModal extends Modal {
 				includeCollectionCodes: options.includeCollectionCodes,
 				fileName: options.fileName,
 				sourceApp: 'Canvas Roots',
-				sourceVersion: this.plugin.manifest.version
+				sourceVersion: this.plugin.manifest.version,
+				privacySettings: {
+					enablePrivacyProtection: this.plugin.settings.enablePrivacyProtection,
+					livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+					privacyDisplayFormat: this.plugin.settings.privacyDisplayFormat,
+					hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+				}
 			});
 
 			// Log results
@@ -3589,9 +3595,13 @@ export class ControlCenterModal extends Modal {
 				document.body.removeChild(a);
 				URL.revokeObjectURL(url);
 
-				new Notice(
-					`GEDCOM exported: ${result.individualsExported} people, ${result.familiesExported} families`
-				);
+				let noticeMsg = `GEDCOM exported: ${result.individualsExported} people, ${result.familiesExported} families`;
+				if (result.privacyExcluded && result.privacyExcluded > 0) {
+					noticeMsg += ` (${result.privacyExcluded} living excluded)`;
+				} else if (result.privacyObfuscated && result.privacyObfuscated > 0) {
+					noticeMsg += ` (${result.privacyObfuscated} living obfuscated)`;
+				}
+				new Notice(noticeMsg);
 			} else {
 				throw new Error('Export failed to generate content');
 			}
