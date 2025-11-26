@@ -271,7 +271,7 @@ Compute and track multi-generational lineages from marked root persons to enable
 
 ### Reference Numbering Systems
 
-**Status**: ✅ Completed in v0.2.9
+**Status**: ✅ Completed in v0.2.8
 
 Genealogical numbering systems for systematic identification of ancestors and descendants. Numbers stored in YAML frontmatter properties, automatically available in Bases views.
 
