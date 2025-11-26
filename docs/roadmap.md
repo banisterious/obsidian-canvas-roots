@@ -297,10 +297,16 @@ Genealogical numbering systems for systematic identification of ancestors and de
 
 ### Advanced UI
 
-- Person Detail Panel with relationship visualization
-- Rich inline person information display
-- Quick editing capabilities
-- Canvas export as image/PDF
+**Status**: ⏸️ Low Priority - Superseded by existing features
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Person Detail Panel | Low priority | Largely redundant with Bases table views and opening notes directly |
+| Rich inline person display | Low priority | Bases provides this; Family Chart View would do it better |
+| Quick editing | Low priority | Bases inline editing covers this use case |
+| Canvas export as image/PDF | Consider | PNG/SVG export exists in Tree Preview; PDF could add value |
+
+The "relationship visualization" aspect originally planned for Person Detail Panel is better served by the **Interactive Family Chart View**, which provides full tree context rather than just immediate relatives.
 
 ### Interactive Family Chart View
 
@@ -461,12 +467,20 @@ A dedicated Obsidian leaf view that renders the full family-chart library intera
 
 ### Interactive Canvas Features
 
-- Hover tooltips showing birth/death info without opening notes
-- Minimap for large trees
-- Zoom to person/generation controls
-- Highlight lineage paths between two people
-- Collapsible branches for large trees
-- Click-to-focus navigation
+**Status**: ⏸️ Reconsidered - See Interactive Family Chart View
+
+Most interactive canvas features are not feasible with Obsidian's current Canvas API, which lacks programmatic viewport control and event hooks. The Canvas is designed as a user-manipulated workspace, not a programmatically-controlled visualization.
+
+| Feature | Feasibility | Issue |
+|---------|-------------|-------|
+| Hover tooltips | 🟡 Hacky | No official API; requires fragile DOM manipulation |
+| Minimap | 🔴 Difficult | No viewport state access |
+| Zoom to person | 🔴 Difficult | No programmatic viewport control |
+| Highlight paths | 🟡 Hacky | Edge SVG manipulation possible but fragile |
+| Collapsible branches | 🔴 Very difficult | Would require hide/show plus layout recalculation |
+| Click-to-focus | 🔴 Difficult | Same viewport control limitation |
+
+**Recommended Alternative**: The **Interactive Family Chart View** (see above) provides all these features natively by rendering family-chart directly in a dedicated Obsidian leaf view, bypassing Canvas API limitations entirely. Canvas remains valuable for static, printable output with Obsidian-native file linking.
 
 ### Alternative Layout Algorithms
 

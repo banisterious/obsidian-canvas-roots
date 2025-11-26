@@ -73,8 +73,8 @@ This plugin is designed for genealogists, historians, and world-builders. It tra
 ### Planned Features
 
 See [Roadmap](docs/roadmap.md) for detailed feature descriptions and development priorities.
-- **Person Detail Panel:** Rich inline person information with relationship visualization
 - **Interactive Family Chart View:** Full family-chart library in an Obsidian leaf view with bidirectional note sync
+- **Import/Export Enhancements:** GEDCOM X, Gramps XML, CSV import/export, selective branch export
 - **World-Building Features:** Track fantasy dynasties, corporate succession, and historical kingdoms
 
 
