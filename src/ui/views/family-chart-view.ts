@@ -1352,7 +1352,33 @@ export class FamilyChartView extends ItemView {
 			const newContent = `---\n${updatedFrontmatter}\n---${bodyContent}`;
 			await this.app.vault.modify(targetFile, newContent);
 
-			logger.info('sync-to-md', 'Successfully synced to markdown', { path: targetFile.path });
+			logger.info('sync-to-md', 'Successfully synced frontmatter', { path: targetFile.path });
+
+			// Check if file should be renamed based on name change
+			const firstName = (datum.data['first name'] as string) || '';
+			const lastName = (datum.data['last name'] as string) || '';
+			const newFullName = `${firstName} ${lastName}`.trim();
+
+			if (newFullName) {
+				// Sanitize the new name for use as filename
+				const sanitizedName = this.sanitizeFilename(newFullName);
+				const currentBasename = targetFile.basename;
+
+				if (sanitizedName && sanitizedName !== currentBasename) {
+					// Build new path preserving the directory
+					const directory = targetFile.parent?.path || '';
+					const newPath = directory ? `${directory}/${sanitizedName}.md` : `${sanitizedName}.md`;
+
+					// Check if target file already exists
+					const existingFile = this.app.vault.getAbstractFileByPath(newPath);
+					if (existingFile) {
+						logger.warn('sync-to-md', 'Cannot rename: file already exists', { newPath });
+					} else {
+						await this.app.vault.rename(targetFile, newPath);
+						logger.info('sync-to-md', 'Renamed file', { from: targetFile.path, to: newPath });
+					}
+				}
+			}
 
 		} catch (error) {
 			logger.error('sync-to-md', 'Failed to sync datum to markdown', { error });
@@ -1445,6 +1471,80 @@ export class FamilyChartView extends ItemView {
 	}
 
 	/**
+	 * Sanitize a string for use as a filename
+	 * Removes/replaces characters that are invalid in filenames
+	 */
+	private sanitizeFilename(name: string): string {
+		// Replace characters that are invalid in filenames on most OS
+		// Windows: \ / : * ? " < > |
+		// Also replace # and ^ which can cause issues in Obsidian
+		return name
+			.replace(/[\\/:*?"<>|#^]/g, '')
+			.replace(/\s+/g, ' ')  // Collapse multiple spaces
+			.trim();
+	}
+
+	/**
+	 * Sync filename to frontmatter name property when file is renamed
+	 */
+	private async syncFilenameToFrontmatter(file: TFile): Promise<void> {
+		if (this.isSyncing) return;
+
+		this.isSyncing = true;
+
+		try {
+			const newName = file.basename;
+			logger.debug('sync-filename', 'Syncing filename to frontmatter', { filename: newName });
+
+			// Read current content
+			const content = await this.app.vault.read(file);
+
+			// Parse frontmatter
+			const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+			if (!frontmatterMatch) {
+				logger.warn('sync-filename', 'No frontmatter found in file', { path: file.path });
+				return;
+			}
+
+			const frontmatterContent = frontmatterMatch[1];
+			const bodyContent = content.slice(frontmatterMatch[0].length);
+
+			// Check if name property exists and differs
+			const nameMatch = frontmatterContent.match(/^name:\s*["']?(.+?)["']?\s*$/m);
+			const currentName = nameMatch ? nameMatch[1] : '';
+
+			if (currentName === newName) {
+				logger.debug('sync-filename', 'Name already matches filename', { name: newName });
+				return;
+			}
+
+			// Update name in frontmatter
+			let updatedFrontmatter: string;
+			if (nameMatch) {
+				// Replace existing name
+				updatedFrontmatter = frontmatterContent.replace(
+					/^name:\s*["']?.+?["']?\s*$/m,
+					`name: "${newName}"`
+				);
+			} else {
+				// Add name property at the beginning
+				updatedFrontmatter = `name: "${newName}"\n${frontmatterContent}`;
+			}
+
+			// Write back to file
+			const newContent = `---\n${updatedFrontmatter}\n---${bodyContent}`;
+			await this.app.vault.modify(file, newContent);
+
+			logger.info('sync-filename', 'Successfully synced filename to frontmatter', { path: file.path, name: newName });
+
+		} catch (error) {
+			logger.error('sync-filename', 'Failed to sync filename to frontmatter', { error });
+		} finally {
+			this.isSyncing = false;
+		}
+	}
+
+	/**
 	 * Check if the view is currently in a sidebar
 	 */
 	private isInSidebar(): boolean {
@@ -1504,6 +1604,22 @@ export class FamilyChartView extends ItemView {
 			this.app.vault.on('delete', (file) => {
 				if (file instanceof TFile && file.extension === 'md') {
 					this.scheduleRefresh();
+				}
+			})
+		);
+
+		// Listen for file renames to update chart with new names
+		this.registerEvent(
+			this.app.vault.on('rename', (file, oldPath) => {
+				if (file instanceof TFile && file.extension === 'md') {
+					// Check if this is a person note
+					const cache = this.app.metadataCache.getFileCache(file);
+					if (cache?.frontmatter?.cr_id) {
+						logger.debug('file-rename', 'Person note renamed', { oldPath, newPath: file.path });
+						// Update frontmatter name to match new filename
+						void this.syncFilenameToFrontmatter(file);
+						this.scheduleRefresh();
+					}
 				}
 			})
 		);
