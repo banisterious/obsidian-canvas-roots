@@ -272,6 +272,99 @@ No features currently in active development. See Planned Features below for road
 
 ## 📋 Planned Features
 
+### Folder Filtering
+
+**Status**: 🆕 Planned
+
+Control which folders Canvas Roots scans for person notes. Useful for mixed-use vaults or complex organizational structures.
+
+**Planned Features:**
+- **Exclusion list**: Ignore specific folders (e.g., templates, archive, non-genealogy notes)
+- **Inclusion list**: Alternative mode - only scan specified folders
+- Settings UI for managing folder lists with folder picker
+- Glob pattern support for flexible matching
+
+**Applies to:**
+- Person note detection
+- Duplicate detection scope
+- Tree generation scans
+- Validation commands
+- Relationship sync scope
+
+**Use Cases:**
+- Mixed-use vaults with non-genealogy content
+- Archived/legacy data that shouldn't be included in active trees
+- Separate staging areas for import cleanup
+- Multiple family projects in one vault with isolation
+
+---
+
+### Import Cleanup & Consolidation
+
+**Status**: 🆕 Planned (Exploratory)
+
+Tools for consolidating multiple GEDCOM files, cleaning up messy imports, and improving data quality. Addresses the common scenario of having multiple old, overlapping GEDCOM files from various sources.
+
+**Phase 1 - Staging Workflow:**
+- Dedicated staging folder setting (auto-excluded from normal operations)
+- Import preview showing what will be created before committing
+- "Promote to main" action to move cleaned data to person folder
+- Delete/archive staging data without affecting main tree
+- Staging folder isolated from: tree generation, duplicate detection, relationship sync, collections
+
+**Phase 2 - Cross-Import Duplicate Detection:**
+- Detect duplicates between staging and existing data before import
+- Detect duplicates across multiple staged imports
+- Side-by-side comparison view for potential matches
+- "Same person" / "Different people" resolution actions
+- Source file tracking (which GEDCOM contributed which data)
+
+**Phase 3 - Merge & Consolidation Tools:**
+- Merge wizard for combining duplicate records
+- Field-level conflict resolution (choose which source's date/place/etc.)
+- Combine unique data from multiple sources into one record
+- Relationship reconciliation when merging people with different connections
+- Audit trail showing merge decisions
+
+**Phase 4 - Data Quality Tools:**
+- Data quality report: missing dates, orphaned records, incomplete relationships
+- Batch operations: normalize name formats, standardize date formats
+- "Fill in blanks" suggestions based on related records
+- Inconsistency detection (e.g., child born before parent)
+- Completeness scoring per person
+
+**Use Cases:**
+- Consolidating overlapping trees from multiple family researchers
+- Extracting useful branches from large, chaotic GEDCOM files
+- Cleaning up data accumulated over years from various sources
+- Quality assurance before sharing or publishing
+
+**Isolation Strategy:**
+
+The staging workflow requires clear separation from "production" data:
+
+*Default mode (simple):*
+- Single staging folder setting, auto-excluded from all normal operations
+- Main person folder + staging folder = complete isolation
+- Zero configuration beyond setting the staging path
+
+*Opt-in project mode (advanced):*
+- Enable "project-based organization" in settings
+- Define named projects, each with own person folder(s) and optional staging
+- Project switcher in Control Center
+- Commands scoped to active project
+- Use case: multiple family research projects in one vault, each fully isolated
+
+Both modes use Folder Filtering as the underlying mechanism.
+
+**Open Questions:**
+- How to handle conflicting data when merging (UI/UX for resolution)?
+- Should source tracking be per-field or per-person?
+- Integration with existing duplicate detection vs. new system?
+- Project mode: how much configuration per project? (settings, color schemes, etc.)
+
+---
+
 ### Bases Integration Improvements
 
 **Status**: ✅ Completed in v0.2.9
