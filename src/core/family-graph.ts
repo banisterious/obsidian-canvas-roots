@@ -887,6 +887,82 @@ export class FamilyGraphService {
 	}
 
 	/**
+	 * Get all ancestors of a person (parents, grandparents, etc.)
+	 * Uses BFS traversal to collect all people in the ancestor tree
+	 */
+	getAncestors(crId: string, includeRoot: boolean = true): PersonNode[] {
+		const ancestors: PersonNode[] = [];
+		const visited = new Set<string>();
+		const queue: string[] = [crId];
+
+		while (queue.length > 0) {
+			const currentId = queue.shift()!;
+			if (visited.has(currentId)) continue;
+			visited.add(currentId);
+
+			const person = this.personCache.get(currentId);
+			if (!person) continue;
+
+			// Add person to ancestors (optionally skip the root person)
+			if (currentId !== crId || includeRoot) {
+				ancestors.push(person);
+			}
+
+			// Queue parents
+			if (person.fatherCrId && !visited.has(person.fatherCrId)) {
+				queue.push(person.fatherCrId);
+			}
+			if (person.motherCrId && !visited.has(person.motherCrId)) {
+				queue.push(person.motherCrId);
+			}
+		}
+
+		return ancestors;
+	}
+
+	/**
+	 * Get all descendants of a person (children, grandchildren, etc.)
+	 * Uses BFS traversal to collect all people in the descendant tree
+	 */
+	getDescendants(crId: string, includeRoot: boolean = true, includeSpouses: boolean = false): PersonNode[] {
+		const descendants: PersonNode[] = [];
+		const visited = new Set<string>();
+		const queue: string[] = [crId];
+
+		while (queue.length > 0) {
+			const currentId = queue.shift()!;
+			if (visited.has(currentId)) continue;
+			visited.add(currentId);
+
+			const person = this.personCache.get(currentId);
+			if (!person) continue;
+
+			// Add person to descendants (optionally skip the root person)
+			if (currentId !== crId || includeRoot) {
+				descendants.push(person);
+			}
+
+			// Queue children
+			for (const childId of person.childrenCrIds) {
+				if (!visited.has(childId)) {
+					queue.push(childId);
+				}
+			}
+
+			// Optionally include spouses
+			if (includeSpouses) {
+				for (const spouseId of person.spouseCrIds) {
+					if (!visited.has(spouseId)) {
+						queue.push(spouseId);
+					}
+				}
+			}
+		}
+
+		return descendants;
+	}
+
+	/**
 	 * Calculate analytics for all collections
 	 * Returns statistics about data quality, completeness, and structure
 	 */

@@ -298,6 +298,24 @@
   stroke-width: 4px;
 }
 
+/* Kinship labels on links */
+.cr-fcv-chart-container.f3 .cr-kinship-label {
+  font-size: 10px;
+  fill: var(--text-muted);
+  pointer-events: none;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.cr-fcv-chart-container.f3 .cr-kinship-label--spouse {
+  fill: var(--text-normal);
+  font-style: italic;
+}
+
+.cr-fcv-chart-container.f3 .cr-kinship-label--parent {
+  fill: var(--text-muted);
+}
+
 /* ============================================================
  * HTML Card Styles (for HTML card mode)
  * ============================================================ */

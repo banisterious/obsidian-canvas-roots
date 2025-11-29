@@ -51,6 +51,7 @@ interface FamilyChartViewState {
 	levelSpacing?: number;
 	showBirthDates?: boolean;
 	showDeathDates?: boolean;
+	showKinshipLabels?: boolean;
 	[key: string]: unknown;  // Index signature for Record<string, unknown> compatibility
 }
 
@@ -68,6 +69,7 @@ export class FamilyChartView extends ItemView {
 	private levelSpacing: number = 150; // Y spacing between generations
 	private showBirthDates: boolean = true;
 	private showDeathDates: boolean = false;
+	private showKinshipLabels: boolean = false;
 
 	// family-chart instances
 	private f3Chart: ReturnType<typeof f3.createChart> | null = null;
@@ -384,6 +386,11 @@ export class FamilyChartView extends ItemView {
 
 		// Initial render
 		this.f3Chart.updateTree({ initial: true });
+
+		// Render kinship labels if enabled (after chart is rendered)
+		if (this.showKinshipLabels) {
+			setTimeout(() => this.renderKinshipLabels(), 100);
+		}
 
 		logger.info('chart-init', 'Chart initialized', {
 			personCount: this.chartData.length,
@@ -1028,6 +1035,14 @@ export class FamilyChartView extends ItemView {
 				.onClick(() => this.toggleDeathDates());
 		});
 
+		menu.addSeparator();
+
+		menu.addItem((item) => {
+			item.setTitle(`${this.showKinshipLabels ? '✓ ' : ''}Show kinship labels`)
+				.setIcon('tag')
+				.onClick(() => this.toggleKinshipLabels());
+		});
+
 		menu.showAtMouseEvent(e);
 	}
 
@@ -1050,6 +1065,103 @@ export class FamilyChartView extends ItemView {
 	}
 
 	/**
+	 * Toggle kinship labels display
+	 */
+	private toggleKinshipLabels(): void {
+		this.showKinshipLabels = !this.showKinshipLabels;
+		this.renderKinshipLabels();
+		new Notice(`Kinship labels ${this.showKinshipLabels ? 'shown' : 'hidden'}`);
+	}
+
+	/**
+	 * Render kinship labels on links
+	 * Adds text labels showing relationship type (Father, Mother, Spouse, etc.)
+	 */
+	private renderKinshipLabels(): void {
+		if (!this.chartContainerEl) return;
+
+		// Remove existing kinship labels
+		const existingLabels = this.chartContainerEl.querySelectorAll('.cr-kinship-label');
+		existingLabels.forEach(label => label.remove());
+
+		if (!this.showKinshipLabels) return;
+
+		// Get the SVG element
+		const svg = this.chartContainerEl.querySelector('svg.main_svg');
+		if (!svg) return;
+
+		// Build a lookup map of person ID to person data
+		const personMap = new Map<string, FamilyChartPerson>();
+		for (const person of this.chartData) {
+			personMap.set(person.id, person);
+		}
+
+		// Find the links group and add labels
+		const linksGroup = svg.querySelector('.links_view');
+		if (!linksGroup) return;
+
+		// Create a group for kinship labels
+		const labelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+		labelsGroup.setAttribute('class', 'cr-kinship-labels');
+
+		// Get all link paths
+		const links = linksGroup.querySelectorAll('path.link');
+
+		links.forEach((linkPath) => {
+			// Get link data from the path's d attribute to calculate midpoint
+			const pathData = linkPath.getAttribute('d');
+			if (!pathData) return;
+
+			// Calculate midpoint of the path
+			const midpoint = this.getPathMidpoint(linkPath as SVGPathElement);
+			if (!midpoint) return;
+
+			// Determine relationship type from link structure
+			// Links in family-chart connect children to parents or spouses
+			const linkEl = linkPath as SVGPathElement;
+			const isSpouseLink = linkEl.classList.contains('spouse') ||
+				pathData.includes('L') && !pathData.includes('C'); // Straight lines are typically spouse links
+
+			// Create label text
+			const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+			label.setAttribute('class', 'cr-kinship-label');
+			label.setAttribute('x', String(midpoint.x));
+			label.setAttribute('y', String(midpoint.y));
+			label.setAttribute('text-anchor', 'middle');
+			label.setAttribute('dominant-baseline', 'middle');
+
+			// Set appropriate label text
+			if (isSpouseLink) {
+				label.textContent = 'Spouse';
+				label.classList.add('cr-kinship-label--spouse');
+			} else {
+				// Parent-child link - label based on direction
+				// Links go from child to parent in family-chart
+				label.textContent = 'Parent';
+				label.classList.add('cr-kinship-label--parent');
+			}
+
+			labelsGroup.appendChild(label);
+		});
+
+		// Append labels group to SVG (after links so labels appear on top)
+		svg.appendChild(labelsGroup);
+	}
+
+	/**
+	 * Get the midpoint of an SVG path element
+	 */
+	private getPathMidpoint(path: SVGPathElement): { x: number; y: number } | null {
+		try {
+			const pathLength = path.getTotalLength();
+			const midpoint = path.getPointAtLength(pathLength / 2);
+			return { x: midpoint.x, y: midpoint.y };
+		} catch {
+			return null;
+		}
+	}
+
+	/**
 	 * Update card display based on current options
 	 */
 	private updateCardDisplay(): void {
@@ -1068,6 +1180,12 @@ export class FamilyChartView extends ItemView {
 
 		this.f3Card.setCardDisplay(displayFields);
 		this.f3Chart.updateTree({});
+
+		// Re-render kinship labels after tree update
+		if (this.showKinshipLabels) {
+			// Small delay to ensure SVG is fully rendered
+			setTimeout(() => this.renderKinshipLabels(), 100);
+		}
 	}
 
 	/**
@@ -1651,6 +1769,7 @@ export class FamilyChartView extends ItemView {
 			levelSpacing: this.levelSpacing,
 			showBirthDates: this.showBirthDates,
 			showDeathDates: this.showDeathDates,
+			showKinshipLabels: this.showKinshipLabels,
 		};
 	}
 
@@ -1678,6 +1797,9 @@ export class FamilyChartView extends ItemView {
 		if (state.showDeathDates !== undefined) {
 			this.showDeathDates = state.showDeathDates;
 		}
+		if (state.showKinshipLabels !== undefined) {
+			this.showKinshipLabels = state.showKinshipLabels;
+		}
 
 		// Re-initialize if we have a root person
 		if (this.rootPersonId && this.chartContainerEl) {
@@ -1702,7 +1824,23 @@ export class FamilyChartView extends ItemView {
 
 		menu.addSeparator();
 
+		menu.addItem((item) => {
+			item.setTitle('Duplicate in new tab')
+				.setIcon('copy')
+				.onClick(() => void this.duplicateView());
+		});
+
+		menu.addSeparator();
+
 		super.onPaneMenu(menu, source);
+	}
+
+	/**
+	 * Duplicate this view in a new tab with the same root person
+	 */
+	private async duplicateView(): Promise<void> {
+		// Open a new family chart view with the same root person
+		await this.plugin.activateFamilyChartView(this.rootPersonId || undefined, true, true);
 	}
 
 	// ============ Public API ============

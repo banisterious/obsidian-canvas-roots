@@ -225,6 +225,9 @@ export class ControlCenterModal extends Modal {
 			case 'gedcom':
 				this.showGedcomTab();
 				break;
+			case 'csv':
+				this.showCsvTab();
+				break;
 			case 'person-detail':
 				this.showPersonDetailTab();
 				break;
@@ -3568,6 +3571,9 @@ export class ControlCenterModal extends Modal {
 		fileName: string;
 		collectionFilter?: string;
 		includeCollectionCodes: boolean;
+		branchRootCrId?: string;
+		branchDirection?: 'ancestors' | 'descendants';
+		branchIncludeSpouses?: boolean;
 	}): Promise<void> {
 		try {
 			logger.info('gedcom-export', `Starting GEDCOM export: ${options.fileName}`);
@@ -3580,6 +3586,9 @@ export class ControlCenterModal extends Modal {
 			const result = await exporter.exportToGedcom({
 				peopleFolder: this.plugin.settings.peopleFolder,
 				collectionFilter: options.collectionFilter,
+				branchRootCrId: options.branchRootCrId,
+				branchDirection: options.branchDirection,
+				branchIncludeSpouses: options.branchIncludeSpouses,
 				includeCollectionCodes: options.includeCollectionCodes,
 				fileName: options.fileName,
 				sourceApp: 'Canvas Roots',
@@ -3941,6 +3950,49 @@ export class ControlCenterModal extends Modal {
 				});
 			});
 
+		// Branch filter options
+		let branchRootCrId: string | undefined;
+		let branchRootName: string | undefined;
+		let branchDirection: 'ancestors' | 'descendants' | undefined;
+		let branchIncludeSpouses = false;
+
+		const branchSetting = new Setting(exportContent)
+			.setName('Branch filter (optional)')
+			.setDesc('Export only ancestors or descendants of a specific person')
+			.addButton(btn => {
+				btn.setButtonText('Select person')
+					.onClick(async () => {
+						const picker = new PersonPickerModal(this.app, (info) => {
+							branchRootCrId = info.crId;
+							branchRootName = info.name;
+							btn.setButtonText(info.name);
+						});
+						picker.open();
+					});
+			});
+
+		new Setting(exportContent)
+			.setName('Branch direction')
+			.setDesc('Include ancestors (up) or descendants (down)')
+			.addDropdown(dropdown => {
+				dropdown.addOption('', 'No branch filter');
+				dropdown.addOption('ancestors', 'Ancestors only');
+				dropdown.addOption('descendants', 'Descendants only');
+				dropdown.onChange(value => {
+					branchDirection = value as 'ancestors' | 'descendants' || undefined;
+				});
+			});
+
+		new Setting(exportContent)
+			.setName('Include spouses in descendants')
+			.setDesc('When exporting descendants, also include their spouses')
+			.addToggle(toggle => toggle
+				.setValue(false)
+				.onChange(value => {
+					branchIncludeSpouses = value;
+				})
+			);
+
 		// Include collection codes option
 		let includeCollectionCodes = true;
 		new Setting(exportContent)
@@ -3977,12 +4029,437 @@ export class ControlCenterModal extends Modal {
 				await this.handleGedcomExport({
 					fileName: exportFileName,
 					collectionFilter,
-					includeCollectionCodes
+					includeCollectionCodes,
+					branchRootCrId,
+					branchDirection,
+					branchIncludeSpouses
 				});
 			})();
 		});
 
 		container.appendChild(exportCard);
+	}
+
+	/**
+	 * Show CSV tab
+	 */
+	private showCsvTab(): void {
+		const container = this.contentContainer;
+
+		// Import Card
+		const importCard = this.createCard({
+			title: 'Import CSV',
+			icon: 'upload'
+		});
+
+		const importContent = importCard.querySelector('.crc-card__content') as HTMLElement;
+
+		importContent.createEl('p', {
+			text: 'Import person data from a CSV/spreadsheet file. Column mapping is auto-detected.',
+			cls: 'crc-text-muted crc-mb-4'
+		});
+
+		// File selection button
+		const fileBtn = importContent.createEl('button', {
+			cls: 'crc-btn crc-btn--primary crc-mt-4',
+			text: 'Select CSV file'
+		});
+
+		// Create hidden file input
+		const fileInput = importContent.createEl('input', {
+			attr: {
+				type: 'file',
+				accept: '.csv,.tsv,.txt',
+				style: 'display: none;'
+			}
+		});
+
+		// Analysis results container (hidden initially)
+		const analysisContainer = importContent.createDiv({ cls: 'crc-csv-analysis cr-hidden' });
+
+		fileBtn.addEventListener('click', () => {
+			fileInput.click();
+		});
+
+		fileInput.addEventListener('change', (event) => {
+			void (async () => {
+				const target = event.target as HTMLInputElement;
+				const file = target.files?.[0];
+				if (file) {
+					await this.showCsvAnalysis(file, analysisContainer, fileBtn);
+				}
+			})();
+		});
+
+		container.appendChild(importCard);
+
+		// Export Card
+		const exportCard = this.createCard({
+			title: 'Export CSV',
+			icon: 'download'
+		});
+
+		const exportContent = exportCard.querySelector('.crc-card__content') as HTMLElement;
+
+		exportContent.createEl('p', {
+			text: 'Export your family tree data to CSV format for use in spreadsheet applications',
+			cls: 'crc-text-muted crc-mb-4'
+		});
+
+		// Export options
+		new Setting(exportContent)
+			.setName('People folder')
+			.setDesc('Folder containing person notes to export')
+			.addText(text => text
+				.setPlaceholder('People')
+				.setValue(this.plugin.settings.peopleFolder)
+				.setDisabled(true)
+			);
+
+		// Collection filter option
+		let collectionFilter: string | undefined;
+		new Setting(exportContent)
+			.setName('Collection filter (optional)')
+			.setDesc('Only export people in a specific collection')
+			.addDropdown(async dropdown => {
+				dropdown.addOption('', 'All people');
+
+				// Load collections
+				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
+				const collections = await graphService.getUserCollections();
+				collections.forEach(collection => {
+					dropdown.addOption(collection.name, collection.name);
+				});
+
+				dropdown.onChange(value => {
+					collectionFilter = value || undefined;
+				});
+			});
+
+		// Branch filter options for CSV
+		let csvBranchRootCrId: string | undefined;
+		let csvBranchRootName: string | undefined;
+		let csvBranchDirection: 'ancestors' | 'descendants' | undefined;
+		let csvBranchIncludeSpouses = false;
+
+		new Setting(exportContent)
+			.setName('Branch filter (optional)')
+			.setDesc('Export only ancestors or descendants of a specific person')
+			.addButton(btn => {
+				btn.setButtonText('Select person')
+					.onClick(async () => {
+						const picker = new PersonPickerModal(this.app, (info) => {
+							csvBranchRootCrId = info.crId;
+							csvBranchRootName = info.name;
+							btn.setButtonText(info.name);
+						});
+						picker.open();
+					});
+			});
+
+		new Setting(exportContent)
+			.setName('Branch direction')
+			.setDesc('Include ancestors (up) or descendants (down)')
+			.addDropdown(dropdown => {
+				dropdown.addOption('', 'No branch filter');
+				dropdown.addOption('ancestors', 'Ancestors only');
+				dropdown.addOption('descendants', 'Descendants only');
+				dropdown.onChange(value => {
+					csvBranchDirection = value as 'ancestors' | 'descendants' || undefined;
+				});
+			});
+
+		new Setting(exportContent)
+			.setName('Include spouses in descendants')
+			.setDesc('When exporting descendants, also include their spouses')
+			.addToggle(toggle => toggle
+				.setValue(false)
+				.onChange(value => {
+					csvBranchIncludeSpouses = value;
+				})
+			);
+
+		// Export file name
+		let exportFileName = 'family-tree';
+		new Setting(exportContent)
+			.setName('Export file name')
+			.setDesc('Name for the exported .csv file (without extension)')
+			.addText(text => text
+				.setPlaceholder('family-tree')
+				.setValue(exportFileName)
+				.onChange(value => {
+					exportFileName = value || 'family-tree';
+				})
+			);
+
+		// Export button
+		const exportBtn = exportContent.createEl('button', {
+			cls: 'crc-btn crc-btn--primary crc-mt-4',
+			text: 'Export to CSV'
+		});
+
+		exportBtn.addEventListener('click', () => {
+			void (async () => {
+				await this.handleCsvExport({
+					fileName: exportFileName,
+					collectionFilter,
+					branchRootCrId: csvBranchRootCrId,
+					branchDirection: csvBranchDirection,
+					branchIncludeSpouses: csvBranchIncludeSpouses
+				});
+			})();
+		});
+
+		container.appendChild(exportCard);
+	}
+
+	/**
+	 * Show CSV analysis before import
+	 */
+	private async showCsvAnalysis(
+		file: File,
+		analysisContainer: HTMLElement,
+		fileBtn: HTMLButtonElement
+	): Promise<void> {
+		try {
+			// Show loading state
+			analysisContainer.empty();
+			analysisContainer.removeClass('cr-hidden');
+			fileBtn.addClass('cr-hidden');
+
+			analysisContainer.createEl('p', {
+				text: `File: ${file.name}`,
+				cls: 'crc-text-muted'
+			});
+
+			const loadingMsg = analysisContainer.createEl('p', {
+				text: 'Analyzing file...',
+				cls: 'crc-text-muted'
+			});
+
+			// Read and analyze file
+			const content = await file.text();
+			const { CsvImporter } = await import('../csv/csv-importer');
+			const importer = new CsvImporter(this.app);
+
+			// Detect delimiter based on file extension
+			const parseOptions = {
+				delimiter: file.name.endsWith('.tsv') ? '\t' : ','
+			};
+
+			const analysis = importer.analyzeFile(content, parseOptions);
+
+			// Update UI with analysis results
+			loadingMsg.remove();
+
+			const results = analysisContainer.createDiv({ cls: 'crc-analysis-results' });
+
+			// Basic stats
+			results.createEl('p', {
+				text: `✓ ${analysis.rowCount} people found`
+			});
+			results.createEl('p', {
+				text: `✓ ${analysis.headers.length} columns detected`
+			});
+
+			// Show detected column mapping
+			const mappedFields = Object.entries(analysis.detectedMapping).filter(([, v]) => v);
+			if (mappedFields.length > 0) {
+				results.createEl('p', {
+					text: `✓ Auto-detected fields: ${mappedFields.map(([k]) => k).join(', ')}`,
+					cls: 'crc-text-muted'
+				});
+			}
+
+			// Check for required columns
+			if (!analysis.detectedMapping.name) {
+				results.createEl('p', {
+					text: '⚠ No "name" column detected - import may fail',
+					cls: 'crc-warning-text'
+				});
+			}
+
+			// Action buttons
+			const actions = analysisContainer.createDiv({ cls: 'crc-csv-actions crc-mt-4' });
+
+			const importBtn = actions.createEl('button', {
+				cls: 'crc-btn crc-btn--primary',
+				text: 'Import to Vault'
+			});
+			importBtn.addEventListener('click', () => {
+				void (async () => {
+					analysisContainer.addClass('cr-hidden');
+					fileBtn.removeClass('cr-hidden');
+					await this.handleCsvImport(file, parseOptions);
+				})();
+			});
+
+			const cancelBtn = actions.createEl('button', {
+				cls: 'crc-btn crc-btn--secondary crc-ml-2',
+				text: 'Cancel'
+			});
+			cancelBtn.addEventListener('click', () => {
+				analysisContainer.addClass('cr-hidden');
+				fileBtn.removeClass('cr-hidden');
+			});
+
+		} catch (error: unknown) {
+			const errorMsg = getErrorMessage(error);
+			logger.error('csv', `CSV analysis failed: ${errorMsg}`);
+			analysisContainer.empty();
+			analysisContainer.createEl('p', {
+				text: `Failed to analyze file: ${errorMsg}`,
+				cls: 'crc-error-text'
+			});
+
+			const retryBtn = analysisContainer.createEl('button', {
+				cls: 'crc-btn crc-btn--secondary crc-mt-2',
+				text: 'Try different file'
+			});
+			retryBtn.addEventListener('click', () => {
+				analysisContainer.addClass('cr-hidden');
+				fileBtn.removeClass('cr-hidden');
+			});
+		}
+	}
+
+	/**
+	 * Handle CSV file import
+	 */
+	private async handleCsvImport(file: File, parseOptions?: { delimiter: string }): Promise<void> {
+		try {
+			logger.info('csv', `Starting CSV import: ${file.name}`);
+
+			// Read file content
+			const content = await file.text();
+
+			// Create importer
+			const { CsvImporter } = await import('../csv/csv-importer');
+			const importer = new CsvImporter(this.app);
+
+			// Import CSV file
+			const result = await importer.importFile(content, {
+				peopleFolder: this.plugin.settings.peopleFolder,
+				overwriteExisting: false,
+				fileName: file.name,
+				parseOptions
+			});
+
+			// Log results
+			logger.info('csv', `Import complete: ${result.recordsImported} records processed`);
+
+			if (result.errors.length > 0) {
+				logger.warn('csv', `Import had ${result.errors.length} errors`);
+				result.errors.forEach(error => logger.error('csv', error));
+			}
+
+			// Track import in recent imports history
+			if (result.success && result.notesCreated > 0) {
+				const importInfo: RecentImportInfo = {
+					fileName: file.name,
+					recordsImported: result.recordsImported,
+					notesCreated: result.notesCreated,
+					timestamp: Date.now()
+				};
+
+				this.plugin.settings.recentImports.unshift(importInfo);
+				if (this.plugin.settings.recentImports.length > 10) {
+					this.plugin.settings.recentImports = this.plugin.settings.recentImports.slice(0, 10);
+				}
+				await this.plugin.saveSettings();
+			}
+
+			// Sync bidirectional relationships after import if enabled
+			if (this.plugin.settings.enableBidirectionalSync && result.success && result.notesCreated > 0) {
+				await this.syncImportedRelationships();
+			}
+
+			// Show import results notice
+			let noticeMsg = `CSV import: ${result.notesCreated} created, ${result.notesUpdated} updated`;
+			if (result.errors.length > 0) {
+				noticeMsg += `, ${result.errors.length} errors`;
+			}
+			new Notice(noticeMsg, 5000);
+
+			// Refresh status tab
+			if (result.notesCreated > 0) {
+				this.showTab('status');
+			}
+		} catch (error: unknown) {
+			const errorMsg = getErrorMessage(error);
+			logger.error('csv', `CSV import failed: ${errorMsg}`);
+			new Notice(`Failed to import CSV: ${errorMsg}`);
+		}
+	}
+
+	/**
+	 * Handle CSV file export
+	 */
+	private async handleCsvExport(options: {
+		fileName: string;
+		collectionFilter?: string;
+		branchRootCrId?: string;
+		branchDirection?: 'ancestors' | 'descendants';
+		branchIncludeSpouses?: boolean;
+	}): Promise<void> {
+		try {
+			logger.info('csv-export', `Starting CSV export: ${options.fileName}`);
+
+			// Create exporter
+			const { CsvExporter } = await import('../csv/csv-exporter');
+			const exporter = new CsvExporter(this.app);
+
+			// Export to CSV
+			const result = exporter.exportToCsv({
+				peopleFolder: this.plugin.settings.peopleFolder,
+				collectionFilter: options.collectionFilter,
+				branchRootCrId: options.branchRootCrId,
+				branchDirection: options.branchDirection,
+				branchIncludeSpouses: options.branchIncludeSpouses,
+				fileName: options.fileName,
+				privacySettings: {
+					enablePrivacyProtection: this.plugin.settings.enablePrivacyProtection,
+					livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+					privacyDisplayFormat: this.plugin.settings.privacyDisplayFormat,
+					hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+				}
+			});
+
+			// Log results
+			logger.info('csv-export', `Export complete: ${result.recordsExported} records`);
+
+			if (result.errors.length > 0) {
+				logger.warn('csv-export', `Export had ${result.errors.length} errors`);
+				result.errors.forEach(error => logger.error('csv-export', error));
+			}
+
+			if (result.success && result.csvContent) {
+				// Create blob and trigger download
+				const blob = new Blob([result.csvContent], { type: 'text/csv;charset=utf-8' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${result.fileName}.csv`;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+
+				let noticeMsg = `CSV exported: ${result.recordsExported} people`;
+				if (result.privacyExcluded && result.privacyExcluded > 0) {
+					noticeMsg += ` (${result.privacyExcluded} living excluded)`;
+				} else if (result.privacyObfuscated && result.privacyObfuscated > 0) {
+					noticeMsg += ` (${result.privacyObfuscated} living obfuscated)`;
+				}
+				new Notice(noticeMsg);
+			} else {
+				throw new Error('Export failed to generate content');
+			}
+		} catch (error: unknown) {
+			const errorMsg = getErrorMessage(error);
+			logger.error('csv-export', `CSV export failed: ${errorMsg}`);
+			new Notice(`Failed to export CSV: ${errorMsg}`);
+		}
 	}
 
 	/**

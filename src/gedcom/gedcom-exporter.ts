@@ -22,6 +22,15 @@ export interface GedcomExportOptions {
 	/** Collection filter - only export people in this collection */
 	collectionFilter?: string;
 
+	/** Branch filter - cr_id of person to filter around */
+	branchRootCrId?: string;
+
+	/** Branch direction - export ancestors or descendants of branchRootCrId */
+	branchDirection?: 'ancestors' | 'descendants';
+
+	/** Include spouses when exporting a branch (applies to descendants) */
+	branchIncludeSpouses?: boolean;
+
 	/** Include collection codes in GEDCOM output */
 	includeCollectionCodes?: boolean;
 
@@ -121,6 +130,22 @@ export class GedcomExporter {
 
 				if (filteredPeople.length === 0) {
 					throw new Error(`No people found in collection "${options.collectionFilter}". Found ${allPeople.length} total people, but none match this collection.`);
+				}
+			}
+
+			// Apply branch filter if specified
+			if (options.branchRootCrId && options.branchDirection) {
+				const branchPeople = options.branchDirection === 'ancestors'
+					? this.graphService.getAncestors(options.branchRootCrId, true)
+					: this.graphService.getDescendants(options.branchRootCrId, true, options.branchIncludeSpouses);
+
+				const branchCrIds = new Set(branchPeople.map(p => p.crId));
+				filteredPeople = filteredPeople.filter(p => branchCrIds.has(p.crId));
+
+				logger.info('export', `Filtered to ${filteredPeople.length} people in ${options.branchDirection} branch of ${options.branchRootCrId}`);
+
+				if (filteredPeople.length === 0) {
+					throw new Error(`No people found in ${options.branchDirection} branch. The branch root may not exist or has no ${options.branchDirection}.`);
 				}
 			}
 
