@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.3] - 2025-11-29
+
+### Added
+
+- **CSV Import/Export**: Full CSV support for spreadsheet workflows
+  - Import from CSV/TSV files with auto-detected column mapping
+  - Export to CSV with configurable columns and privacy protection
+  - New CSV tab in Control Center alongside GEDCOM
+
+- **Selective Branch Export**: Export specific portions of your family tree
+  - Choose a person and export only their ancestors or descendants
+  - Available in both GEDCOM and CSV export tabs
+  - Option to include spouses when exporting descendants
+  - Works alongside collection filtering
+
+- **Smart Duplicate Detection**: Find and manage potential duplicate records
+  - Fuzzy name matching using Levenshtein distance algorithm
+  - Date proximity analysis for birth/death dates
+  - Confidence scoring (high/medium/low) with configurable thresholds
+  - Command: "Find duplicate people" opens detection modal
+  - Review matches and dismiss false positives
+
+- **Family Chart View Enhancements**:
+  - Kinship labels: Toggle to show relationship labels on links (Parent/Spouse)
+  - Multiple views: "Open new family chart" command creates additional tabs
+  - Duplicate view: Pane menu option to open same chart in new tab
+
+---
+
 ## [0.3.2] - 2025-11-28
 
 ### Fixed

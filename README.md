@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-> **Status (v0.3.2):** Canvas Roots is feature-complete for core genealogical workflows and submitted for Obsidian community plugin review. All essential features are stable and production-ready (GEDCOM import/export, bidirectional sync, alternative layout algorithms, tree generation, canvas styling, collections, relationship calculator, reference numbering, lineage tracking, relationship history, interactive family chart view with PDF export). Advanced features are planned for future releases. See [Roadmap](docs/roadmap.md) for details.
+> **Status (v0.3.3):** Canvas Roots is feature-complete for core genealogical workflows and submitted for Obsidian community plugin review. All essential features are stable and production-ready (GEDCOM import/export, CSV import/export, bidirectional sync, alternative layout algorithms, tree generation, canvas styling, collections, relationship calculator, reference numbering, lineage tracking, relationship history, interactive family chart view with PDF export, selective branch export, smart duplicate detection). Advanced features are planned for future releases. See [Roadmap](docs/roadmap.md) for details.
 
 **Canvas Roots** is an Obsidian plugin that automatically generates complex family trees directly onto the Canvas using specialized genealogical layout algorithms for non-overlapping, relationship-aware positioning.
 
@@ -16,11 +16,13 @@ This plugin is designed for genealogists, historians, and world-builders. It tra
 
 ## ✨ Key Features
 
-### Available Now (v0.3.2)
+### Available Now (v0.3.3)
 
-- **Interactive Family Chart View:** A persistent, interactive visualization panel for exploring and editing family trees in real-time. Pan, zoom, and navigate large trees with smooth animations. Click any person to center the view or open their note. Edit relationships directly in the chart with full undo/redo support. Full bidirectional sync: chart edits update frontmatter and rename files, file renames update frontmatter and refresh the chart. Choose from multiple color schemes (Gender, Generation, Collection, Monochrome) and adjustable spacing. Export as high-quality PNG, SVG, or PDF. Customizable export filenames with `{name}` and `{date}` placeholders. Access via "Open family chart" command or "Open current note in family chart" for the active person note.
+- **Interactive Family Chart View:** A persistent, interactive visualization panel for exploring and editing family trees in real-time. Pan, zoom, and navigate large trees with smooth animations. Click any person to center the view or open their note. Edit relationships directly in the chart with full undo/redo support. Full bidirectional sync: chart edits update frontmatter and rename files, file renames update frontmatter and refresh the chart. Choose from multiple color schemes (Gender, Generation, Collection, Monochrome) and adjustable spacing. Export as high-quality PNG, SVG, or PDF. Customizable export filenames with `{name}` and `{date}` placeholders. Toggle kinship labels on relationship links. Open multiple chart views simultaneously. Access via "Open family chart" command or "Open current note in family chart" for the active person note.
 
-- **GEDCOM Import/Export:** Full round-trip support for GEDCOM 5.5.1 format with pre-import validation and comprehensive import results modal. Import family trees from popular genealogy software (Gramps, Ancestry, FamilySearch) with birth/death places, occupation, and gender data. Export back to .ged format with UUID preservation, collection codes, marriage metadata, and optional privacy protection for living persons.
+- **GEDCOM Import/Export:** Full round-trip support for GEDCOM 5.5.1 format with pre-import validation and comprehensive import results modal. Import family trees from popular genealogy software (Gramps, Ancestry, FamilySearch) with birth/death places, occupation, and gender data. Export back to .ged format with UUID preservation, collection codes, marriage metadata, and optional privacy protection for living persons. Selective branch export: export only ancestors or descendants of a specific person.
+
+- **CSV Import/Export:** Import and export family data in CSV/TSV format for spreadsheet workflows. Auto-detected column mapping supports common field names. Export with configurable columns and privacy protection. Selective branch export available for both formats.
 
 - **Interactive Tree Preview:** Real-time visual preview of family trees before canvas generation. Pan, zoom, and explore layouts with interactive controls. Switch between color schemes (Gender, Generation, Monochrome) to visualize different data aspects. Hover over nodes to view person details (name, birth/death dates, generation). Export previews as high-resolution PNG, vector SVG, or PDF for external use. Particularly useful for large trees (50+ people) to verify layout before generating the final canvas.
 
@@ -61,6 +63,8 @@ This plugin is designed for genealogists, historians, and world-builders. It tra
 - **Excalidraw Export:** Export family tree canvases to Excalidraw format for manual annotation, drawing, and customization. Preserves node positioning and colors while enabling hand-drawn styling and freeform annotations.
 
 - **Relationship Calculator:** Calculate the relationship between any two people in your family tree. Uses BFS pathfinding to find the shortest connection path and provides proper genealogical terms (cousin, uncle, 2nd cousin once removed, etc.). Supports in-law relationships, displays common ancestors, and shows the full relationship path. Access via command palette or right-click context menu on person notes.
+
+- **Smart Duplicate Detection:** Find and manage potential duplicate person records in your vault. Uses fuzzy name matching (Levenshtein distance) and date proximity analysis to identify likely duplicates. Configurable confidence thresholds and match criteria. Review matches in a dedicated modal, dismiss false positives, and maintain data quality. Access via "Find duplicate people" command.
 
 - **Reference Numbering Systems:** Assign standard genealogical reference numbers to your family members. Supports four numbering systems: Ahnentafel (ancestor numbering where father=2N, mother=2N+1), d'Aboville (descendant numbering with dot notation like 1.2.3), Henry System (compact descendant numbering without dots), and Generation numbering (relative generation depth from a reference person). Numbers are stored in frontmatter and automatically available in Bases views.
 

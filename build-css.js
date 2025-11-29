@@ -34,6 +34,7 @@ const CONFIG = {
     'edges.css',         // Relationship edge styling
     'settings.css',      // Settings interface
     'modals.css',        // Modal dialogs
+    'duplicate-detection.css', // Duplicate detection modal
     'tree-statistics.css', // Tree statistics modal
     'validation.css',    // Validation results modal
     'find-on-canvas.css', // Find on canvas modal

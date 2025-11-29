@@ -1,7 +1,7 @@
 # Canvas Roots: Development Roadmap
 
-> **Last Updated:** 2025-11-28
-> **Current Version:** v0.3.2
+> **Last Updated:** 2025-11-29
+> **Current Version:** v0.3.3
 
 Canvas Roots is in beta with core functionality complete and stable. Advanced features and enhancements are planned for future releases.
 
@@ -9,7 +9,16 @@ Canvas Roots is in beta with core functionality complete and stable. Advanced fe
 
 ## 🎯 Released Versions
 
-### v0.3.2 (Current)
+### v0.3.3 (Current)
+
+**CSV Import/Export, Selective Branch Export, Duplicate Detection:**
+- ✅ CSV import/export with auto-detected column mapping
+- ✅ Selective branch export (ancestors/descendants of specific person)
+- ✅ Smart duplicate detection with fuzzy name matching
+- ✅ Family Chart View: kinship labels, multiple views support
+- ✅ Command: "Find duplicate people" for data quality
+
+### v0.3.2
 
 **ESLint Compliance & Bidirectional Name Sync:**
 - ✅ Fixed 19 ESLint errors related to async/await and promise handling
@@ -414,10 +423,17 @@ A dedicated Obsidian leaf view that renders the full family-chart library intera
 
 ### Smart Duplicate Detection
 
-- Find potential duplicate people by name similarity and date proximity
+**Status**: ✅ Partially Completed in v0.3.3
+
+**Implemented:**
+- ✅ Find potential duplicate people by name similarity and date proximity
+- ✅ Fuzzy matching for name variations (Levenshtein distance)
+- ✅ Confidence scoring with configurable thresholds
+- ✅ Command: "Find duplicate people" with modal UI
+
+**Planned:**
 - Merge wizard to consolidate duplicate records
 - GEDCOM import duplicate detection before creating new notes
-- Fuzzy matching for name variations
 - Confidence scoring for duplicate suggestions
 
 ### Geographic Features
@@ -482,11 +498,16 @@ Most interactive canvas features are not feasible with Obsidian's current Canvas
 
 ### Import/Export Enhancements
 
+**Status**: ✅ Partially Completed in v0.3.3
+
+**Implemented:**
+- ✅ CSV bulk import/export (v0.3.3)
+- ✅ Selective export - specific branches only (v0.3.3)
+- ✅ Privacy filters for living people (v0.2.9 for GEDCOM export)
+
+**Planned:**
 - FamilySearch GEDCOM X format support
 - Gramps XML import
-- CSV bulk import/export
-- Selective export (specific branches only)
-- ✅ Privacy filters for living people (Completed in v0.2.9 for GEDCOM export)
 - Redacted exports for sharing
 
 ---
