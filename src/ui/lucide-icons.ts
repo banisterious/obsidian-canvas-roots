@@ -62,7 +62,8 @@ export type LucideIconName =
 	| 'minimize-2'     // Smallest
 	| 'undo-2'         // Undo action
 	| 'history'        // History view
-	| 'user-minus';    // Remove person
+	| 'user-minus'     // Remove person
+	| 'table-2';       // CSV/spreadsheet
 
 /**
  * Tab configuration for Control Center navigation
@@ -101,6 +102,12 @@ export const TAB_CONFIGS: TabConfig[] = [
 		name: 'GEDCOM',
 		icon: 'file-text',
 		description: 'Import and export genealogical data'
+	},
+	{
+		id: 'csv',
+		name: 'CSV',
+		icon: 'table-2',
+		description: 'Import and export spreadsheet data'
 	},
 	{
 		id: 'data-entry',
