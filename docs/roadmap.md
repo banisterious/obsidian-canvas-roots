@@ -357,6 +357,45 @@ The staging workflow requires clear separation from "production" data:
 
 Both modes use Folder Filtering as the underlying mechanism.
 
+**Example Workflow:**
+
+Scenario: User has clean tree in `/People/` (200 notes), wants to process three old messy GEDCOMs.
+
+1. **Setup**: Configure staging folder (`/People-Staging/`) in settings
+2. **Import to staging**: Import each GEDCOM to separate subfolders (`import-1/`, `import-2/`, `import-3/`)
+3. **Clean within staging**:
+   - Run duplicate detection scoped to staging only
+   - Merge/delete internal duplicates across imports
+   - Review data quality report, fix issues in Bases
+   - Generate preview trees to visualize structure
+   - Delete obvious junk records
+4. **Compare staging to main**:
+   - Run "Compare staging to main tree" command
+   - Review potential matches side-by-side
+   - Mark each as "Same person" or "Different people"
+5. **Merge/promote**:
+   - For matches: merge wizard combines data with field-level conflict resolution
+   - For new people: "Promote to main" moves to `/People/`
+   - Relationships updated automatically
+6. **Cleanup**: Archive remaining staging data, run validation on main tree
+
+**Operation Scopes:**
+
+| Operation | Default Scope |
+|-----------|---------------|
+| Tree generation | Main only |
+| Normal duplicate detection | Main only |
+| Relationship sync | Main only |
+| Collections/groups | Main only |
+| "Compare staging to main" | Cross-boundary (explicit) |
+| "Find duplicates in staging" | Staging only (explicit) |
+| Data quality report | Configurable |
+
+**Tracked Metadata:**
+- `_source_file`: which GEDCOM this person originated from
+- `_import_date`: when the record was imported
+- Enables informed conflict resolution and audit trail
+
 **Open Questions:**
 - How to handle conflicting data when merging (UI/UX for resolution)?
 - Should source tracking be per-field or per-person?
