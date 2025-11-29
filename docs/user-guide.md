@@ -1,7 +1,7 @@
 # Canvas Roots: User Guide
 
-> **Version:** v0.3.0
-> **Last Updated:** 2025-11-26
+> **Version:** v0.3.3
+> **Last Updated:** 2025-11-29
 
 This guide covers the complete workflow for using Canvas Roots to create and maintain family trees in Obsidian.
 
@@ -18,14 +18,17 @@ This guide covers the complete workflow for using Canvas Roots to create and mai
 7. [Interactive Family Chart View](#interactive-family-chart-view)
 8. [Maintaining Trees](#maintaining-trees)
 9. [GEDCOM Import/Export](#gedcom-importexport)
-10. [Relationship Calculator](#relationship-calculator)
-11. [Reference Numbering Systems](#reference-numbering-systems)
-12. [Lineage Tracking](#lineage-tracking)
-13. [Relationship History & Undo](#relationship-history--undo)
-14. [Folder Statistics](#folder-statistics)
-15. [Advanced Styling](#advanced-styling)
-16. [Excalidraw Export](#excalidraw-export)
-17. [Tips & Best Practices](#tips--best-practices)
+10. [CSV Import/Export](#csv-importexport)
+11. [Selective Branch Export](#selective-branch-export)
+12. [Relationship Calculator](#relationship-calculator)
+13. [Smart Duplicate Detection](#smart-duplicate-detection)
+14. [Reference Numbering Systems](#reference-numbering-systems)
+15. [Lineage Tracking](#lineage-tracking)
+16. [Relationship History & Undo](#relationship-history--undo)
+17. [Folder Statistics](#folder-statistics)
+18. [Advanced Styling](#advanced-styling)
+19. [Excalidraw Export](#excalidraw-export)
+20. [Tips & Best Practices](#tips--best-practices)
 
 ---
 
@@ -581,6 +584,36 @@ The Family Chart View automatically saves and restores:
 
 When you close and reopen a family chart, it returns to the same state.
 
+### Kinship Labels
+
+Toggle relationship labels on connecting lines to show how people are related:
+
+1. Open the **Layout** menu (gear icon in toolbar)
+2. Enable **Show kinship labels**
+3. Links now display "Parent" or "Spouse" labels
+
+This helps clarify relationship types at a glance, especially useful when presenting or reviewing complex family structures.
+
+### Multiple Chart Views
+
+Open additional family chart tabs to compare different branches or root persons:
+
+**Open a new chart:**
+1. Press `Ctrl/Cmd + P`
+2. Type "Canvas Roots: Open new family chart"
+3. Select a root person
+4. A new chart tab opens alongside existing ones
+
+**Duplicate current chart:**
+1. Click the three-dot menu (⋮) on the chart tab
+2. Select **Duplicate view**
+3. A copy of the current chart opens in a new tab
+
+This allows you to:
+- Compare different branches side-by-side
+- Keep one view on ancestors while exploring descendants in another
+- Navigate to different people without losing your current position
+
 ### Toolbar Reference
 
 | Button | Function |
@@ -591,7 +624,7 @@ When you close and reopen a family chart, it returns to the same state.
 | Edit toggle | Enable/disable edit mode |
 | Undo/Redo | Reverse or replay edits (edit mode only) |
 | Fit to view | Zoom to show entire tree |
-| Layout settings | Adjust spacing and date display |
+| Layout settings | Adjust spacing, date display, and kinship labels |
 | Export menu | Save as PNG or SVG |
 | Refresh | Reload data from notes |
 
@@ -777,6 +810,142 @@ Canvas Roots includes optional privacy controls for protecting living persons in
 
 ---
 
+## CSV Import/Export
+
+Canvas Roots supports CSV and TSV file formats for easy data exchange with spreadsheets and other applications. The CSV tab in Control Center provides a familiar interface alongside GEDCOM import/export.
+
+### Importing from CSV/TSV
+
+**Using Control Center:**
+1. Open Control Center → Data Entry tab → CSV sub-tab
+2. Click **Import CSV**
+3. Select your `.csv` or `.tsv` file
+4. Review the auto-detected column mapping
+5. Adjust mappings if needed
+6. Click **Import**
+
+**Auto-Detected Column Mapping:**
+
+Canvas Roots automatically detects common column names and maps them to person properties:
+
+| Detected columns | Maps to |
+|-----------------|---------|
+| name, full name, person | `name` |
+| birth, born, birth date | `born` |
+| death, died, death date | `died` |
+| father, father name | `father` |
+| mother, mother name | `mother` |
+| spouse, spouse name | `spouse` |
+| gender, sex | `gender` |
+
+You can manually adjust any mapping before importing if the auto-detection doesn't match your file's column names.
+
+**What Happens:**
+- Creates one Markdown note per row
+- Generates `cr_id` for each person automatically
+- Creates relationship links when parent/spouse columns reference other people in the file
+- Supports both wikilink format (`[[Name]]`) and plain text names
+
+### Exporting to CSV
+
+Export your family data to CSV format for use in spreadsheets or sharing with others.
+
+**Using Control Center:**
+1. Open Control Center → Data Entry tab → CSV sub-tab
+2. Click **Export CSV**
+3. Select the folder to export
+4. Configure columns to include
+5. Enable privacy protection if needed
+6. Click **Export**
+
+**Configurable Columns:**
+
+Choose which fields to include in your export:
+- Core fields: name, cr_id, gender
+- Dates: born, died
+- Relationships: father, mother, spouse, children
+- Metadata: collection, group_name, lineage
+
+**Privacy Protection:**
+
+Same privacy options as GEDCOM export:
+- Exclude living persons entirely
+- Anonymize living persons (replace PII with "[Living]")
+- Configurable birth year threshold
+
+### CSV vs GEDCOM
+
+| Feature | CSV | GEDCOM |
+|---------|-----|--------|
+| **Compatibility** | Spreadsheets, databases | Genealogy software |
+| **Structure** | Flat (one row per person) | Hierarchical (individuals + families) |
+| **Best for** | Quick edits, bulk changes | Software interchange |
+| **Marriage data** | Limited | Full support |
+| **Use case** | Working with data | Archiving/sharing |
+
+---
+
+## Selective Branch Export
+
+Export specific portions of your family tree rather than the entire dataset. Available in both GEDCOM and CSV export tabs.
+
+### Branch Types
+
+**Ancestors Only:**
+Export only the ancestors (parents, grandparents, etc.) of a selected person.
+- Useful for pedigree charts
+- Creates focused lineage documentation
+- Reduces file size for large trees
+
+**Descendants Only:**
+Export only the descendants (children, grandchildren, etc.) of a selected person.
+- Useful for descendant reports
+- Can optionally include spouses of descendants
+- Great for sharing a specific family branch
+
+### How to Use Selective Export
+
+**In GEDCOM Export:**
+1. Open Control Center → Data Entry tab → GEDCOM sub-tab
+2. Click **Export GEDCOM**
+3. Select "Branch export" mode
+4. Choose a root person for the branch
+5. Select branch type (ancestors or descendants)
+6. Optionally enable "Include spouses" for descendant exports
+7. Click **Export**
+
+**In CSV Export:**
+1. Open Control Center → Data Entry tab → CSV sub-tab
+2. Click **Export CSV**
+3. Select "Branch export" mode
+4. Choose a root person and branch type
+5. Configure other options as needed
+6. Click **Export**
+
+### Combining with Collection Filtering
+
+Selective branch export works together with collection filtering for precise exports:
+
+1. Filter by collection to narrow the scope
+2. Then apply branch selection to further refine
+3. Result includes only people matching both criteria
+
+**Example workflow:**
+- Filter to "Maternal Line" collection
+- Select branch: descendants of "Great-Grandmother Jane"
+- Export only that specific branch within the maternal line
+
+### Include Spouses Option
+
+When exporting descendants, you can optionally include spouses:
+
+- **Enabled**: Includes spouses of each descendant (helps show family units)
+- **Disabled**: Exports only direct blood descendants
+
+This option is particularly useful when you want complete family units rather than just the bloodline.
+
+---
+
 ## Relationship Calculator
 
 Calculate the genealogical relationship between any two people in your family tree using proper genealogical terminology.
@@ -830,6 +999,93 @@ This helps you understand the chain of relationships connecting two individuals.
 ### Copy to Clipboard
 
 Click **Copy result** to copy the relationship description for use in notes or documentation.
+
+---
+
+## Smart Duplicate Detection
+
+Find potential duplicate person records in your vault using intelligent matching algorithms. This helps maintain data quality, especially after importing data from multiple sources.
+
+### How It Works
+
+Smart Duplicate Detection analyzes your person notes using multiple criteria:
+
+**Fuzzy Name Matching (Levenshtein Distance):**
+- Compares names allowing for typos and spelling variations
+- "John Smith" matches "Jon Smith" or "John Smyth"
+- Handles reversed names ("Smith, John" vs "John Smith")
+- Configurable similarity threshold
+
+**Date Proximity Analysis:**
+- Compares birth and death dates when available
+- Allows configurable year tolerance (default: ±2 years)
+- Missing dates don't disqualify matches
+
+**Confidence Scoring:**
+Each potential duplicate receives a confidence level:
+- **High**: Strong name match + close dates (likely duplicates)
+- **Medium**: Good name match, dates may differ slightly
+- **Low**: Possible match, worth reviewing
+
+### Finding Duplicates
+
+**Via Command Palette:**
+1. Press `Ctrl/Cmd + P`
+2. Type "Canvas Roots: Find duplicate people"
+3. The detection modal opens with results
+
+**What You'll See:**
+- List of potential duplicate pairs grouped by confidence
+- Name comparison showing both versions
+- Birth/death dates for each person (if available)
+- Match score and confidence level
+
+### Reviewing Matches
+
+For each potential duplicate pair:
+
+**Confirm as Duplicate:**
+- Opens both notes for manual review
+- Decide which record to keep
+- Merge data as needed
+
+**Dismiss False Positive:**
+- Marks the pair as "not duplicates"
+- Won't appear in future scans
+- Dismissals are remembered across sessions
+
+### Configuring Detection
+
+Adjust detection sensitivity in Settings → Canvas Roots → Data:
+
+**Name Similarity Threshold:**
+- Higher values = stricter matching (fewer false positives)
+- Lower values = looser matching (catches more variations)
+- Default: 0.8 (80% similarity required)
+
+**Date Tolerance:**
+- Years of variance allowed for date matching
+- Default: 2 years
+- Set to 0 for exact date matching only
+
+### Best Practices
+
+**When to Run Detection:**
+- After importing GEDCOM or CSV files
+- After bulk data entry sessions
+- Periodically during research to catch accidental duplicates
+
+**Handling Duplicates:**
+1. Review both notes side-by-side
+2. Identify which has more complete data
+3. Merge unique information into the keeper
+4. Update relationships pointing to the duplicate
+5. Delete or archive the duplicate note
+
+**Preventing Duplicates:**
+- Use consistent naming conventions
+- Enable bidirectional sync to catch relationship conflicts
+- Import from single authoritative source when possible
 
 ---
 
