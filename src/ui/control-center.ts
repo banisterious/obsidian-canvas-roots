@@ -17,6 +17,7 @@ import type { RecentTreeInfo, RecentImportInfo, ArrowStyle, ColorScheme, SpouseE
 import { FolderFilterService } from '../core/folder-filter';
 import { StagingService, StagingSubfolderInfo } from '../core/staging-service';
 import { CrossImportDetectionService, CrossImportMatch } from '../core/cross-import-detection';
+import { MergeWizardModal } from './merge-wizard-modal';
 
 const logger = getLogger('ControlCenter');
 
@@ -6234,9 +6235,17 @@ class CrossImportReviewModal extends Modal {
 		// Action buttons
 		const actionsEl = contentEl.createDiv({ cls: 'cr-cross-import-actions' });
 
-		const sameBtn = actionsEl.createEl('button', {
-			text: 'Same person',
+		const mergeBtn = actionsEl.createEl('button', {
+			text: 'Merge records',
 			cls: 'mod-cta'
+		});
+		mergeBtn.addEventListener('click', () => {
+			this.openMergeWizard(match);
+		});
+
+		const sameBtn = actionsEl.createEl('button', {
+			text: 'Same (skip promote)',
+			cls: 'crc-btn-secondary'
 		});
 		sameBtn.addEventListener('click', () => {
 			this.resolveMatch(match, 'same');
@@ -6296,6 +6305,32 @@ class CrossImportReviewModal extends Modal {
 		if (person.sex) {
 			detailsEl.createEl('div', { text: `Gender: ${person.sex}` });
 		}
+	}
+
+	private openMergeWizard(match: CrossImportMatch): void {
+		const stagingFile = match.stagingPerson.file;
+		const mainFile = match.mainPerson.file;
+
+		if (!stagingFile || !mainFile) {
+			new Notice('Cannot merge: missing file reference');
+			return;
+		}
+
+		const mergeModal = new MergeWizardModal(
+			this.app,
+			this.plugin.settings,
+			stagingFile,
+			mainFile,
+			() => {
+				// After successful merge, remove this match from the list
+				this.matches = this.matches.filter(m => m !== match);
+				if (this.currentIndex >= this.matches.length) {
+					this.currentIndex = Math.max(0, this.matches.length - 1);
+				}
+				this.renderCurrentMatch();
+			}
+		);
+		mergeModal.open();
 	}
 
 	private resolveMatch(match: CrossImportMatch, resolution: 'same' | 'different'): void {

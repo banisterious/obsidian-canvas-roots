@@ -484,12 +484,115 @@ When marked as "different people":
 
 ---
 
-## Future Phases
+## Phase 3: Merge & Consolidation Tools
 
-### Phase 3: Merge & Consolidation Tools
-- Merge wizard for combining duplicate records
-- Field-level conflict resolution
-- Relationship reconciliation
+**Status:** Core Implementation Complete
+**Goal:** Merge duplicate records with field-level conflict resolution
+
+### Overview
+
+When a staging person is marked as "same person" as someone in the main tree, the user needs a way to merge the data from both records. Phase 3 provides:
+
+1. **MergeService** - Core logic for merging two person records
+2. **MergeWizardModal** - UI for field-by-field conflict resolution
+3. **Relationship reconciliation** - Update links from both records
+
+### Merge Strategy
+
+For each field, user can choose:
+- **Keep main** - Use value from main tree record
+- **Keep staging** - Use value from staging record
+- **Combine** - For arrays (spouses, children), merge both lists
+
+```
+┌─ Merge Wizard ───────────────────────────────────────────┐
+│                                                          │
+│ Merging: John Smith (staging) → John H. Smith (main)     │
+│                                                          │
+│ Field          Staging          Main            Choose   │
+│ ────────────────────────────────────────────────────────│
+│ Name           John Smith       John H. Smith   [Main ▾] │
+│ Born           1845             1845-03-15      [Main ▾] │
+│ Died           1920             1920-08-22      [Main ▾] │
+│ Birth Place    Ohio             Columbus, OH    [Main ▾] │
+│ Father         William Smith    Wm. Smith       [Stag ▾] │
+│ Spouse         [Mary Jones]     [Mary J. Doe]   [Both ▾] │
+│                                                          │
+│ After merge:                                             │
+│ - Staging file will be deleted                           │
+│ - Main file will be updated with merged data             │
+│ - Relationships pointing to staging will update          │
+│                                                          │
+│ [Cancel]                               [Preview] [Merge] │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Implementation Plan
+
+#### 3.1 MergeService
+
+**File:** `src/core/merge-service.ts`
+
+```typescript
+export interface MergeFieldChoice {
+    field: string;
+    choice: 'main' | 'staging' | 'both';
+}
+
+export interface MergeResult {
+    success: boolean;
+    mainFile: TFile;
+    stagingFileDeleted: boolean;
+    relationshipsUpdated: number;
+    error?: string;
+}
+
+export class MergeService {
+    constructor(private app: App, private settings: CanvasRootsSettings) {}
+
+    /**
+     * Get field differences between two person records
+     */
+    getFieldDifferences(staging: PersonNode, main: PersonNode): FieldDifference[];
+
+    /**
+     * Merge staging record into main record
+     */
+    async merge(
+        stagingFile: TFile,
+        mainFile: TFile,
+        choices: MergeFieldChoice[]
+    ): Promise<MergeResult>;
+
+    /**
+     * Update all relationships pointing to staging cr_id to point to main cr_id
+     */
+    async updateRelationships(oldCrId: string, newCrId: string): Promise<number>;
+}
+```
+
+#### 3.2 MergeWizardModal
+
+**File:** `src/ui/merge-wizard-modal.ts`
+
+- Shows side-by-side field comparison
+- Dropdown for each field to choose source
+- Preview of final merged result
+- Confirmation before executing merge
+
+### Implementation Order
+
+1. [x] Create `MergeService` with field difference detection
+2. [x] Implement merge logic with relationship updates
+3. [x] Build `MergeWizardModal` with field selection UI
+4. [x] Add "Merge" button to CrossImportReviewModal for "same person" matches
+5. [ ] Add merge option to duplicate detection modal
+6. [ ] Test merge workflow end-to-end
+
+---
+
+## Future Phases
 
 ### Phase 4: Data Quality Tools
 - Data quality report
