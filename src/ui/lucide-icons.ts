@@ -63,7 +63,8 @@ export type LucideIconName =
 	| 'undo-2'         // Undo action
 	| 'history'        // History view
 	| 'user-minus'     // Remove person
-	| 'table-2';       // CSV/spreadsheet
+	| 'table-2'        // CSV/spreadsheet
+	| 'package';       // Staging/import packages
 
 /**
  * Tab configuration for Control Center navigation
@@ -108,6 +109,12 @@ export const TAB_CONFIGS: TabConfig[] = [
 		name: 'CSV',
 		icon: 'table-2',
 		description: 'Import and export spreadsheet data'
+	},
+	{
+		id: 'staging',
+		name: 'Staging',
+		icon: 'package',
+		description: 'Review and promote imported data'
 	},
 	{
 		id: 'data-entry',

@@ -338,12 +338,153 @@ export class StagingService {
 
 ---
 
-## Future Phases
+## Phase 2: Cross-Import Duplicate Detection
 
-### Phase 2: Cross-Import Duplicate Detection
-- Detect duplicates between staging and main tree
-- Side-by-side comparison view
-- "Same person" / "Different people" resolution
+**Status:** Core Implementation Complete
+**Goal:** Detect duplicates between staging and main tree before promoting
+
+### Overview
+
+When importing GEDCOM/CSV data to staging, users need to identify which people already exist in their main tree before promoting. Phase 2 adds:
+
+1. **Cross-import detection** - Compare staging files against main tree only
+2. **Staging tab in Control Center** - Dedicated UI for managing staging data
+3. **Resolution workflow** - Mark matches as "same person" or "different people"
+
+### Implementation Plan
+
+#### 2.1 Cross-Import Detection Service
+
+**File:** `src/core/cross-import-detection.ts`
+
+Extends duplicate detection to compare staging vs main tree:
+
+```typescript
+export interface CrossImportMatch extends DuplicateMatch {
+    stagingPerson: PersonNode;  // Always from staging
+    mainPerson: PersonNode;     // Always from main tree
+    resolution?: 'same' | 'different' | 'pending';
+}
+
+export class CrossImportDetectionService {
+    constructor(
+        private app: App,
+        private settings: CanvasRootsSettings,
+        private folderFilter: FolderFilterService,
+        private stagingService: StagingService
+    ) {}
+
+    /**
+     * Find matches between staging and main tree
+     */
+    findCrossImportMatches(options?: DuplicateDetectionOptions): CrossImportMatch[];
+
+    /**
+     * Get staging files that have no match in main tree (safe to promote)
+     */
+    getUnmatchedStagingFiles(): TFile[];
+
+    /**
+     * Get staging files with potential matches (need review)
+     */
+    getMatchedStagingFiles(): TFile[];
+}
+```
+
+#### 2.2 Staging Tab in Control Center
+
+**File:** `src/ui/control-center.ts`
+
+Add new tab between "Data Entry" and "Collections":
+
+```
+┌─ Control Center ─────────────────────────────────────────┐
+│ [Tree Output] [Data Entry] [Staging] [Collections] ...   │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│ Staging Area                                             │
+│ ─────────────────────────────────────────────────────    │
+│ 📁 People-Staging/import-2024-11                         │
+│    15 people | 3 potential matches | Modified: Nov 29    │
+│    [Check for duplicates] [Promote all] [Delete]         │
+│                                                          │
+│ 📁 People-Staging/smith-gedcom                           │
+│    8 people | 1 potential match | Modified: Nov 15       │
+│    [Check for duplicates] [Promote all] [Delete]         │
+│                                                          │
+│ ─────────────────────────────────────────────────────    │
+│ Total: 23 people in staging | 4 need review              │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+#### 2.3 Cross-Import Review Modal
+
+**File:** `src/ui/cross-import-review-modal.ts`
+
+Modal for reviewing staging vs main tree matches:
+
+```
+┌─ Review Potential Matches ───────────────────────────────┐
+│                                                          │
+│ Comparing: import-2024-11 (15 people) vs Main Tree       │
+│                                                          │
+│ ┌─ Match 1 of 3 ─────────────────────────────────────┐   │
+│ │ 87% confidence                                      │   │
+│ │                                                     │   │
+│ │ STAGING                    MAIN TREE               │   │
+│ │ ────────────────────────   ────────────────────    │   │
+│ │ John Smith                 John H. Smith           │   │
+│ │ b. 1845                    b. 1845                 │   │
+│ │ d. 1920                    d. 1920                 │   │
+│ │ Father: William Smith      Father: William Smith   │   │
+│ │ Mother: Mary Jones         Mother: Mary Jones      │   │
+│ │                                                     │   │
+│ │ [Same Person] [Different People] [Skip]            │   │
+│ └─────────────────────────────────────────────────────┘   │
+│                                                          │
+│ Progress: 0/3 resolved                                   │
+│                                                          │
+│ [Cancel] [Finish Review]                                 │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Implementation Order
+
+1. [x] Create `CrossImportDetectionService` (`src/core/cross-import-detection.ts`)
+2. [x] Add Staging tab to Control Center
+3. [x] Display staging subfolders with stats
+4. [x] Add "Check for duplicates" action per subfolder
+5. [x] Create `CrossImportReviewModal` for reviewing matches
+6. [x] Store resolution decisions (same/different)
+7. [ ] Update promote logic to handle resolved matches
+8. [ ] Test cross-import workflow
+
+### Resolution Storage
+
+Store resolution decisions in a plugin data file to persist across sessions:
+
+```typescript
+interface ResolutionRecord {
+    stagingCrId: string;
+    mainCrId: string;
+    resolution: 'same' | 'different';
+    resolvedAt: string;  // ISO date
+}
+```
+
+When a staging file is marked as "same person" as a main tree entry:
+- Promote action should skip the file (already exists)
+- Or offer to merge data from staging into existing record (Phase 3)
+
+When marked as "different people":
+- Promote action proceeds normally
+- Decision is remembered to avoid re-prompting
+
+---
+
+## Future Phases
 
 ### Phase 3: Merge & Consolidation Tools
 - Merge wizard for combining duplicate records

@@ -15,6 +15,8 @@ import { TreePreviewRenderer } from './tree-preview';
 import { ReferenceNumberingService, NumberingSystem } from '../core/reference-numbering';
 import type { RecentTreeInfo, RecentImportInfo, ArrowStyle, ColorScheme, SpouseEdgeLabelFormat } from '../settings';
 import { FolderFilterService } from '../core/folder-filter';
+import { StagingService, StagingSubfolderInfo } from '../core/staging-service';
+import { CrossImportDetectionService, CrossImportMatch } from '../core/cross-import-detection';
 
 const logger = getLogger('ControlCenter');
 
@@ -228,6 +230,9 @@ export class ControlCenterModal extends Modal {
 				break;
 			case 'csv':
 				this.showCsvTab();
+				break;
+			case 'staging':
+				this.showStagingTab();
 				break;
 			case 'person-detail':
 				this.showPersonDetailTab();
@@ -4583,6 +4588,460 @@ export class ControlCenterModal extends Modal {
 		}
 	}
 
+	// ==========================================================================
+	// STAGING TAB
+	// ==========================================================================
+
+	/**
+	 * Show Staging tab - manage imported data before promoting to main tree
+	 */
+	private showStagingTab(): void {
+		const container = this.contentContainer;
+		const settings = this.plugin.settings;
+
+		// Check if staging is configured
+		if (!settings.stagingFolder) {
+			this.showStagingNotConfigured(container);
+			return;
+		}
+
+		// Create staging service instances
+		const folderFilter = new FolderFilterService(settings);
+		const stagingService = new StagingService(this.app, settings);
+		const crossImportService = new CrossImportDetectionService(
+			this.app,
+			settings,
+			folderFilter,
+			stagingService
+		);
+
+		// Get staging data
+		const subfolders = stagingService.getStagingSubfolders();
+		const stats = stagingService.getStagingStats();
+
+		// Header card with summary
+		const headerCard = this.createCard({
+			title: 'Staging area',
+			icon: 'package',
+			subtitle: `${stats.totalPeople} people in ${stats.subfolderCount} import(s)`
+		});
+
+		const headerContent = headerCard.querySelector('.crc-card__content') as HTMLElement;
+
+		if (stats.totalPeople === 0) {
+			headerContent.createEl('p', {
+				text: 'No data in staging. Import GEDCOM or CSV files to the staging folder to review them here before promoting to your main tree.',
+				cls: 'crc-text-muted'
+			});
+
+			// Quick link to import tabs
+			const linkContainer = headerContent.createDiv({ cls: 'crc-staging-links' });
+			const gedcomLink = linkContainer.createEl('button', {
+				text: 'Import GEDCOM',
+				cls: 'mod-cta'
+			});
+			gedcomLink.addEventListener('click', () => this.switchTab('gedcom'));
+
+			const csvLink = linkContainer.createEl('button', {
+				text: 'Import CSV',
+				cls: 'crc-btn-secondary'
+			});
+			csvLink.addEventListener('click', () => this.switchTab('csv'));
+		} else {
+			// Show staging folder info
+			const infoEl = headerContent.createDiv({ cls: 'crc-staging-info' });
+			infoEl.createEl('span', {
+				text: `Staging folder: ${settings.stagingFolder}`,
+				cls: 'crc-text-muted'
+			});
+		}
+
+		container.appendChild(headerCard);
+
+		// If no data, stop here
+		if (stats.totalPeople === 0) {
+			return;
+		}
+
+		// Subfolders card
+		const subfoldersCard = this.createCard({
+			title: 'Imports',
+			icon: 'folder'
+		});
+
+		const subfoldersContent = subfoldersCard.querySelector('.crc-card__content') as HTMLElement;
+
+		if (subfolders.length === 0) {
+			// Files are directly in staging folder, not in subfolders
+			this.renderStagingRootFiles(subfoldersContent, stagingService, crossImportService);
+		} else {
+			// Render each subfolder
+			for (const subfolder of subfolders) {
+				this.renderStagingSubfolder(subfoldersContent, subfolder, stagingService, crossImportService);
+			}
+		}
+
+		container.appendChild(subfoldersCard);
+
+		// Bulk actions card
+		const actionsCard = this.createCard({
+			title: 'Bulk actions',
+			icon: 'zap'
+		});
+
+		const actionsContent = actionsCard.querySelector('.crc-card__content') as HTMLElement;
+
+		// Check all for duplicates
+		new Setting(actionsContent)
+			.setName('Check all for duplicates')
+			.setDesc('Scan all staging data against your main tree')
+			.addButton(btn => btn
+				.setButtonText('Check all')
+				.onClick(() => {
+					this.runCrossImportCheck(crossImportService);
+				})
+			);
+
+		// Promote all (if no pending matches)
+		new Setting(actionsContent)
+			.setName('Promote all to main tree')
+			.setDesc('Move all staging data to your main people folder')
+			.addButton(btn => btn
+				.setButtonText('Promote all')
+				.setWarning()
+				.onClick(() => {
+					void this.promoteAllStaging(stagingService);
+				})
+			);
+
+		// Delete all staging
+		new Setting(actionsContent)
+			.setName('Delete all staging data')
+			.setDesc('Permanently remove all data from staging')
+			.addButton(btn => btn
+				.setButtonText('Delete all')
+				.setWarning()
+				.onClick(() => {
+					void this.deleteAllStaging(stagingService);
+				})
+			);
+
+		container.appendChild(actionsCard);
+	}
+
+	/**
+	 * Show message when staging is not configured
+	 */
+	private showStagingNotConfigured(container: HTMLElement): void {
+		const card = this.createCard({
+			title: 'Staging not configured',
+			icon: 'package'
+		});
+
+		const content = card.querySelector('.crc-card__content') as HTMLElement;
+
+		content.createEl('p', {
+			text: 'A staging folder allows you to import GEDCOM or CSV data for review before adding it to your main family tree.',
+			cls: 'crc-text-muted'
+		});
+
+		content.createEl('p', {
+			text: 'This helps you:',
+			cls: 'crc-staging-benefits-intro'
+		});
+
+		const benefitsList = content.createEl('ul', { cls: 'crc-staging-benefits' });
+		benefitsList.createEl('li', { text: 'Review imported data before it affects your tree' });
+		benefitsList.createEl('li', { text: 'Check for duplicates against existing people' });
+		benefitsList.createEl('li', { text: 'Promote clean data or discard unwanted imports' });
+
+		new Setting(content)
+			.setName('Configure staging folder')
+			.setDesc('Set a folder for staging imported data')
+			.addButton(btn => btn
+				.setButtonText('Open settings')
+				.setCta()
+				.onClick(() => {
+					// Open plugin settings
+					// @ts-expect-error - Obsidian API
+					this.app.setting.open();
+					// @ts-expect-error - Obsidian API
+					this.app.setting.openTabById(this.plugin.manifest.id);
+				})
+			);
+
+		container.appendChild(card);
+	}
+
+	/**
+	 * Render files directly in staging root (no subfolders)
+	 */
+	private renderStagingRootFiles(
+		container: HTMLElement,
+		stagingService: StagingService,
+		crossImportService: CrossImportDetectionService
+	): void {
+		const files = stagingService.getStagingPersonFiles();
+
+		const itemEl = container.createDiv({ cls: 'crc-staging-item' });
+
+		// Header
+		const headerEl = itemEl.createDiv({ cls: 'crc-staging-item__header' });
+
+		const iconEl = headerEl.createDiv({ cls: 'crc-staging-item__icon' });
+		setLucideIcon(iconEl, 'folder', 20);
+
+		const infoEl = headerEl.createDiv({ cls: 'crc-staging-item__info' });
+		infoEl.createEl('strong', { text: 'Staging root' });
+		infoEl.createEl('span', {
+			text: `${files.length} people`,
+			cls: 'crc-text-muted'
+		});
+
+		// Actions
+		const actionsEl = itemEl.createDiv({ cls: 'crc-staging-item__actions' });
+
+		const checkBtn = actionsEl.createEl('button', {
+			text: 'Check duplicates',
+			cls: 'crc-btn-secondary'
+		});
+		checkBtn.addEventListener('click', () => {
+			this.runCrossImportCheck(crossImportService);
+		});
+
+		const promoteBtn = actionsEl.createEl('button', {
+			text: 'Promote all',
+			cls: 'mod-cta'
+		});
+		promoteBtn.addEventListener('click', () => {
+			void this.promoteAllStaging(stagingService);
+		});
+	}
+
+	/**
+	 * Render a staging subfolder item
+	 */
+	private renderStagingSubfolder(
+		container: HTMLElement,
+		subfolder: StagingSubfolderInfo,
+		stagingService: StagingService,
+		crossImportService: CrossImportDetectionService
+	): void {
+		const itemEl = container.createDiv({ cls: 'crc-staging-item' });
+
+		// Header
+		const headerEl = itemEl.createDiv({ cls: 'crc-staging-item__header' });
+
+		const iconEl = headerEl.createDiv({ cls: 'crc-staging-item__icon' });
+		setLucideIcon(iconEl, 'folder', 20);
+
+		const infoEl = headerEl.createDiv({ cls: 'crc-staging-item__info' });
+		infoEl.createEl('strong', { text: subfolder.name });
+
+		const statsEl = infoEl.createDiv({ cls: 'crc-staging-item__stats' });
+		statsEl.createEl('span', {
+			text: `${subfolder.personCount} people`,
+			cls: 'crc-text-muted'
+		});
+
+		// Modified date
+		const dateStr = subfolder.modifiedDate ? subfolder.modifiedDate.toLocaleDateString() : 'Unknown';
+		statsEl.createEl('span', {
+			text: `Modified: ${dateStr}`,
+			cls: 'crc-text-muted'
+		});
+
+		// Actions
+		const actionsEl = itemEl.createDiv({ cls: 'crc-staging-item__actions' });
+
+		const checkBtn = actionsEl.createEl('button', {
+			text: 'Check duplicates',
+			cls: 'crc-btn-secondary'
+		});
+		checkBtn.addEventListener('click', () => {
+			this.runCrossImportCheck(crossImportService, subfolder.path);
+		});
+
+		const promoteBtn = actionsEl.createEl('button', {
+			text: 'Promote',
+			cls: 'mod-cta'
+		});
+		promoteBtn.addEventListener('click', () => {
+			void this.promoteStagingSubfolder(stagingService, subfolder.path);
+		});
+
+		const deleteBtn = actionsEl.createEl('button', {
+			cls: 'crc-btn-danger'
+		});
+		setLucideIcon(deleteBtn, 'trash', 16);
+		deleteBtn.addEventListener('click', () => {
+			void this.deleteStagingSubfolder(stagingService, subfolder.path, subfolder.name);
+		});
+	}
+
+	/**
+	 * Run cross-import duplicate check
+	 */
+	private runCrossImportCheck(
+		crossImportService: CrossImportDetectionService,
+		subfolderPath?: string
+	): void {
+		const matches = crossImportService.findCrossImportMatches(subfolderPath);
+
+		if (matches.length === 0) {
+			new Notice('No duplicates found. All staging data appears unique.');
+			return;
+		}
+
+		// Open the review modal
+		const modal = new CrossImportReviewModal(
+			this.app,
+			this.plugin,
+			matches,
+			crossImportService
+		);
+		modal.open();
+	}
+
+	/**
+	 * Promote all staging data to main tree
+	 */
+	private async promoteAllStaging(stagingService: StagingService): Promise<void> {
+		const stats = stagingService.getStagingStats();
+
+		if (stats.totalPeople === 0) {
+			new Notice('No staging data to promote');
+			return;
+		}
+
+		// Confirm action
+		const confirmed = await this.confirmAction(
+			'Promote all staging data',
+			`This will move ${stats.totalPeople} people from staging to your main people folder. Continue?`
+		);
+
+		if (!confirmed) return;
+
+		try {
+			const result = await stagingService.promoteAll();
+
+			if (result.success) {
+				new Notice(`Promoted ${result.filesPromoted} people to main tree`);
+				// Refresh the tab
+				this.showStagingTab();
+			} else {
+				new Notice(`Promotion failed: ${result.errors.join(', ')}`);
+			}
+		} catch (error) {
+			const msg = getErrorMessage(error);
+			logger.error('staging', `Promote all failed: ${msg}`);
+			new Notice(`Failed to promote staging data: ${msg}`);
+		}
+	}
+
+	/**
+	 * Promote a specific staging subfolder
+	 */
+	private async promoteStagingSubfolder(
+		stagingService: StagingService,
+		subfolderPath: string
+	): Promise<void> {
+		try {
+			const result = await stagingService.promoteSubfolder(subfolderPath);
+
+			if (result.success) {
+				new Notice(`Promoted ${result.filesPromoted} people to main tree`);
+				// Refresh the tab
+				this.showStagingTab();
+			} else {
+				new Notice(`Promotion failed: ${result.errors.join(', ')}`);
+			}
+		} catch (error) {
+			const msg = getErrorMessage(error);
+			logger.error('staging', `Promote subfolder failed: ${msg}`);
+			new Notice(`Failed to promote: ${msg}`);
+		}
+	}
+
+	/**
+	 * Delete all staging data
+	 */
+	private async deleteAllStaging(stagingService: StagingService): Promise<void> {
+		const stats = stagingService.getStagingStats();
+
+		if (stats.totalPeople === 0) {
+			new Notice('No staging data to delete');
+			return;
+		}
+
+		// Confirm action
+		const confirmed = await this.confirmAction(
+			'Delete all staging data',
+			`This will permanently delete ${stats.totalPeople} people from staging. This cannot be undone. Continue?`
+		);
+
+		if (!confirmed) return;
+
+		try {
+			const result = await stagingService.deleteAllStaging();
+
+			if (result.success) {
+				new Notice(`Deleted ${result.filesDeleted} files from staging`);
+				// Refresh the tab
+				this.showStagingTab();
+			} else {
+				new Notice(`Delete failed: ${result.error}`);
+			}
+		} catch (error) {
+			const msg = getErrorMessage(error);
+			logger.error('staging', `Delete all staging failed: ${msg}`);
+			new Notice(`Failed to delete staging data: ${msg}`);
+		}
+	}
+
+	/**
+	 * Delete a specific staging subfolder
+	 */
+	private async deleteStagingSubfolder(
+		stagingService: StagingService,
+		subfolderPath: string,
+		subfolderName: string
+	): Promise<void> {
+		// Confirm action
+		const confirmed = await this.confirmAction(
+			'Delete staging import',
+			`This will permanently delete all data in "${subfolderName}". This cannot be undone. Continue?`
+		);
+
+		if (!confirmed) return;
+
+		try {
+			const result = await stagingService.deleteSubfolder(subfolderPath);
+
+			if (result.success) {
+				new Notice(`Deleted ${result.filesDeleted} files`);
+				// Refresh the tab
+				this.showStagingTab();
+			} else {
+				new Notice(`Delete failed: ${result.error}`);
+			}
+		} catch (error) {
+			const msg = getErrorMessage(error);
+			logger.error('staging', `Delete subfolder failed: ${msg}`);
+			new Notice(`Failed to delete: ${msg}`);
+		}
+	}
+
+	/**
+	 * Show a confirmation dialog
+	 */
+	private confirmAction(title: string, message: string): Promise<boolean> {
+		return new Promise((resolve) => {
+			const modal = new ConfirmationModal(this.app, title, message, resolve);
+			modal.open();
+		});
+	}
+
 	/**
 	 * Show Person Detail tab
 	 */
@@ -5599,5 +6058,265 @@ export class ControlCenterModal extends Modal {
 			});
 			new Notice(`Relationship sync failed: ${errorMsg}`);
 		}
+	}
+}
+
+/**
+ * Simple confirmation modal for destructive actions
+ */
+class ConfirmationModal extends Modal {
+	private title: string;
+	private message: string;
+	private onResult: (confirmed: boolean) => void;
+
+	constructor(app: App, title: string, message: string, onResult: (confirmed: boolean) => void) {
+		super(app);
+		this.title = title;
+		this.message = message;
+		this.onResult = onResult;
+	}
+
+	onOpen(): void {
+		const { contentEl, titleEl } = this;
+		titleEl.setText(this.title);
+
+		contentEl.createEl('p', { text: this.message });
+
+		const buttonContainer = contentEl.createDiv({ cls: 'crc-confirmation-buttons' });
+
+		const cancelBtn = buttonContainer.createEl('button', {
+			text: 'Cancel',
+			cls: 'crc-btn-secondary'
+		});
+		cancelBtn.addEventListener('click', () => {
+			this.onResult(false);
+			this.close();
+		});
+
+		const confirmBtn = buttonContainer.createEl('button', {
+			text: 'Continue',
+			cls: 'mod-warning'
+		});
+		confirmBtn.addEventListener('click', () => {
+			this.onResult(true);
+			this.close();
+		});
+	}
+
+	onClose(): void {
+		this.contentEl.empty();
+	}
+}
+
+/**
+ * Modal for reviewing cross-import duplicate matches
+ */
+class CrossImportReviewModal extends Modal {
+	private matches: CrossImportMatch[];
+	private crossImportService: CrossImportDetectionService;
+	private currentIndex: number = 0;
+	private plugin: CanvasRootsPlugin;
+
+	constructor(
+		app: App,
+		plugin: CanvasRootsPlugin,
+		matches: CrossImportMatch[],
+		crossImportService: CrossImportDetectionService
+	) {
+		super(app);
+		this.plugin = plugin;
+		this.matches = matches;
+		this.crossImportService = crossImportService;
+	}
+
+	onOpen(): void {
+		const { contentEl, titleEl } = this;
+		titleEl.setText('Review potential matches');
+		contentEl.addClass('cr-cross-import-modal');
+
+		this.renderCurrentMatch();
+	}
+
+	onClose(): void {
+		this.contentEl.empty();
+	}
+
+	private renderCurrentMatch(): void {
+		const { contentEl } = this;
+		contentEl.empty();
+
+		if (this.currentIndex >= this.matches.length) {
+			this.renderComplete();
+			return;
+		}
+
+		const match = this.matches[this.currentIndex];
+		const pendingCount = this.matches.filter(m => m.resolution === 'pending').length;
+
+		// Progress indicator
+		const progressEl = contentEl.createDiv({ cls: 'cr-cross-import-progress' });
+		progressEl.createEl('span', {
+			text: `Match ${this.currentIndex + 1} of ${this.matches.length}`,
+			cls: 'cr-cross-import-progress__count'
+		});
+		progressEl.createEl('span', {
+			text: `${pendingCount} pending`,
+			cls: 'cr-cross-import-progress__pending'
+		});
+
+		// Confidence badge
+		const confidenceClass = match.confidence >= 80 ? 'cr-badge--danger' :
+			match.confidence >= 60 ? 'cr-badge--warning' : 'cr-badge--info';
+
+		const headerEl = contentEl.createDiv({ cls: 'cr-cross-import-header' });
+		headerEl.createSpan({
+			text: `${match.confidence}% confidence`,
+			cls: `cr-badge ${confidenceClass}`
+		});
+
+		// Side-by-side comparison
+		const comparisonEl = contentEl.createDiv({ cls: 'cr-cross-import-comparison' });
+
+		// Staging person (left)
+		const stagingEl = comparisonEl.createDiv({ cls: 'cr-cross-import-person cr-cross-import-person--staging' });
+		stagingEl.createEl('div', { text: 'STAGING', cls: 'cr-cross-import-person__label' });
+		this.renderPersonDetails(stagingEl, match.stagingPerson);
+
+		// VS separator
+		comparisonEl.createDiv({ text: 'vs', cls: 'cr-cross-import-vs' });
+
+		// Main tree person (right)
+		const mainEl = comparisonEl.createDiv({ cls: 'cr-cross-import-person cr-cross-import-person--main' });
+		mainEl.createEl('div', { text: 'MAIN TREE', cls: 'cr-cross-import-person__label' });
+		this.renderPersonDetails(mainEl, match.mainPerson);
+
+		// Match reasons
+		if (match.reasons.length > 0) {
+			const reasonsEl = contentEl.createDiv({ cls: 'cr-cross-import-reasons' });
+			reasonsEl.createEl('strong', { text: 'Match reasons:' });
+			reasonsEl.createEl('span', {
+				text: match.reasons.join(' • '),
+				cls: 'crc-text-muted'
+			});
+		}
+
+		// Action buttons
+		const actionsEl = contentEl.createDiv({ cls: 'cr-cross-import-actions' });
+
+		const sameBtn = actionsEl.createEl('button', {
+			text: 'Same person',
+			cls: 'mod-cta'
+		});
+		sameBtn.addEventListener('click', () => {
+			this.resolveMatch(match, 'same');
+		});
+
+		const differentBtn = actionsEl.createEl('button', {
+			text: 'Different people',
+			cls: 'crc-btn-secondary'
+		});
+		differentBtn.addEventListener('click', () => {
+			this.resolveMatch(match, 'different');
+		});
+
+		const skipBtn = actionsEl.createEl('button', {
+			text: 'Skip',
+			cls: 'crc-btn-link'
+		});
+		skipBtn.addEventListener('click', () => {
+			this.nextMatch();
+		});
+
+		// Navigation
+		const navEl = contentEl.createDiv({ cls: 'cr-cross-import-nav' });
+
+		const prevBtn = navEl.createEl('button', {
+			text: '← Previous',
+			cls: 'crc-btn-link'
+		});
+		prevBtn.disabled = this.currentIndex === 0;
+		prevBtn.addEventListener('click', () => {
+			if (this.currentIndex > 0) {
+				this.currentIndex--;
+				this.renderCurrentMatch();
+			}
+		});
+
+		const finishBtn = navEl.createEl('button', {
+			text: 'Finish review',
+			cls: 'crc-btn-secondary'
+		});
+		finishBtn.addEventListener('click', () => {
+			this.close();
+		});
+	}
+
+	private renderPersonDetails(container: HTMLElement, person: { name?: string; birthDate?: string; deathDate?: string; sex?: string }): void {
+		container.createEl('strong', { text: person.name || 'Unknown' });
+
+		const detailsEl = container.createDiv({ cls: 'cr-cross-import-person__details' });
+
+		if (person.birthDate) {
+			detailsEl.createEl('div', { text: `Born: ${person.birthDate}` });
+		}
+		if (person.deathDate) {
+			detailsEl.createEl('div', { text: `Died: ${person.deathDate}` });
+		}
+		if (person.sex) {
+			detailsEl.createEl('div', { text: `Gender: ${person.sex}` });
+		}
+	}
+
+	private resolveMatch(match: CrossImportMatch, resolution: 'same' | 'different'): void {
+		// Store the resolution
+		this.crossImportService.setResolution(
+			match.stagingPerson.crId || '',
+			match.mainPerson.crId || '',
+			resolution
+		);
+
+		// Update the match object
+		match.resolution = resolution;
+
+		// Move to next
+		this.nextMatch();
+
+		// Show feedback
+		new Notice(resolution === 'same'
+			? 'Marked as same person (will skip on promote)'
+			: 'Marked as different people (will promote normally)'
+		);
+	}
+
+	private nextMatch(): void {
+		this.currentIndex++;
+		this.renderCurrentMatch();
+	}
+
+	private renderComplete(): void {
+		const { contentEl } = this;
+		contentEl.empty();
+
+		const completeEl = contentEl.createDiv({ cls: 'cr-cross-import-complete' });
+		completeEl.createEl('h3', { text: 'Review complete' });
+
+		const sameCount = this.matches.filter(m => m.resolution === 'same').length;
+		const differentCount = this.matches.filter(m => m.resolution === 'different').length;
+		const pendingCount = this.matches.filter(m => m.resolution === 'pending').length;
+
+		const summaryEl = completeEl.createDiv({ cls: 'cr-cross-import-summary' });
+		summaryEl.createEl('p', { text: `Same person: ${sameCount}` });
+		summaryEl.createEl('p', { text: `Different people: ${differentCount}` });
+		if (pendingCount > 0) {
+			summaryEl.createEl('p', { text: `Pending: ${pendingCount}`, cls: 'crc-text-muted' });
+		}
+
+		const closeBtn = completeEl.createEl('button', {
+			text: 'Close',
+			cls: 'mod-cta'
+		});
+		closeBtn.addEventListener('click', () => {
+			this.close();
+		});
 	}
 }
