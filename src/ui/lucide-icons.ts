@@ -99,16 +99,10 @@ export const TAB_CONFIGS: TabConfig[] = [
 		description: 'Frequently used commands'
 	},
 	{
-		id: 'gedcom',
-		name: 'GEDCOM',
+		id: 'import-export',
+		name: 'Import/Export',
 		icon: 'file-text',
-		description: 'Import and export genealogical data'
-	},
-	{
-		id: 'csv',
-		name: 'CSV',
-		icon: 'table-2',
-		description: 'Import and export spreadsheet data'
+		description: 'Import and export genealogical data (GEDCOM, CSV)'
 	},
 	{
 		id: 'staging',

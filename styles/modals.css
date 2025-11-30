@@ -2004,3 +2004,32 @@
 .crc-btn--danger:hover {
   background-color: #d32f2f;
 }
+
+/* ==========================================================================
+   IMPORT/EXPORT TAB - Selector Row
+   ========================================================================== */
+
+.crc-selector-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.crc-selector-row .setting-item {
+  border: none;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.crc-selector-row .setting-item-info {
+  flex: 0 0 auto;
+}
+
+.crc-selector-row .setting-item-control {
+  flex: 0 0 auto;
+}
+
+.crc-import-export-content {
+  margin-top: 16px;
+}

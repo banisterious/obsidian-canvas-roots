@@ -42,11 +42,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Inclusion list mode: only scan specified folders
   - Applies to all person note operations
 
+- **Combined Import/Export Tab**: Unified interface for all import/export operations
+  - Single tab replaces separate GEDCOM and CSV tabs
+  - Format dropdown: choose GEDCOM or CSV
+  - Direction dropdown: choose Import or Export
+  - Inline folder configuration section for quick setup
+
 ### Changed
 
 - Promote operations now skip files marked as "same person" (duplicates should be merged instead)
 - StagingService updated with `PromoteOptions` for skip logic
 - DuplicateDetectionModal now accepts settings for merge button integration
+- Control Center Import/Export tab now includes collapsible folder configuration
+  - Configure people folder, staging folder, and isolation settings without leaving Control Center
+  - Shows current folder status at a glance
 
 ---
 

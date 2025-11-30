@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-11-30 17:02:48 UTC
+ * - Generated: 2025-11-30 19:48:30 UTC
  * - Components: 18 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -187,7 +187,7 @@
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 2007 lines, 36.3 KB */
+/* Component Size: 2036 lines, 36.84 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -2196,6 +2196,35 @@
   background-color: #d32f2f;
 }
 
+/* ==========================================================================
+   IMPORT/EXPORT TAB - Selector Row
+   ========================================================================== */
+
+.crc-selector-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.crc-selector-row .setting-item {
+  border: none;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.crc-selector-row .setting-item-info {
+  flex: 0 0 auto;
+}
+
+.crc-selector-row .setting-item-control {
+  flex: 0 0 auto;
+}
+
+.crc-import-export-content {
+  margin-top: 16px;
+}
+
 
 /* End of modals.css */
 
@@ -3818,11 +3847,11 @@
    ========================================================================== */
 
 /*
- * Build completed: 2025-11-30 17:02:48 UTC
+ * Build completed: 2025-11-30 19:48:30 UTC
  * Components processed: 18
- * Total lines: 3633
- * Total size: 67.79 KB
- * Build duration: 0.01 seconds
+ * Total lines: 3662
+ * Total size: 68.33 KB
+ * Build duration: 0.04 seconds
  *
  * Component breakdown:
  * - variables.css: 31 lines, 0.72 KB
@@ -3832,7 +3861,7 @@
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 2007 lines, 36.3 KB
+ * - modals.css: 2036 lines, 36.84 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

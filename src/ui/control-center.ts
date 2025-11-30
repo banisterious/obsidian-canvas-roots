@@ -226,11 +226,8 @@ export class ControlCenterModal extends Modal {
 			case 'tree-generation':
 				void this.showTreeGenerationTab();
 				break;
-			case 'gedcom':
-				this.showGedcomTab();
-				break;
-			case 'csv':
-				this.showCsvTab();
+			case 'import-export':
+				this.showImportExportTab();
 				break;
 			case 'staging':
 				this.showStagingTab();
@@ -1014,7 +1011,7 @@ export class ControlCenterModal extends Modal {
 				number: '1',
 				title: 'Enter your data',
 				description: 'Create person notes with YAML frontmatter, import a GEDCOM file, or use Obsidian Bases for bulk entry.',
-				action: 'Go to GEDCOM tab to import →'
+				action: 'Go to Import/Export tab →'
 			},
 			{
 				number: '2',
@@ -1049,7 +1046,7 @@ export class ControlCenterModal extends Modal {
 				});
 				actionLink.addEventListener('click', (e) => {
 					e.preventDefault();
-					if (index === 0) this.switchTab('gedcom');
+					if (index === 0) this.switchTab('import-export');
 					if (index === 1) this.switchTab('tree-generation');
 				});
 			}
@@ -1424,7 +1421,7 @@ export class ControlCenterModal extends Modal {
 		exportMethodsSection.createEl('h4', { text: 'How to export', cls: 'crc-mb-2' });
 
 		const exportMethods = exportMethodsSection.createEl('ul', { cls: 'crc-mb-2' });
-		exportMethods.createEl('li', { text: 'GEDCOM tab: Configure export options and export all people or a specific collection' });
+		exportMethods.createEl('li', { text: 'Import/Export tab: Configure export options and export all people or a specific collection' });
 		exportMethods.createEl('li', { text: 'Folder context menu: Right-click any folder → "Export GEDCOM from this folder"' });
 
 		// Export Features
@@ -1522,15 +1519,15 @@ export class ControlCenterModal extends Modal {
 		const tasks = [
 			{
 				icon: 'upload',
-				title: 'Import GEDCOM file',
-				description: 'Import genealogical data from Family Tree Maker, Gramps, or other tools',
-				tab: 'gedcom'
+				title: 'Import data (GEDCOM/CSV)',
+				description: 'Import genealogical data from Family Tree Maker, Gramps, spreadsheets, or other tools',
+				tab: 'import-export'
 			},
 			{
 				icon: 'download',
-				title: 'Export GEDCOM file',
-				description: 'Export your family tree to share with other genealogy software',
-				tab: 'gedcom'
+				title: 'Export data (GEDCOM/CSV)',
+				description: 'Export your family tree to share with other genealogy software or spreadsheets',
+				tab: 'import-export'
 			},
 			{
 				icon: 'git-branch',
@@ -3879,20 +3876,200 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
-	 * Show GEDCOM tab
+	 * State for Import/Export tab
 	 */
-	private showGedcomTab(): void {
+	private importExportFormat: 'gedcom' | 'csv' = 'gedcom';
+	private importExportDirection: 'import' | 'export' = 'import';
+
+	/**
+	 * Show combined Import/Export tab
+	 */
+	private showImportExportTab(): void {
 		const container = this.contentContainer;
 
-		// Import Card
-		const importCard = this.createCard({
+		// Header with format and direction selectors
+		const headerCard = this.createCard({
+			title: 'Import/Export data',
+			icon: 'file-text'
+		});
+		const headerContent = headerCard.querySelector('.crc-card__content') as HTMLElement;
+
+		// Format and direction selectors in a row
+		const selectorRow = headerContent.createDiv({ cls: 'crc-selector-row' });
+
+		// Format selector
+		new Setting(selectorRow)
+			.setName('Format')
+			.addDropdown(dropdown => dropdown
+				.addOption('gedcom', 'GEDCOM')
+				.addOption('csv', 'CSV')
+				.setValue(this.importExportFormat)
+				.onChange(value => {
+					this.importExportFormat = value as 'gedcom' | 'csv';
+					this.renderImportExportContent(contentContainer);
+				})
+			);
+
+		// Direction selector
+		new Setting(selectorRow)
+			.setName('Direction')
+			.addDropdown(dropdown => dropdown
+				.addOption('import', 'Import')
+				.addOption('export', 'Export')
+				.setValue(this.importExportDirection)
+				.onChange(value => {
+					this.importExportDirection = value as 'import' | 'export';
+					this.renderImportExportContent(contentContainer);
+				})
+			);
+
+		// Collapsible folder configuration section
+		this.renderFolderConfigSection(headerContent);
+
+		container.appendChild(headerCard);
+
+		// Content area for format-specific options
+		const contentContainer = container.createDiv({ cls: 'crc-import-export-content' });
+		this.renderImportExportContent(contentContainer);
+	}
+
+	/**
+	 * Render collapsible folder configuration section
+	 */
+	private renderFolderConfigSection(container: HTMLElement): void {
+		const section = container.createDiv({ cls: 'crc-folder-config-section' });
+
+		// Collapsible header
+		const header = section.createDiv({ cls: 'crc-folder-config-header' });
+		const chevron = header.createSpan({ cls: 'crc-folder-config-chevron' });
+		setIcon(chevron, 'chevron-right');
+		header.createSpan({ text: 'Configure folders', cls: 'crc-folder-config-title' });
+
+		// Current status summary
+		const statusText = this.getFolderStatusSummary();
+		const status = header.createSpan({ text: statusText, cls: 'crc-folder-config-status' });
+
+		// Collapsible content
+		const content = section.createDiv({ cls: 'crc-folder-config-content cr-hidden' });
+
+		// Toggle collapse
+		header.addEventListener('click', () => {
+			const isExpanded = !content.hasClass('cr-hidden');
+			if (isExpanded) {
+				content.addClass('cr-hidden');
+				setIcon(chevron, 'chevron-right');
+			} else {
+				content.removeClass('cr-hidden');
+				setIcon(chevron, 'chevron-down');
+			}
+		});
+
+		// People folder setting
+		new Setting(content)
+			.setName('People folder')
+			.setDesc('Where person notes are stored (main tree)')
+			.addText(text => text
+				.setPlaceholder('People')
+				.setValue(this.plugin.settings.peopleFolder)
+				.onChange(async value => {
+					this.plugin.settings.peopleFolder = value;
+					await this.plugin.saveSettings();
+					status.setText(this.getFolderStatusSummary());
+				})
+			);
+
+		// Staging folder setting
+		new Setting(content)
+			.setName('Staging folder')
+			.setDesc('Optional folder for reviewing imports before promoting to main')
+			.addText(text => text
+				.setPlaceholder('People-Staging')
+				.setValue(this.plugin.settings.stagingFolder || '')
+				.onChange(async value => {
+					this.plugin.settings.stagingFolder = value;
+					await this.plugin.saveSettings();
+					status.setText(this.getFolderStatusSummary());
+				})
+			);
+
+		// Staging isolation toggle (only show if staging folder is set)
+		if (this.plugin.settings.stagingFolder) {
+			new Setting(content)
+				.setName('Staging isolation')
+				.setDesc('Exclude staging folder from tree generation, duplicate detection, etc.')
+				.addToggle(toggle => toggle
+					.setValue(this.plugin.settings.enableStagingIsolation ?? true)
+					.onChange(async value => {
+						this.plugin.settings.enableStagingIsolation = value;
+						await this.plugin.saveSettings();
+					})
+				);
+		}
+
+		// Link to full settings
+		const settingsLink = content.createDiv({ cls: 'crc-folder-config-link' });
+		settingsLink.createSpan({ text: 'More options in ' });
+		const link = settingsLink.createEl('a', { text: 'plugin settings' });
+		link.addEventListener('click', (e) => {
+			e.preventDefault();
+			// Open Obsidian settings to this plugin
+			// @ts-ignore - accessing internal API
+			this.app.setting?.open();
+			// @ts-ignore
+			this.app.setting?.openTabById?.('canvas-roots');
+		});
+	}
+
+	/**
+	 * Get a summary of folder configuration status
+	 */
+	private getFolderStatusSummary(): string {
+		const peopleFolder = this.plugin.settings.peopleFolder;
+		const stagingFolder = this.plugin.settings.stagingFolder;
+
+		if (!peopleFolder) {
+			return '⚠ Not configured';
+		}
+
+		if (stagingFolder) {
+			return `${peopleFolder} + staging`;
+		}
+
+		return peopleFolder;
+	}
+
+	/**
+	 * Render the content area based on current format and direction selections
+	 */
+	private renderImportExportContent(container: HTMLElement): void {
+		container.empty();
+
+		if (this.importExportFormat === 'gedcom') {
+			if (this.importExportDirection === 'import') {
+				this.renderGedcomImport(container);
+			} else {
+				this.renderGedcomExport(container);
+			}
+		} else {
+			if (this.importExportDirection === 'import') {
+				this.renderCsvImport(container);
+			} else {
+				this.renderCsvExport(container);
+			}
+		}
+	}
+
+	/**
+	 * Render GEDCOM import options
+	 */
+	private renderGedcomImport(container: HTMLElement): void {
+		const card = this.createCard({
 			title: 'Import GEDCOM',
 			icon: 'upload'
 		});
+		const content = card.querySelector('.crc-card__content') as HTMLElement;
 
-		const importContent = importCard.querySelector('.crc-card__content') as HTMLElement;
-
-		importContent.createEl('p', {
+		content.createEl('p', {
 			text: 'Import creates person notes for all individuals in your GEDCOM file',
 			cls: 'crc-text-muted crc-mb-4'
 		});
@@ -3903,7 +4080,7 @@ export class ControlCenterModal extends Modal {
 
 		const stagingFolder = this.plugin.settings.stagingFolder;
 		if (stagingFolder) {
-			new Setting(importContent)
+			new Setting(content)
 				.setName('Import destination')
 				.setDesc('Where to create person notes')
 				.addDropdown(dropdown => dropdown
@@ -3920,7 +4097,7 @@ export class ControlCenterModal extends Modal {
 				);
 
 			// Subfolder input (hidden by default, shown when staging is selected)
-			const subfolderSetting = new Setting(importContent)
+			const subfolderSetting = new Setting(content)
 				.setName('Subfolder name')
 				.setDesc('Create imports in a subfolder for organization')
 				.addText(text => text
@@ -3934,13 +4111,13 @@ export class ControlCenterModal extends Modal {
 		}
 
 		// File selection button
-		const fileBtn = importContent.createEl('button', {
+		const fileBtn = content.createEl('button', {
 			cls: 'crc-btn crc-btn--primary crc-mt-4',
 			text: 'Select GEDCOM file'
 		});
 
 		// Create hidden file input
-		const fileInput = importContent.createEl('input', {
+		const fileInput = content.createEl('input', {
 			attr: {
 				type: 'file',
 				accept: '.ged,.gedcom',
@@ -3949,7 +4126,7 @@ export class ControlCenterModal extends Modal {
 		});
 
 		// Analysis results container (hidden initially)
-		const analysisContainer = importContent.createDiv({ cls: 'crc-gedcom-analysis cr-hidden' });
+		const analysisContainer = content.createDiv({ cls: 'crc-gedcom-analysis cr-hidden' });
 
 		fileBtn.addEventListener('click', () => {
 			fileInput.click();
@@ -3974,23 +4151,26 @@ export class ControlCenterModal extends Modal {
 			})();
 		});
 
-		container.appendChild(importCard);
+		container.appendChild(card);
+	}
 
-		// Export Card
-		const exportCard = this.createCard({
+	/**
+	 * Render GEDCOM export options
+	 */
+	private renderGedcomExport(container: HTMLElement): void {
+		const card = this.createCard({
 			title: 'Export GEDCOM',
 			icon: 'download'
 		});
+		const content = card.querySelector('.crc-card__content') as HTMLElement;
 
-		const exportContent = exportCard.querySelector('.crc-card__content') as HTMLElement;
-
-		exportContent.createEl('p', {
+		content.createEl('p', {
 			text: 'Export your family tree data to GEDCOM 5.5.1 format for sharing with other genealogy software',
 			cls: 'crc-text-muted crc-mb-4'
 		});
 
 		// Export options
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('People folder')
 			.setDesc('Folder containing person notes to export')
 			.addText(text => text
@@ -4001,7 +4181,7 @@ export class ControlCenterModal extends Modal {
 
 		// Collection filter option
 		let collectionFilter: string | undefined;
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Collection filter (optional)')
 			.setDesc('Only export people in a specific collection')
 			.addDropdown(async dropdown => {
@@ -4025,7 +4205,7 @@ export class ControlCenterModal extends Modal {
 		let branchDirection: 'ancestors' | 'descendants' | undefined;
 		let branchIncludeSpouses = false;
 
-		const branchSetting = new Setting(exportContent)
+		new Setting(content)
 			.setName('Branch filter (optional)')
 			.setDesc('Export only ancestors or descendants of a specific person')
 			.addButton(btn => {
@@ -4040,7 +4220,7 @@ export class ControlCenterModal extends Modal {
 					});
 			});
 
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Branch direction')
 			.setDesc('Include ancestors (up) or descendants (down)')
 			.addDropdown(dropdown => {
@@ -4052,7 +4232,7 @@ export class ControlCenterModal extends Modal {
 				});
 			});
 
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Include spouses in descendants')
 			.setDesc('When exporting descendants, also include their spouses')
 			.addToggle(toggle => toggle
@@ -4064,7 +4244,7 @@ export class ControlCenterModal extends Modal {
 
 		// Include collection codes option
 		let includeCollectionCodes = true;
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Include collection codes')
 			.setDesc('Preserve Canvas Roots collection data in export')
 			.addToggle(toggle => toggle
@@ -4076,7 +4256,7 @@ export class ControlCenterModal extends Modal {
 
 		// Export file name
 		let exportFileName = 'family-tree';
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Export file name')
 			.setDesc('Name for the exported .ged file (without extension)')
 			.addText(text => text
@@ -4088,7 +4268,7 @@ export class ControlCenterModal extends Modal {
 			);
 
 		// Export button
-		const exportBtn = exportContent.createEl('button', {
+		const exportBtn = content.createEl('button', {
 			cls: 'crc-btn crc-btn--primary crc-mt-4',
 			text: 'Export to GEDCOM'
 		});
@@ -4106,24 +4286,20 @@ export class ControlCenterModal extends Modal {
 			})();
 		});
 
-		container.appendChild(exportCard);
+		container.appendChild(card);
 	}
 
 	/**
-	 * Show CSV tab
+	 * Render CSV import options
 	 */
-	private showCsvTab(): void {
-		const container = this.contentContainer;
-
-		// Import Card
-		const importCard = this.createCard({
+	private renderCsvImport(container: HTMLElement): void {
+		const card = this.createCard({
 			title: 'Import CSV',
 			icon: 'upload'
 		});
+		const content = card.querySelector('.crc-card__content') as HTMLElement;
 
-		const importContent = importCard.querySelector('.crc-card__content') as HTMLElement;
-
-		importContent.createEl('p', {
+		content.createEl('p', {
 			text: 'Import person data from a CSV/spreadsheet file. Column mapping is auto-detected.',
 			cls: 'crc-text-muted crc-mb-4'
 		});
@@ -4134,7 +4310,7 @@ export class ControlCenterModal extends Modal {
 
 		const csvStagingFolder = this.plugin.settings.stagingFolder;
 		if (csvStagingFolder) {
-			new Setting(importContent)
+			new Setting(content)
 				.setName('Import destination')
 				.setDesc('Where to create person notes')
 				.addDropdown(dropdown => dropdown
@@ -4151,7 +4327,7 @@ export class ControlCenterModal extends Modal {
 				);
 
 			// Subfolder input (hidden by default, shown when staging is selected)
-			const csvSubfolderSetting = new Setting(importContent)
+			const csvSubfolderSetting = new Setting(content)
 				.setName('Subfolder name')
 				.setDesc('Create imports in a subfolder for organization')
 				.addText(text => text
@@ -4165,13 +4341,13 @@ export class ControlCenterModal extends Modal {
 		}
 
 		// File selection button
-		const fileBtn = importContent.createEl('button', {
+		const fileBtn = content.createEl('button', {
 			cls: 'crc-btn crc-btn--primary crc-mt-4',
 			text: 'Select CSV file'
 		});
 
 		// Create hidden file input
-		const fileInput = importContent.createEl('input', {
+		const fileInput = content.createEl('input', {
 			attr: {
 				type: 'file',
 				accept: '.csv,.tsv,.txt',
@@ -4180,7 +4356,7 @@ export class ControlCenterModal extends Modal {
 		});
 
 		// Analysis results container (hidden initially)
-		const analysisContainer = importContent.createDiv({ cls: 'crc-csv-analysis cr-hidden' });
+		const analysisContainer = content.createDiv({ cls: 'crc-csv-analysis cr-hidden' });
 
 		fileBtn.addEventListener('click', () => {
 			fileInput.click();
@@ -4205,23 +4381,26 @@ export class ControlCenterModal extends Modal {
 			})();
 		});
 
-		container.appendChild(importCard);
+		container.appendChild(card);
+	}
 
-		// Export Card
-		const exportCard = this.createCard({
+	/**
+	 * Render CSV export options
+	 */
+	private renderCsvExport(container: HTMLElement): void {
+		const card = this.createCard({
 			title: 'Export CSV',
 			icon: 'download'
 		});
+		const content = card.querySelector('.crc-card__content') as HTMLElement;
 
-		const exportContent = exportCard.querySelector('.crc-card__content') as HTMLElement;
-
-		exportContent.createEl('p', {
+		content.createEl('p', {
 			text: 'Export your family tree data to CSV format for use in spreadsheet applications',
 			cls: 'crc-text-muted crc-mb-4'
 		});
 
 		// Export options
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('People folder')
 			.setDesc('Folder containing person notes to export')
 			.addText(text => text
@@ -4232,7 +4411,7 @@ export class ControlCenterModal extends Modal {
 
 		// Collection filter option
 		let collectionFilter: string | undefined;
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Collection filter (optional)')
 			.setDesc('Only export people in a specific collection')
 			.addDropdown(async dropdown => {
@@ -4256,7 +4435,7 @@ export class ControlCenterModal extends Modal {
 		let csvBranchDirection: 'ancestors' | 'descendants' | undefined;
 		let csvBranchIncludeSpouses = false;
 
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Branch filter (optional)')
 			.setDesc('Export only ancestors or descendants of a specific person')
 			.addButton(btn => {
@@ -4271,7 +4450,7 @@ export class ControlCenterModal extends Modal {
 					});
 			});
 
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Branch direction')
 			.setDesc('Include ancestors (up) or descendants (down)')
 			.addDropdown(dropdown => {
@@ -4283,7 +4462,7 @@ export class ControlCenterModal extends Modal {
 				});
 			});
 
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Include spouses in descendants')
 			.setDesc('When exporting descendants, also include their spouses')
 			.addToggle(toggle => toggle
@@ -4295,7 +4474,7 @@ export class ControlCenterModal extends Modal {
 
 		// Export file name
 		let exportFileName = 'family-tree';
-		new Setting(exportContent)
+		new Setting(content)
 			.setName('Export file name')
 			.setDesc('Name for the exported .csv file (without extension)')
 			.addText(text => text
@@ -4307,7 +4486,7 @@ export class ControlCenterModal extends Modal {
 			);
 
 		// Export button
-		const exportBtn = exportContent.createEl('button', {
+		const exportBtn = content.createEl('button', {
 			cls: 'crc-btn crc-btn--primary crc-mt-4',
 			text: 'Export to CSV'
 		});
@@ -4324,7 +4503,7 @@ export class ControlCenterModal extends Modal {
 			})();
 		});
 
-		container.appendChild(exportCard);
+		container.appendChild(card);
 	}
 
 	/**
@@ -4637,17 +4816,11 @@ export class ControlCenterModal extends Modal {
 
 			// Quick link to import tabs
 			const linkContainer = headerContent.createDiv({ cls: 'crc-staging-links' });
-			const gedcomLink = linkContainer.createEl('button', {
-				text: 'Import GEDCOM',
+			const importLink = linkContainer.createEl('button', {
+				text: 'Go to Import/Export',
 				cls: 'mod-cta'
 			});
-			gedcomLink.addEventListener('click', () => this.switchTab('gedcom'));
-
-			const csvLink = linkContainer.createEl('button', {
-				text: 'Import CSV',
-				cls: 'crc-btn-secondary'
-			});
-			csvLink.addEventListener('click', () => this.switchTab('csv'));
+			importLink.addEventListener('click', () => this.switchTab('import-export'));
 		} else {
 			// Show staging folder info
 			const infoEl = headerContent.createDiv({ cls: 'crc-staging-info' });

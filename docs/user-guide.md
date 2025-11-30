@@ -716,13 +716,15 @@ Canvas Roots provides full round-trip support for GEDCOM 5.5.1 format, allowing 
 ### Importing a GEDCOM File
 
 **Using Control Center:**
-1. Open Control Center → Data Entry tab
-2. Click **Import GEDCOM**
-3. Select your `.ged` file
-4. Configure import options:
+1. Open Control Center → **Import/Export** tab
+2. Set **Format** to "GEDCOM" and **Direction** to "Import"
+3. If folders aren't configured, expand **Configure folders** to set your people folder
+4. Click **Import GEDCOM**
+5. Select your `.ged` file
+6. Configure import options:
    - Target folder for person notes
    - UUID handling (preserve or generate new)
-5. Click **Import**
+7. Click **Import**
 
 **What Happens:**
 - Creates one Markdown note per individual
@@ -773,11 +775,12 @@ Export your family data back to GEDCOM format for sharing with other genealogy s
 4. Save the `.ged` file
 
 **Using Control Center:**
-1. Open Control Center → Data Entry tab
-2. Click **Export GEDCOM**
-3. Select the folder to export
-4. Configure export options
-5. Click **Export**
+1. Open Control Center → **Import/Export** tab
+2. Set **Format** to "GEDCOM" and **Direction** to "Export"
+3. Click **Export GEDCOM**
+4. Select the folder to export
+5. Configure export options
+6. Click **Export**
 
 **What Gets Exported:**
 - All person notes in the selected folder
@@ -814,17 +817,19 @@ Canvas Roots includes optional privacy controls for protecting living persons in
 
 ## CSV Import/Export
 
-Canvas Roots supports CSV and TSV file formats for easy data exchange with spreadsheets and other applications. The CSV tab in Control Center provides a familiar interface alongside GEDCOM import/export.
+Canvas Roots supports CSV and TSV file formats for easy data exchange with spreadsheets and other applications. The Import/Export tab in Control Center provides a unified interface for both GEDCOM and CSV operations.
 
 ### Importing from CSV/TSV
 
 **Using Control Center:**
-1. Open Control Center → Data Entry tab → CSV sub-tab
-2. Click **Import CSV**
-3. Select your `.csv` or `.tsv` file
-4. Review the auto-detected column mapping
-5. Adjust mappings if needed
-6. Click **Import**
+1. Open Control Center → **Import/Export** tab
+2. Set **Format** to "CSV" and **Direction** to "Import"
+3. If folders aren't configured, expand **Configure folders** to set your people folder
+4. Click **Import CSV**
+5. Select your `.csv` or `.tsv` file
+6. Review the auto-detected column mapping
+7. Adjust mappings if needed
+8. Click **Import**
 
 **Auto-Detected Column Mapping:**
 
@@ -853,12 +858,13 @@ You can manually adjust any mapping before importing if the auto-detection doesn
 Export your family data to CSV format for use in spreadsheets or sharing with others.
 
 **Using Control Center:**
-1. Open Control Center → Data Entry tab → CSV sub-tab
-2. Click **Export CSV**
-3. Select the folder to export
-4. Configure columns to include
-5. Enable privacy protection if needed
-6. Click **Export**
+1. Open Control Center → **Import/Export** tab
+2. Set **Format** to "CSV" and **Direction** to "Export"
+3. Click **Export CSV**
+4. Select the folder to export
+5. Configure columns to include
+6. Enable privacy protection if needed
+7. Click **Export**
 
 **Configurable Columns:**
 
@@ -889,7 +895,7 @@ Same privacy options as GEDCOM export:
 
 ## Selective Branch Export
 
-Export specific portions of your family tree rather than the entire dataset. Available in both GEDCOM and CSV export tabs.
+Export specific portions of your family tree rather than the entire dataset. Available for both GEDCOM and CSV formats in the Import/Export tab.
 
 ### Branch Types
 
@@ -908,21 +914,23 @@ Export only the descendants (children, grandchildren, etc.) of a selected person
 ### How to Use Selective Export
 
 **In GEDCOM Export:**
-1. Open Control Center → Data Entry tab → GEDCOM sub-tab
-2. Click **Export GEDCOM**
-3. Select "Branch export" mode
-4. Choose a root person for the branch
-5. Select branch type (ancestors or descendants)
-6. Optionally enable "Include spouses" for descendant exports
-7. Click **Export**
+1. Open Control Center → **Import/Export** tab
+2. Set **Format** to "GEDCOM" and **Direction** to "Export"
+3. Click **Export GEDCOM**
+4. Select "Branch export" mode
+5. Choose a root person for the branch
+6. Select branch type (ancestors or descendants)
+7. Optionally enable "Include spouses" for descendant exports
+8. Click **Export**
 
 **In CSV Export:**
-1. Open Control Center → Data Entry tab → CSV sub-tab
-2. Click **Export CSV**
-3. Select "Branch export" mode
-4. Choose a root person and branch type
-5. Configure other options as needed
-6. Click **Export**
+1. Open Control Center → **Import/Export** tab
+2. Set **Format** to "CSV" and **Direction** to "Export"
+3. Click **Export CSV**
+4. Select "Branch export" mode
+5. Choose a root person and branch type
+6. Configure other options as needed
+7. Click **Export**
 
 ### Combining with Collection Filtering
 
@@ -1097,19 +1105,28 @@ The staging workflow provides a safe way to process imported data before incorpo
 
 ### Setting Up Staging
 
+**Option 1: From Control Center (Recommended)**
+1. Open Control Center → **Import/Export** tab
+2. Expand the **Configure folders** section at the top
+3. Set your **People folder** (where main tree notes live)
+4. Set a **Staging folder** path (e.g., `People-Staging`)
+5. Enable **Staging isolation** to exclude staging from normal operations
+
+**Option 2: From Plugin Settings**
 1. Go to **Settings → Canvas Roots → Data**
-2. Set a **Staging folder** path (e.g., `People-Staging`)
-3. Enable **Staging isolation** to exclude staging from normal operations
+2. Set a **Staging folder** path
+3. Enable **Staging isolation**
 
 When staging is configured, imported data is kept separate from your main tree until you're ready to promote it.
 
 ### Importing to Staging
 
-1. Open Control Center → **Data Entry** tab
-2. Select **Import destination**: choose "Staging" instead of "Main tree"
-3. Optionally specify a **Subfolder name** for this import batch (e.g., `smith-gedcom-2024`)
-4. Import your GEDCOM or CSV file
-5. Data is created in the staging folder, isolated from your main tree
+1. Open Control Center → **Import/Export** tab
+2. Select **Format** (GEDCOM or CSV) and **Direction** (Import)
+3. Select **Import destination**: choose "Staging" instead of "Main tree"
+4. Optionally specify a **Subfolder name** for this import batch (e.g., `smith-gedcom-2024`)
+5. Import your GEDCOM or CSV file
+6. Data is created in the staging folder, isolated from your main tree
 
 ### Using the Staging Tab
 
