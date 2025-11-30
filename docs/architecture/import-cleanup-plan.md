@@ -587,7 +587,7 @@ export class MergeService {
 2. [x] Implement merge logic with relationship updates
 3. [x] Build `MergeWizardModal` with field selection UI
 4. [x] Add "Merge" button to CrossImportReviewModal for "same person" matches
-5. [ ] Add merge option to duplicate detection modal
+5. [x] Add merge option to duplicate detection modal
 6. [ ] Test merge workflow end-to-end
 
 ---

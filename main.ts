@@ -159,7 +159,7 @@ export default class CanvasRootsPlugin extends Plugin {
 			name: 'Find duplicate people',
 			callback: async () => {
 				const { DuplicateDetectionModal } = await import('./src/ui/duplicate-detection-modal');
-				new DuplicateDetectionModal(this.app).open();
+				new DuplicateDetectionModal(this.app, this.settings).open();
 			}
 		});
 

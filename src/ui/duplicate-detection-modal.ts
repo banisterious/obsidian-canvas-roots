@@ -11,6 +11,8 @@ import {
 	DuplicateMatch,
 	DuplicateDetectionOptions
 } from '../core/duplicate-detection';
+import { MergeWizardModal } from './merge-wizard-modal';
+import type { CanvasRootsSettings } from '../settings';
 import { getLogger } from '../core/logging';
 
 const logger = getLogger('DuplicateModal');
@@ -24,7 +26,10 @@ export class DuplicateDetectionModal extends Modal {
 	private service: DuplicateDetectionService;
 	private resultsContainer: HTMLElement | null = null;
 
-	constructor(app: App) {
+	constructor(
+		app: App,
+		private settings?: CanvasRootsSettings
+	) {
 		super(app);
 		this.service = new DuplicateDetectionService(app);
 	}
@@ -282,6 +287,18 @@ export class DuplicateDetectionModal extends Modal {
 
 		// Actions
 		const actionsEl = itemEl.createDiv({ cls: 'cr-duplicate-actions' });
+
+		// Merge button (only if settings available)
+		if (this.settings) {
+			const mergeBtn = actionsEl.createEl('button', {
+				cls: 'mod-cta',
+				text: 'Merge'
+			});
+			mergeBtn.addEventListener('click', () => {
+				this.openMergeWizard(match, itemEl);
+			});
+		}
+
 		const dismissBtn = actionsEl.createEl('button', {
 			cls: 'cr-btn-secondary',
 			text: 'Not a duplicate'
@@ -298,5 +315,27 @@ export class DuplicateDetectionModal extends Modal {
 	 */
 	private async openPersonNote(file: TFile): Promise<void> {
 		await this.app.workspace.getLeaf(false).openFile(file);
+	}
+
+	/**
+	 * Open merge wizard for a duplicate match
+	 */
+	private openMergeWizard(match: DuplicateMatch, itemEl: HTMLElement): void {
+		if (!this.settings) return;
+
+		// Use person1 as "staging" (source to merge from) and person2 as "main" (target)
+		// User can decide which is which - the UI will show both
+		const mergeModal = new MergeWizardModal(
+			this.app,
+			this.settings,
+			match.person1.file,
+			match.person2.file,
+			() => {
+				// After merge, remove the item from the list
+				itemEl.remove();
+				this.matches = this.matches.filter(m => m !== match);
+			}
+		);
+		mergeModal.open();
 	}
 }
