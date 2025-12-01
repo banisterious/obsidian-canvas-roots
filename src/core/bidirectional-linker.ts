@@ -143,7 +143,7 @@ export class BidirectionalLinker {
 
 			// Sync spouse relationship(s)
 			// Handle both simple spouse/spouse_id and indexed spouse1/spouse1_id format
-			const spousesToSync: Array<{link: string, index?: number}> = [];
+			const spousesToSync: Array<{link: unknown, index?: number}> = [];
 
 			// Check for simple spouse property
 			if (frontmatter.spouse) {
@@ -235,9 +235,20 @@ export class BidirectionalLinker {
 	/**
 	 * Extract spouse links as array from spouse property (handles both single and array format)
 	 */
-	private extractSpouseLinks(spouse: string | string[] | undefined): string[] {
+	private extractSpouseLinks(spouse: unknown): string[] {
 		if (!spouse) return [];
-		return Array.isArray(spouse) ? spouse : [spouse];
+		if (typeof spouse === 'string') return [spouse];
+		if (Array.isArray(spouse)) {
+			const result: string[] = [];
+			for (const item of spouse) {
+				const link = this.extractStringLink(item);
+				if (link) result.push(link);
+			}
+			return result;
+		}
+		// Handle object with link property
+		const link = this.extractStringLink(spouse);
+		return link ? [link] : [];
 	}
 
 	/**
@@ -273,7 +284,7 @@ export class BidirectionalLinker {
 	 * Ensures parent has this person in their children array + children_id array
 	 */
 	private async syncParentChild(
-		parentLink: string,
+		parentLink: unknown,
 		childFile: TFile,
 		childName: string,
 		relationshipType: 'father' | 'mother'
@@ -355,7 +366,7 @@ export class BidirectionalLinker {
 	 * @param spouseIndex Optional index for indexed spouse properties (spouse1, spouse2, etc.)
 	 */
 	private async syncSpouse(
-		spouseLink: string,
+		spouseLink: unknown,
 		personFile: TFile,
 		personName: string,
 		personCrId: string,
@@ -482,7 +493,7 @@ export class BidirectionalLinker {
 	 * Remove a child from a parent's children array (handles deletion sync)
 	 */
 	private async removeChildFromParent(
-		parentLink: string,
+		parentLink: unknown,
 		childFile: TFile,
 		childName: string,
 		childCrId: string
@@ -513,7 +524,7 @@ export class BidirectionalLinker {
 	 * Remove spouse link from the other spouse's note (handles deletion sync)
 	 */
 	private async removeSpouseLink(
-		spouseLink: string,
+		spouseLink: unknown,
 		personFile: TFile,
 		personName: string,
 		personCrId: string
@@ -573,11 +584,45 @@ export class BidirectionalLinker {
 	}
 
 	/**
+	 * Extract a string link from a frontmatter value that might be string, array, or object
+	 * GEDCOM imports may create unexpected data types
+	 */
+	private extractStringLink(value: unknown): string | null {
+		if (typeof value === 'string') {
+			return value;
+		}
+		if (Array.isArray(value) && value.length > 0) {
+			// Use first element if it's a string
+			if (typeof value[0] === 'string') {
+				return value[0];
+			}
+			// Handle array of objects with link property
+			if (value[0] && typeof value[0] === 'object' && 'link' in value[0]) {
+				return this.extractStringLink(value[0].link);
+			}
+		}
+		if (value && typeof value === 'object' && 'link' in value) {
+			return this.extractStringLink((value as { link: unknown }).link);
+		}
+		return null;
+	}
+
+	/**
 	 * Resolve a wikilink to a TFile
 	 */
-	private resolveLink(link: string, sourceFile: TFile): TFile | null {
+	private resolveLink(link: string | unknown, sourceFile: TFile): TFile | null {
+		// Extract string from potentially complex value
+		const stringLink = this.extractStringLink(link);
+		if (!stringLink) {
+			logger.warn('bidirectional-linking', 'Could not extract string link', {
+				linkType: typeof link,
+				linkValue: JSON.stringify(link)?.substring(0, 100)
+			});
+			return null;
+		}
+
 		// Remove wikilink brackets and any aliases
-		const cleanLink = link.replace(/\[\[|\]\]/g, '').split('|')[0].trim();
+		const cleanLink = stringLink.replace(/\[\[|\]\]/g, '').split('|')[0].trim();
 
 		// Try to resolve the link
 		const linkedFile = this.app.metadataCache.getFirstLinkpathDest(cleanLink, sourceFile.path);

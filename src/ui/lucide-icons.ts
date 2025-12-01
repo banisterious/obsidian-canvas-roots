@@ -65,7 +65,9 @@ export type LucideIconName =
 	| 'user-minus'     // Remove person
 	| 'table-2'        // CSV/spreadsheet
 	| 'package'        // Staging/import packages
-	| 'shield-check';  // Data quality
+	| 'shield-check'   // Data quality
+	| 'layers'         // Layers/generations
+	| 'arrow-up-down'; // Bidirectional/ancestor-descendant
 
 /**
  * Tab configuration for Control Center navigation

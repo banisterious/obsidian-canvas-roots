@@ -59,6 +59,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Direction dropdown: choose Import or Export
   - Inline folder configuration section for quick setup
 
+- **Split Canvas Wizard**: Multi-step wizard for splitting large family trees
+  - Split by generation (configurable generations per canvas)
+  - Split by branch (paternal/maternal lines)
+  - Single lineage extraction (direct line between two people)
+  - Split by collection (one canvas per user-defined collection)
+  - Ancestor + descendant canvas pairs
+  - **Split by surname** - Extract people by surname even without established connections
+    - Scrollable list of surnames sorted by frequency
+    - Multi-surname selection
+    - Options: include spouses, match maiden names, handle spelling variants
+    - Separate canvas per surname or combined output
+  - Preview showing expected canvas count and people
+  - Access via canvas context menu → Canvas Roots → Split canvas wizard
+
 ### Changed
 
 - Promote operations now skip files marked as "same person" (duplicates should be merged instead)

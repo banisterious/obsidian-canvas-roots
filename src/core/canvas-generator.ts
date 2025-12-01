@@ -15,6 +15,7 @@ import type { ArrowStyle, SpouseEdgeLabelFormat } from '../settings';
 import type { SpouseRelationship } from '../models/person';
 import type { StyleOverrides } from './canvas-style-overrides';
 import { mergeStyleSettings } from './canvas-style-overrides';
+import type { CanvasNavigationMetadata } from './canvas-navigation';
 
 const logger = getLogger('CanvasGenerator');
 
@@ -94,6 +95,12 @@ export interface CanvasRootsMetadata {
 	 * Preserved during canvas regeneration.
 	 */
 	styleOverrides?: StyleOverrides;
+
+	/**
+	 * Navigation and relationship metadata (optional)
+	 * Tracks relationships to other canvases, navigation nodes, and split history.
+	 */
+	navigation?: CanvasNavigationMetadata;
 }
 
 /**

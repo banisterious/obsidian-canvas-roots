@@ -304,11 +304,13 @@ Tools for consolidating multiple GEDCOM files, cleaning up messy imports, and im
 - Relationship reconciliation when merging people with different connections
 - Merge available from both cross-import review and duplicate detection modals
 
-**Phase 4 - Data Quality Tools:** 🔜 Planned
-- Data quality report: missing dates, orphaned records, incomplete relationships
-- Batch operations: normalize name formats, standardize date formats
-- Inconsistency detection (e.g., child born before parent)
-- Completeness scoring per person
+**Phase 4 - Data Quality Tools:** ✅ Complete
+- Data quality report with quality score (0-100)
+- Issue detection across 5 categories: date inconsistencies, relationship problems, missing data, format issues, orphan references
+- 15+ specific issue types (birth after death, circular references, unrealistic ages, etc.)
+- Batch normalization: date formats, gender values, orphan reference cleanup
+- Preview changes before applying batch operations
+- Data Quality tab in Control Center with filtering and navigation
 
 See [import-cleanup-plan.md](architecture/import-cleanup-plan.md) for implementation details.
 
@@ -464,11 +466,31 @@ A dedicated Obsidian leaf view that renders the full family-chart library intera
 
 ### Canvas Navigation & Organization
 
-- Split large canvases by branch, generation, or geography
-- Linked branch canvases with navigation nodes
-- Ancestor/descendant canvas linking for same root person
-- Canvas-to-canvas file nodes for easy navigation
+**Status:** 🚧 In Development
+
+Tools for splitting large trees into manageable segments and linking them together.
+
+**Implemented Features:**
+- ✅ Split wizard modal with multi-step configuration flow
+- ✅ Split by generation (configurable generations per canvas)
+- ✅ Split by branch (paternal/maternal lines)
+- ✅ Single lineage extraction (direct line between two people)
+- ✅ Split by collection (one canvas per user-defined collection)
+- ✅ Ancestor + descendant canvas pairs for same root person
+- ✅ **Split by surname** - Extract all people with a given surname, even without established connections
+  - Scrollable list of available surnames sorted by frequency
+  - Multi-surname selection for combined extraction
+  - Options: include spouses, match maiden names, handle spelling variants
+  - Separate canvas per surname or combined output
+- ✅ Preview functionality showing expected canvas count and people
+- ✅ Navigation node infrastructure for linking canvases
+
+**Planned Features (Canvas Generation):**
+- Actual canvas file generation from wizard configuration
+- Navigation nodes linking between related canvases
 - Master overview canvases with links to detailed views
+
+See [canvas-navigation-plan.md](architecture/canvas-navigation-plan.md) for implementation details.
 
 ### World-Building Features
 

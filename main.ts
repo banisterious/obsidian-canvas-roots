@@ -26,6 +26,7 @@ import { RelationshipHistoryModal } from './src/ui/relationship-history-modal';
 import { FamilyChartView, VIEW_TYPE_FAMILY_CHART } from './src/ui/views/family-chart-view';
 import { TreePreviewRenderer } from './src/ui/tree-preview';
 import { FolderFilterService } from './src/core/folder-filter';
+import { SplitWizardModal } from './src/ui/split-wizard-modal';
 
 const logger = getLogger('CanvasRootsPlugin');
 
@@ -282,6 +283,15 @@ export default class CanvasRootsPlugin extends Plugin {
 			}
 		});
 
+		// Add command: Split Canvas Wizard
+		this.addCommand({
+			id: 'split-canvas-wizard',
+			name: 'Split canvas wizard',
+			callback: () => {
+				new SplitWizardModal(this.app, this.settings, this.folderFilter ?? undefined).open();
+			}
+		});
+
 		// Add context menu items for person notes, canvas files, and folders
 		this.registerEvent(
 			this.app.workspace.on('file-menu', (menu, file) => {
@@ -388,6 +398,15 @@ export default class CanvasRootsPlugin extends Plugin {
 								});
 							});
 
+							submenu.addItem((subItem) => {
+								subItem
+									.setTitle('Split canvas wizard')
+									.setIcon('layers')
+									.onClick(() => {
+										new SplitWizardModal(this.app, this.settings, this.folderFilter ?? undefined).open();
+									});
+							});
+
 							submenu.addSeparator();
 
 							submenu.addItem((subItem) => {
@@ -475,6 +494,15 @@ export default class CanvasRootsPlugin extends Plugin {
 								.setIcon('file-text')
 								.onClick(async () => {
 									await this.exportCanvasAsImage(file, 'pdf');
+								});
+						});
+
+						menu.addItem((item) => {
+							item
+								.setTitle('Canvas Roots: Split canvas wizard')
+								.setIcon('layers')
+								.onClick(() => {
+									new SplitWizardModal(this.app, this.settings, this.folderFilter ?? undefined).open();
 								});
 						});
 					}

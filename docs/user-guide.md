@@ -30,7 +30,8 @@ This guide covers the complete workflow for using Canvas Roots to create and mai
 19. [Folder Statistics](#folder-statistics)
 20. [Advanced Styling](#advanced-styling)
 21. [Excalidraw Export](#excalidraw-export)
-22. [Tips & Best Practices](#tips--best-practices)
+22. [Split Canvas Wizard](#split-canvas-wizard)
+23. [Tips & Best Practices](#tips--best-practices)
 
 ---
 
@@ -1640,6 +1641,87 @@ Once exported, you can:
 - Check that all person nodes have valid relationships
 
 For more help, see [troubleshooting section](#troubleshooting) or open an issue on [GitHub](https://github.com/banisterious/obsidian-canvas-roots/issues).
+
+---
+
+## Split Canvas Wizard
+
+The Split Canvas Wizard helps you plan how to split large family trees into manageable segments. This is useful when you have a tree that's too large to view comfortably on a single canvas, or when you want to focus on specific family lines.
+
+### Accessing the Wizard
+
+1. Right-click on any canvas file
+2. Select **Canvas Roots** → **Split canvas wizard**
+
+### Split Methods
+
+The wizard offers six different split methods:
+
+#### By Generation
+Split your tree into separate canvases based on generation ranges:
+- Configure how many generations per canvas
+- Choose direction: ancestors (older generations first) or descendants (younger first)
+- Useful for very deep trees (10+ generations)
+
+#### By Branch
+Separate paternal and maternal lines:
+- Create separate canvases for father's ancestors vs mother's ancestors
+- Optionally include descendant branches
+- Useful for focusing on specific family lines
+
+#### Single Lineage
+Extract a direct line between two specific people:
+- Select a start person (e.g., oldest known ancestor)
+- Select an end person (e.g., yourself or youngest descendant)
+- Optionally include spouses of people on the line
+- Optionally include siblings at each generation
+- Useful for surname studies or lineage documentation
+
+#### By Collection
+Create one canvas per user-defined collection:
+- Select which collections to include
+- Bridge people (those in multiple collections) can appear on multiple canvases
+- Useful for multi-family research projects
+
+#### Ancestor + Descendant Pair
+Generate linked ancestor and descendant canvases for the same person:
+- Select a root person as the pivot point
+- Configure maximum generations in each direction
+- Optionally include spouses
+- Creates two linked canvases plus optional overview
+
+#### By Surname
+Extract all people with a given surname, even without established family connections:
+- Scrollable list shows all surnames sorted by frequency
+- Select one or more surnames to extract
+- **Include spouses**: Also include spouses who have different surnames
+- **Include maiden names**: Match people whose maiden name matches (from frontmatter)
+- **Handle name variants**: Treat similar spellings as the same surname (e.g., Smith/Smythe)
+- **Separate canvas per surname**: Create one canvas per surname, or combine all into one
+
+This is particularly useful for:
+- Consolidating unconnected GEDCOM imports that share surnames
+- Surname studies when family connections aren't fully established
+- Research projects focused on a specific surname
+- Extracting people from different family branches who share a name
+
+### Output Options
+
+All split methods share common output options:
+
+- **Output folder**: Where to save generated canvases
+- **Filename prefix**: Prefix for canvas file names
+- **Include navigation nodes**: Add portal nodes linking between canvases
+- **Generate overview canvas**: Create a master canvas showing relationships
+
+### Preview
+
+The final step shows a preview of what will be generated:
+- Number of canvases to be created
+- Total people included
+- List of canvas files with person counts
+
+**Note:** Canvas generation is planned for a future update. Currently, the wizard provides planning and preview functionality.
 
 ---
 
