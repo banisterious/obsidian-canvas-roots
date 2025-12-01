@@ -430,3 +430,372 @@ export const DEFAULT_LINEAGE_OPTIONS: Partial<LineageOptions> = {
 	includeSiblings: false,
 	lineageDirection: 'auto'
 };
+
+/**
+ * Canvas edge structure (matches Obsidian Canvas spec)
+ */
+interface CanvasEdge {
+	id: string;
+	fromNode: string;
+	fromSide?: 'top' | 'right' | 'bottom' | 'left';
+	fromEnd?: 'none' | 'arrow';
+	toNode: string;
+	toSide?: 'top' | 'right' | 'bottom' | 'left';
+	toEnd?: 'none' | 'arrow';
+	color?: string;
+	label?: string;
+}
+
+/**
+ * Generic canvas node (union of text and file nodes)
+ */
+type CanvasNode = CanvasTextNode | CanvasFileNode;
+
+/**
+ * Canvas data structure
+ */
+interface CanvasData {
+	nodes: CanvasNode[];
+	edges: CanvasEdge[];
+	metadata?: {
+		version?: string;
+		frontmatter?: Record<string, unknown>;
+	};
+}
+
+/**
+ * Result of a prune operation
+ */
+export interface PruneResult {
+	/** Nodes that were removed */
+	removedNodes: CanvasNode[];
+
+	/** Edges that were removed */
+	removedEdges: CanvasEdge[];
+
+	/** Navigation node that was added (if requested) */
+	navigationNode?: CanvasTextNode;
+
+	/** Edges from remaining nodes to navigation node */
+	navigationEdges?: CanvasEdge[];
+
+	/** Centroid position of removed nodes */
+	centroid: { x: number; y: number };
+
+	/** Nodes that remain but had edges to removed nodes */
+	affectedNodes: string[];
+}
+
+/**
+ * Information about a pruned section for tracking
+ */
+export interface PrunedSectionInfo {
+	/** When the prune occurred */
+	timestamp: number;
+
+	/** Path to the canvas containing the extracted content */
+	extractedToCanvas: string;
+
+	/** cr_ids of people that were removed */
+	removedCrIds: string[];
+
+	/** Label for the pruned section */
+	label: string;
+
+	/** Navigation node ID in the source canvas */
+	navigationNodeId?: string;
+}
+
+/**
+ * Service for pruning nodes from a canvas and adding navigation nodes
+ */
+export class CanvasPruneService {
+	private navigationGenerator: NavigationNodeGenerator;
+
+	constructor() {
+		this.navigationGenerator = new NavigationNodeGenerator();
+	}
+
+	/**
+	 * Remove nodes from a canvas by their IDs
+	 *
+	 * @param canvas - The canvas data to modify
+	 * @param nodeIds - IDs of nodes to remove
+	 * @param options - Prune options
+	 * @returns Result containing removed nodes and any added navigation elements
+	 */
+	pruneNodes(
+		canvas: CanvasData,
+		nodeIds: Set<string>,
+		options: {
+			addNavigationNode: boolean;
+			targetCanvas?: string;
+			label?: string;
+			direction?: NavigationDirection;
+			info?: string;
+		}
+	): PruneResult {
+		// Separate nodes into removed and remaining
+		const removedNodes: CanvasNode[] = [];
+		const remainingNodes: CanvasNode[] = [];
+
+		for (const node of canvas.nodes) {
+			if (nodeIds.has(node.id)) {
+				removedNodes.push(node);
+			} else {
+				remainingNodes.push(node);
+			}
+		}
+
+		// Identify edges to remove and edges that cross the boundary
+		const removedEdges: CanvasEdge[] = [];
+		const remainingEdges: CanvasEdge[] = [];
+		const boundaryEdges: CanvasEdge[] = []; // Edges between removed and remaining nodes
+
+		for (const edge of canvas.edges) {
+			const fromRemoved = nodeIds.has(edge.fromNode);
+			const toRemoved = nodeIds.has(edge.toNode);
+
+			if (fromRemoved && toRemoved) {
+				// Both ends removed - remove the edge
+				removedEdges.push(edge);
+			} else if (fromRemoved || toRemoved) {
+				// One end removed - this is a boundary edge
+				boundaryEdges.push(edge);
+				removedEdges.push(edge);
+			} else {
+				// Both ends remain - keep the edge
+				remainingEdges.push(edge);
+			}
+		}
+
+		// Calculate centroid of removed nodes
+		const centroid = this.calculateCentroid(removedNodes);
+
+		// Find remaining nodes that were connected to removed nodes
+		const affectedNodeIds = new Set<string>();
+		for (const edge of boundaryEdges) {
+			if (!nodeIds.has(edge.fromNode)) {
+				affectedNodeIds.add(edge.fromNode);
+			}
+			if (!nodeIds.has(edge.toNode)) {
+				affectedNodeIds.add(edge.toNode);
+			}
+		}
+
+		const result: PruneResult = {
+			removedNodes,
+			removedEdges,
+			centroid,
+			affectedNodes: Array.from(affectedNodeIds)
+		};
+
+		// Create navigation node if requested
+		if (options.addNavigationNode && options.targetCanvas) {
+			const navNode = this.navigationGenerator.createPortalNode(
+				options.targetCanvas,
+				options.label || 'Extracted Content',
+				centroid,
+				options.direction || this.inferDirection(removedNodes, remainingNodes),
+				options.info
+			);
+
+			result.navigationNode = navNode;
+			remainingNodes.push(navNode);
+
+			// Create edges from affected nodes to navigation node
+			const navEdges = this.createNavigationEdges(
+				Array.from(affectedNodeIds),
+				navNode.id,
+				boundaryEdges
+			);
+			result.navigationEdges = navEdges;
+			remainingEdges.push(...navEdges);
+		}
+
+		// Update canvas in place
+		canvas.nodes = remainingNodes;
+		canvas.edges = remainingEdges;
+
+		return result;
+	}
+
+	/**
+	 * Remove nodes from canvas by cr_id (for person nodes linked to note files)
+	 *
+	 * @param canvas - The canvas data to modify
+	 * @param crIds - cr_ids of people to remove
+	 * @param options - Prune options
+	 * @returns Result containing removed nodes and any added navigation elements
+	 */
+	pruneNodesByCrId(
+		canvas: CanvasData,
+		crIds: Set<string>,
+		options: {
+			addNavigationNode: boolean;
+			targetCanvas?: string;
+			label?: string;
+			direction?: NavigationDirection;
+			info?: string;
+		}
+	): PruneResult {
+		// Find node IDs that correspond to the cr_ids
+		const nodeIds = new Set<string>();
+
+		for (const node of canvas.nodes) {
+			if (node.type === 'file' && node.file) {
+				// Extract cr_id from file path (assumes format: path/to/cr_id.md)
+				const crId = this.extractCrIdFromPath(node.file);
+				if (crId && crIds.has(crId)) {
+					nodeIds.add(node.id);
+				}
+			}
+		}
+
+		return this.pruneNodes(canvas, nodeIds, options);
+	}
+
+	/**
+	 * Calculate the centroid (center point) of a set of nodes
+	 */
+	calculateCentroid(nodes: CanvasNode[]): { x: number; y: number } {
+		if (nodes.length === 0) {
+			return { x: 0, y: 0 };
+		}
+
+		let sumX = 0;
+		let sumY = 0;
+
+		for (const node of nodes) {
+			// Use center of node, not top-left corner
+			sumX += node.x + node.width / 2;
+			sumY += node.y + node.height / 2;
+		}
+
+		return {
+			x: sumX / nodes.length,
+			y: sumY / nodes.length
+		};
+	}
+
+	/**
+	 * Calculate bounding box of a set of nodes
+	 */
+	calculateBoundingBox(nodes: CanvasNode[]): {
+		minX: number;
+		minY: number;
+		maxX: number;
+		maxY: number;
+		width: number;
+		height: number;
+	} {
+		if (nodes.length === 0) {
+			return { minX: 0, minY: 0, maxX: 0, maxY: 0, width: 0, height: 0 };
+		}
+
+		let minX = Infinity;
+		let minY = Infinity;
+		let maxX = -Infinity;
+		let maxY = -Infinity;
+
+		for (const node of nodes) {
+			minX = Math.min(minX, node.x);
+			minY = Math.min(minY, node.y);
+			maxX = Math.max(maxX, node.x + node.width);
+			maxY = Math.max(maxY, node.y + node.height);
+		}
+
+		return {
+			minX,
+			minY,
+			maxX,
+			maxY,
+			width: maxX - minX,
+			height: maxY - minY
+		};
+	}
+
+	/**
+	 * Infer navigation direction based on relative positions
+	 */
+	private inferDirection(
+		removedNodes: CanvasNode[],
+		remainingNodes: CanvasNode[]
+	): NavigationDirection {
+		if (removedNodes.length === 0 || remainingNodes.length === 0) {
+			return 'down'; // Default
+		}
+
+		const removedCentroid = this.calculateCentroid(removedNodes);
+		const remainingCentroid = this.calculateCentroid(remainingNodes);
+
+		const dx = removedCentroid.x - remainingCentroid.x;
+		const dy = removedCentroid.y - remainingCentroid.y;
+
+		// Determine primary direction
+		if (Math.abs(dx) > Math.abs(dy)) {
+			return dx > 0 ? 'right' : 'left';
+		} else {
+			return dy > 0 ? 'down' : 'up';
+		}
+	}
+
+	/**
+	 * Create edges from affected nodes to the navigation node
+	 */
+	private createNavigationEdges(
+		affectedNodeIds: string[],
+		navigationNodeId: string,
+		originalBoundaryEdges: CanvasEdge[]
+	): CanvasEdge[] {
+		const edges: CanvasEdge[] = [];
+
+		// For each affected node, create an edge to the navigation node
+		// Try to preserve the original edge direction/style
+		for (const nodeId of affectedNodeIds) {
+			// Find original edge to get styling hints
+			const originalEdge = originalBoundaryEdges.find(
+				e => e.fromNode === nodeId || e.toNode === nodeId
+			);
+
+			const wasFromNode = originalEdge?.fromNode === nodeId;
+
+			edges.push({
+				id: this.generateId(),
+				fromNode: wasFromNode ? nodeId : navigationNodeId,
+				toNode: wasFromNode ? navigationNodeId : nodeId,
+				fromSide: originalEdge?.fromSide,
+				toSide: originalEdge?.toSide,
+				color: '5' // Cyan to match navigation node
+			});
+		}
+
+		return edges;
+	}
+
+	/**
+	 * Extract cr_id from a file path
+	 * Assumes files are named with cr_id: path/to/cr_id.md
+	 */
+	private extractCrIdFromPath(filePath: string): string | null {
+		// Remove .md extension and get filename
+		const match = filePath.match(/([^/]+)\.md$/);
+		return match ? match[1] : null;
+	}
+
+	/**
+	 * Generate a unique ID
+	 */
+	private generateId(): string {
+		return Math.random().toString(36).substring(2, 15) +
+			Math.random().toString(36).substring(2, 15);
+	}
+}
+
+/**
+ * Extend canvas metadata with prune tracking
+ */
+export interface ExtendedCanvasNavigationMetadata extends CanvasNavigationMetadata {
+	/** Sections that have been pruned from this canvas */
+	prunedSections?: PrunedSectionInfo[];
+}
