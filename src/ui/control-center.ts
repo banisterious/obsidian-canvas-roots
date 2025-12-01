@@ -1513,6 +1513,48 @@ export class ControlCenterModal extends Modal {
 
 		container.appendChild(bidirectionalSyncCard);
 
+		// Split Canvas Wizard Card
+		const splitWizardCard = this.createCard({
+			title: 'Split canvas wizard',
+			icon: 'layers'
+		});
+		const splitWizardContent = splitWizardCard.querySelector('.crc-card__content') as HTMLElement;
+
+		splitWizardContent.createEl('p', {
+			text: 'Split large family trees into manageable segments with the multi-step Split Canvas Wizard.',
+			cls: 'crc-mb-3'
+		});
+
+		// Split Methods
+		const methodsSection = splitWizardContent.createDiv({ cls: 'crc-mb-4' });
+		methodsSection.createEl('h4', { text: 'Available split methods', cls: 'crc-mb-2' });
+
+		const methodsList = methodsSection.createEl('ul', { cls: 'crc-mb-2' });
+		methodsList.createEl('li', { text: 'By generation: Split every N generations' });
+		methodsList.createEl('li', { text: 'By branch: Separate paternal/maternal lines' });
+		methodsList.createEl('li', { text: 'Single lineage: Direct line between two people' });
+		methodsList.createEl('li', { text: 'By collection: One canvas per user-defined collection' });
+		methodsList.createEl('li', { text: 'Ancestor + descendant pair: Linked canvases for same root' });
+		methodsList.createEl('li', { text: 'By surname: Extract people sharing a surname (even unconnected)' });
+
+		// How to Access
+		const accessSection = splitWizardContent.createDiv({ cls: 'crc-mb-4' });
+		accessSection.createEl('h4', { text: 'How to access', cls: 'crc-mb-2' });
+		accessSection.createEl('p', {
+			text: 'Right-click any canvas file → Canvas Roots → Split canvas wizard',
+			cls: 'crc-text-muted'
+		});
+
+		// Surname Split Highlight
+		const surnameSection = splitWizardContent.createDiv({ cls: 'crc-info-box' });
+		surnameSection.createEl('strong', { text: 'Surname extraction:' });
+		surnameSection.createEl('p', {
+			text: 'Extract all people with a given surname, even without established family connections. Useful for consolidating unconnected GEDCOM imports or surname-focused research. Options include matching maiden names and including spouses.',
+			cls: 'crc-mt-2'
+		});
+
+		container.appendChild(splitWizardCard);
+
 		// Common Tasks Card
 		const tasksCard = this.createCard({
 			title: 'Common tasks',
@@ -3293,13 +3335,27 @@ export class ControlCenterModal extends Modal {
 	 * @returns Formatted JSON string matching Obsidian's format
 	 */
 	private formatCanvasJson(data: CanvasData): string {
+		// Helper to safely stringify handling circular references
+		const safeStringify = (obj: unknown): string => {
+			const seen = new WeakSet();
+			return JSON.stringify(obj, (_key, value) => {
+				if (typeof value === 'object' && value !== null) {
+					if (seen.has(value)) {
+						return '[Circular]';
+					}
+					seen.add(value);
+				}
+				return value;
+			});
+		};
+
 		const lines: string[] = [];
 		lines.push('{');
 
 		// Format nodes array
 		lines.push('\t"nodes":[');
 		data.nodes.forEach((node, index) => {
-			const compact = JSON.stringify(node);
+			const compact = safeStringify(node);
 			const suffix = index < data.nodes.length - 1 ? ',' : '';
 			lines.push(`\t\t${compact}${suffix}`);
 		});
@@ -3308,7 +3364,7 @@ export class ControlCenterModal extends Modal {
 		// Format edges array
 		lines.push('\t"edges":[');
 		data.edges.forEach((edge, index) => {
-			const compact = JSON.stringify(edge);
+			const compact = safeStringify(edge);
 			const suffix = index < data.edges.length - 1 ? ',' : '';
 			lines.push(`\t\t${compact}${suffix}`);
 		});
@@ -3320,7 +3376,7 @@ export class ControlCenterModal extends Modal {
 			lines.push(`\t\t"version":"${data.metadata.version}",`);
 		}
 		const frontmatter = data.metadata?.frontmatter || {};
-		lines.push(`\t\t"frontmatter":${JSON.stringify(frontmatter)}`);
+		lines.push(`\t\t"frontmatter":${safeStringify(frontmatter)}`);
 		lines.push('\t}');
 
 		lines.push('}');
@@ -5396,7 +5452,17 @@ export class ControlCenterModal extends Modal {
 				new Notice('⚠️ Warning: Exporting logs WITHOUT obfuscation may expose personal information!', 5000);
 			}
 
-			const logData = JSON.stringify(logs, null, 2);
+			// Safely stringify logs handling circular references
+			const seen = new WeakSet();
+			const logData = JSON.stringify(logs, (_key, value) => {
+				if (typeof value === 'object' && value !== null) {
+					if (seen.has(value)) {
+						return '[Circular]';
+					}
+					seen.add(value);
+				}
+				return value;
+			}, 2);
 
 			// Get export folder (vault-relative path)
 			const exportFolder = this.plugin.settings.logExportPath || '.canvas-roots/logs';

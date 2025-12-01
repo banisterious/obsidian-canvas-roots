@@ -263,6 +263,20 @@ export class CanvasStyleModal extends Modal {
 	 * Format canvas JSON to match Obsidian's exact format
 	 */
 	private formatCanvasJson(data: CanvasData): string {
+		// Helper to safely stringify handling circular references
+		const safeStringify = (obj: unknown): string => {
+			const seen = new WeakSet();
+			return JSON.stringify(obj, (_key, value) => {
+				if (typeof value === 'object' && value !== null) {
+					if (seen.has(value)) {
+						return '[Circular]';
+					}
+					seen.add(value);
+				}
+				return value;
+			});
+		};
+
 		const lines: string[] = [];
 		lines.push('{');
 
@@ -270,7 +284,7 @@ export class CanvasStyleModal extends Modal {
 		lines.push('\t"nodes":[');
 		data.nodes.forEach((node, i) => {
 			const isLast = i === data.nodes.length - 1;
-			const nodeStr = JSON.stringify(node);
+			const nodeStr = safeStringify(node);
 			lines.push(`\t\t${nodeStr}${isLast ? '' : ','}`);
 		});
 		lines.push('\t],');
@@ -279,7 +293,7 @@ export class CanvasStyleModal extends Modal {
 		lines.push('\t"edges":[');
 		data.edges.forEach((edge, i) => {
 			const isLast = i === data.edges.length - 1;
-			const edgeStr = JSON.stringify(edge);
+			const edgeStr = safeStringify(edge);
 			lines.push(`\t\t${edgeStr}${isLast ? '' : ','}`);
 		});
 		lines.push('\t],');
@@ -290,7 +304,7 @@ export class CanvasStyleModal extends Modal {
 			lines.push(`\t\t"version":"${data.metadata.version}",`);
 		}
 		const frontmatter = data.metadata?.frontmatter || {};
-		lines.push(`\t\t"frontmatter":${JSON.stringify(frontmatter)}`);
+		lines.push(`\t\t"frontmatter":${safeStringify(frontmatter)}`);
 		lines.push('\t}');
 
 		lines.push('}');

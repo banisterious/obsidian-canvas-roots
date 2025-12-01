@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-01 16:27:15 UTC
+ * - Generated: 2025-12-01 17:36:26 UTC
  * - Components: 20 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -4177,7 +4177,7 @@
    COMPONENT: CANVAS-NAVIGATION.CSS
    ========================================================================== */
 
-/* Component Size: 558 lines, 12.14 KB */
+/* Component Size: 683 lines, 14.64 KB */
 
 /**
  * Canvas Navigation Styles
@@ -4737,6 +4737,131 @@
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   Complete Step Styles
+   ========================================================================== */
+
+.crc-split-complete-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-3);
+  margin-bottom: var(--size-4-4);
+}
+
+.crc-split-complete-header h3 {
+  margin: 0;
+  font-size: var(--font-ui-large);
+}
+
+.crc-split-complete-icon {
+  flex-shrink: 0;
+}
+
+.crc-split-complete-icon.mod-success {
+  color: var(--color-green);
+}
+
+.crc-split-complete-icon.mod-warning {
+  color: var(--color-orange);
+}
+
+.crc-split-complete-icon.mod-error {
+  color: var(--color-red);
+}
+
+.crc-split-complete-stats {
+  display: flex;
+  gap: var(--size-4-4);
+  margin-bottom: var(--size-4-4);
+}
+
+.crc-split-complete-stat {
+  padding: var(--size-4-2) var(--size-4-3);
+  border-radius: var(--radius-s);
+  font-weight: var(--font-medium);
+}
+
+.crc-split-complete-stat.mod-success {
+  background: var(--color-green);
+  color: var(--text-on-accent);
+}
+
+.crc-split-complete-stat.mod-error {
+  background: var(--background-modifier-error);
+  color: var(--text-error);
+}
+
+.crc-split-complete-section {
+  margin-bottom: var(--size-4-4);
+}
+
+.crc-split-complete-section h4 {
+  margin: 0 0 var(--size-4-2) 0;
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+}
+
+.crc-split-complete-files {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-1);
+  max-height: 150px;
+  overflow-y: auto;
+  padding: var(--size-4-2);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+}
+
+.crc-split-complete-file {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+}
+
+.crc-split-complete-file svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.crc-split-complete-errors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+  padding: var(--size-4-2);
+  background: var(--background-modifier-error);
+  border-radius: var(--radius-s);
+}
+
+.crc-split-complete-error {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-1);
+  font-size: var(--font-ui-small);
+}
+
+.crc-split-complete-error-path {
+  font-weight: var(--font-medium);
+  color: var(--text-normal);
+}
+
+.crc-split-complete-error-message {
+  color: var(--text-error);
+}
+
+.crc-split-complete-summary {
+  margin: 0;
+  padding-left: var(--size-4-4);
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+}
+
+.crc-split-complete-summary li {
+  margin-bottom: var(--size-2-1);
+}
+
 
 /* End of canvas-navigation.css */
 
@@ -4808,11 +4933,11 @@
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-01 16:27:15 UTC
+ * Build completed: 2025-12-01 17:36:26 UTC
  * Components processed: 20
- * Total lines: 4605
- * Total size: 87.55 KB
- * Build duration: 0.02 seconds
+ * Total lines: 4730
+ * Total size: 90.05 KB
+ * Build duration: 0.03 seconds
  *
  * Component breakdown:
  * - variables.css: 31 lines, 0.72 KB
@@ -4831,7 +4956,7 @@
  * - relationship-calculator.css: 302 lines, 5.21 KB
  * - family-chart-view.css: 629 lines, 14.51 KB
  * - data-quality.css: 385 lines, 7.08 KB
- * - canvas-navigation.css: 558 lines, 12.14 KB
+ * - canvas-navigation.css: 683 lines, 14.64 KB
  * - animations.css: 16 lines, 0.18 KB
  * - responsive.css: 9 lines, 0.13 KB
  * - theme.css: 11 lines, 0.19 KB

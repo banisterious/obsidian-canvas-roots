@@ -477,7 +477,7 @@ A dedicated Obsidian leaf view that renders the full family-chart library intera
 
 ### Canvas Navigation & Organization
 
-**Status:** 🚧 In Development
+**Status:** ✅ Complete (v0.5.0)
 
 Tools for splitting large trees into manageable segments and linking them together.
 
@@ -494,10 +494,10 @@ Tools for splitting large trees into manageable segments and linking them togeth
   - Options: include spouses, match maiden names, handle spelling variants
   - Separate canvas per surname or combined output
 - ✅ Preview functionality showing expected canvas count and people
-- ✅ Navigation node infrastructure for linking canvases
+- ✅ Canvas file generation from wizard configuration
+- ✅ Completion step with generation results summary
 
-**Planned Features (Canvas Generation):**
-- Actual canvas file generation from wizard configuration
+**Planned Enhancements:**
 - Navigation nodes linking between related canvases
 - Master overview canvases with links to detailed views
 

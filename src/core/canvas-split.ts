@@ -5,6 +5,7 @@
  * Supports splitting by generation ranges, branches, collections, and lineage extraction.
  */
 
+import { App, TFile } from 'obsidian';
 import type { PersonNode, FamilyTree, FamilyEdge } from './family-graph';
 import type {
 	SplitOptions,
@@ -16,6 +17,16 @@ import type {
 } from './canvas-navigation';
 import { NavigationNodeGenerator, DEFAULT_SPLIT_OPTIONS } from './canvas-navigation';
 import { MediaAssociationService, type MediaDetectionOptions, type MediaDetectionResult } from './media-association';
+import { CanvasGenerator, type CanvasGenerationOptions } from './canvas-generator';
+import type { CanvasData } from './canvas-generator';
+import {
+	writeCanvasFile,
+	toSafeFilename,
+	type CanvasWriteResult
+} from './canvas-utils';
+import { getLogger } from './logging';
+
+const logger = getLogger('CanvasSplit');
 
 /**
  * Generation range for splitting
@@ -349,15 +360,16 @@ export interface CollectionExtractionResult {
 }
 
 /**
- * Canvas data structure for manipulation
+ * Internal canvas data structure for manipulation (used by split operations)
+ * Note: This is separate from CanvasData imported from canvas-generator
  */
-interface CanvasData {
-	nodes: CanvasNode[];
-	edges: CanvasEdge[];
-	groups?: CanvasGroup[];
+interface InternalCanvasData {
+	nodes: InternalCanvasNode[];
+	edges: InternalCanvasEdge[];
+	groups?: InternalCanvasGroup[];
 }
 
-interface CanvasNode {
+interface InternalCanvasNode {
 	id: string;
 	type: 'file' | 'text' | 'link' | 'group';
 	file?: string;
@@ -369,7 +381,7 @@ interface CanvasNode {
 	color?: string;
 }
 
-interface CanvasEdge {
+interface InternalCanvasEdge {
 	id: string;
 	fromNode: string;
 	toNode: string;
@@ -379,7 +391,7 @@ interface CanvasEdge {
 	label?: string;
 }
 
-interface CanvasGroup {
+interface InternalCanvasGroup {
 	id: string;
 	x: number;
 	y: number;
@@ -3104,5 +3116,472 @@ export class CanvasSplitService {
 			canvasCount,
 			spouseCount: 0 // Calculated separately if includeSpouses is true
 		};
+	}
+
+	// ============================================================================
+	// CANVAS FILE GENERATION METHODS
+	// ============================================================================
+
+	/**
+	 * Create a subset FamilyTree from a list of people
+	 *
+	 * @param sourcePeople - Map of all people (crId -> PersonNode)
+	 * @param includedCrIds - Set of crIds to include in the subset
+	 * @param rootCrId - The root person for the new tree (must be in includedCrIds)
+	 * @returns A new FamilyTree containing only the included people
+	 */
+	createSubsetTree(
+		sourcePeople: Map<string, PersonNode>,
+		includedCrIds: Set<string>,
+		rootCrId: string
+	): FamilyTree | null {
+		const rootPerson = sourcePeople.get(rootCrId);
+		if (!rootPerson || !includedCrIds.has(rootCrId)) {
+			logger.warn('createSubsetTree', 'Root person not found or not included', { rootCrId });
+			return null;
+		}
+
+		const nodes = new Map<string, PersonNode>();
+		const edges: FamilyEdge[] = [];
+
+		// Add included people to nodes
+		for (const crId of includedCrIds) {
+			const person = sourcePeople.get(crId);
+			if (person) {
+				// Create a copy with filtered relationships
+				const filteredPerson: PersonNode = {
+					...person,
+					// Only keep relationships to people in the subset
+					fatherCrId: person.fatherCrId && includedCrIds.has(person.fatherCrId)
+						? person.fatherCrId : undefined,
+					motherCrId: person.motherCrId && includedCrIds.has(person.motherCrId)
+						? person.motherCrId : undefined,
+					spouseCrIds: person.spouseCrIds.filter(id => includedCrIds.has(id)),
+					childrenCrIds: person.childrenCrIds.filter(id => includedCrIds.has(id))
+				};
+				nodes.set(crId, filteredPerson);
+			}
+		}
+
+		// Build edges for included relationships
+		for (const [crId, person] of nodes) {
+			// Parent edges
+			if (person.fatherCrId) {
+				edges.push({ from: person.fatherCrId, to: crId, type: 'parent' });
+			}
+			if (person.motherCrId) {
+				edges.push({ from: person.motherCrId, to: crId, type: 'parent' });
+			}
+
+			// Spouse edges (only add once per pair)
+			for (const spouseId of person.spouseCrIds) {
+				if (crId < spouseId) { // Ensure we only add each pair once
+					edges.push({ from: crId, to: spouseId, type: 'spouse' });
+				}
+			}
+		}
+
+		// Use the filtered root person from nodes, not the original
+		const filteredRoot = nodes.get(rootCrId);
+		if (!filteredRoot) {
+			logger.warn('createSubsetTree', 'Filtered root not found in nodes', { rootCrId });
+			return null;
+		}
+
+		return {
+			root: filteredRoot,
+			nodes,
+			edges
+		};
+	}
+
+	/**
+	 * Find the best root person for a subset of people
+	 * Prefers people with most descendants in the set, or earliest birth date
+	 *
+	 * @param people - Array of people to find root from
+	 * @param allPeople - Map of all people for relationship checking
+	 * @param includedCrIds - Set of crIds in the subset
+	 * @returns The best root person's crId
+	 */
+	findBestRoot(
+		people: PersonNode[],
+		allPeople: Map<string, PersonNode>,
+		includedCrIds: Set<string>
+	): string {
+		if (people.length === 0) {
+			throw new Error('Cannot find root in empty people array');
+		}
+
+		// Score each person: more descendants in set = better root
+		let bestPerson = people[0];
+		let bestScore = 0;
+
+		for (const person of people) {
+			let score = 0;
+
+			// Count descendants in set
+			const visited = new Set<string>();
+			const queue = [person.crId];
+			while (queue.length > 0) {
+				const crId = queue.shift()!;
+				if (visited.has(crId)) continue;
+				visited.add(crId);
+
+				const p = allPeople.get(crId);
+				if (!p) continue;
+
+				for (const childId of p.childrenCrIds) {
+					if (includedCrIds.has(childId) && !visited.has(childId)) {
+						score++;
+						queue.push(childId);
+					}
+				}
+			}
+
+			// Bonus for having no parents in set (top of tree)
+			if (!person.fatherCrId || !includedCrIds.has(person.fatherCrId)) score += 10;
+			if (!person.motherCrId || !includedCrIds.has(person.motherCrId)) score += 10;
+
+			if (score > bestScore) {
+				bestScore = score;
+				bestPerson = person;
+			}
+		}
+
+		return bestPerson.crId;
+	}
+
+	/**
+	 * Generate canvas data for a subset of people
+	 *
+	 * @param tree - Source family tree
+	 * @param includedCrIds - Set of crIds to include
+	 * @param options - Canvas generation options
+	 * @returns Canvas data or null if generation failed
+	 */
+	generateCanvasDataForSubset(
+		tree: FamilyTree,
+		includedCrIds: Set<string>,
+		options: CanvasGenerationOptions = {}
+	): CanvasData | null {
+		if (includedCrIds.size === 0) {
+			logger.warn('generateCanvasDataForSubset', 'No people to include');
+			return null;
+		}
+
+		// Get people array
+		const people: PersonNode[] = [];
+		for (const crId of includedCrIds) {
+			const person = tree.nodes.get(crId);
+			if (person) {
+				people.push(person);
+			}
+		}
+
+		if (people.length === 0) {
+			logger.warn('generateCanvasDataForSubset', 'No valid people found');
+			return null;
+		}
+
+		// Find the best root for this subset
+		const rootCrId = this.findBestRoot(people, tree.nodes, includedCrIds);
+
+		// Create subset tree
+		const subsetTree = this.createSubsetTree(tree.nodes, includedCrIds, rootCrId);
+		if (!subsetTree) {
+			logger.warn('generateCanvasDataForSubset', 'Failed to create subset tree');
+			return null;
+		}
+
+		// Generate canvas using CanvasGenerator
+		const generator = new CanvasGenerator();
+		return generator.generateCanvas(subsetTree, options);
+	}
+
+	/**
+	 * Generate and write canvas files for a generation-based split
+	 *
+	 * @param app - Obsidian app instance
+	 * @param tree - Source family tree
+	 * @param options - Generation split options
+	 * @param canvasOptions - Canvas generation options
+	 * @returns Array of write results
+	 */
+	async generateGenerationSplitCanvases(
+		app: App,
+		tree: FamilyTree,
+		options: GenerationSplitOptions,
+		canvasOptions: CanvasGenerationOptions = {}
+	): Promise<CanvasWriteResult[]> {
+		const results: CanvasWriteResult[] = [];
+		const opts = { ...DEFAULT_GENERATION_SPLIT_OPTIONS, ...options };
+
+		// Calculate generations
+		const assignment = this.assignGenerations(tree, opts.generationDirection);
+
+		// Create ranges
+		const ranges = opts.customRanges || this.createGenerationRanges(
+			assignment.generationBounds,
+			opts.generationsPerCanvas,
+			opts.generationDirection
+		);
+
+		// Assign people to ranges
+		this.assignPeopleToRanges(assignment, ranges);
+
+		// Generate canvas for each range
+		for (const range of ranges) {
+			const people = assignment.byRange.get(range.label) || [];
+			if (people.length === 0) continue;
+
+			const includedCrIds = new Set(people.map(p => p.crId));
+			const canvasData = this.generateCanvasDataForSubset(tree, includedCrIds, canvasOptions);
+
+			if (!canvasData) {
+				results.push({
+					success: false,
+					path: this.generateCanvasPath(opts, range.label),
+					error: 'Failed to generate canvas data'
+				});
+				continue;
+			}
+
+			const result = await writeCanvasFile(
+				app,
+				this.generateCanvasPath(opts, range.label),
+				canvasData,
+				true // overwrite
+			);
+			results.push(result);
+		}
+
+		return results;
+	}
+
+	/**
+	 * Generate and write canvas files for a branch-based split
+	 *
+	 * @param app - Obsidian app instance
+	 * @param tree - Source family tree
+	 * @param options - Branch split options
+	 * @param canvasOptions - Canvas generation options
+	 * @returns Array of write results
+	 */
+	async generateBranchSplitCanvases(
+		app: App,
+		tree: FamilyTree,
+		options: BranchSplitOptions,
+		canvasOptions: CanvasGenerationOptions = {}
+	): Promise<CanvasWriteResult[]> {
+		const results: CanvasWriteResult[] = [];
+		const opts = { ...DEFAULT_BRANCH_SPLIT_OPTIONS, ...options };
+
+		// Extract each branch
+		for (const branchDef of opts.branches) {
+			const extraction = this.extractBranch(tree, branchDef, opts);
+			if (extraction.people.length === 0) continue;
+
+			const canvasData = this.generateCanvasDataForSubset(tree, extraction.crIds, canvasOptions);
+
+			if (!canvasData) {
+				const path = `${opts.outputFolder || ''}/${toSafeFilename(branchDef.label)}.canvas`;
+				results.push({
+					success: false,
+					path,
+					error: 'Failed to generate canvas data'
+				});
+				continue;
+			}
+
+			const path = `${opts.outputFolder || ''}/${toSafeFilename(branchDef.label)}`;
+			const result = await writeCanvasFile(app, path, canvasData, true);
+			results.push(result);
+		}
+
+		return results;
+	}
+
+	/**
+	 * Generate and write canvas file for a lineage extraction
+	 *
+	 * @param app - Obsidian app instance
+	 * @param tree - Source family tree
+	 * @param options - Lineage split options
+	 * @param canvasOptions - Canvas generation options
+	 * @returns Write result
+	 */
+	async generateLineageCanvas(
+		app: App,
+		tree: FamilyTree,
+		options: LineageSplitOptions,
+		canvasOptions: CanvasGenerationOptions = {}
+	): Promise<CanvasWriteResult> {
+		const opts = { ...DEFAULT_LINEAGE_SPLIT_OPTIONS, ...options };
+
+		// Extract lineage
+		const extraction = this.extractLineage(tree, opts);
+
+		if (!extraction.pathFound || extraction.allPeople.length === 0) {
+			const label = opts.label || 'lineage';
+			const path = `${opts.outputFolder || ''}/${toSafeFilename(label)}.canvas`;
+			return {
+				success: false,
+				path,
+				error: 'No path found between the specified people'
+			};
+		}
+
+		const canvasData = this.generateCanvasDataForSubset(tree, extraction.allCrIds, canvasOptions);
+
+		if (!canvasData) {
+			const label = opts.label || 'lineage';
+			const path = `${opts.outputFolder || ''}/${toSafeFilename(label)}.canvas`;
+			return {
+				success: false,
+				path,
+				error: 'Failed to generate canvas data'
+			};
+		}
+
+		const label = opts.label || 'lineage';
+		const path = `${opts.outputFolder || ''}/${toSafeFilename(label)}`;
+		return await writeCanvasFile(app, path, canvasData, true);
+	}
+
+	/**
+	 * Generate and write canvas files for a collection-based split
+	 *
+	 * @param app - Obsidian app instance
+	 * @param tree - Source family tree
+	 * @param options - Collection split options
+	 * @param canvasOptions - Canvas generation options
+	 * @returns Array of write results
+	 */
+	async generateCollectionSplitCanvases(
+		app: App,
+		tree: FamilyTree,
+		options: CollectionSplitOptions,
+		canvasOptions: CanvasGenerationOptions = {}
+	): Promise<CanvasWriteResult[]> {
+		const results: CanvasWriteResult[] = [];
+		const opts = { ...DEFAULT_COLLECTION_SPLIT_OPTIONS, ...options };
+
+		// Extract collections
+		const extraction = this.extractCollections(tree, opts);
+
+		// Generate canvas for each collection
+		for (const [collectionName, info] of extraction.collections) {
+			// Skip if we have a filter and this collection isn't in it
+			if (opts.collections && opts.collections.length > 0) {
+				if (!opts.collections.includes(collectionName)) continue;
+			}
+
+			const canvasData = this.generateCanvasDataForSubset(tree, info.crIds, canvasOptions);
+
+			if (!canvasData) {
+				const path = `${opts.outputFolder || ''}/${toSafeFilename(collectionName)}.canvas`;
+				results.push({
+					success: false,
+					path,
+					error: 'Failed to generate canvas data'
+				});
+				continue;
+			}
+
+			const path = `${opts.outputFolder || ''}/${toSafeFilename(collectionName)}`;
+			const result = await writeCanvasFile(app, path, canvasData, true);
+			results.push(result);
+		}
+
+		// Handle uncollected people
+		if (opts.includeUncollected && extraction.uncollected.length > 0) {
+			const uncollectedCrIds = new Set<string>(extraction.uncollected.map((p: PersonNode) => p.crId));
+			const canvasData = this.generateCanvasDataForSubset(tree, uncollectedCrIds, canvasOptions);
+
+			if (canvasData) {
+				const path = `${opts.outputFolder || ''}/${toSafeFilename(opts.uncollectedLabel)}`;
+				const result = await writeCanvasFile(app, path, canvasData, true);
+				results.push(result);
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * Generate and write canvas files for ancestor-descendant pair
+	 *
+	 * @param app - Obsidian app instance
+	 * @param tree - Source family tree
+	 * @param options - Ancestor-descendant split options
+	 * @param canvasOptions - Canvas generation options
+	 * @returns Array of write results
+	 */
+	async generateAncestorDescendantCanvases(
+		app: App,
+		tree: FamilyTree,
+		options: AncestorDescendantSplitOptions,
+		canvasOptions: CanvasGenerationOptions = {}
+	): Promise<CanvasWriteResult[]> {
+		const results: CanvasWriteResult[] = [];
+		const opts = { ...DEFAULT_ANCESTOR_DESCENDANT_OPTIONS, ...options };
+
+		const rootPerson = tree.nodes.get(opts.rootCrId);
+		if (!rootPerson) {
+			return [{
+				success: false,
+				path: '',
+				error: 'Root person not found'
+			}];
+		}
+
+		const labelPrefix = opts.labelPrefix || rootPerson.name || 'Person';
+
+		// Extract ancestors
+		const ancestorExtraction = this.extractAncestors(
+			tree,
+			opts.rootCrId,
+			opts.maxAncestorGenerations,
+			opts.includeSpouses
+		);
+
+		if (ancestorExtraction.people.length > 0) {
+			const canvasData = this.generateCanvasDataForSubset(
+				tree,
+				ancestorExtraction.crIds,
+				{ ...canvasOptions, treeType: 'ancestor' }
+			);
+
+			if (canvasData) {
+				const path = `${opts.outputFolder || ''}/${toSafeFilename(labelPrefix)}-ancestors`;
+				const result = await writeCanvasFile(app, path, canvasData, true);
+				results.push(result);
+			}
+		}
+
+		// Extract descendants
+		const descendantExtraction = this.extractDescendants(
+			tree,
+			opts.rootCrId,
+			opts.maxDescendantGenerations,
+			opts.includeSpouses
+		);
+
+		if (descendantExtraction.people.length > 0) {
+			const canvasData = this.generateCanvasDataForSubset(
+				tree,
+				descendantExtraction.crIds,
+				{ ...canvasOptions, treeType: 'descendant' }
+			);
+
+			if (canvasData) {
+				const path = `${opts.outputFolder || ''}/${toSafeFilename(labelPrefix)}-descendants`;
+				const result = await writeCanvasFile(app, path, canvasData, true);
+				results.push(result);
+			}
+		}
+
+		return results;
 	}
 }

@@ -55,6 +55,31 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 };
 
 /**
+ * Safely stringify an object, handling circular references
+ */
+function safeStringify(obj: unknown, maxLength = 1000): string {
+	try {
+		const seen = new WeakSet();
+		const result = JSON.stringify(obj, (_key, value) => {
+			if (typeof value === 'object' && value !== null) {
+				if (seen.has(value)) {
+					return '[Circular]';
+				}
+				seen.add(value);
+			}
+			return value;
+		});
+		// Truncate very long strings
+		if (result && result.length > maxLength) {
+			return result.substring(0, maxLength) + '... [truncated]';
+		}
+		return result;
+	} catch {
+		return '[Unstringifiable]';
+	}
+}
+
+/**
  * Logger implementation
  */
 class Logger implements ILogger {
@@ -128,8 +153,8 @@ class Logger implements ILogger {
 
 		// Output to console if log level permits
 		if (LOG_LEVELS[entry.level] <= LoggerFactoryClass.getLogLevelValue()) {
-			const contextStr = entry.context ? ` [${JSON.stringify(entry.context)}]` : '';
-			const dataStr = entry.data ? ` | ${JSON.stringify(entry.data)}` : '';
+			const contextStr = entry.context ? ` [${safeStringify(entry.context)}]` : '';
+			const dataStr = entry.data ? ` | ${safeStringify(entry.data)}` : '';
 			const logMessage = `[Canvas Roots] [${entry.timestamp.toISOString()}] [${entry.level.toUpperCase()}] [${entry.component}/${entry.category}]${contextStr} ${entry.message}${dataStr}`;
 
 			switch (entry.level) {
