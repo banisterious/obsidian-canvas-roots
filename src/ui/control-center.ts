@@ -4036,20 +4036,41 @@ export class ControlCenterModal extends Modal {
 		// Format and direction selectors in a row
 		const selectorRow = headerContent.createDiv({ cls: 'crc-selector-row' });
 
-		// Format selector
-		new Setting(selectorRow)
-			.setName('Format')
-			.addDropdown(dropdown => dropdown
-				.addOption('gedcom', 'GEDCOM 5.5.1')
-				.addOption('gedcomx', 'GEDCOM X (JSON)')
-				.addOption('gramps', 'Gramps XML')
-				.addOption('csv', 'CSV')
-				.setValue(this.importExportFormat)
-				.onChange(value => {
-					this.importExportFormat = value as 'gedcom' | 'gedcomx' | 'gramps' | 'csv';
-					this.renderImportExportContent(contentContainer);
-				})
-			);
+		// Format selector container (will be rebuilt when direction changes)
+		const formatSettingContainer = selectorRow.createDiv();
+
+		// Helper to build format dropdown based on direction
+		const buildFormatDropdown = () => {
+			formatSettingContainer.empty();
+			new Setting(formatSettingContainer)
+				.setName('Format')
+				.addDropdown(dropdown => {
+					// Always available formats
+					dropdown.addOption('gedcom', 'GEDCOM 5.5.1');
+					dropdown.addOption('csv', 'CSV');
+
+					// Import-only formats
+					if (this.importExportDirection === 'import') {
+						dropdown.addOption('gedcomx', 'GEDCOM X (JSON)');
+						dropdown.addOption('gramps', 'Gramps XML');
+					}
+
+					// Reset format if current selection is not available for export
+					if (this.importExportDirection === 'export' &&
+						(this.importExportFormat === 'gedcomx' || this.importExportFormat === 'gramps')) {
+						this.importExportFormat = 'gedcom';
+					}
+
+					dropdown.setValue(this.importExportFormat);
+					dropdown.onChange(value => {
+						this.importExportFormat = value as 'gedcom' | 'gedcomx' | 'gramps' | 'csv';
+						this.renderImportExportContent(contentContainer);
+					});
+				});
+		};
+
+		// Build initial format dropdown
+		buildFormatDropdown();
 
 		// Direction selector
 		new Setting(selectorRow)
@@ -4060,6 +4081,8 @@ export class ControlCenterModal extends Modal {
 				.setValue(this.importExportDirection)
 				.onChange(value => {
 					this.importExportDirection = value as 'import' | 'export';
+					// Rebuild format dropdown with appropriate options
+					buildFormatDropdown();
 					this.renderImportExportContent(contentContainer);
 				})
 			);
