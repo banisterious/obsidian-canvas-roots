@@ -1455,6 +1455,72 @@ export class ControlCenterModal extends Modal {
 
 		container.appendChild(gedcomExportCard);
 
+		// Import Formats Card
+		const importFormatsCard = this.createCard({
+			title: 'Supported import formats',
+			icon: 'upload'
+		});
+		const importFormatsContent = importFormatsCard.querySelector('.crc-card__content') as HTMLElement;
+
+		importFormatsContent.createEl('p', {
+			text: 'Canvas Roots supports multiple genealogical data formats for importing family trees.',
+			cls: 'crc-mb-3'
+		});
+
+		// GEDCOM 5.5.1
+		const gedcom551Section = importFormatsContent.createDiv({ cls: 'crc-mb-4' });
+		gedcom551Section.createEl('h4', { text: 'GEDCOM 5.5.1', cls: 'crc-mb-2' });
+		gedcom551Section.createEl('p', {
+			text: 'The standard genealogy file format supported by most family tree software including Ancestry, FamilySearch, and Family Tree Maker.',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+		const gedcom551Details = gedcom551Section.createEl('ul');
+		gedcom551Details.createEl('li', { text: 'File extension: .ged, .gedcom' });
+		gedcom551Details.createEl('li', { text: 'Full round-trip support (import and export)' });
+
+		// GEDCOM X
+		const gedcomXSection = importFormatsContent.createDiv({ cls: 'crc-mb-4' });
+		gedcomXSection.createEl('h4', { text: 'GEDCOM X (JSON)', cls: 'crc-mb-2' });
+		gedcomXSection.createEl('p', {
+			text: 'FamilySearch\'s modern JSON-based genealogical data format. More structured than traditional GEDCOM.',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+		const gedcomXDetails = gedcomXSection.createEl('ul');
+		gedcomXDetails.createEl('li', { text: 'File extension: .json, .gedx' });
+		gedcomXDetails.createEl('li', { text: 'Import only (export planned for future release)' });
+
+		// Gramps XML
+		const grampsSection = importFormatsContent.createDiv({ cls: 'crc-mb-4' });
+		grampsSection.createEl('h4', { text: 'Gramps XML', cls: 'crc-mb-2' });
+		grampsSection.createEl('p', {
+			text: 'Native format from Gramps, the popular open-source genealogy software.',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+		const grampsDetails = grampsSection.createEl('ul');
+		grampsDetails.createEl('li', { text: 'File extension: .gramps, .xml' });
+		grampsDetails.createEl('li', { text: 'Import only (export planned for future release)' });
+
+		// CSV
+		const csvSection = importFormatsContent.createDiv({ cls: 'crc-mb-4' });
+		csvSection.createEl('h4', { text: 'CSV/Spreadsheet', cls: 'crc-mb-2' });
+		csvSection.createEl('p', {
+			text: 'Comma-separated values for spreadsheet workflows. Auto-detects common column names.',
+			cls: 'crc-text-muted crc-mb-2'
+		});
+		const csvDetails = csvSection.createEl('ul');
+		csvDetails.createEl('li', { text: 'File extension: .csv, .tsv' });
+		csvDetails.createEl('li', { text: 'Full round-trip support (import and export)' });
+
+		// How to Import
+		const importHowSection = importFormatsContent.createDiv({ cls: 'crc-info-box' });
+		importHowSection.createEl('strong', { text: 'How to import:' });
+		importHowSection.createEl('p', {
+			text: 'Go to the Import/Export tab, select your format from the dropdown, and choose Import. All formats support the staging folder workflow for safe import processing.',
+			cls: 'crc-mt-2'
+		});
+
+		container.appendChild(importFormatsCard);
+
 		// Bidirectional Relationship Sync Card
 		const bidirectionalSyncCard = this.createCard({
 			title: 'Bidirectional relationship sync',
@@ -1541,6 +1607,15 @@ export class ControlCenterModal extends Modal {
 		methodsList.createEl('li', { text: 'Ancestor + descendant pair: Linked canvases for same root' });
 		methodsList.createEl('li', { text: 'By surname: Extract people sharing a surname (even unconnected)' });
 
+		// Navigation Features
+		const navSection = splitWizardContent.createDiv({ cls: 'crc-mb-4' });
+		navSection.createEl('h4', { text: 'Navigation features', cls: 'crc-mb-2' });
+
+		const navList = navSection.createEl('ul', { cls: 'crc-mb-2' });
+		navList.createEl('li', { text: 'Navigation nodes: Portal nodes link between related canvases' });
+		navList.createEl('li', { text: 'Master overview: Optional grid canvas with links to all split canvases' });
+		navList.createEl('li', { text: 'Both options configurable in the wizard' });
+
 		// How to Access
 		const accessSection = splitWizardContent.createDiv({ cls: 'crc-mb-4' });
 		accessSection.createEl('h4', { text: 'How to access', cls: 'crc-mb-2' });
@@ -1569,8 +1644,8 @@ export class ControlCenterModal extends Modal {
 		const tasks = [
 			{
 				icon: 'upload',
-				title: 'Import data (GEDCOM/CSV)',
-				description: 'Import genealogical data from Family Tree Maker, Gramps, spreadsheets, or other tools',
+				title: 'Import data',
+				description: 'Import from GEDCOM 5.5.1, GEDCOM X (JSON), Gramps XML, or CSV/spreadsheets',
 				tab: 'import-export'
 			},
 			{
