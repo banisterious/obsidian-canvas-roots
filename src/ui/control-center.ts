@@ -9,6 +9,8 @@ import { CanvasGenerator, CanvasData, CanvasGenerationOptions } from '../core/ca
 import { getLogger, LoggerFactory, type LogLevel } from '../core/logging';
 import { getErrorMessage } from '../core/error-utils';
 import { GedcomImporter } from '../gedcom/gedcom-importer';
+import { GedcomXImporter, GedcomXImportResult } from '../gedcomx/gedcomx-importer';
+import { GedcomXParser } from '../gedcomx/gedcomx-parser';
 import { GedcomImportResultsModal } from './gedcom-import-results-modal';
 import { BidirectionalLinker } from '../core/bidirectional-linker';
 import { TreePreviewRenderer } from './tree-preview';
@@ -3938,7 +3940,7 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * State for Import/Export tab
 	 */
-	private importExportFormat: 'gedcom' | 'csv' = 'gedcom';
+	private importExportFormat: 'gedcom' | 'gedcomx' | 'csv' = 'gedcom';
 	private importExportDirection: 'import' | 'export' = 'import';
 
 	/**
@@ -3961,11 +3963,12 @@ export class ControlCenterModal extends Modal {
 		new Setting(selectorRow)
 			.setName('Format')
 			.addDropdown(dropdown => dropdown
-				.addOption('gedcom', 'GEDCOM')
+				.addOption('gedcom', 'GEDCOM 5.5.1')
+				.addOption('gedcomx', 'GEDCOM X (JSON)')
 				.addOption('csv', 'CSV')
 				.setValue(this.importExportFormat)
 				.onChange(value => {
-					this.importExportFormat = value as 'gedcom' | 'csv';
+					this.importExportFormat = value as 'gedcom' | 'gedcomx' | 'csv';
 					this.renderImportExportContent(contentContainer);
 				})
 			);
@@ -4109,6 +4112,12 @@ export class ControlCenterModal extends Modal {
 				this.renderGedcomImport(container);
 			} else {
 				this.renderGedcomExport(container);
+			}
+		} else if (this.importExportFormat === 'gedcomx') {
+			if (this.importExportDirection === 'import') {
+				this.renderGedcomXImport(container);
+			} else {
+				this.renderGedcomXExportNotSupported(container);
 			}
 		} else {
 			if (this.importExportDirection === 'import') {
@@ -4344,6 +4353,256 @@ export class ControlCenterModal extends Modal {
 					branchIncludeSpouses
 				});
 			})();
+		});
+
+		container.appendChild(card);
+	}
+
+	/**
+	 * Render GEDCOM X import options
+	 */
+	private renderGedcomXImport(container: HTMLElement): void {
+		const card = this.createCard({
+			title: 'Import GEDCOM X',
+			icon: 'upload'
+		});
+		const content = card.querySelector('.crc-card__content') as HTMLElement;
+
+		content.createEl('p', {
+			text: 'Import family tree data from GEDCOM X JSON format (FamilySearch standard)',
+			cls: 'crc-text-muted crc-mb-4'
+		});
+
+		// Import destination options (only show if staging folder is configured)
+		let importDestination: 'main' | 'staging' = 'main';
+		let stagingSubfolder = `import-${new Date().toISOString().slice(0, 7)}`;
+
+		const stagingFolder = this.plugin.settings.stagingFolder;
+		if (stagingFolder) {
+			new Setting(content)
+				.setName('Import destination')
+				.setDesc('Where to create person notes')
+				.addDropdown(dropdown => dropdown
+					.addOption('main', `Main tree (${this.plugin.settings.peopleFolder || 'vault root'})`)
+					.addOption('staging', `Staging (${stagingFolder})`)
+					.setValue(importDestination)
+					.onChange(value => {
+						importDestination = value as 'main' | 'staging';
+						// Show/hide subfolder input
+						if (subfolderSetting) {
+							subfolderSetting.settingEl.style.display = value === 'staging' ? '' : 'none';
+						}
+					})
+				);
+
+			// Subfolder input (hidden by default, shown when staging is selected)
+			const subfolderSetting = new Setting(content)
+				.setName('Subfolder name')
+				.setDesc('Create imports in a subfolder for organization')
+				.addText(text => text
+					.setPlaceholder(stagingSubfolder)
+					.setValue(stagingSubfolder)
+					.onChange(value => {
+						stagingSubfolder = value || `import-${new Date().toISOString().slice(0, 7)}`;
+					})
+				);
+			subfolderSetting.settingEl.style.display = 'none';
+		}
+
+		// File selection button
+		const fileBtn = content.createEl('button', {
+			cls: 'crc-btn crc-btn--primary crc-mt-4',
+			text: 'Select GEDCOM X file'
+		});
+
+		// Create hidden file input
+		const fileInput = content.createEl('input', {
+			attr: {
+				type: 'file',
+				accept: '.json,.gedx',
+				style: 'display: none;'
+			}
+		});
+
+		// Analysis results container (hidden initially)
+		const analysisContainer = content.createDiv({ cls: 'crc-gedcom-analysis cr-hidden' });
+
+		fileBtn.addEventListener('click', () => {
+			fileInput.click();
+		});
+
+		fileInput.addEventListener('change', (event) => {
+			void (async () => {
+				const target = event.target as HTMLInputElement;
+				const file = target.files?.[0];
+				if (file) {
+					// Determine target folder based on import destination
+					let targetFolder: string;
+					if (importDestination === 'staging' && stagingFolder) {
+						targetFolder = stagingSubfolder
+							? `${stagingFolder}/${stagingSubfolder}`
+							: stagingFolder;
+					} else {
+						targetFolder = this.plugin.settings.peopleFolder;
+					}
+					await this.showGedcomXAnalysis(file, analysisContainer, fileBtn, targetFolder);
+				}
+			})();
+		});
+
+		container.appendChild(card);
+	}
+
+	/**
+	 * Show GEDCOM X file analysis before import
+	 */
+	private async showGedcomXAnalysis(
+		file: File,
+		analysisContainer: HTMLElement,
+		_fileBtn: HTMLButtonElement,
+		targetFolder: string
+	): Promise<void> {
+		analysisContainer.empty();
+		analysisContainer.removeClass('cr-hidden');
+
+		// Show loading state
+		analysisContainer.createEl('p', {
+			text: 'Analyzing GEDCOM X file...',
+			cls: 'crc-text-muted'
+		});
+
+		try {
+			const content = await file.text();
+
+			// Validate it's a GEDCOM X file
+			if (!GedcomXParser.isGedcomX(content)) {
+				analysisContainer.empty();
+				analysisContainer.createEl('p', {
+					text: 'This file does not appear to be a valid GEDCOM X JSON file.',
+					cls: 'crc-text-error'
+				});
+				return;
+			}
+
+			const importer = new GedcomXImporter(this.app);
+			const analysis = importer.analyzeFile(content);
+
+			analysisContainer.empty();
+
+			// Show analysis results
+			const statsGrid = analysisContainer.createDiv({ cls: 'crc-stats-grid' });
+
+			const createStat = (label: string, value: string | number) => {
+				const stat = statsGrid.createDiv({ cls: 'crc-stat' });
+				stat.createSpan({ text: String(value), cls: 'crc-stat-value' });
+				stat.createSpan({ text: label, cls: 'crc-stat-label' });
+			};
+
+			createStat('Individuals', analysis.individualCount);
+			createStat('Relationships', analysis.relationshipCount);
+			createStat('Family groups', analysis.componentCount);
+
+			// Import destination info
+			analysisContainer.createEl('p', {
+				text: `Import destination: ${targetFolder || 'vault root'}`,
+				cls: 'crc-text-muted crc-mt-4'
+			});
+
+			// Import button
+			const importBtn = analysisContainer.createEl('button', {
+				cls: 'crc-btn crc-btn--primary crc-mt-4',
+				text: 'Import'
+			});
+
+			importBtn.addEventListener('click', () => {
+				void this.handleGedcomXImport(file, targetFolder);
+			});
+
+		} catch (error: unknown) {
+			analysisContainer.empty();
+			analysisContainer.createEl('p', {
+				text: `Error analyzing file: ${getErrorMessage(error)}`,
+				cls: 'crc-text-error'
+			});
+		}
+	}
+
+	/**
+	 * Handle GEDCOM X file import
+	 */
+	private async handleGedcomXImport(file: File, destFolder: string): Promise<void> {
+		try {
+			const content = await file.text();
+
+			logger.info('gedcomx', `Starting GEDCOM X import: ${file.name} to ${destFolder}`);
+
+			const importer = new GedcomXImporter(this.app);
+			const result = await importer.importFile(content, {
+				peopleFolder: destFolder,
+				overwriteExisting: false,
+				fileName: file.name
+			});
+
+			// Show results notification
+			this.showGedcomXImportResults(result);
+
+			// Refresh status tab
+			if (result.notesCreated > 0) {
+				this.showTab('status');
+			}
+
+			// If successful, offer to assign reference numbers
+			if (result.success && result.individualsImported > 0) {
+				this.promptAssignReferenceNumbersAfterImport();
+			}
+
+		} catch (error: unknown) {
+			const errorMsg = getErrorMessage(error);
+			logger.error('gedcomx', `GEDCOM X import failed: ${errorMsg}`);
+			new Notice(`Import failed: ${errorMsg}`);
+		}
+	}
+
+	/**
+	 * Show GEDCOM X import results
+	 */
+	private showGedcomXImportResults(result: GedcomXImportResult): void {
+		new Notice(
+			`GEDCOM X import complete: ${result.individualsImported} people imported` +
+			(result.errors.length > 0 ? ` (${result.errors.length} errors)` : ''),
+			5000
+		);
+
+		// Log detailed results
+		logger.info('gedcomx', 'Import results:', {
+			imported: result.individualsImported,
+			created: result.notesCreated,
+			errors: result.errors.length
+		});
+
+		if (result.errors.length > 0) {
+			logger.warn('gedcomx', 'Import errors:', result.errors);
+		}
+	}
+
+	/**
+	 * Render GEDCOM X export not supported message
+	 */
+	private renderGedcomXExportNotSupported(container: HTMLElement): void {
+		const card = this.createCard({
+			title: 'Export GEDCOM X',
+			icon: 'download'
+		});
+		const content = card.querySelector('.crc-card__content') as HTMLElement;
+
+		content.createEl('p', {
+			text: 'GEDCOM X export is not yet supported. Use GEDCOM 5.5.1 format for export.',
+			cls: 'crc-text-muted'
+		});
+
+		content.createEl('p', {
+			text: 'GEDCOM X export support is planned for a future release.',
+			cls: 'crc-text-muted crc-mt-2'
 		});
 
 		container.appendChild(card);
