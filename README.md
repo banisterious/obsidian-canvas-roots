@@ -1,256 +1,243 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-> **Status (v0.5.2):** Canvas Roots is feature-complete for core genealogical workflows and submitted for Obsidian community plugin review. All essential features are stable and production-ready (GEDCOM import/export, GEDCOM X import, Gramps XML import, CSV import/export, bidirectional sync, alternative layout algorithms, tree generation, canvas styling, collections, relationship calculator, reference numbering, lineage tracking, relationship history, interactive family chart view with PDF export, selective branch export, smart duplicate detection, staging workflow, merge tools, data quality analysis, Split Canvas Wizard with navigation nodes and master overview canvases, **geographic features with place notes, place statistics, and migration visualizations**). Advanced features are planned for future releases. See [Roadmap](docs/roadmap.md) for details.
+[![Version](https://img.shields.io/badge/version-0.5.2-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
-**Canvas Roots** is an Obsidian plugin that automatically generates complex family trees directly onto the Canvas using specialized genealogical layout algorithms for non-overlapping, relationship-aware positioning.
+**Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, and world-builders.
 
-This plugin is designed for genealogists, historians, and world-builders. It transforms structured data in your Markdown notes (relationships, dates, locations) into perfectly laid-out family trees directly on the Obsidian Canvas, powered by the [family-chart](https://github.com/donatso/family-chart) library.
+## Demo
 
+[![Canvas Roots Demo](https://img.youtube.com/vi/oiEjFsNI7pI/maxresdefault.jpg)](https://youtu.be/oiEjFsNI7pI)
 
-## 🎥 Demo Video
+**Watch:** Import GEDCOM → Create Base → Generate tree with interactive preview → Export to Excalidraw
 
-[![Canvas Roots v0.2.3 Demo - GEDCOM Import to Canvas Generation](https://img.youtube.com/vi/oiEjFsNI7pI/maxresdefault.jpg)](https://youtu.be/oiEjFsNI7pI)
+---
 
-**Watch the complete workflow:** Import GEDCOM → Create Base → Generate tree with interactive preview → Export to Excalidraw
+## Features
 
+### Tree Generation
 
-## ✨ Key Features
+| Feature | Description |
+|---------|-------------|
+| **Automated Layout** | Non-overlapping pedigree and descendant charts using specialized genealogical algorithms |
+| **Multiple Tree Types** | Ancestor trees, descendant trees, or full family trees with configurable generation limits |
+| **Layout Algorithms** | Standard, Compact (50% tighter), Timeline (chronological), Hourglass (focused lineage) |
+| **Interactive Preview** | Pan, zoom, and explore layouts before generating; export as PNG, SVG, or PDF |
+| **Multi-Family Detection** | Automatically detects disconnected family groups |
+| **Regenerate Canvas** | Update existing canvases with current data via right-click |
 
-### Available Now (v0.5.2)
+### Import & Export
 
-- **Interactive Family Chart View:** A persistent, interactive visualization panel for exploring and editing family trees in real-time. Pan, zoom, and navigate large trees with smooth animations. Click any person to center the view or open their note. Edit relationships directly in the chart with full undo/redo support. Full bidirectional sync: chart edits update frontmatter and rename files, file renames update frontmatter and refresh the chart. Choose from multiple color schemes (Gender, Generation, Collection, Monochrome) and adjustable spacing. Export as high-quality PNG, SVG, or PDF. Customizable export filenames with `{name}` and `{date}` placeholders. Toggle kinship labels on relationship links. Open multiple chart views simultaneously. Access via "Open family chart" command or "Open current note in family chart" for the active person note.
+| Feature | Description |
+|---------|-------------|
+| **GEDCOM 5.5.1** | Full round-trip import/export with validation, UUID preservation, and privacy protection |
+| **GEDCOM X** | Import from FamilySearch JSON format |
+| **Gramps XML** | Import directly from Gramps genealogy software |
+| **CSV/TSV** | Import/export for spreadsheet workflows with auto-detected column mapping |
+| **Excalidraw Export** | Export canvases for manual annotation and hand-drawn styling |
+| **Selective Branch Export** | Export only ancestors or descendants of a specific person |
 
-- **GEDCOM Import/Export:** Full round-trip support for GEDCOM 5.5.1 format with pre-import validation and comprehensive import results modal. Import family trees from popular genealogy software (Gramps, Ancestry, FamilySearch) with birth/death places, occupation, and gender data. Export back to .ged format with UUID preservation, collection codes, marriage metadata, and optional privacy protection for living persons. Selective branch export: export only ancestors or descendants of a specific person.
+### Interactive Family Chart
 
-- **GEDCOM X Import:** Import family tree data from FamilySearch GEDCOM X JSON format. Parses persons, relationships, names, dates, and places. Supports the staging folder workflow for safe import processing.
+| Feature | Description |
+|---------|-------------|
+| **Persistent View** | Interactive visualization panel for exploring and editing trees in real-time |
+| **Direct Editing** | Edit relationships in the chart with full undo/redo support |
+| **Bidirectional Sync** | Chart edits update frontmatter; file changes refresh the chart |
+| **Multiple Color Schemes** | Gender, Generation, Collection, or Monochrome |
+| **Export Options** | High-quality PNG, SVG, or PDF with customizable filenames |
 
-- **Gramps XML Import:** Import family tree data directly from Gramps genealogy software's native XML format. Preserves all relationship data, events, dates, and places. Full support for staging workflow.
+### Data Management
 
-- **CSV Import/Export:** Import and export family data in CSV/TSV format for spreadsheet workflows. Auto-detected column mapping supports common field names. Export with configurable columns and privacy protection. Selective branch export available for both formats.
+| Feature | Description |
+|---------|-------------|
+| **Bidirectional Sync** | Reciprocal relationships auto-maintained across all notes |
+| **Dual Storage** | Wikilinks for readability + `cr_id` references for robust tracking |
+| **Smart Duplicate Detection** | Fuzzy name matching and date proximity analysis |
+| **Merge Wizard** | Field-level conflict resolution with automatic relationship reconciliation |
+| **Staging Workflow** | Isolated staging folder for safe import processing |
+| **Data Quality Tools** | Quality scores, 15+ issue types, batch normalization |
 
-- **Interactive Tree Preview:** Real-time visual preview of family trees before canvas generation. Pan, zoom, and explore layouts with interactive controls. Switch between color schemes (Gender, Generation, Monochrome) to visualize different data aspects. Hover over nodes to view person details (name, birth/death dates, generation). Export previews as high-resolution PNG, vector SVG, or PDF for external use. Particularly useful for large trees (50+ people) to verify layout before generating the final canvas.
+### Geographic Features
 
-- **Alternative Layout Algorithms:** Choose from four layout algorithms to visualize your family tree in different ways:
-  - **Standard:** Traditional family-chart layout with proper spouse handling
-  - **Compact:** 50% tighter spacing for large trees (50+ people)
-  - **Timeline:** Chronological positioning by birth year (shows who lived when)
-  - **Hourglass:** Focus on one person's lineage (ancestors above, descendants below)
+| Feature | Description |
+|---------|-------------|
+| **Place Notes** | Hierarchical places (city → state → country) with six categories |
+| **Place Categories** | Real, historical, disputed, legendary, mythological, fictional |
+| **Place Statistics** | Category breakdown, common locations, migration patterns |
+| **Migration Visualizations** | D3-based network and arc diagrams with time/collection filters |
+| **Geocoding Lookup** | Auto-lookup coordinates via Nominatim (OpenStreetMap) |
+| **Place-Based Filtering** | Filter tree generation by birth/death/marriage locations |
 
-- **Automated Layout:** Generate precise, non-overlapping pedigree (ancestor) and descendant charts using specialized genealogical layout algorithms designed for complex family relationships.
+### Organization & Analysis
 
-- **Native Canvas Nodes:** Trees are built from Obsidian file nodes, making every person immediately linkable to research notes, images, and documents.
+| Feature | Description |
+|---------|-------------|
+| **Collections & Groups** | Auto-detected family groups and user-defined collections |
+| **Reference Numbering** | Ahnentafel, d'Aboville, Henry, and Generation systems |
+| **Lineage Tracking** | Track patrilineal, matrilineal, or all descendants |
+| **Relationship Calculator** | Find connections with proper genealogical terms (cousin, 2nd cousin once removed, etc.) |
+| **Relationship History** | Track all changes with timestamps and one-click undo |
 
-- **Multiple Tree Types:** Generate ancestor trees (pedigree charts), descendant trees, or full family trees. Configure generation limits, spouse inclusion, and layout direction.
+### Canvas Features
 
-- **Multi-Family Detection:** Automatically detects disconnected family groups. Generate all family trees at once or work with individual families.
+| Feature | Description |
+|---------|-------------|
+| **Native Canvas Nodes** | Every person is a linkable Obsidian file node |
+| **Canvas Styling** | Node coloring, arrow styles, edge colors for parent-child and spouse relationships |
+| **Multiple Spouse Support** | Indexed properties with marriage dates, locations, and status |
+| **Split Canvas Wizard** | Split large trees by generation, branch, collection, surname, or lineage |
+| **Navigation Portals** | Link between related canvases with optional master overview |
 
-- **Regenerate Canvas:** Update existing canvases with current relationship data and settings. Recalculate layout, apply new styling, and preserve tree metadata—all with a right-click.
+### Integration
 
-- **Canvas Styling:** Comprehensive styling options: node coloring (gender-based, generation-based, or monochrome), arrow styles (directed, bidirectional, undirected), and edge colors. Configure parent-child and spouse relationships independently.
+| Feature | Description |
+|---------|-------------|
+| **Obsidian Bases** | Ready-to-use Base template with 22 pre-configured views |
+| **Context Menu Actions** | Right-click person notes, folders, and canvases for quick actions |
+| **YAML-First Data** | Compatible with Dataview, Bases, and other Obsidian tools |
+| **Privacy Protection** | Optional anonymization of living persons in exports |
 
-- **Multiple Spouse Support:** Track complex marital histories with flat indexed YAML properties (`spouse1`, `spouse2`, etc.) including marriage dates, locations, and status. Optionally display spouse edges with marriage metadata labels on the canvas (toggle in Canvas Settings).
+---
 
-- **Obsidian Bases Compatible:** Designed to work seamlessly with [Obsidian Bases](https://help.obsidian.md/bases) for efficient bulk data entry and management. Includes ready-to-use Base template with 22 pre-configured views including relationship queries, lineage tracking, and reference numbering views.
+## Planned Features
 
-- **Bidirectional Relationship Sync:** Automatically maintains reciprocal relationships across your family tree. When you set someone as a parent in one note, Canvas Roots automatically adds the child relationship in the parent's note. When you delete a relationship, the reciprocal link is automatically removed. Works seamlessly with Bases table edits, direct frontmatter modifications, and external editors.
+See [Roadmap](docs/roadmap.md) for detailed descriptions and development priorities.
 
-- **Dual Storage System:** Combines human-friendly wikilinks with persistent `cr_id` references for robust relationship tracking that survives file renames and moves.
+### Coming Soon
 
-- **YAML-First Data:** Uses native YAML frontmatter for maximum compatibility with Dataview, Bases, and other Obsidian tools.
+| Feature | Description |
+|---------|-------------|
+| **Interactive Maps** | Leaflet.js integration with birth/death markers, migration paths, and animated timelines |
+| **Custom Relationships** | Non-familial relationships (mentor, liege, rival) with colored canvas edges |
+| **Fictional Dates** | Custom calendars and eras for world-building (e.g., "Third Age 2941") |
+| **Schema Validation** | User-defined JSON schemas to enforce property rules and catch inconsistencies |
+| **Organization Charts** | Track houses, guilds, and factions with hierarchical D3 visualizations |
+| **Source Media Gallery** | Centralized evidence management with thumbnails and citation generation |
+| **Canvas Media Nodes** | Media files as first-class canvas entities with intelligent placement |
+| **Oral History Tools** | Timestamped transcript citations, interview subject graphs, chronological story mapping |
 
-- **Context Menu Actions:** Right-click person notes to add relationships, validate data integrity, find canvases, or bulk-add essential properties. Generate trees quickly via "Generate tree" submenu (Canvas with full options, or Excalidraw with instant defaults). Right-click folders to scan for relationship issues, import GEDCOM files, or export folder contents to GEDCOM. Right-click canvas files to regenerate, view statistics, or export as image (PNG, SVG, PDF). Multi-file selection support for batch operations. Full desktop and mobile support.
+---
 
-- **Collections & Groups:** Organize and browse people using auto-detected family groups (with customizable group names) or user-defined collections. Filter tree generation by collection and view cross-collection connections to identify bridge people connecting different parts of your family network.
-
-- **Root Person Marking:** Mark specific people as "root persons" to track key lineage anchor points. Use the crown-icon context menu action to designate research starting points, track multiple lineages simultaneously, and filter root persons in Obsidian Bases views.
-
-- **Excalidraw Export:** Export family tree canvases to Excalidraw format for manual annotation, drawing, and customization. Preserves node positioning and colors while enabling hand-drawn styling and freeform annotations.
-
-- **Relationship Calculator:** Calculate the relationship between any two people in your family tree. Uses BFS pathfinding to find the shortest connection path and provides proper genealogical terms (cousin, uncle, 2nd cousin once removed, etc.). Supports in-law relationships, displays common ancestors, and shows the full relationship path. Access via command palette or right-click context menu on person notes.
-
-- **Smart Duplicate Detection:** Find and manage potential duplicate person records in your vault. Uses fuzzy name matching (Levenshtein distance) and date proximity analysis to identify likely duplicates. Configurable confidence thresholds and match criteria. Review matches in a dedicated modal, dismiss false positives, and maintain data quality. Access via "Find duplicate people" command.
-
-- **Staging & Import Cleanup:** Safe import workflow for processing messy GEDCOM files. Configure a staging folder that's automatically isolated from your main tree. Import data to staging, review cross-import duplicates, and promote clean data to main. Staging tab in Control Center provides subfolder management, batch promote/delete actions, and quick statistics.
-
-- **Merge Wizard:** Combine duplicate records with field-level conflict resolution. Side-by-side comparison shows values from both records with dropdowns to choose which to keep. Support for combining array fields (spouses, children) from both sources. Automatic relationship reconciliation updates all references pointing to the merged record. Available from both duplicate detection and cross-import review modals.
-
-- **Data Quality Tools:** Comprehensive data quality analysis and batch normalization. Quality score (0-100) measures data completeness and consistency. Detects 15+ issue types across five categories: date inconsistencies (birth after death, impossible ages), relationship problems (circular references, mismatched links), missing data (no birth date, no parents), format issues (non-standard dates/gender), and orphan references. Filter issues by category and severity. Batch operations normalize dates to YYYY-MM-DD, standardize gender to M/F, and clear invalid references—all with preview before applying. Data Quality tab in Control Center provides visual stats, completeness bars, and scrollable issue list.
-
-- **Split Canvas Wizard:** Multi-step wizard for splitting large family trees into manageable canvas files. Six split methods: by generation (configurable generations per canvas), by branch (paternal/maternal lines), single lineage extraction (direct line between two people), by collection (one canvas per user-defined collection), ancestor + descendant pairs, and by surname (extract people sharing a surname even without established connections). Surname extraction includes scrollable surname list sorted by frequency, multi-surname selection, and options to include spouses and match maiden names. Preview step shows expected canvas count and people before generating. Generates actual canvas files with full layout and styling. Optional navigation portal nodes link between related canvases. Master overview canvas provides grid layout with links to all split canvases. Access via canvas context menu → Canvas Roots → Split canvas wizard.
-
-- **Geographic Features - Place Notes:** Create and manage place notes with hierarchical relationships (city → state → country). Six place categories support both real-world genealogy (real, historical, disputed) and world-building (legendary, mythological, fictional). Track coordinates for real-world places or custom map systems for fictional worlds. Historical names support for places that changed names over time. Person notes can link to place notes for birth, death, marriage, and burial locations.
-
-- **Place Statistics & Visualizations:** Control Center panel shows place analytics including category breakdown, most common locations, and migration patterns. D3-based visualizations include network/schematic view (places as nodes sized by population) and migration flow diagrams (arc diagrams showing movement patterns). Filter by time period, collection, or hierarchy level. Actions to create missing places, build hierarchies, and standardize names.
-
-- **Reference Numbering Systems:** Assign standard genealogical reference numbers to your family members. Supports four numbering systems: Ahnentafel (ancestor numbering where father=2N, mother=2N+1), d'Aboville (descendant numbering with dot notation like 1.2.3), Henry System (compact descendant numbering without dots), and Generation numbering (relative generation depth from a reference person). Numbers are stored in frontmatter and automatically available in Bases views.
-
-- **Lineage Tracking:** Compute and track multi-generational lineages from root persons. Mark people as belonging to specific ancestral lines (e.g., "Smith Line", "Tudor Dynasty") with support for patrilineal (father's line), matrilineal (mother's line), or all descendants tracking. Enables filtering and analysis of descendant lines in Bases views.
-
-- **Relationship History & Undo:** Track all relationship changes made through Canvas Roots with timestamps. View recent changes in the Relationship History modal, see statistics on changes by type, and undo any change with a single click. Configurable retention period for automatic cleanup of old history entries.
-
-- **Folder Statistics:** View comprehensive statistics about person notes in any folder. See data completeness metrics, relationship health reports, and family structure analysis including gender distribution, relationship types, and generation depth.
-
-- **Privacy Protection:** Optional privacy controls for living persons in GEDCOM exports. Configure birth year threshold to automatically exclude or anonymize personal details for people who may still be living.
-
-### Planned Features
-
-See [Roadmap](docs/roadmap.md) for detailed feature descriptions and development priorities.
-- **Full Map Support:** Leaflet.js integration with OpenStreetMap tiles for interactive maps showing birth/death locations, migration paths, and animated timelines. Custom image maps for fictional worlds.
-- **Export Enhancements:** GEDCOM X and Gramps XML export support
-- **World-Building Features:** Track fantasy dynasties, corporate succession, and historical kingdoms
-- **Custom Relationship Types:** Define non-familial relationships (mentor, liege, rival, etc.) with colored canvas edges and configurable styling
-- **Fictional Date Systems:** Custom calendars and eras for world-building (e.g., "Third Age 2941", "Year of the Dragon 1247") with timeline integration
-- **Schema Validation & Consistency Checks:** User-defined JSON schemas to enforce property rules (required fields, enum values, cross-property constraints) and catch plot holes or data inconsistencies
-- **Organization Notes & Hierarchy Views:** Track houses, guilds, corporations, and factions with hierarchical structure, temporal membership, and D3-based organizational chart visualization
-- **Source Media Gallery:** Centralized evidence management linking source documents (census records, vital records, photos, correspondence) to person notes with thumbnail grid view, one-click viewing, and citation generation
-- **Canvas Media Nodes:** Media files as first-class canvas entities with semantic relationships, intelligent placement (avatars adjacent to people, sources in clusters), type-based filtering, and visual audit trails
-- **Transcript Nodes & Quotable Facts:** Time-stamped citations from audio/video interviews with deep links to exact moments, specialized quote nodes on canvas, verifiable primary source evidence for oral history, interview subject graphs that visualize who was interviewed and who they mentioned, and chronological story mapping that transforms extracted facts into timeline events for Leaflet.js animation and dedicated timeline views
-
-
-## 📸 Screenshots
+## Screenshots
 
 | Tree Output Interface | Generated Family Tree |
 |:---------------------:|:---------------------:|
-| ![Tree Output interface showing person selection, family groups, tree configuration with layout algorithms, and interactive preview with pan/zoom controls](docs/images/tree-output-ui.png) | ![Multi-generational family tree canvas with automated genealogical layout](docs/images/family-tree-canvas.png) |
-| **Complete Tree Output workflow** with person browser, layout algorithm selection, interactive SVG preview, and export options | **Automated genealogical layout** showing 3 generations with spouse relationships and parent-child connections |
+| ![Tree Output interface](docs/images/tree-output-ui.png) | ![Family tree canvas](docs/images/family-tree-canvas.png) |
+| Person browser, layout selection, interactive preview | Automated genealogical layout with spouse and parent-child connections |
 
+---
 
-## 📥 Installation
+## Installation
 
-### Using BRAT (Recommended for Alpha Testing)
+### Using BRAT (Recommended)
 
-The easiest way to install Canvas Roots for alpha testing is using the [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin:
+1. Install [BRAT](https://github.com/TfTHacker/obsidian42-brat) from Community Plugins
+2. Run command: `BRAT: Add a beta plugin for testing`
+3. Enter: `https://github.com/banisterious/obsidian-canvas-roots`
+4. Enable Canvas Roots in Settings → Community Plugins
 
-1. Install BRAT from Obsidian's Community Plugins (if not already installed)
-2. Open Command Palette (Ctrl/Cmd + P)
-3. Run command: `BRAT: Add a beta plugin for testing`
-4. Enter this repository URL: `https://github.com/banisterious/obsidian-canvas-roots`
-5. Enable Canvas Roots in Settings → Community Plugins
+### Manual Installation
 
-BRAT will automatically check for updates and notify you when new versions are available.
+1. Download from [Releases](https://github.com/banisterious/obsidian-canvas-roots/releases)
+2. Extract to `<vault>/.obsidian/plugins/canvas-roots/`
+3. Reload Obsidian and enable the plugin
 
-### Manual Installation from Release
+### From Source
 
-1. Download the latest release from the [Releases page](https://github.com/banisterious/obsidian-canvas-roots/releases)
-2. Extract the ZIP file
-3. Copy the `canvas-roots` folder to your vault's plugins folder: `<vault>/.obsidian/plugins/`
-4. Reload Obsidian (Ctrl/Cmd + R)
-5. Go to Settings → Community Plugins and enable "Canvas Roots"
+```bash
+git clone https://github.com/banisterious/obsidian-canvas-roots
+cd obsidian-canvas-roots
+npm install && npm run build
+```
 
-### From Source (For Developers)
+Copy `main.js`, `styles.css`, and `manifest.json` to your vault's plugins folder.
 
-1. Clone this repository or download the source code
-2. Run `npm install` to install dependencies
-3. Run `npm run build` to compile the plugin
-4. Copy `main.js`, `styles.css`, and `manifest.json` to your vault's plugins folder
-5. Reload Obsidian and enable the plugin
+---
 
-### From Obsidian Community Plugins (Coming Soon)
-
-Once approved for the Community Plugins directory:
-1. Open Settings → Community Plugins
-2. Click "Browse" and search for "Canvas Roots"
-3. Click "Install" then "Enable"
-
-
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Enter Your Data
 
-**Option A: Import GEDCOM**
-1. Open Control Center (`Ctrl/Cmd + P` → "Canvas Roots: Open Control Center")
-2. Go to GEDCOM tab → Import section
-3. Select your `.ged` file and configure import options
+**Import GEDCOM:** Control Center → Import/Export tab → Import section
 
-**Option B: Create Individual Notes**
+**Or create notes manually:**
 
 ```yaml
 ---
 cr_id: abc-123-def-456
 name: John Robert Smith
 father: "[[John Smith Sr]]"
-father_id: xyz-789-uvw-012
 mother: "[[Jane Doe]]"
-mother_id: pqr-345-stu-678
 spouse: ["[[Mary Jones]]"]
-spouse_id: ["mno-901-jkl-234"]
 born: 1888-05-15
 died: 1952-08-20
 ---
-
-# Research Notes
-[Your biographical research, sources, and notes here...]
 ```
 
-**Option C: Use Obsidian Bases (Recommended for Bulk Entry)**
-- Control Center → Quick Actions → "Create Bases template"
-- Edit family data in spreadsheet-like table views
-- See [Bases Integration Guide](docs/bases-integration.md) for details
+**Or use Obsidian Bases:** Control Center → Quick Actions → "Create Bases template"
 
 ### 2. Generate Tree
 
 1. Open Control Center → Tree Generation tab
-2. Select root person using the inline person browser
-3. Configure tree type, generations, and layout
+2. Select root person
+3. Configure tree type and layout
 4. Click "Generate family tree"
 
 ### 3. Maintain Tree
 
-After editing relationships or changing settings:
-- **Right-click** the canvas tab/file → "Regenerate canvas"
-- Or use Command Palette: "Canvas Roots: Regenerate canvas"
+Right-click canvas → "Regenerate canvas" after editing relationships.
 
-For complete workflow details, see the [User Guide](docs/user-guide.md).
+See [User Guide](docs/user-guide.md) for complete documentation.
 
 ---
 
-## Support My Work
+## Support
 
 If you find this plugin useful, please consider supporting its development!
 
 <a href="https://www.buymeacoffee.com/banisterious" target="_blank"><img src="docs/images/buy-me-a-coffee.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
+---
 
-## 📚 Documentation
+## Documentation
 
 ### For Users
-- **[User Guide](docs/user-guide.md)** - Complete workflow, tree generation, and styling guide
-- **[Frontmatter Schema](docs/reference/frontmatter-schema.md)** - Complete property reference for person and place notes
-- **[Changelog](CHANGELOG.md)** - Version history and release notes
-- **[Bases Integration](docs/bases-integration.md)** - Bulk data management with Obsidian Bases
-- **[Roadmap](docs/roadmap.md)** - Current status and planned features
-- **[Security Policy](SECURITY.md)** - PII handling and data privacy best practices
+- [User Guide](docs/user-guide.md) - Complete workflow and features
+- [Frontmatter Schema](docs/reference/frontmatter-schema.md) - Property reference for person and place notes
+- [Bases Integration](docs/bases-integration.md) - Bulk data management
+- [Changelog](CHANGELOG.md) - Version history
+- [Roadmap](docs/roadmap.md) - Planned features
 
 ### For Developers
-- **[Contributing Guide](CONTRIBUTING.md)** - Development setup and contribution process
-- **[Development Guide](docs/development.md)** - Build commands, testing, and architecture
-- **[Coding Standards](docs/developer/coding-standards.md)** - TypeScript and CSS standards
+- [Contributing Guide](CONTRIBUTING.md) - Development setup
+- [Development Guide](docs/development.md) - Architecture and testing
+- [Coding Standards](docs/developer/coding-standards.md) - Style guidelines
 
+---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
-- Development environment setup
-- Code style guidelines
-- Pull request process
-- Testing requirements
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
+---
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE)
 
+---
 
-## 🐛 Issues & Support
+## Issues & Support
 
 - **Bug Reports:** [GitHub Issues](https://github.com/banisterious/obsidian-canvas-roots/issues)
 - **Feature Requests:** [GitHub Discussions](https://github.com/banisterious/obsidian-canvas-roots/discussions)
-- **Security Issues:** See [SECURITY.md](SECURITY.md) for responsible disclosure
+- **Security:** See [SECURITY.md](SECURITY.md)
 
+---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-- Built with the [Obsidian Plugin API](https://docs.obsidian.md/Plugins)
-- Layout powered by [family-chart](https://github.com/donatso/family-chart) library
-- Follows the [JSON Canvas 1.0 specification](https://jsoncanvas.org/)
+- [Obsidian Plugin API](https://docs.obsidian.md/Plugins)
+- [family-chart](https://github.com/donatso/family-chart) library
+- [JSON Canvas 1.0 specification](https://jsoncanvas.org/)
 - Compatible with [Obsidian Bases](https://help.obsidian.md/bases) and [Advanced Canvas](https://github.com/Developer-Mike/obsidian-advanced-canvas)

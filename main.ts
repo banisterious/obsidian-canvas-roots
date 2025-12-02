@@ -1049,9 +1049,9 @@ export default class CanvasRootsPlugin extends Plugin {
 					const fileCache = this.app.metadataCache.getFileCache(file);
 					const frontmatter = fileCache?.frontmatter || {};
 
-					// Check if all essential properties exist
+					// Check if all essential person properties exist
 					// Note: Relationships can be stored as wikilinks OR _id properties (dual storage)
-					const hasAllProperties =
+					const hasAllPersonProperties =
 						frontmatter.cr_id &&
 						frontmatter.name &&
 						('born' in frontmatter) &&
@@ -1062,29 +1062,73 @@ export default class CanvasRootsPlugin extends Plugin {
 						(('children' in frontmatter) || ('children_id' in frontmatter)) &&
 						('group_name' in frontmatter);
 
-					// Only show if missing some properties
-					if (!hasAllProperties) {
+					// Check if all essential place properties exist
+					const hasAllPlaceProperties =
+						frontmatter.type === 'place' &&
+						frontmatter.cr_id &&
+						frontmatter.name &&
+						('place_type' in frontmatter) &&
+						('place_category' in frontmatter);
+
+					// Show submenu if either person or place properties are missing
+					const showPersonOption = !hasAllPersonProperties;
+					const showPlaceOption = !hasAllPlaceProperties;
+
+					if (showPersonOption || showPlaceOption) {
 						menu.addSeparator();
 
 						if (useSubmenu) {
 							menu.addItem((item) => {
-								item
+								const propsSubmenu: Menu = item
 									.setTitle('Canvas Roots: Add essential properties')
 									.setIcon('file-plus')
-									.onClick(async () => {
-										await this.addEssentialProperties([file]);
+									.setSubmenu();
+
+								if (showPersonOption) {
+									propsSubmenu.addItem((subItem) => {
+										subItem
+											.setTitle('Add essential person properties')
+											.setIcon('user')
+											.onClick(async () => {
+												await this.addEssentialPersonProperties([file]);
+											});
 									});
+								}
+
+								if (showPlaceOption) {
+									propsSubmenu.addItem((subItem) => {
+										subItem
+											.setTitle('Add essential place properties')
+											.setIcon('map-pin')
+											.onClick(async () => {
+												await this.addEssentialPlaceProperties([file]);
+											});
+									});
+								}
 							});
 						} else {
-							// Mobile
-							menu.addItem((item) => {
-								item
-									.setTitle('Canvas Roots: Add essential properties')
-									.setIcon('file-plus')
-									.onClick(async () => {
-										await this.addEssentialProperties([file]);
-									});
-							});
+							// Mobile: flat menu with prefix
+							if (showPersonOption) {
+								menu.addItem((item) => {
+									item
+										.setTitle('Canvas Roots: Add essential person properties')
+										.setIcon('user')
+										.onClick(async () => {
+											await this.addEssentialPersonProperties([file]);
+										});
+								});
+							}
+
+							if (showPlaceOption) {
+								menu.addItem((item) => {
+									item
+										.setTitle('Canvas Roots: Add essential place properties')
+										.setIcon('map-pin')
+										.onClick(async () => {
+											await this.addEssentialPlaceProperties([file]);
+										});
+								});
+							}
 						}
 					}
 				}
@@ -1355,14 +1399,16 @@ export default class CanvasRootsPlugin extends Plugin {
 
 				if (markdownFiles.length === 0) return;
 
-				// Check if any files are missing essential properties
-				let hasMissingProperties = false;
+				// Check if any files are missing essential person properties
+				let hasMissingPersonProperties = false;
+				let hasMissingPlaceProperties = false;
+
 				for (const file of markdownFiles) {
 					const fileCache = this.app.metadataCache.getFileCache(file);
 					const frontmatter = fileCache?.frontmatter || {};
 
-					// Check if all essential properties exist (accounting for dual storage)
-					const hasAllProperties =
+					// Check person properties
+					const hasAllPersonProperties =
 						frontmatter.cr_id &&
 						frontmatter.name &&
 						('born' in frontmatter) &&
@@ -1373,23 +1419,79 @@ export default class CanvasRootsPlugin extends Plugin {
 						(('children' in frontmatter) || ('children_id' in frontmatter)) &&
 						('group_name' in frontmatter);
 
-					if (!hasAllProperties) {
-						hasMissingProperties = true;
-						break;
-					}
+					// Check place properties
+					const hasAllPlaceProperties =
+						frontmatter.type === 'place' &&
+						frontmatter.cr_id &&
+						frontmatter.name &&
+						('place_type' in frontmatter) &&
+						('place_category' in frontmatter);
+
+					if (!hasAllPersonProperties) hasMissingPersonProperties = true;
+					if (!hasAllPlaceProperties) hasMissingPlaceProperties = true;
+
+					// If both types are missing properties, no need to keep checking
+					if (hasMissingPersonProperties && hasMissingPlaceProperties) break;
 				}
 
-				// Only show menu item if at least one file is missing properties
-				if (hasMissingProperties) {
+				// Only show submenu if at least one type is missing properties
+				if (hasMissingPersonProperties || hasMissingPlaceProperties) {
+					const useSubmenu = Platform.isDesktop && !Platform.isMobile;
 					menu.addSeparator();
-					menu.addItem((item) => {
-						item
-							.setTitle(`Canvas Roots: Add essential properties (${markdownFiles.length} files)`)
-							.setIcon('file-plus')
-							.onClick(async () => {
-								await this.addEssentialProperties(markdownFiles);
+
+					if (useSubmenu) {
+						menu.addItem((item) => {
+							const propsSubmenu: Menu = item
+								.setTitle(`Canvas Roots: Add essential properties (${markdownFiles.length} files)`)
+								.setIcon('file-plus')
+								.setSubmenu();
+
+							if (hasMissingPersonProperties) {
+								propsSubmenu.addItem((subItem) => {
+									subItem
+										.setTitle('Add essential person properties')
+										.setIcon('user')
+										.onClick(async () => {
+											await this.addEssentialPersonProperties(markdownFiles);
+										});
+								});
+							}
+
+							if (hasMissingPlaceProperties) {
+								propsSubmenu.addItem((subItem) => {
+									subItem
+										.setTitle('Add essential place properties')
+										.setIcon('map-pin')
+										.onClick(async () => {
+											await this.addEssentialPlaceProperties(markdownFiles);
+										});
+								});
+							}
+						});
+					} else {
+						// Mobile: flat menu
+						if (hasMissingPersonProperties) {
+							menu.addItem((item) => {
+								item
+									.setTitle(`Canvas Roots: Add essential person properties (${markdownFiles.length} files)`)
+									.setIcon('user')
+									.onClick(async () => {
+										await this.addEssentialPersonProperties(markdownFiles);
+									});
 							});
-					});
+						}
+
+						if (hasMissingPlaceProperties) {
+							menu.addItem((item) => {
+								item
+									.setTitle(`Canvas Roots: Add essential place properties (${markdownFiles.length} files)`)
+									.setIcon('map-pin')
+									.onClick(async () => {
+										await this.addEssentialPlaceProperties(markdownFiles);
+									});
+							});
+						}
+					}
 				}
 			})
 		);
@@ -2587,7 +2689,7 @@ export default class CanvasRootsPlugin extends Plugin {
 	 * Add essential properties to person note(s)
 	 * Supports batch operations on multiple files
 	 */
-	private async addEssentialProperties(files: TFile[]) {
+	private async addEssentialPersonProperties(files: TFile[]) {
 		try {
 			let processedCount = 0;
 			let skippedCount = 0;
@@ -2720,8 +2822,166 @@ export default class CanvasRootsPlugin extends Plugin {
 			}
 
 		} catch (error: unknown) {
-			console.error('Error adding essential properties:', error);
-			new Notice('Failed to add essential properties');
+			console.error('Error adding essential person properties:', error);
+			new Notice('Failed to add essential person properties');
+		}
+	}
+
+	/**
+	 * Add essential properties to place note(s)
+	 * Supports batch operations on multiple files
+	 */
+	private async addEssentialPlaceProperties(files: TFile[]) {
+		try {
+			let processedCount = 0;
+			let skippedCount = 0;
+			let errorCount = 0;
+
+			for (const file of files) {
+				try {
+					// Read current file content
+					const content = await this.app.vault.read(file);
+					const cache = this.app.metadataCache.getFileCache(file);
+
+					// Check if file already has frontmatter
+					const hasFrontmatter = content.startsWith('---');
+					const existingFrontmatter = cache?.frontmatter || {};
+
+					// Define essential place properties
+					const essentialProperties: Record<string, unknown> = {};
+
+					// type: Must be "place"
+					if (existingFrontmatter.type !== 'place') {
+						essentialProperties.type = 'place';
+					}
+
+					// cr_id: Generate if missing
+					if (!existingFrontmatter.cr_id) {
+						essentialProperties.cr_id = `place_${generateCrId()}`;
+					}
+
+					// name: Use filename if missing
+					if (!existingFrontmatter.name) {
+						essentialProperties.name = file.basename;
+					}
+
+					// place_type: Add as empty if missing
+					if (!existingFrontmatter.place_type) {
+						essentialProperties.place_type = '';
+					}
+
+					// place_category: Default to 'real' if missing
+					if (!existingFrontmatter.place_category) {
+						essentialProperties.place_category = 'real';
+					}
+
+					// Skip if no properties to add
+					if (Object.keys(essentialProperties).length === 0) {
+						skippedCount++;
+						continue;
+					}
+
+					// Build new frontmatter (place type first for clarity)
+					const orderedFrontmatter: Record<string, unknown> = {};
+
+					// Place type identifier first
+					if (essentialProperties.type || existingFrontmatter.type) {
+						orderedFrontmatter.type = essentialProperties.type || existingFrontmatter.type;
+					}
+
+					// Then cr_id
+					if (essentialProperties.cr_id || existingFrontmatter.cr_id) {
+						orderedFrontmatter.cr_id = essentialProperties.cr_id || existingFrontmatter.cr_id;
+					}
+
+					// Then name
+					if (essentialProperties.name || existingFrontmatter.name) {
+						orderedFrontmatter.name = essentialProperties.name || existingFrontmatter.name;
+					}
+
+					// Then classification properties
+					if (essentialProperties.place_type !== undefined || existingFrontmatter.place_type !== undefined) {
+						orderedFrontmatter.place_type = essentialProperties.place_type ?? existingFrontmatter.place_type;
+					}
+					if (essentialProperties.place_category || existingFrontmatter.place_category) {
+						orderedFrontmatter.place_category = essentialProperties.place_category || existingFrontmatter.place_category;
+					}
+
+					// Then remaining existing properties
+					for (const [key, value] of Object.entries(existingFrontmatter)) {
+						if (!(key in orderedFrontmatter)) {
+							orderedFrontmatter[key] = value;
+						}
+					}
+
+					// Convert frontmatter to YAML string
+					const yamlLines = ['---'];
+					for (const [key, value] of Object.entries(orderedFrontmatter)) {
+						if (Array.isArray(value)) {
+							if (value.length === 0) {
+								yamlLines.push(`${key}: []`);
+							} else {
+								yamlLines.push(`${key}:`);
+								value.forEach(item => yamlLines.push(`  - ${item}`));
+							}
+						} else if (typeof value === 'object' && value !== null) {
+							// Handle nested objects like coordinates
+							yamlLines.push(`${key}:`);
+							for (const [subKey, subValue] of Object.entries(value)) {
+								yamlLines.push(`  ${subKey}: ${subValue}`);
+							}
+						} else if (value === '') {
+							yamlLines.push(`${key}: ""`);
+						} else {
+							yamlLines.push(`${key}: ${value}`);
+						}
+					}
+					yamlLines.push('---');
+
+					// Get body content (everything after frontmatter)
+					let bodyContent = '';
+					if (hasFrontmatter) {
+						const endOfFrontmatter = content.indexOf('---', 3);
+						if (endOfFrontmatter !== -1) {
+							bodyContent = content.substring(endOfFrontmatter + 3).trim();
+						}
+					} else {
+						bodyContent = content.trim();
+					}
+
+					// Construct new file content
+					const newContent = yamlLines.join('\n') + '\n\n' + bodyContent;
+
+					// Write back to file
+					await this.app.vault.modify(file, newContent);
+					processedCount++;
+
+				} catch (error: unknown) {
+					console.error(`Error processing ${file.path}:`, error);
+					errorCount++;
+				}
+			}
+
+			// Show summary
+			if (files.length === 1) {
+				if (processedCount === 1) {
+					new Notice('Added essential place properties');
+				} else if (skippedCount === 1) {
+					new Notice('File already has all essential place properties');
+				} else {
+					new Notice('Failed to add essential place properties');
+				}
+			} else {
+				const parts = [];
+				if (processedCount > 0) parts.push(`${processedCount} updated`);
+				if (skippedCount > 0) parts.push(`${skippedCount} already complete`);
+				if (errorCount > 0) parts.push(`${errorCount} errors`);
+				new Notice(`Essential place properties: ${parts.join(', ')}`);
+			}
+
+		} catch (error: unknown) {
+			console.error('Error adding essential place properties:', error);
+			new Notice('Failed to add essential place properties');
 		}
 	}
 

@@ -1072,21 +1072,21 @@ export class ControlCenterModal extends Modal {
 
 		container.appendChild(quickStartCard);
 
-		// Essential Frontmatter Card
-		const frontmatterCard = this.createCard({
-			title: 'Essential person note fields',
-			icon: 'file-text'
+		// Essential Person Note Properties Card
+		const personPropsCard = this.createCard({
+			title: 'Essential person note properties',
+			icon: 'user'
 		});
-		const frontmatterContent = frontmatterCard.querySelector('.crc-card__content') as HTMLElement;
+		const personPropsContent = personPropsCard.querySelector('.crc-card__content') as HTMLElement;
 
-		frontmatterContent.createEl('p', {
-			text: 'Add these fields to your person notes (YAML frontmatter):',
+		personPropsContent.createEl('p', {
+			text: 'Add these properties to your person notes (YAML frontmatter):',
 			cls: 'crc-mb-3'
 		});
 
-		const fieldsList = frontmatterContent.createEl('ul', { cls: 'crc-field-list' });
+		const personPropsList = personPropsContent.createEl('ul', { cls: 'crc-field-list' });
 
-		const fields = [
+		const personProps = [
 			{ name: 'cr_id', description: 'Unique identifier (auto-generated or from GEDCOM UUID)', required: true },
 			{ name: 'name', description: 'Full name of the person', required: true },
 			{ name: 'sex', description: 'M (male), F (female), or U (unknown)', required: false },
@@ -1097,22 +1097,63 @@ export class ControlCenterModal extends Modal {
 			{ name: 'died', description: 'Death date (YYYY-MM-DD format preferred)', required: false }
 		];
 
-		fields.forEach(field => {
-			const li = fieldsList.createEl('li');
-			const fieldName = li.createEl('code', { text: field.name });
-			if (field.required) {
-				fieldName.addClass('crc-field--required');
+		personProps.forEach(prop => {
+			const li = personPropsList.createEl('li');
+			const propName = li.createEl('code', { text: prop.name });
+			if (prop.required) {
+				propName.addClass('crc-field--required');
 			}
-			li.appendText(` - ${field.description}`);
+			li.appendText(` - ${prop.description}`);
 		});
 
-		// Link to full schema reference
-		const schemaLink = frontmatterContent.createDiv({ cls: 'crc-mt-3' });
-		schemaLink.createEl('p', {
-			cls: 'crc-text-muted'
-		}).innerHTML = 'For the complete property reference (including spouse metadata, reference numbering, and place notes), see the <a href="https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/reference/frontmatter-schema.md" class="crc-link" target="_blank">Frontmatter Schema Reference</a>.';
+		container.appendChild(personPropsCard);
 
-		container.appendChild(frontmatterCard);
+		// Essential Place Note Properties Card
+		const placePropsCard = this.createCard({
+			title: 'Essential place note properties',
+			icon: 'map-pin'
+		});
+		const placePropsContent = placePropsCard.querySelector('.crc-card__content') as HTMLElement;
+
+		placePropsContent.createEl('p', {
+			text: 'Add these properties to your place notes (YAML frontmatter):',
+			cls: 'crc-mb-3'
+		});
+
+		const placePropsList = placePropsContent.createEl('ul', { cls: 'crc-field-list' });
+
+		const placeProps = [
+			{ name: 'type', description: 'Must be "place" to identify as a place note', required: true },
+			{ name: 'cr_id', description: 'Unique identifier for the place', required: true },
+			{ name: 'name', description: 'Primary name of the place', required: true },
+			{ name: 'place_type', description: 'Type: city, state, country, village, etc.', required: false },
+			{ name: 'place_category', description: 'Category: real, historical, fictional, etc.', required: false },
+			{ name: 'parent_place', description: 'Wikilink to parent place: [[England]]', required: false },
+			{ name: 'coordinates', description: 'lat/long for real-world places', required: false }
+		];
+
+		placeProps.forEach(prop => {
+			const li = placePropsList.createEl('li');
+			const propName = li.createEl('code', { text: prop.name });
+			if (prop.required) {
+				propName.addClass('crc-field--required');
+			}
+			li.appendText(` - ${prop.description}`);
+		});
+
+		container.appendChild(placePropsCard);
+
+		// Link to full schema reference
+		const schemaLinkCard = this.createCard({
+			title: 'Schema reference',
+			icon: 'file-text'
+		});
+		const schemaLinkContent = schemaLinkCard.querySelector('.crc-card__content') as HTMLElement;
+		schemaLinkContent.createEl('p', {
+			cls: 'crc-text-muted'
+		}).innerHTML = 'For the complete property reference (including spouse metadata, reference numbering, and place hierarchies), see the <a href="https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/reference/frontmatter-schema.md" class="crc-link" target="_blank">Frontmatter Schema Reference</a>.';
+
+		container.appendChild(schemaLinkCard);
 
 		// Groups and Collections Card
 		const organizationCard = this.createCard({
