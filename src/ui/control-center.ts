@@ -1680,7 +1680,13 @@ export class ControlCenterModal extends Modal {
 				icon: 'user-plus',
 				title: 'Create person note',
 				description: 'Add a new individual to your family tree',
-				tab: 'data-entry'
+				tab: 'people'
+			},
+			{
+				icon: 'map-pin',
+				title: 'Create place note',
+				description: 'Add a geographic location with hierarchy support',
+				tab: 'places'
 			},
 			{
 				icon: 'settings',
