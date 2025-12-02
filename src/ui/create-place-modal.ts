@@ -446,15 +446,12 @@ export class CreatePlaceModal extends Modal {
 
 		// Add geocoding lookup button to header
 		coordHeader.addButton(btn => {
-			const searchIcon = createLucideIcon('search', 14);
-			btn.buttonEl.empty();
-			btn.buttonEl.appendChild(searchIcon);
-			btn.buttonEl.appendText(' Look up');
-			btn.setClass('crc-btn crc-btn--small');
-			btn.setTooltip('Look up coordinates by place name');
-			btn.onClick(() => {
-				this.lookupCoordinates();
-			});
+			btn.setButtonText('Look up')
+				.setTooltip('Look up coordinates by place name (uses OpenStreetMap)')
+				.onClick(() => {
+					void this.lookupCoordinates();
+				});
+			btn.buttonEl.addClass('crc-coord-lookup-btn');
 		});
 
 		const coordInputs = this.coordSectionEl.createDiv({ cls: 'crc-coord-inputs' });

@@ -2061,6 +2061,14 @@
   flex: 1;
 }
 
+.crc-coord-header .setting-item-control {
+  flex-shrink: 0;
+}
+
+.crc-coord-lookup-btn {
+  font-size: var(--font-ui-small);
+}
+
 .crc-coord-inputs {
   display: flex;
   gap: 16px;
