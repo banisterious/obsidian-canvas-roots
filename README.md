@@ -30,11 +30,12 @@
 | Feature | Description |
 |---------|-------------|
 | **GEDCOM 5.5.1** | Full round-trip import/export with validation, UUID preservation, and privacy protection |
-| **GEDCOM X** | Import from FamilySearch JSON format |
-| **Gramps XML** | Import directly from Gramps genealogy software |
+| **GEDCOM X** | Import/export with FamilySearch JSON format |
+| **Gramps XML** | Import/export for Gramps genealogy software |
 | **CSV/TSV** | Import/export for spreadsheet workflows with auto-detected column mapping |
 | **Excalidraw Export** | Export canvases for manual annotation and hand-drawn styling |
 | **Selective Branch Export** | Export only ancestors or descendants of a specific person |
+| **Privacy-Aware Exports** | Optional anonymization of living persons in all export formats |
 
 ### Interactive Family Chart
 
@@ -103,12 +104,16 @@
 
 See [Roadmap](docs/roadmap.md) for detailed descriptions and development priorities.
 
+### In Development (v0.6.0)
+
+| Feature | Description |
+|---------|-------------|
+| **Interactive Maps** | Leaflet.js integration with birth/death markers, migration paths, and animated timelines |
+
 ### Coming Soon
 
 | Feature | Description |
 |---------|-------------|
-| **Import/Export Enhancements** | GEDCOM X export, Gramps XML export, redacted exports, additional GEDCOM fields |
-| **Interactive Maps** | Leaflet.js integration with birth/death markers, migration paths, and animated timelines |
 | **Custom Relationships** | Non-familial relationships (mentor, liege, rival) with colored canvas edges |
 | **Fictional Dates** | Custom calendars and eras for world-building (e.g., "Third Age 2941") |
 | **Schema Validation** | User-defined JSON schemas to enforce property rules and catch inconsistencies |

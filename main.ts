@@ -381,21 +381,23 @@ export default class CanvasRootsPlugin extends Plugin {
 									});
 							});
 
-							submenu.addItem((subItem) => {
-								subItem
-									.setTitle('Export to Excalidraw')
-									.setIcon('pencil')
-									.onClick(async () => {
-										await this.exportCanvasToExcalidraw(file);
-									});
-							});
-
-							// Export as image submenu
+							// Export submenu (Excalidraw + images)
 							submenu.addItem((subItem) => {
 								const exportSubmenu: Menu = subItem
-									.setTitle('Export as image')
-									.setIcon('image')
+									.setTitle('Export')
+									.setIcon('share')
 									.setSubmenu();
+
+								exportSubmenu.addItem((expItem) => {
+									expItem
+										.setTitle('Export to Excalidraw')
+										.setIcon('pencil')
+										.onClick(async () => {
+											await this.exportCanvasToExcalidraw(file);
+										});
+								});
+
+								exportSubmenu.addSeparator();
 
 								exportSubmenu.addItem((expItem) => {
 									expItem
@@ -535,10 +537,93 @@ export default class CanvasRootsPlugin extends Plugin {
 					}
 				}
 
-				// Person notes: Generate family tree
+				// Markdown files: Person notes, Place notes, or plain notes
 				if (file instanceof TFile && file.extension === 'md') {
 					const cache = this.app.metadataCache.getFileCache(file);
-					if (cache?.frontmatter?.cr_id) {
+					const hasCrId = !!cache?.frontmatter?.cr_id;
+					const isPlaceNote = cache?.frontmatter?.type === 'place';
+
+					// Place notes with cr_id get place-specific options
+					if (hasCrId && isPlaceNote) {
+						menu.addSeparator();
+
+						if (useSubmenu) {
+							menu.addItem((item) => {
+								const submenu: Menu = item
+									.setTitle('Canvas Roots')
+									.setIcon('map-pin')
+									.setSubmenu();
+
+								// Set collection
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Set collection')
+										.setIcon('folder')
+										.onClick(async () => {
+											await this.promptSetCollection(file);
+										});
+								});
+
+								submenu.addSeparator();
+
+								// Add essential properties submenu
+								submenu.addItem((subItem) => {
+									const propsSubmenu: Menu = subItem
+										.setTitle('Add essential properties')
+										.setIcon('file-plus')
+										.setSubmenu();
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential person properties')
+											.setIcon('user')
+											.onClick(async () => {
+												await this.addEssentialPersonProperties([file]);
+											});
+									});
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential place properties')
+											.setIcon('map-pin')
+											.onClick(async () => {
+												await this.addEssentialPlaceProperties([file]);
+											});
+									});
+								});
+							});
+						} else {
+							// Mobile: flat menu for place notes
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Set collection')
+									.setIcon('folder')
+									.onClick(async () => {
+										await this.promptSetCollection(file);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential person properties')
+									.setIcon('user')
+									.onClick(async () => {
+										await this.addEssentialPersonProperties([file]);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential place properties')
+									.setIcon('map-pin')
+									.onClick(async () => {
+										await this.addEssentialPlaceProperties([file]);
+									});
+							});
+						}
+					}
+					// Person notes with cr_id get full person options
+					else if (hasCrId && !isPlaceNote) {
 						menu.addSeparator();
 
 						if (useSubmenu) {
@@ -824,6 +909,32 @@ export default class CanvasRootsPlugin extends Plugin {
 											await this.showCreatePlaceNotesForPerson(file);
 										});
 								});
+
+								// Add essential properties submenu
+								submenu.addItem((subItem) => {
+									const propsSubmenu: Menu = subItem
+										.setTitle('Add essential properties')
+										.setIcon('file-plus')
+										.setSubmenu();
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential person properties')
+											.setIcon('user')
+											.onClick(async () => {
+												await this.addEssentialPersonProperties([file]);
+											});
+									});
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential place properties')
+											.setIcon('map-pin')
+											.onClick(async () => {
+												await this.addEssentialPlaceProperties([file]);
+											});
+									});
+								});
 							});
 						} else {
 							// Mobile: flat menu with prefix
@@ -1041,94 +1152,82 @@ export default class CanvasRootsPlugin extends Plugin {
 										await this.showCreatePlaceNotesForPerson(file);
 									});
 							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential person properties')
+									.setIcon('user')
+									.onClick(async () => {
+										await this.addEssentialPersonProperties([file]);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential place properties')
+									.setIcon('map-pin')
+									.onClick(async () => {
+										await this.addEssentialPlaceProperties([file]);
+									});
+							});
 						}
 					}
-
-					// Add essential properties option for ALL markdown files
-					// (appears outside the cr_id check so it works on blank notes too)
-					const fileCache = this.app.metadataCache.getFileCache(file);
-					const frontmatter = fileCache?.frontmatter || {};
-
-					// Check if all essential person properties exist
-					// Note: Relationships can be stored as wikilinks OR _id properties (dual storage)
-					const hasAllPersonProperties =
-						frontmatter.cr_id &&
-						frontmatter.name &&
-						('born' in frontmatter) &&
-						('died' in frontmatter) &&
-						(('father' in frontmatter) || ('father_id' in frontmatter)) &&
-						(('mother' in frontmatter) || ('mother_id' in frontmatter)) &&
-						(('spouses' in frontmatter) || ('spouse' in frontmatter) || ('spouse_id' in frontmatter)) &&
-						(('children' in frontmatter) || ('children_id' in frontmatter)) &&
-						('group_name' in frontmatter);
-
-					// Check if all essential place properties exist
-					const hasAllPlaceProperties =
-						frontmatter.type === 'place' &&
-						frontmatter.cr_id &&
-						frontmatter.name &&
-						('place_type' in frontmatter) &&
-						('place_category' in frontmatter);
-
-					// Show submenu if either person or place properties are missing
-					const showPersonOption = !hasAllPersonProperties;
-					const showPlaceOption = !hasAllPlaceProperties;
-
-					if (showPersonOption || showPlaceOption) {
+					// Notes without cr_id still get "Add essential properties" option
+					else if (!hasCrId) {
 						menu.addSeparator();
 
 						if (useSubmenu) {
 							menu.addItem((item) => {
-								const propsSubmenu: Menu = item
-									.setTitle('Canvas Roots: Add essential properties')
-									.setIcon('file-plus')
+								const submenu: Menu = item
+									.setTitle('Canvas Roots')
+									.setIcon('git-fork')
 									.setSubmenu();
 
-								if (showPersonOption) {
-									propsSubmenu.addItem((subItem) => {
-										subItem
+								// Add essential properties submenu
+								submenu.addItem((subItem) => {
+									const propsSubmenu: Menu = subItem
+										.setTitle('Add essential properties')
+										.setIcon('file-plus')
+										.setSubmenu();
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
 											.setTitle('Add essential person properties')
 											.setIcon('user')
 											.onClick(async () => {
 												await this.addEssentialPersonProperties([file]);
 											});
 									});
-								}
 
-								if (showPlaceOption) {
-									propsSubmenu.addItem((subItem) => {
-										subItem
+									propsSubmenu.addItem((propItem) => {
+										propItem
 											.setTitle('Add essential place properties')
 											.setIcon('map-pin')
 											.onClick(async () => {
 												await this.addEssentialPlaceProperties([file]);
 											});
 									});
-								}
+								});
 							});
 						} else {
-							// Mobile: flat menu with prefix
-							if (showPersonOption) {
-								menu.addItem((item) => {
-									item
-										.setTitle('Canvas Roots: Add essential person properties')
-										.setIcon('user')
-										.onClick(async () => {
-											await this.addEssentialPersonProperties([file]);
-										});
-								});
-							}
+							// Mobile: flat menu
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential person properties')
+									.setIcon('user')
+									.onClick(async () => {
+										await this.addEssentialPersonProperties([file]);
+									});
+							});
 
-							if (showPlaceOption) {
-								menu.addItem((item) => {
-									item
-										.setTitle('Canvas Roots: Add essential place properties')
-										.setIcon('map-pin')
-										.onClick(async () => {
-											await this.addEssentialPlaceProperties([file]);
-										});
-								});
-							}
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential place properties')
+									.setIcon('map-pin')
+									.onClick(async () => {
+										await this.addEssentialPlaceProperties([file]);
+									});
+							});
 						}
 					}
 				}

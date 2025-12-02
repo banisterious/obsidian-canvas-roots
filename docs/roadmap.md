@@ -1,7 +1,7 @@
 # Canvas Roots: Development Roadmap
 
 > **Last Updated:** 2025-12-02
-> **Current Version:** v0.5.2
+> **Current Version:** v0.5.2 (v0.6.0 in development)
 
 This document outlines planned features for Canvas Roots. For release history and completed features, see [CHANGELOG.md](../CHANGELOG.md).
 
@@ -28,8 +28,8 @@ The following priority order guides future development:
 
 | Priority | Feature | Status |
 |:--------:|---------|--------|
-| 1 | [Import/Export Enhancements](#importexport-enhancements) | Planned |
-| 2 | [Geographic Features (Phase 4)](#geographic-features-phase-4) | Planned |
+| 1 | [Import/Export Enhancements](#importexport-enhancements) | ✅ Complete (v0.6.0) |
+| 2 | [Geographic Features (Phase 4)](#geographic-features-phase-4) | 🚧 In Progress (v0.6.0) |
 | 3 | [Custom Relationship Types](#custom-relationship-types) | Planned |
 | 4 | [Schema Validation](#schema-validation--consistency-checks) | Planned |
 | 5 | [Fictional Date Systems](#fictional-date-systems) | Planned |
@@ -444,12 +444,17 @@ confidence: medium
 
 ### Import/Export Enhancements
 
-**Current Status:** GEDCOM, GEDCOM X, Gramps XML, CSV import complete.
+**Status:** ✅ Complete in v0.6.0
 
-**Planned:**
-- GEDCOM X export
-- Gramps XML export
-- Redacted exports for sharing
+**Completed Features:**
+- GEDCOM import/export
+- GEDCOM X import/export (JSON format)
+- Gramps XML import/export
+- CSV import/export
+- Privacy-aware exports with redaction options
+- Separate Import and Export cards in Control Center UI
+
+**Future Enhancements:**
 - Additional GEDCOM fields (sources, notes, events)
 
 ---
@@ -486,6 +491,24 @@ See [known-limitations.md](known-limitations.md) for complete details.
 - No bulk operations from Bases multi-select (platform limitation)
 - Privacy obfuscation for canvas display not yet implemented
 - Interactive Canvas features limited by Obsidian Canvas API
+
+### Context Menu Submenu Behavior
+
+**Issue:** On desktop, after hovering over a submenu to reveal its contents, hovering over a different submenu doesn't dismiss the first one. The first submenu remains "sticky" until clicked elsewhere.
+
+**Cause:** This is a limitation of Obsidian's native `Menu` API. The `setSubmenu()` method creates native Obsidian submenus, and plugins have no control over their hover/dismiss behavior.
+
+**Potential Solutions (to be evaluated):**
+
+1. **Flatten menu structure** - Remove submenus for items with only 2 options (e.g., "Generate Canvas tree" and "Generate Excalidraw tree" as separate items instead of a "Generate tree" submenu). Keeps submenus only for longer lists (4+ items).
+
+2. **Replace with modal dialogs** - Convert submenu actions to open modal pickers on click, similar to "More options...". More clicks but predictable behavior.
+
+3. **Custom menu component** - Build a fully custom menu system with proper hover behavior. Significant development effort and wouldn't integrate with native right-click.
+
+4. **Upstream feature request** - Request improved submenu behavior from Obsidian team.
+
+**Status:** Deferred - will select approach based on user feedback and Obsidian API evolution.
 
 ---
 

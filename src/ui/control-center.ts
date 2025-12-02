@@ -4113,6 +4113,10 @@ export class ControlCenterModal extends Modal {
 		branchRootCrId?: string;
 		branchDirection?: 'ancestors' | 'descendants';
 		branchIncludeSpouses?: boolean;
+		privacyOverride?: {
+			enablePrivacyProtection: boolean;
+			privacyDisplayFormat: 'living' | 'private' | 'initials' | 'hidden';
+		};
 	}): Promise<void> {
 		try {
 			logger.info('gedcom-export', `Starting GEDCOM export: ${options.fileName}`);
@@ -4133,9 +4137,9 @@ export class ControlCenterModal extends Modal {
 				sourceApp: 'Canvas Roots',
 				sourceVersion: this.plugin.manifest.version,
 				privacySettings: {
-					enablePrivacyProtection: this.plugin.settings.enablePrivacyProtection,
+					enablePrivacyProtection: options.privacyOverride?.enablePrivacyProtection ?? this.plugin.settings.enablePrivacyProtection,
 					livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
-					privacyDisplayFormat: this.plugin.settings.privacyDisplayFormat,
+					privacyDisplayFormat: options.privacyOverride?.privacyDisplayFormat ?? this.plugin.settings.privacyDisplayFormat,
 					hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
 				}
 			});
@@ -5222,84 +5226,168 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * State for Import/Export tab
 	 */
-	private importExportFormat: 'gedcom' | 'gedcomx' | 'gramps' | 'csv' = 'gedcom';
-	private importExportDirection: 'import' | 'export' = 'import';
+	private importFormat: 'gedcom' | 'gedcomx' | 'gramps' | 'csv' = 'gedcom';
+	private exportFormat: 'gedcom' | 'gedcomx' | 'gramps' | 'csv' = 'gedcom';
 
 	/**
-	 * Show combined Import/Export tab
+	 * Show Import/Export tab with separate Import and Export cards
 	 */
 	private showImportExportTab(): void {
 		const container = this.contentContainer;
 
-		// Header with format and direction selectors
-		const headerCard = this.createCard({
-			title: 'Import/Export data',
-			icon: 'file-text'
+		// Shared folder configuration card
+		const folderCard = this.createCard({
+			title: 'Folder configuration',
+			icon: 'folder'
 		});
-		const headerContent = headerCard.querySelector('.crc-card__content') as HTMLElement;
+		const folderContent = folderCard.querySelector('.crc-card__content') as HTMLElement;
+		this.renderFolderConfigInline(folderContent);
+		container.appendChild(folderCard);
 
-		// Format and direction selectors in a row
-		const selectorRow = headerContent.createDiv({ cls: 'crc-selector-row' });
+		// === IMPORT CARD ===
+		const importCard = this.createCard({
+			title: 'Import data',
+			icon: 'upload'
+		});
+		const importCardContent = importCard.querySelector('.crc-card__content') as HTMLElement;
 
-		// Format selector container (will be rebuilt when direction changes)
-		const formatSettingContainer = selectorRow.createDiv();
+		importCardContent.createEl('p', {
+			text: 'Import genealogical data from external files into your vault.',
+			cls: 'crc-text-muted crc-mb-4'
+		});
 
-		// Helper to build format dropdown based on direction
-		const buildFormatDropdown = () => {
-			formatSettingContainer.empty();
-			new Setting(formatSettingContainer)
-				.setName('Format')
-				.addDropdown(dropdown => {
-					// Always available formats
-					dropdown.addOption('gedcom', 'GEDCOM 5.5.1');
-					dropdown.addOption('csv', 'CSV');
+		// Format selector for import
+		const importFormatContainer = importCardContent.createDiv();
+		new Setting(importFormatContainer)
+			.setName('Format')
+			.addDropdown(dropdown => {
+				dropdown.addOption('gedcom', 'GEDCOM 5.5.1');
+				dropdown.addOption('gedcomx', 'GEDCOM X (JSON)');
+				dropdown.addOption('gramps', 'Gramps XML');
+				dropdown.addOption('csv', 'CSV');
 
-					// Import-only formats
-					if (this.importExportDirection === 'import') {
-						dropdown.addOption('gedcomx', 'GEDCOM X (JSON)');
-						dropdown.addOption('gramps', 'Gramps XML');
-					}
-
-					// Reset format if current selection is not available for export
-					if (this.importExportDirection === 'export' &&
-						(this.importExportFormat === 'gedcomx' || this.importExportFormat === 'gramps')) {
-						this.importExportFormat = 'gedcom';
-					}
-
-					dropdown.setValue(this.importExportFormat);
-					dropdown.onChange(value => {
-						this.importExportFormat = value as 'gedcom' | 'gedcomx' | 'gramps' | 'csv';
-						this.renderImportExportContent(contentContainer);
-					});
+				dropdown.setValue(this.importFormat);
+				dropdown.onChange(value => {
+					this.importFormat = value as 'gedcom' | 'gedcomx' | 'gramps' | 'csv';
+					this.renderImportContent(importContentContainer);
 				});
-		};
+			});
 
-		// Build initial format dropdown
-		buildFormatDropdown();
+		// Content area for import options
+		const importContentContainer = importCardContent.createDiv({ cls: 'crc-import-content' });
+		this.renderImportContent(importContentContainer);
 
-		// Direction selector
-		new Setting(selectorRow)
-			.setName('Direction')
-			.addDropdown(dropdown => dropdown
-				.addOption('import', 'Import')
-				.addOption('export', 'Export')
-				.setValue(this.importExportDirection)
-				.onChange(value => {
-					this.importExportDirection = value as 'import' | 'export';
-					// Rebuild format dropdown with appropriate options
-					buildFormatDropdown();
-					this.renderImportExportContent(contentContainer);
+		container.appendChild(importCard);
+
+		// === EXPORT CARD ===
+		const exportCard = this.createCard({
+			title: 'Export data',
+			icon: 'download'
+		});
+		const exportCardContent = exportCard.querySelector('.crc-card__content') as HTMLElement;
+
+		exportCardContent.createEl('p', {
+			text: 'Export your family tree data to share with other genealogy software.',
+			cls: 'crc-text-muted crc-mb-4'
+		});
+
+		// Format selector for export
+		const exportFormatContainer = exportCardContent.createDiv();
+		new Setting(exportFormatContainer)
+			.setName('Format')
+			.addDropdown(dropdown => {
+				dropdown.addOption('gedcom', 'GEDCOM 5.5.1');
+				dropdown.addOption('gedcomx', 'GEDCOM X (JSON)');
+				dropdown.addOption('gramps', 'Gramps XML');
+				dropdown.addOption('csv', 'CSV');
+
+				dropdown.setValue(this.exportFormat);
+				dropdown.onChange(value => {
+					this.exportFormat = value as 'gedcom' | 'gedcomx' | 'gramps' | 'csv';
+					this.renderExportContent(exportContentContainer);
+				});
+			});
+
+		// Content area for export options
+		const exportContentContainer = exportCardContent.createDiv({ cls: 'crc-export-content' });
+		this.renderExportContent(exportContentContainer);
+
+		container.appendChild(exportCard);
+	}
+
+	/**
+	 * Render import content based on selected format
+	 */
+	private renderImportContent(container: HTMLElement): void {
+		container.empty();
+
+		switch (this.importFormat) {
+			case 'gedcom':
+				this.renderGedcomImport(container);
+				break;
+			case 'gedcomx':
+				this.renderGedcomXImport(container);
+				break;
+			case 'gramps':
+				this.renderGrampsImport(container);
+				break;
+			case 'csv':
+				this.renderCsvImport(container);
+				break;
+		}
+	}
+
+	/**
+	 * Render export content based on selected format
+	 */
+	private renderExportContent(container: HTMLElement): void {
+		container.empty();
+
+		switch (this.exportFormat) {
+			case 'gedcom':
+				this.renderGedcomExport(container);
+				break;
+			case 'gedcomx':
+				this.renderGedcomXExport(container);
+				break;
+			case 'gramps':
+				this.renderGrampsExport(container);
+				break;
+			case 'csv':
+				this.renderCsvExport(container);
+				break;
+		}
+	}
+
+	/**
+	 * Render inline folder configuration (non-collapsible version)
+	 */
+	private renderFolderConfigInline(container: HTMLElement): void {
+		// People folder setting
+		new Setting(container)
+			.setName('People folder')
+			.setDesc('Where person notes are stored')
+			.addText(text => text
+				.setPlaceholder('People')
+				.setValue(this.plugin.settings.peopleFolder)
+				.onChange(async value => {
+					this.plugin.settings.peopleFolder = value;
+					await this.plugin.saveSettings();
 				})
 			);
 
-		// Collapsible folder configuration section
-		this.renderFolderConfigSection(headerContent);
-
-		container.appendChild(headerCard);
-
-		// Content area for format-specific options
-		const contentContainer = container.createDiv({ cls: 'crc-import-export-content' });
-		this.renderImportExportContent(contentContainer);
+		// Staging folder setting
+		new Setting(container)
+			.setName('Staging folder')
+			.setDesc('Optional folder for reviewing imports before promoting')
+			.addText(text => text
+				.setPlaceholder('People-Staging')
+				.setValue(this.plugin.settings.stagingFolder || '')
+				.onChange(async value => {
+					this.plugin.settings.stagingFolder = value;
+					await this.plugin.saveSettings();
+				})
+			);
 	}
 
 	/**
@@ -5405,39 +5493,6 @@ export class ControlCenterModal extends Modal {
 		}
 
 		return peopleFolder;
-	}
-
-	/**
-	 * Render the content area based on current format and direction selections
-	 */
-	private renderImportExportContent(container: HTMLElement): void {
-		container.empty();
-
-		if (this.importExportFormat === 'gedcom') {
-			if (this.importExportDirection === 'import') {
-				this.renderGedcomImport(container);
-			} else {
-				this.renderGedcomExport(container);
-			}
-		} else if (this.importExportFormat === 'gedcomx') {
-			if (this.importExportDirection === 'import') {
-				this.renderGedcomXImport(container);
-			} else {
-				this.renderGedcomXExportNotSupported(container);
-			}
-		} else if (this.importExportFormat === 'gramps') {
-			if (this.importExportDirection === 'import') {
-				this.renderGrampsImport(container);
-			} else {
-				this.renderGrampsExportNotSupported(container);
-			}
-		} else {
-			if (this.importExportDirection === 'import') {
-				this.renderCsvImport(container);
-			} else {
-				this.renderCsvExport(container);
-			}
-		}
 	}
 
 	/**
@@ -5635,6 +5690,107 @@ export class ControlCenterModal extends Modal {
 				})
 			);
 
+		// Privacy override options
+		let privacyOverrideEnabled = false;
+		let privacyOverrideProtection = this.plugin.settings.enablePrivacyProtection;
+		let privacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
+
+		// Define updatePrivacyPreview before the settings that use it
+		let updatePrivacyPreview: () => Promise<void>;
+
+		const privacyOverrideSetting = new Setting(content)
+			.setName('Override privacy settings')
+			.setDesc('Use different privacy settings for this export only')
+			.addToggle(toggle => toggle
+				.setValue(false)
+				.onChange(value => {
+					privacyOverrideEnabled = value;
+					privacyProtectionSetting.settingEl.style.display = value ? '' : 'none';
+					privacyFormatSetting.settingEl.style.display = value && privacyOverrideProtection ? '' : 'none';
+					void updatePrivacyPreview();
+				})
+			);
+
+		const privacyProtectionSetting = new Setting(content)
+			.setName('Enable privacy protection')
+			.setDesc('Protect living persons in this export')
+			.addToggle(toggle => toggle
+				.setValue(privacyOverrideProtection)
+				.onChange(value => {
+					privacyOverrideProtection = value;
+					privacyFormatSetting.settingEl.style.display = value ? '' : 'none';
+					void updatePrivacyPreview();
+				})
+			);
+		privacyProtectionSetting.settingEl.style.display = 'none';
+
+		const privacyFormatSetting = new Setting(content)
+			.setName('Privacy display format')
+			.setDesc('How to display protected living persons')
+			.addDropdown(dropdown => dropdown
+				.addOption('living', 'Living')
+				.addOption('private', 'Private')
+				.addOption('initials', 'Initials only')
+				.addOption('hidden', 'Exclude from export')
+				.setValue(privacyOverrideFormat)
+				.onChange(value => {
+					privacyOverrideFormat = value as 'living' | 'private' | 'initials' | 'hidden';
+					void updatePrivacyPreview();
+				})
+			);
+		privacyFormatSetting.settingEl.style.display = 'none';
+
+		// Privacy preview section
+		const privacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4' });
+		privacyPreviewEl.style.display = 'none';
+
+		updatePrivacyPreview = async (): Promise<void> => {
+			const effectiveProtection = privacyOverrideEnabled
+				? privacyOverrideProtection
+				: this.plugin.settings.enablePrivacyProtection;
+			const effectiveFormat = privacyOverrideEnabled
+				? privacyOverrideFormat
+				: this.plugin.settings.privacyDisplayFormat;
+
+			if (!effectiveProtection) {
+				privacyPreviewEl.style.display = 'none';
+				return;
+			}
+
+			// Load people and calculate privacy summary
+			const { FamilyGraphService } = await import('../core/family-graph');
+			const { PrivacyService } = await import('../core/privacy-service');
+
+			const graphService = new FamilyGraphService(this.app);
+			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.reloadCache();
+			const allPeople = graphService.getAllPeople();
+
+			const privacyService = new PrivacyService({
+				enablePrivacyProtection: effectiveProtection,
+				livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+				privacyDisplayFormat: effectiveFormat,
+				hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+			});
+
+			const summary = privacyService.getPrivacySummary(allPeople);
+
+			privacyPreviewEl.empty();
+			privacyPreviewEl.style.display = '';
+
+			const previewText = effectiveFormat === 'hidden'
+				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
+				: `${summary.protected} of ${summary.total} people will be obfuscated (living)`;
+
+			privacyPreviewEl.createEl('span', {
+				text: previewText,
+				cls: 'crc-text-muted crc-text-sm'
+			});
+		};
+
+		// Initial preview based on global settings
+		void updatePrivacyPreview();
+
 		// Export file name
 		let exportFileName = 'family-tree';
 		new Setting(content)
@@ -5662,7 +5818,11 @@ export class ControlCenterModal extends Modal {
 					includeCollectionCodes,
 					branchRootCrId,
 					branchDirection,
-					branchIncludeSpouses
+					branchIncludeSpouses,
+					privacyOverride: privacyOverrideEnabled ? {
+						enablePrivacyProtection: privacyOverrideProtection,
+						privacyDisplayFormat: privacyOverrideFormat
+					} : undefined
 				});
 			})();
 		});
@@ -5898,9 +6058,9 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
-	 * Render GEDCOM X export not supported message
+	 * Render GEDCOM X export options
 	 */
-	private renderGedcomXExportNotSupported(container: HTMLElement): void {
+	private renderGedcomXExport(container: HTMLElement): void {
 		const card = this.createCard({
 			title: 'Export GEDCOM X',
 			icon: 'download'
@@ -5908,16 +6068,295 @@ export class ControlCenterModal extends Modal {
 		const content = card.querySelector('.crc-card__content') as HTMLElement;
 
 		content.createEl('p', {
-			text: 'GEDCOM X export is not yet supported. Use GEDCOM 5.5.1 format for export.',
-			cls: 'crc-text-muted'
+			text: 'Export your family tree data to GEDCOM X JSON format (FamilySearch standard)',
+			cls: 'crc-text-muted crc-mb-4'
 		});
 
-		content.createEl('p', {
-			text: 'GEDCOM X export support is planned for a future release.',
-			cls: 'crc-text-muted crc-mt-2'
+		// Export options
+		new Setting(content)
+			.setName('People folder')
+			.setDesc('Folder containing person notes to export')
+			.addText(text => text
+				.setPlaceholder('People')
+				.setValue(this.plugin.settings.peopleFolder)
+				.setDisabled(true)
+			);
+
+		// Collection filter option
+		let collectionFilter: string | undefined;
+		new Setting(content)
+			.setName('Collection filter (optional)')
+			.setDesc('Only export people in a specific collection')
+			.addDropdown(async dropdown => {
+				dropdown.addOption('', 'All people');
+
+				// Load collections
+				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
+				const collections = await graphService.getUserCollections();
+				collections.forEach(collection => {
+					dropdown.addOption(collection.name, collection.name);
+				});
+
+				dropdown.onChange(value => {
+					collectionFilter = value || undefined;
+				});
+			});
+
+		// Branch filter options
+		let gxBranchRootCrId: string | undefined;
+		let gxBranchRootName: string | undefined;
+		let gxBranchDirection: 'ancestors' | 'descendants' | undefined;
+		let gxBranchIncludeSpouses = false;
+
+		new Setting(content)
+			.setName('Branch filter (optional)')
+			.setDesc('Export only ancestors or descendants of a specific person')
+			.addButton(btn => {
+				btn.setButtonText('Select person')
+					.onClick(async () => {
+						const picker = new PersonPickerModal(this.app, (info) => {
+							gxBranchRootCrId = info.crId;
+							gxBranchRootName = info.name;
+							btn.setButtonText(info.name);
+						});
+						picker.open();
+					});
+			});
+
+		new Setting(content)
+			.setName('Branch direction')
+			.setDesc('Include ancestors (up) or descendants (down)')
+			.addDropdown(dropdown => {
+				dropdown.addOption('', 'No branch filter');
+				dropdown.addOption('ancestors', 'Ancestors only');
+				dropdown.addOption('descendants', 'Descendants only');
+				dropdown.onChange(value => {
+					gxBranchDirection = value as 'ancestors' | 'descendants' || undefined;
+				});
+			});
+
+		new Setting(content)
+			.setName('Include spouses in descendants')
+			.setDesc('When exporting descendants, also include their spouses')
+			.addToggle(toggle => toggle
+				.setValue(false)
+				.onChange(value => {
+					gxBranchIncludeSpouses = value;
+				})
+			);
+
+		// Privacy override options
+		let gxPrivacyOverrideEnabled = false;
+		let gxPrivacyOverrideProtection = this.plugin.settings.enablePrivacyProtection;
+		let gxPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
+
+		// Define updateGxPrivacyPreview before the settings that use it
+		let updateGxPrivacyPreview: () => Promise<void>;
+
+		const gxPrivacyOverrideSetting = new Setting(content)
+			.setName('Override privacy settings')
+			.setDesc('Use different privacy settings for this export only')
+			.addToggle(toggle => toggle
+				.setValue(false)
+				.onChange(value => {
+					gxPrivacyOverrideEnabled = value;
+					gxPrivacyProtectionSetting.settingEl.style.display = value ? '' : 'none';
+					gxPrivacyFormatSetting.settingEl.style.display = value && gxPrivacyOverrideProtection ? '' : 'none';
+					void updateGxPrivacyPreview();
+				})
+			);
+
+		const gxPrivacyProtectionSetting = new Setting(content)
+			.setName('Enable privacy protection')
+			.setDesc('Protect living persons in this export')
+			.addToggle(toggle => toggle
+				.setValue(gxPrivacyOverrideProtection)
+				.onChange(value => {
+					gxPrivacyOverrideProtection = value;
+					gxPrivacyFormatSetting.settingEl.style.display = value ? '' : 'none';
+					void updateGxPrivacyPreview();
+				})
+			);
+		gxPrivacyProtectionSetting.settingEl.style.display = 'none';
+
+		const gxPrivacyFormatSetting = new Setting(content)
+			.setName('Privacy display format')
+			.setDesc('How to display protected living persons')
+			.addDropdown(dropdown => dropdown
+				.addOption('living', 'Living')
+				.addOption('private', 'Private')
+				.addOption('initials', 'Initials only')
+				.addOption('hidden', 'Exclude from export')
+				.setValue(gxPrivacyOverrideFormat)
+				.onChange(value => {
+					gxPrivacyOverrideFormat = value as 'living' | 'private' | 'initials' | 'hidden';
+					void updateGxPrivacyPreview();
+				})
+			);
+		gxPrivacyFormatSetting.settingEl.style.display = 'none';
+
+		// Privacy preview section
+		const gxPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4' });
+		gxPrivacyPreviewEl.style.display = 'none';
+
+		updateGxPrivacyPreview = async (): Promise<void> => {
+			const effectiveProtection = gxPrivacyOverrideEnabled
+				? gxPrivacyOverrideProtection
+				: this.plugin.settings.enablePrivacyProtection;
+			const effectiveFormat = gxPrivacyOverrideEnabled
+				? gxPrivacyOverrideFormat
+				: this.plugin.settings.privacyDisplayFormat;
+
+			if (!effectiveProtection) {
+				gxPrivacyPreviewEl.style.display = 'none';
+				return;
+			}
+
+			const { FamilyGraphService } = await import('../core/family-graph');
+			const { PrivacyService } = await import('../core/privacy-service');
+
+			const graphService = new FamilyGraphService(this.app);
+			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.reloadCache();
+			const allPeople = graphService.getAllPeople();
+
+			const privacyService = new PrivacyService({
+				enablePrivacyProtection: effectiveProtection,
+				livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+				privacyDisplayFormat: effectiveFormat,
+				hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+			});
+
+			const summary = privacyService.getPrivacySummary(allPeople);
+
+			gxPrivacyPreviewEl.empty();
+			gxPrivacyPreviewEl.style.display = '';
+
+			const previewText = effectiveFormat === 'hidden'
+				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
+				: `${summary.protected} of ${summary.total} people will be obfuscated (living)`;
+
+			gxPrivacyPreviewEl.createEl('span', {
+				text: previewText,
+				cls: 'crc-text-muted crc-text-sm'
+			});
+		};
+
+		// Initial preview based on global settings
+		void updateGxPrivacyPreview();
+
+		// Export file name
+		let gxExportFileName = 'family-tree';
+		new Setting(content)
+			.setName('Export file name')
+			.setDesc('Name for the exported .json file (without extension)')
+			.addText(text => text
+				.setPlaceholder('family-tree')
+				.setValue(gxExportFileName)
+				.onChange(value => {
+					gxExportFileName = value || 'family-tree';
+				})
+			);
+
+		// Export button
+		const exportBtn = content.createEl('button', {
+			cls: 'crc-btn crc-btn--primary crc-mt-4',
+			text: 'Export to GEDCOM X'
+		});
+
+		exportBtn.addEventListener('click', () => {
+			void (async () => {
+				await this.handleGedcomXExport({
+					fileName: gxExportFileName,
+					collectionFilter,
+					branchRootCrId: gxBranchRootCrId,
+					branchDirection: gxBranchDirection,
+					branchIncludeSpouses: gxBranchIncludeSpouses,
+					privacyOverride: gxPrivacyOverrideEnabled ? {
+						enablePrivacyProtection: gxPrivacyOverrideProtection,
+						privacyDisplayFormat: gxPrivacyOverrideFormat
+					} : undefined
+				});
+			})();
 		});
 
 		container.appendChild(card);
+	}
+
+	/**
+	 * Handle GEDCOM X file export
+	 */
+	private async handleGedcomXExport(options: {
+		fileName: string;
+		collectionFilter?: string;
+		branchRootCrId?: string;
+		branchDirection?: 'ancestors' | 'descendants';
+		branchIncludeSpouses?: boolean;
+		privacyOverride?: {
+			enablePrivacyProtection: boolean;
+			privacyDisplayFormat: 'living' | 'private' | 'initials' | 'hidden';
+		};
+	}): Promise<void> {
+		try {
+			logger.info('gedcomx-export', `Starting GEDCOM X export: ${options.fileName}`);
+
+			// Create exporter
+			const { GedcomXExporter } = await import('../gedcomx/gedcomx-exporter');
+			const exporter = new GedcomXExporter(this.app);
+
+			// Export to GEDCOM X
+			const result = exporter.exportToGedcomX({
+				peopleFolder: this.plugin.settings.peopleFolder,
+				collectionFilter: options.collectionFilter,
+				branchRootCrId: options.branchRootCrId,
+				branchDirection: options.branchDirection,
+				branchIncludeSpouses: options.branchIncludeSpouses,
+				fileName: options.fileName,
+				sourceApp: 'Canvas Roots',
+				sourceVersion: this.plugin.manifest.version,
+				privacySettings: {
+					enablePrivacyProtection: options.privacyOverride?.enablePrivacyProtection ?? this.plugin.settings.enablePrivacyProtection,
+					livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+					privacyDisplayFormat: options.privacyOverride?.privacyDisplayFormat ?? this.plugin.settings.privacyDisplayFormat,
+					hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+				}
+			});
+
+			// Log results
+			logger.info('gedcomx-export', `Export complete: ${result.personsExported} persons, ${result.relationshipsExported} relationships`);
+
+			if (result.errors.length > 0) {
+				logger.warn('gedcomx-export', `Export had ${result.errors.length} errors`);
+				result.errors.forEach(error => logger.error('gedcomx-export', error));
+			}
+
+			if (result.success && result.jsonContent) {
+				// Create blob and trigger download
+				const blob = new Blob([result.jsonContent], { type: 'application/json' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${result.fileName}.json`;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+
+				let noticeMsg = `GEDCOM X exported: ${result.personsExported} people, ${result.relationshipsExported} relationships`;
+				if (result.privacyExcluded && result.privacyExcluded > 0) {
+					noticeMsg += ` (${result.privacyExcluded} living excluded)`;
+				} else if (result.privacyObfuscated && result.privacyObfuscated > 0) {
+					noticeMsg += ` (${result.privacyObfuscated} living obfuscated)`;
+				}
+				new Notice(noticeMsg);
+			} else {
+				throw new Error('Export failed to generate content');
+			}
+		} catch (error: unknown) {
+			const errorMsg = getErrorMessage(error);
+			logger.error('gedcomx-export', `GEDCOM X export failed: ${errorMsg}`);
+			new Notice(`Failed to export GEDCOM X: ${errorMsg}`);
+		}
 	}
 
 	/**
@@ -6148,9 +6587,9 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
-	 * Render Gramps XML export not supported message
+	 * Render Gramps XML export options
 	 */
-	private renderGrampsExportNotSupported(container: HTMLElement): void {
+	private renderGrampsExport(container: HTMLElement): void {
 		const card = this.createCard({
 			title: 'Export Gramps XML',
 			icon: 'download'
@@ -6158,16 +6597,295 @@ export class ControlCenterModal extends Modal {
 		const content = card.querySelector('.crc-card__content') as HTMLElement;
 
 		content.createEl('p', {
-			text: 'Gramps XML export is not yet supported. Use GEDCOM 5.5.1 format for export.',
-			cls: 'crc-text-muted'
+			text: 'Export your family tree data to Gramps XML format for use with Gramps genealogy software',
+			cls: 'crc-text-muted crc-mb-4'
 		});
 
-		content.createEl('p', {
-			text: 'Gramps XML export support is planned for a future release.',
-			cls: 'crc-text-muted crc-mt-2'
+		// Export options
+		new Setting(content)
+			.setName('People folder')
+			.setDesc('Folder containing person notes to export')
+			.addText(text => text
+				.setPlaceholder('People')
+				.setValue(this.plugin.settings.peopleFolder)
+				.setDisabled(true)
+			);
+
+		// Collection filter option
+		let collectionFilter: string | undefined;
+		new Setting(content)
+			.setName('Collection filter (optional)')
+			.setDesc('Only export people in a specific collection')
+			.addDropdown(async dropdown => {
+				dropdown.addOption('', 'All people');
+
+				// Load collections
+				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
+				const collections = await graphService.getUserCollections();
+				collections.forEach(collection => {
+					dropdown.addOption(collection.name, collection.name);
+				});
+
+				dropdown.onChange(value => {
+					collectionFilter = value || undefined;
+				});
+			});
+
+		// Branch filter options
+		let grampsBranchRootCrId: string | undefined;
+		let grampsBranchRootName: string | undefined;
+		let grampsBranchDirection: 'ancestors' | 'descendants' | undefined;
+		let grampsBranchIncludeSpouses = false;
+
+		new Setting(content)
+			.setName('Branch filter (optional)')
+			.setDesc('Export only ancestors or descendants of a specific person')
+			.addButton(btn => {
+				btn.setButtonText('Select person')
+					.onClick(async () => {
+						const picker = new PersonPickerModal(this.app, (info) => {
+							grampsBranchRootCrId = info.crId;
+							grampsBranchRootName = info.name;
+							btn.setButtonText(info.name);
+						});
+						picker.open();
+					});
+			});
+
+		new Setting(content)
+			.setName('Branch direction')
+			.setDesc('Include ancestors (up) or descendants (down)')
+			.addDropdown(dropdown => {
+				dropdown.addOption('', 'No branch filter');
+				dropdown.addOption('ancestors', 'Ancestors only');
+				dropdown.addOption('descendants', 'Descendants only');
+				dropdown.onChange(value => {
+					grampsBranchDirection = value as 'ancestors' | 'descendants' || undefined;
+				});
+			});
+
+		new Setting(content)
+			.setName('Include spouses in descendants')
+			.setDesc('When exporting descendants, also include their spouses')
+			.addToggle(toggle => toggle
+				.setValue(false)
+				.onChange(value => {
+					grampsBranchIncludeSpouses = value;
+				})
+			);
+
+		// Privacy override options
+		let grampsPrivacyOverrideEnabled = false;
+		let grampsPrivacyOverrideProtection = this.plugin.settings.enablePrivacyProtection;
+		let grampsPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
+
+		// Define updateGrampsPrivacyPreview before the settings that use it
+		let updateGrampsPrivacyPreview: () => Promise<void>;
+
+		const grampsPrivacyOverrideSetting = new Setting(content)
+			.setName('Override privacy settings')
+			.setDesc('Use different privacy settings for this export only')
+			.addToggle(toggle => toggle
+				.setValue(false)
+				.onChange(value => {
+					grampsPrivacyOverrideEnabled = value;
+					grampsPrivacyProtectionSetting.settingEl.style.display = value ? '' : 'none';
+					grampsPrivacyFormatSetting.settingEl.style.display = value && grampsPrivacyOverrideProtection ? '' : 'none';
+					void updateGrampsPrivacyPreview();
+				})
+			);
+
+		const grampsPrivacyProtectionSetting = new Setting(content)
+			.setName('Enable privacy protection')
+			.setDesc('Protect living persons in this export')
+			.addToggle(toggle => toggle
+				.setValue(grampsPrivacyOverrideProtection)
+				.onChange(value => {
+					grampsPrivacyOverrideProtection = value;
+					grampsPrivacyFormatSetting.settingEl.style.display = value ? '' : 'none';
+					void updateGrampsPrivacyPreview();
+				})
+			);
+		grampsPrivacyProtectionSetting.settingEl.style.display = 'none';
+
+		const grampsPrivacyFormatSetting = new Setting(content)
+			.setName('Privacy display format')
+			.setDesc('How to display protected living persons')
+			.addDropdown(dropdown => dropdown
+				.addOption('living', 'Living')
+				.addOption('private', 'Private')
+				.addOption('initials', 'Initials only')
+				.addOption('hidden', 'Exclude from export')
+				.setValue(grampsPrivacyOverrideFormat)
+				.onChange(value => {
+					grampsPrivacyOverrideFormat = value as 'living' | 'private' | 'initials' | 'hidden';
+					void updateGrampsPrivacyPreview();
+				})
+			);
+		grampsPrivacyFormatSetting.settingEl.style.display = 'none';
+
+		// Privacy preview section
+		const grampsPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4' });
+		grampsPrivacyPreviewEl.style.display = 'none';
+
+		updateGrampsPrivacyPreview = async (): Promise<void> => {
+			const effectiveProtection = grampsPrivacyOverrideEnabled
+				? grampsPrivacyOverrideProtection
+				: this.plugin.settings.enablePrivacyProtection;
+			const effectiveFormat = grampsPrivacyOverrideEnabled
+				? grampsPrivacyOverrideFormat
+				: this.plugin.settings.privacyDisplayFormat;
+
+			if (!effectiveProtection) {
+				grampsPrivacyPreviewEl.style.display = 'none';
+				return;
+			}
+
+			const { FamilyGraphService } = await import('../core/family-graph');
+			const { PrivacyService } = await import('../core/privacy-service');
+
+			const graphService = new FamilyGraphService(this.app);
+			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.reloadCache();
+			const allPeople = graphService.getAllPeople();
+
+			const privacyService = new PrivacyService({
+				enablePrivacyProtection: effectiveProtection,
+				livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+				privacyDisplayFormat: effectiveFormat,
+				hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+			});
+
+			const summary = privacyService.getPrivacySummary(allPeople);
+
+			grampsPrivacyPreviewEl.empty();
+			grampsPrivacyPreviewEl.style.display = '';
+
+			const previewText = effectiveFormat === 'hidden'
+				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
+				: `${summary.protected} of ${summary.total} people will be obfuscated (living)`;
+
+			grampsPrivacyPreviewEl.createEl('span', {
+				text: previewText,
+				cls: 'crc-text-muted crc-text-sm'
+			});
+		};
+
+		// Initial preview based on global settings
+		void updateGrampsPrivacyPreview();
+
+		// Export file name
+		let grampsExportFileName = 'family-tree';
+		new Setting(content)
+			.setName('Export file name')
+			.setDesc('Name for the exported .gramps file (without extension)')
+			.addText(text => text
+				.setPlaceholder('family-tree')
+				.setValue(grampsExportFileName)
+				.onChange(value => {
+					grampsExportFileName = value || 'family-tree';
+				})
+			);
+
+		// Export button
+		const exportBtn = content.createEl('button', {
+			cls: 'crc-btn crc-btn--primary crc-mt-4',
+			text: 'Export to Gramps'
+		});
+
+		exportBtn.addEventListener('click', () => {
+			void (async () => {
+				await this.handleGrampsExport({
+					fileName: grampsExportFileName,
+					collectionFilter,
+					branchRootCrId: grampsBranchRootCrId,
+					branchDirection: grampsBranchDirection,
+					branchIncludeSpouses: grampsBranchIncludeSpouses,
+					privacyOverride: grampsPrivacyOverrideEnabled ? {
+						enablePrivacyProtection: grampsPrivacyOverrideProtection,
+						privacyDisplayFormat: grampsPrivacyOverrideFormat
+					} : undefined
+				});
+			})();
 		});
 
 		container.appendChild(card);
+	}
+
+	/**
+	 * Handle Gramps XML file export
+	 */
+	private async handleGrampsExport(options: {
+		fileName: string;
+		collectionFilter?: string;
+		branchRootCrId?: string;
+		branchDirection?: 'ancestors' | 'descendants';
+		branchIncludeSpouses?: boolean;
+		privacyOverride?: {
+			enablePrivacyProtection: boolean;
+			privacyDisplayFormat: 'living' | 'private' | 'initials' | 'hidden';
+		};
+	}): Promise<void> {
+		try {
+			logger.info('gramps-export', `Starting Gramps export: ${options.fileName}`);
+
+			// Create exporter
+			const { GrampsExporter } = await import('../gramps/gramps-exporter');
+			const exporter = new GrampsExporter(this.app);
+
+			// Export to Gramps
+			const result = exporter.exportToGramps({
+				peopleFolder: this.plugin.settings.peopleFolder,
+				collectionFilter: options.collectionFilter,
+				branchRootCrId: options.branchRootCrId,
+				branchDirection: options.branchDirection,
+				branchIncludeSpouses: options.branchIncludeSpouses,
+				fileName: options.fileName,
+				sourceApp: 'Canvas Roots',
+				sourceVersion: this.plugin.manifest.version,
+				privacySettings: {
+					enablePrivacyProtection: options.privacyOverride?.enablePrivacyProtection ?? this.plugin.settings.enablePrivacyProtection,
+					livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+					privacyDisplayFormat: options.privacyOverride?.privacyDisplayFormat ?? this.plugin.settings.privacyDisplayFormat,
+					hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+				}
+			});
+
+			// Log results
+			logger.info('gramps-export', `Export complete: ${result.personsExported} persons, ${result.familiesExported} families, ${result.eventsExported} events`);
+
+			if (result.errors.length > 0) {
+				logger.warn('gramps-export', `Export had ${result.errors.length} errors`);
+				result.errors.forEach(error => logger.error('gramps-export', error));
+			}
+
+			if (result.success && result.xmlContent) {
+				// Create blob and trigger download
+				const blob = new Blob([result.xmlContent], { type: 'application/xml' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${result.fileName}.gramps`;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+
+				let noticeMsg = `Gramps exported: ${result.personsExported} people, ${result.familiesExported} families`;
+				if (result.privacyExcluded && result.privacyExcluded > 0) {
+					noticeMsg += ` (${result.privacyExcluded} living excluded)`;
+				} else if (result.privacyObfuscated && result.privacyObfuscated > 0) {
+					noticeMsg += ` (${result.privacyObfuscated} living obfuscated)`;
+				}
+				new Notice(noticeMsg);
+			} else {
+				throw new Error('Export failed to generate content');
+			}
+		} catch (error: unknown) {
+			const errorMsg = getErrorMessage(error);
+			logger.error('gramps-export', `Gramps export failed: ${errorMsg}`);
+			new Notice(`Failed to export Gramps: ${errorMsg}`);
+		}
 	}
 
 	/**
@@ -6353,6 +7071,107 @@ export class ControlCenterModal extends Modal {
 				})
 			);
 
+		// Privacy override options for CSV
+		let csvPrivacyOverrideEnabled = false;
+		let csvPrivacyOverrideProtection = this.plugin.settings.enablePrivacyProtection;
+		let csvPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
+
+		// Define updateCsvPrivacyPreview before the settings that use it
+		let updateCsvPrivacyPreview: () => Promise<void>;
+
+		const csvPrivacyOverrideSetting = new Setting(content)
+			.setName('Override privacy settings')
+			.setDesc('Use different privacy settings for this export only')
+			.addToggle(toggle => toggle
+				.setValue(false)
+				.onChange(value => {
+					csvPrivacyOverrideEnabled = value;
+					csvPrivacyProtectionSetting.settingEl.style.display = value ? '' : 'none';
+					csvPrivacyFormatSetting.settingEl.style.display = value && csvPrivacyOverrideProtection ? '' : 'none';
+					void updateCsvPrivacyPreview();
+				})
+			);
+
+		const csvPrivacyProtectionSetting = new Setting(content)
+			.setName('Enable privacy protection')
+			.setDesc('Protect living persons in this export')
+			.addToggle(toggle => toggle
+				.setValue(csvPrivacyOverrideProtection)
+				.onChange(value => {
+					csvPrivacyOverrideProtection = value;
+					csvPrivacyFormatSetting.settingEl.style.display = value ? '' : 'none';
+					void updateCsvPrivacyPreview();
+				})
+			);
+		csvPrivacyProtectionSetting.settingEl.style.display = 'none';
+
+		const csvPrivacyFormatSetting = new Setting(content)
+			.setName('Privacy display format')
+			.setDesc('How to display protected living persons')
+			.addDropdown(dropdown => dropdown
+				.addOption('living', 'Living')
+				.addOption('private', 'Private')
+				.addOption('initials', 'Initials only')
+				.addOption('hidden', 'Exclude from export')
+				.setValue(csvPrivacyOverrideFormat)
+				.onChange(value => {
+					csvPrivacyOverrideFormat = value as 'living' | 'private' | 'initials' | 'hidden';
+					void updateCsvPrivacyPreview();
+				})
+			);
+		csvPrivacyFormatSetting.settingEl.style.display = 'none';
+
+		// Privacy preview section for CSV
+		const csvPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4' });
+		csvPrivacyPreviewEl.style.display = 'none';
+
+		updateCsvPrivacyPreview = async (): Promise<void> => {
+			const effectiveProtection = csvPrivacyOverrideEnabled
+				? csvPrivacyOverrideProtection
+				: this.plugin.settings.enablePrivacyProtection;
+			const effectiveFormat = csvPrivacyOverrideEnabled
+				? csvPrivacyOverrideFormat
+				: this.plugin.settings.privacyDisplayFormat;
+
+			if (!effectiveProtection) {
+				csvPrivacyPreviewEl.style.display = 'none';
+				return;
+			}
+
+			// Load people and calculate privacy summary
+			const { FamilyGraphService } = await import('../core/family-graph');
+			const { PrivacyService } = await import('../core/privacy-service');
+
+			const graphService = new FamilyGraphService(this.app);
+			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.reloadCache();
+			const allPeople = graphService.getAllPeople();
+
+			const privacyService = new PrivacyService({
+				enablePrivacyProtection: effectiveProtection,
+				livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+				privacyDisplayFormat: effectiveFormat,
+				hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+			});
+
+			const summary = privacyService.getPrivacySummary(allPeople);
+
+			csvPrivacyPreviewEl.empty();
+			csvPrivacyPreviewEl.style.display = '';
+
+			const previewText = effectiveFormat === 'hidden'
+				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
+				: `${summary.protected} of ${summary.total} people will be obfuscated (living)`;
+
+			csvPrivacyPreviewEl.createEl('span', {
+				text: previewText,
+				cls: 'crc-text-muted crc-text-sm'
+			});
+		};
+
+		// Initial preview based on global settings
+		void updateCsvPrivacyPreview();
+
 		// Export file name
 		let exportFileName = 'family-tree';
 		new Setting(content)
@@ -6379,7 +7198,11 @@ export class ControlCenterModal extends Modal {
 					collectionFilter,
 					branchRootCrId: csvBranchRootCrId,
 					branchDirection: csvBranchDirection,
-					branchIncludeSpouses: csvBranchIncludeSpouses
+					branchIncludeSpouses: csvBranchIncludeSpouses,
+					privacyOverride: csvPrivacyOverrideEnabled ? {
+						enablePrivacyProtection: csvPrivacyOverrideProtection,
+						privacyDisplayFormat: csvPrivacyOverrideFormat
+					} : undefined
 				});
 			})();
 		});
@@ -6588,6 +7411,10 @@ export class ControlCenterModal extends Modal {
 		branchRootCrId?: string;
 		branchDirection?: 'ancestors' | 'descendants';
 		branchIncludeSpouses?: boolean;
+		privacyOverride?: {
+			enablePrivacyProtection: boolean;
+			privacyDisplayFormat: 'living' | 'private' | 'initials' | 'hidden';
+		};
 	}): Promise<void> {
 		try {
 			logger.info('csv-export', `Starting CSV export: ${options.fileName}`);
@@ -6605,9 +7432,9 @@ export class ControlCenterModal extends Modal {
 				branchIncludeSpouses: options.branchIncludeSpouses,
 				fileName: options.fileName,
 				privacySettings: {
-					enablePrivacyProtection: this.plugin.settings.enablePrivacyProtection,
+					enablePrivacyProtection: options.privacyOverride?.enablePrivacyProtection ?? this.plugin.settings.enablePrivacyProtection,
 					livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
-					privacyDisplayFormat: this.plugin.settings.privacyDisplayFormat,
+					privacyDisplayFormat: options.privacyOverride?.privacyDisplayFormat ?? this.plugin.settings.privacyDisplayFormat,
 					hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
 				}
 			});

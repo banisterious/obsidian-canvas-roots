@@ -148,13 +148,61 @@ export class PrivacyService {
 
 	/**
 	 * Extract year from a date string
-	 * Supports various formats: YYYY, YYYY-MM-DD, DD MMM YYYY, etc.
+	 * Supports various formats including approximate dates:
+	 * - Exact: YYYY, YYYY-MM-DD, DD MMM YYYY
+	 * - Approximate: "about 1920", "abt 1920", "circa 1920", "~1920", "c.1920"
+	 * - Range: "bet 1920 and 1930", "between 1920-1930", "1920-1930"
+	 * - Before/After: "bef 1920", "before 1920", "aft 1920", "after 1920"
+	 *
+	 * For privacy purposes:
+	 * - Ranges use the earlier year (conservative - assume born earlier)
+	 * - "After" dates use the stated year (makes person appear younger, more likely protected)
+	 * - "Before" dates use the stated year (conservative)
 	 */
 	private extractYear(dateString: string): number | null {
 		if (!dateString) return null;
 
-		// Try to find a 4-digit year in the string
-		const yearMatch = dateString.match(/\b(1[0-9]{3}|20[0-9]{2})\b/);
+		const normalized = dateString.toLowerCase().trim();
+
+		// Handle "between X and Y" or "bet X and Y" - use earlier year
+		const betweenMatch = normalized.match(/(?:bet(?:ween)?)\s*(\d{4})\s*(?:and|-)\s*(\d{4})/);
+		if (betweenMatch) {
+			const year1 = parseInt(betweenMatch[1], 10);
+			const year2 = parseInt(betweenMatch[2], 10);
+			return Math.min(year1, year2);
+		}
+
+		// Handle date ranges like "1920-1930" - use earlier year
+		const rangeMatch = normalized.match(/\b(\d{4})\s*[-–—]\s*(\d{4})\b/);
+		if (rangeMatch) {
+			const year1 = parseInt(rangeMatch[1], 10);
+			const year2 = parseInt(rangeMatch[2], 10);
+			// Only treat as range if second year is greater (not MM-DD format)
+			if (year2 > year1) {
+				return Math.min(year1, year2);
+			}
+		}
+
+		// Handle "before" dates - use stated year (conservative)
+		const beforeMatch = normalized.match(/(?:bef(?:ore)?)\s*(\d{4})/);
+		if (beforeMatch) {
+			return parseInt(beforeMatch[1], 10);
+		}
+
+		// Handle "after" dates - use stated year (person could be younger)
+		const afterMatch = normalized.match(/(?:aft(?:er)?)\s*(\d{4})/);
+		if (afterMatch) {
+			return parseInt(afterMatch[1], 10);
+		}
+
+		// Handle approximate dates: "about", "abt", "circa", "c.", "~"
+		const approxMatch = normalized.match(/(?:ab(?:ou)?t|circa|c\.|~)\s*(\d{4})/);
+		if (approxMatch) {
+			return parseInt(approxMatch[1], 10);
+		}
+
+		// Try to find any 4-digit year in the string (1800-2099)
+		const yearMatch = dateString.match(/\b(1[89][0-9]{2}|20[0-9]{2})\b/);
 		if (yearMatch) {
 			return parseInt(yearMatch[1], 10);
 		}

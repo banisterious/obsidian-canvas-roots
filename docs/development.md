@@ -52,33 +52,42 @@ canvas-roots/
 ├── src/
 │   ├── settings.ts            # Plugin settings interface
 │   ├── core/                  # Core business logic
-│   │   ├── canvas-generator.ts      # Canvas JSON generation from positioned nodes ✓
-│   │   ├── family-chart-layout.ts   # Family tree layout using family-chart library ✓
+│   │   ├── canvas-generator.ts      # Canvas JSON generation ✓
+│   │   ├── family-chart-layout.ts   # Family tree layout ✓
 │   │   ├── family-graph.ts          # Relationship graph builder ✓
-│   │   ├── layout-engine.ts         # Original D3.js layout (deprecated) ✓
-│   │   ├── logging.ts               # Structured logging system ✓
-│   │   ├── person-note-writer.ts    # Person note creation ✓
-│   │   ├── uuid.ts                  # UUID generation ✓
-│   │   └── vault-stats.ts           # Vault statistics ✓
+│   │   ├── privacy-service.ts       # Living person detection ✓
+│   │   ├── logging.ts               # Structured logging ✓
+│   │   └── ...
+│   ├── gedcom/                # GEDCOM 5.5.1 support
+│   │   ├── gedcom-importer.ts    # Import from GEDCOM ✓
+│   │   └── gedcom-exporter.ts    # Export to GEDCOM ✓
+│   ├── gedcomx/               # GEDCOM X (FamilySearch) support
+│   │   ├── gedcomx-importer.ts   # Import from GEDCOM X JSON ✓
+│   │   ├── gedcomx-exporter.ts   # Export to GEDCOM X JSON ✓
+│   │   └── gedcomx-types.ts      # Type definitions ✓
+│   ├── gramps/                # Gramps XML support
+│   │   ├── gramps-importer.ts    # Import from Gramps XML ✓
+│   │   ├── gramps-exporter.ts    # Export to Gramps XML ✓
+│   │   └── gramps-types.ts       # Type definitions ✓
 │   ├── models/                # TypeScript interfaces
-│   │   ├── person.ts             # Person data structures (partial)
-│   │   └── canvas.ts             # Canvas JSON types (partial)
+│   │   ├── person.ts             # Person data structures
+│   │   └── canvas.ts             # Canvas JSON types
 │   └── ui/                    # User interface components
-│       ├── control-center.ts     # Control Center modal ✓ (skeleton)
-│       ├── lucide-icons.ts       # Icon helpers ✓
-│       └── person-picker.ts      # Person search modal ✓
+│       ├── control-center.ts     # Control Center modal ✓
+│       ├── tree-preview.ts       # Interactive SVG preview ✓
+│       └── ...
 ├── styles/                    # CSS source files
 │   ├── control-center.css     # Control Center styling ✓
-│   └── modals.css             # Modal styling
+│   └── modals.css             # Modal styling ✓
 ├── docs/                      # Documentation
 │   ├── development.md         # This file
-│   ├── user-guide.md          # Complete user documentation ✓
-│   ├── roadmap.md             # Released and planned features ✓
-│   └── ...
+│   ├── user-guide.md          # User documentation ✓
+│   ├── roadmap.md             # Planned features ✓
+│   └── architecture/          # Design documents
 ├── manifest.json              # Obsidian plugin metadata
 ├── package.json               # NPM configuration
 ├── tsconfig.json              # TypeScript configuration
-├── esbuild.config.mjs         # Build configuration with CSS compilation
+├── esbuild.config.mjs         # Build configuration
 └── .eslintrc.json             # ESLint configuration
 ```
 
@@ -105,7 +114,7 @@ canvas-roots/
 | `lineage-tracking.ts` | ✅ Complete | Multi-generational lineage assignment (patrilineal, matrilineal, all descendants) |
 | `logging.ts` | ✅ Complete | Structured logging with export capability and persistent log level settings |
 | `person-note-writer.ts` | ✅ Complete | Creates person notes with YAML frontmatter, includes all essential properties by default |
-| `privacy-service.ts` | ✅ Complete | Privacy protection for GEDCOM exports (living person detection, anonymization) |
+| `privacy-service.ts` | ✅ Complete | Privacy protection for all exports (living person detection, anonymization) |
 | `reference-numbering.ts` | ✅ Complete | Genealogical reference systems (Ahnentafel, d'Aboville, Henry, Generation) |
 | `relationship-calculator.ts` | ✅ Complete | BFS pathfinding to calculate genealogical relationships between people |
 | `relationship-history.ts` | ✅ Complete | Tracks relationship changes with timestamps for undo functionality |
@@ -898,6 +907,52 @@ collection: "Paternal Line"  # or "House Stark", etc.
 - Success message now shows: "Family tree generated successfully! (163 people)"
 - Provides immediate feedback about tree size
 - Modified: `src/ui/control-center.ts` line 1141
+
+### GEDCOM X and Gramps XML Export (2025-12-02)
+
+**Added:** Full export capabilities for GEDCOM X (JSON) and Gramps XML formats, completing round-trip support for all import formats.
+
+**Implemented Features:**
+
+1. **GEDCOM X Export (src/gedcomx/gedcomx-exporter.ts):**
+   - FamilySearch-compatible JSON format
+   - Exports persons with names, gender, and facts (birth, death)
+   - Exports ParentChild and Couple relationships
+   - Privacy-aware: optional anonymization of living persons
+   - Configurable filename with sanitization
+
+2. **Gramps XML Export (src/gramps/gramps-exporter.ts):**
+   - Gramps genealogy software compatible XML format
+   - Exports persons, families, events, and places
+   - Proper XML escaping and formatting
+   - Privacy-aware: optional anonymization of living persons
+   - Family records link parents to children
+
+3. **Control Center UI Enhancements:**
+   - Separated Import and Export into distinct cards
+   - Folder configuration card for shared settings
+   - Format dropdowns for import and export selection
+   - All formats available for both import and export
+
+4. **Context Menu Integration:**
+   - Consolidated Export submenu (Excalidraw + image formats)
+   - Canvas Roots submenu for place notes
+   - Canvas Roots submenu for blank notes (Add essential properties)
+
+**Files Created:**
+- `src/gedcomx/gedcomx-exporter.ts` - GEDCOM X export implementation
+- `src/gramps/gramps-exporter.ts` - Gramps XML export implementation
+
+**Files Modified:**
+- `src/ui/control-center.ts` - Import/Export tab restructure
+- `main.ts` - Context menu enhancements
+
+**Technical Details:**
+- Reuses existing type definitions from gedcomx-types.ts and gramps-types.ts
+- Leverages PrivacyService for consistent privacy protection across all formats
+- Supports per-export privacy override in export options
+
+---
 
 ### CSS Linting Configuration (2025-11-20)
 
