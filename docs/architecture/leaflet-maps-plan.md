@@ -681,7 +681,7 @@ Leaflet's Simple CRS is now supported for direct pixel-to-coordinate mapping.
 
 **How it works:**
 - Set `coordinate_system: pixel` in the map config frontmatter
-- Place notes use `pixel_coordinates: { x: number, y: number }` instead of `coordinates: { lat, lng }`
+- Place notes use flat `pixel_x` and `pixel_y` properties
 - Image dimensions can be specified or auto-detected from the image
 - The map automatically switches CRS when loading a pixel-based custom map
 
@@ -694,12 +694,10 @@ name: Westeros
 universe: got
 image: assets/maps/westeros.png
 coordinate_system: pixel
-image_dimensions:
-  width: 2048
-  height: 3072
-center:
-  x: 1024
-  y: 1536
+image_width: 2048
+image_height: 3072
+center_x: 1024
+center_y: 1536
 default_zoom: 0
 ---
 ```
@@ -711,9 +709,8 @@ type: place
 cr_id: winterfell
 name: Winterfell
 universe: got
-pixel_coordinates:
-  x: 1200
-  y: 2400
+pixel_x: 1200
+pixel_y: 2400
 ---
 ```
 
@@ -726,6 +723,7 @@ pixel_coordinates:
 - More intuitive for non-geographic maps (users think in pixels)
 - No need to define arbitrary lat/lng bounds for fictional worlds
 - Coordinates directly correspond to image editor positions
+- Flat properties work well with Obsidian's Properties view
 
 ### Tiled Image Maps (Zoomify/DeepZoom)
 - Replace `L.imageOverlay` with tiled image loading for massive custom maps

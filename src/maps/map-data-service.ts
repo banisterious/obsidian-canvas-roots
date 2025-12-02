@@ -175,15 +175,17 @@ export class MapDataService {
 			const coords = this.parseCoordinates(fm.coordinates);
 
 			// Parse pixel coordinates for pixel-based maps
-			const pixelCoords = this.parsePixelCoordinates(fm.pixel_coordinates);
+			// Supports both flat (pixel_x, pixel_y) and nested (pixel_coordinates.x, pixel_coordinates.y) formats
+			const pixelX = this.parseCoordinate(fm.pixel_x) ?? this.parsePixelCoordinates(fm.pixel_coordinates).x;
+			const pixelY = this.parseCoordinate(fm.pixel_y) ?? this.parsePixelCoordinates(fm.pixel_coordinates).y;
 
 			const placeData: PlaceData = {
 				crId: String(fm.cr_id || ''),
 				name: String(fm.name || file.basename),
 				lat: coords.lat,
 				lng: coords.lng,
-				pixelX: pixelCoords.x,
-				pixelY: pixelCoords.y,
+				pixelX,
+				pixelY,
 				category: fm.place_category ? String(fm.place_category) : undefined,
 				universe: fm.universe ? String(fm.universe) : undefined,
 				parentPlace: this.extractLinkTarget(fm.parent_place) || undefined

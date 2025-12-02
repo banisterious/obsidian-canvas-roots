@@ -15,6 +15,10 @@ const logger = getLogger('ImageMapManager');
 
 /**
  * Configuration for a custom image map stored in frontmatter
+ *
+ * Supports both flat and nested property formats for Obsidian compatibility.
+ * Flat properties (image_width, center_x) are preferred as they work better
+ * with Obsidian's Properties view.
  */
 export interface ImageMapFrontmatter {
 	/** Type must be 'map' to be recognized */
@@ -33,33 +37,52 @@ export interface ImageMapFrontmatter {
 	 * - 'pixel': Use pixel coordinates with L.CRS.Simple
 	 */
 	coordinate_system?: 'geographic' | 'pixel';
-	/**
-	 * Coordinate bounds for the image (geographic mode)
-	 * For pixel mode, bounds are auto-calculated from image dimensions
-	 */
+
+	// === Geographic mode bounds (flat format preferred) ===
+	/** North bound (geographic mode) */
+	bounds_north?: number;
+	/** South bound (geographic mode) */
+	bounds_south?: number;
+	/** East bound (geographic mode) */
+	bounds_east?: number;
+	/** West bound (geographic mode) */
+	bounds_west?: number;
+	/** Legacy nested bounds (still supported) */
 	bounds?: {
-		/** Southwest corner (bottom-left) */
 		south: number;
 		west: number;
-		/** Northeast corner (top-right) */
 		north: number;
 		east: number;
 	};
-	/**
-	 * Image dimensions in pixels (pixel mode)
-	 * If not provided, will be auto-detected from the image
-	 */
+
+	// === Pixel mode image dimensions (flat format preferred) ===
+	/** Image width in pixels */
+	image_width?: number;
+	/** Image height in pixels */
+	image_height?: number;
+	/** Legacy nested dimensions (still supported) */
 	image_dimensions?: {
 		width: number;
 		height: number;
 	};
-	/** Optional default center point (in lat/lng for geographic, x/y for pixel) */
+
+	// === Center point (flat format preferred) ===
+	/** Center latitude (geographic mode) */
+	center_lat?: number;
+	/** Center longitude (geographic mode) */
+	center_lng?: number;
+	/** Center X coordinate (pixel mode) */
+	center_x?: number;
+	/** Center Y coordinate (pixel mode) */
+	center_y?: number;
+	/** Legacy nested center (still supported) */
 	center?: {
 		lat?: number;
 		lng?: number;
 		x?: number;
 		y?: number;
 	};
+
 	/** Optional default zoom level */
 	default_zoom?: number;
 	/** Optional minimum zoom */
@@ -118,6 +141,7 @@ export class ImageMapManager {
 
 	/**
 	 * Parse a map configuration from frontmatter
+	 * Supports both flat (preferred) and nested (legacy) property formats
 	 */
 	private parseMapConfig(fm: Record<string, unknown>, file: TFile): CustomMapConfig | null {
 		// Validate required fields
@@ -128,9 +152,13 @@ export class ImageMapManager {
 
 		const coordinateSystem = fm.coordinate_system === 'pixel' ? 'pixel' : 'geographic';
 
-		// For pixel mode, bounds are optional (will be calculated from image dimensions)
+		// Parse bounds - support both flat and nested formats
+		const boundsNested = fm.bounds as Record<string, unknown> | undefined;
+		const hasFlatBounds = typeof fm.bounds_north === 'number' || typeof fm.bounds_south === 'number';
+		const hasNestedBounds = boundsNested && typeof boundsNested.north === 'number';
+
 		// For geographic mode, bounds are required
-		if (coordinateSystem === 'geographic' && !fm.bounds) {
+		if (coordinateSystem === 'geographic' && !hasFlatBounds && !hasNestedBounds) {
 			logger.warn('invalid-config', `Map config in ${file.path} missing bounds (required for geographic mode)`);
 			return null;
 		}
@@ -139,14 +167,21 @@ export class ImageMapManager {
 		let imageDimensions: { width: number; height: number } | undefined;
 
 		if (coordinateSystem === 'pixel') {
-			// For pixel mode, use image dimensions or default placeholder
-			const dims = fm.image_dimensions as Record<string, unknown> | undefined;
-			if (dims && typeof dims.width === 'number' && typeof dims.height === 'number') {
-				imageDimensions = { width: dims.width, height: dims.height };
+			// For pixel mode, use image dimensions (flat format preferred)
+			const width = typeof fm.image_width === 'number' ? fm.image_width : undefined;
+			const height = typeof fm.image_height === 'number' ? fm.image_height : undefined;
+
+			// Fall back to nested format
+			const dimsNested = fm.image_dimensions as Record<string, unknown> | undefined;
+			const finalWidth = width ?? (dimsNested && typeof dimsNested.width === 'number' ? dimsNested.width : undefined);
+			const finalHeight = height ?? (dimsNested && typeof dimsNested.height === 'number' ? dimsNested.height : undefined);
+
+			if (finalWidth !== undefined && finalHeight !== undefined) {
+				imageDimensions = { width: finalWidth, height: finalHeight };
 				// In pixel/Simple CRS: y increases upward, so bounds go from [0,0] to [height, width]
 				bounds = {
-					topLeft: { x: 0, y: dims.height },      // top-left in Simple CRS
-					bottomRight: { x: dims.width, y: 0 }    // bottom-right in Simple CRS
+					topLeft: { x: 0, y: finalHeight },      // top-left in Simple CRS
+					bottomRight: { x: finalWidth, y: 0 }    // bottom-right in Simple CRS
 				};
 			} else {
 				// Dimensions will be auto-detected later when loading the image
@@ -157,39 +192,61 @@ export class ImageMapManager {
 				};
 			}
 		} else {
-			// Geographic mode - parse bounds as lat/lng
-			const boundsObj = fm.bounds as Record<string, unknown>;
-			if (
-				typeof boundsObj.south !== 'number' ||
-				typeof boundsObj.west !== 'number' ||
-				typeof boundsObj.north !== 'number' ||
-				typeof boundsObj.east !== 'number'
-			) {
-				logger.warn('invalid-bounds', `Map config in ${file.path} has invalid bounds`);
+			// Geographic mode - parse bounds (flat format preferred)
+			let north: number, south: number, east: number, west: number;
+
+			if (hasFlatBounds) {
+				north = typeof fm.bounds_north === 'number' ? fm.bounds_north : 100;
+				south = typeof fm.bounds_south === 'number' ? fm.bounds_south : -100;
+				east = typeof fm.bounds_east === 'number' ? fm.bounds_east : 100;
+				west = typeof fm.bounds_west === 'number' ? fm.bounds_west : -100;
+			} else if (boundsNested) {
+				if (
+					typeof boundsNested.south !== 'number' ||
+					typeof boundsNested.west !== 'number' ||
+					typeof boundsNested.north !== 'number' ||
+					typeof boundsNested.east !== 'number'
+				) {
+					logger.warn('invalid-bounds', `Map config in ${file.path} has invalid bounds`);
+					return null;
+				}
+				north = boundsNested.north as number;
+				south = boundsNested.south as number;
+				east = boundsNested.east as number;
+				west = boundsNested.west as number;
+			} else {
+				// Should not reach here due to earlier check
 				return null;
 			}
 
 			bounds = {
-				topLeft: { x: boundsObj.west as number, y: boundsObj.north as number },
-				bottomRight: { x: boundsObj.east as number, y: boundsObj.south as number }
+				topLeft: { x: west, y: north },
+				bottomRight: { x: east, y: south }
 			};
 		}
 
-		const center = fm.center as Record<string, unknown> | undefined;
+		// Parse center - support both flat and nested formats
+		const centerNested = fm.center as Record<string, unknown> | undefined;
 		let centerPoint: { x: number; y: number } | undefined;
 
-		if (center) {
-			if (coordinateSystem === 'pixel') {
-				// Use x/y for pixel mode
+		if (coordinateSystem === 'pixel') {
+			// Pixel mode: prefer flat center_x/center_y
+			const cx = typeof fm.center_x === 'number' ? fm.center_x : (centerNested?.x as number | undefined);
+			const cy = typeof fm.center_y === 'number' ? fm.center_y : (centerNested?.y as number | undefined);
+			if (cx !== undefined || cy !== undefined) {
 				centerPoint = {
-					x: (center.x as number) ?? (bounds.bottomRight.x / 2),
-					y: (center.y as number) ?? (bounds.topLeft.y / 2)
+					x: cx ?? (bounds.bottomRight.x / 2),
+					y: cy ?? (bounds.topLeft.y / 2)
 				};
-			} else {
-				// Use lng/lat for geographic mode
+			}
+		} else {
+			// Geographic mode: prefer flat center_lat/center_lng
+			const clat = typeof fm.center_lat === 'number' ? fm.center_lat : (centerNested?.lat as number | undefined);
+			const clng = typeof fm.center_lng === 'number' ? fm.center_lng : (centerNested?.lng as number | undefined);
+			if (clat !== undefined || clng !== undefined) {
 				centerPoint = {
-					x: (center.lng as number) ?? 0,
-					y: (center.lat as number) ?? 0
+					x: clng ?? 0,
+					y: clat ?? 0
 				};
 			}
 		}
@@ -428,14 +485,12 @@ export class ImageMapManager {
  * universe: tolkien
  * image: assets/maps/middle-earth.jpg
  * coordinate_system: geographic
- * bounds:
- *   north: 50
- *   south: -50
- *   west: -100
- *   east: 100
- * center:
- *   lat: 0
- *   lng: 0
+ * bounds_north: 50
+ * bounds_south: -50
+ * bounds_west: -100
+ * bounds_east: 100
+ * center_lat: 0
+ * center_lng: 0
  * default_zoom: 3
  * min_zoom: 1
  * max_zoom: 6
@@ -458,12 +513,10 @@ export class ImageMapManager {
  * universe: got
  * image: assets/maps/westeros.png
  * coordinate_system: pixel
- * image_dimensions:
- *   width: 2048
- *   height: 3072
- * center:
- *   x: 1024
- *   y: 1536
+ * image_width: 2048
+ * image_height: 3072
+ * center_x: 1024
+ * center_y: 1536
  * default_zoom: 0
  * min_zoom: -2
  * max_zoom: 3
@@ -476,7 +529,7 @@ export class ImageMapManager {
  * - y: 0 is the bottom edge, increases upward
  *
  * Tip: Use an image editor to find pixel coordinates for places.
- * Note: If image_dimensions is omitted, it will be auto-detected.
+ * Note: If image_width/image_height are omitted, they will be auto-detected.
  * ```
  *
  * ## Place Note Example (Pixel Mode)
@@ -487,9 +540,8 @@ export class ImageMapManager {
  * cr_id: winterfell
  * name: Winterfell
  * universe: got
- * pixel_coordinates:
- *   x: 1200
- *   y: 2400
+ * pixel_x: 1200
+ * pixel_y: 2400
  * ---
  * ```
  */

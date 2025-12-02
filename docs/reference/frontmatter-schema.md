@@ -1,7 +1,7 @@
 # Canvas Roots Frontmatter Schema Reference
 
-> **Version:** 0.5.2
-> **Last Updated:** 2025-12-01
+> **Version:** 0.6.0
+> **Last Updated:** 2025-12-02
 
 This document defines all frontmatter properties recognized by Canvas Roots for person notes and place notes.
 
@@ -196,13 +196,23 @@ Canvas Roots can generate genealogical reference numbers:
 
 ### Coordinates
 
+#### Geographic Coordinates (Real-World Maps)
+
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
 | `coordinates.lat` | `number` | Latitude (real-world) | `51.5074` |
 | `coordinates.long` | `number` | Longitude (real-world) | `-0.1278` |
-| `custom_coordinates.x` | `number` | X position on custom map | `450` |
-| `custom_coordinates.y` | `number` | Y position on custom map | `230` |
-| `custom_coordinates.map` | `string` | Path to custom map image | `"maps/westeros.png"` |
+
+#### Pixel Coordinates (Custom Image Maps)
+
+For places on pixel-based custom maps (using L.CRS.Simple):
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `pixel_x` | `number` | X position in pixels (0 = left edge) | `1200` |
+| `pixel_y` | `number` | Y position in pixels (0 = bottom edge) | `2400` |
+
+> **Note:** Flat properties (`pixel_x`, `pixel_y`) are preferred over nested formats for better compatibility with Obsidian's Properties view.
 
 ### Historical Names
 
@@ -221,6 +231,65 @@ historical_names:
 | `collection` | `string` | User-defined grouping (shared with person notes) | `"Smith Family"` |
 
 The `collection` property allows places to be grouped with related person notes. For example, a "Smith Family" collection could include both the Smith family members and the places associated with them.
+
+---
+
+## Map Note Properties
+
+Map notes define custom image maps for fictional worlds or historical maps.
+
+### Identity
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `type` | `string` | Must be `"map"` | `"map"` |
+| `map_id` | `string` | Unique identifier for the map | `"middle-earth"` |
+
+### Basic Information
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `name` | `string` | Display name of the map | `"Middle-earth"` |
+| `universe` | `string` | Fictional universe for filtering | `"tolkien"` |
+| `image` | `string` | Path to map image in vault | `"assets/maps/middle-earth.jpg"` |
+
+### Coordinate System
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `coordinate_system` | `string` | `"geographic"` (default) or `"pixel"` | `"pixel"` |
+
+### Geographic Mode Properties
+
+For maps with arbitrary lat/lng-style coordinates:
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `bounds_north` | `number` | North bound | `50` |
+| `bounds_south` | `number` | South bound | `-50` |
+| `bounds_east` | `number` | East bound | `100` |
+| `bounds_west` | `number` | West bound | `-100` |
+| `center_lat` | `number` | Initial center latitude | `0` |
+| `center_lng` | `number` | Initial center longitude | `0` |
+
+### Pixel Mode Properties
+
+For maps where coordinates match pixel positions:
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `image_width` | `number` | Image width in pixels (auto-detected if omitted) | `2048` |
+| `image_height` | `number` | Image height in pixels (auto-detected if omitted) | `3072` |
+| `center_x` | `number` | Initial center X coordinate | `1024` |
+| `center_y` | `number` | Initial center Y coordinate | `1536` |
+
+### Zoom Settings
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `default_zoom` | `number` | Initial zoom level | `2` |
+| `min_zoom` | `number` | Minimum zoom level | `-2` |
+| `max_zoom` | `number` | Maximum zoom level | `4` |
 
 ---
 
@@ -320,6 +389,79 @@ historical_names:
 # London
 
 Capital city of England and the United Kingdom...
+```
+
+---
+
+## Example Place Note (Pixel Coordinates)
+
+```yaml
+---
+type: place
+cr_id: "place_winterfell_001"
+name: "Winterfell"
+place_category: fictional
+place_type: castle
+universe: "A Song of Ice and Fire"
+pixel_x: 1200
+pixel_y: 2400
+---
+
+# Winterfell
+
+Seat of House Stark in the North...
+```
+
+---
+
+## Example Map Note (Geographic Mode)
+
+```yaml
+---
+type: map
+map_id: middle-earth
+name: Middle-earth
+universe: tolkien
+image: assets/maps/middle-earth.jpg
+coordinate_system: geographic
+bounds_north: 50
+bounds_south: -50
+bounds_west: -100
+bounds_east: 100
+center_lat: 0
+center_lng: 0
+default_zoom: 3
+---
+
+# Middle-earth Map
+
+Map of J.R.R. Tolkien's Middle-earth...
+```
+
+---
+
+## Example Map Note (Pixel Mode)
+
+```yaml
+---
+type: map
+map_id: westeros
+name: Westeros
+universe: got
+image: assets/maps/westeros.png
+coordinate_system: pixel
+image_width: 2048
+image_height: 3072
+center_x: 1024
+center_y: 1536
+default_zoom: 0
+min_zoom: -2
+max_zoom: 3
+---
+
+# Westeros Map
+
+Map of Westeros from A Song of Ice and Fire...
 ```
 
 ---
