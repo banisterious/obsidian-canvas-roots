@@ -261,8 +261,8 @@ When viewing a person note with unlinked place references:
 - ✓ Extract unlinked place references from birth_place, death_place, burial_place, marriage locations
 - ✓ Filter out already-linked places and existing place notes
 - ✓ Open CreateMissingPlacesModal for batch creation
+- ✓ Auto-link option: converts plain text place names to wikilinks after creation
 - Planned: Add action button/link next to unlinked fields in person detail view
-- Planned: Auto-link after creation option
 
 ### Place Note Template Configuration (Partial)
 

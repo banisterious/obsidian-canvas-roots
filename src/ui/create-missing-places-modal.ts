@@ -3,9 +3,11 @@
  * Shows referenced places that don't have notes and allows selection for creation
  */
 
-import { App, Modal, Setting, Notice, normalizePath } from 'obsidian';
+import { App, Modal, Setting, Notice, normalizePath, TFile } from 'obsidian';
 import { createPlaceNote } from '../core/place-note-writer';
 import { createLucideIcon } from './lucide-icons';
+import { PlaceGraphService } from '../core/place-graph';
+import { PlaceReference } from '../models/place';
 
 interface MissingPlace {
 	name: string;
@@ -15,6 +17,8 @@ interface MissingPlace {
 interface CreateMissingPlacesOptions {
 	directory?: string;
 	onComplete?: (created: number) => void;
+	/** PlaceGraphService for auto-linking */
+	placeGraph?: PlaceGraphService;
 }
 
 /**
@@ -25,6 +29,8 @@ export class CreateMissingPlacesModal extends Modal {
 	private selectedPlaces: Set<string>;
 	private directory: string;
 	private onComplete?: (created: number) => void;
+	private placeGraph?: PlaceGraphService;
+	private autoLinkEnabled: boolean = true;
 
 	constructor(
 		app: App,
@@ -36,6 +42,7 @@ export class CreateMissingPlacesModal extends Modal {
 		this.selectedPlaces = new Set();
 		this.directory = options.directory || '';
 		this.onComplete = options.onComplete;
+		this.placeGraph = options.placeGraph;
 	}
 
 	onOpen() {
@@ -70,6 +77,18 @@ export class CreateMissingPlacesModal extends Modal {
 				.onChange(value => {
 					this.directory = value;
 				}));
+
+		// Auto-link option (only if placeGraph is available)
+		if (this.placeGraph) {
+			new Setting(form)
+				.setName('Auto-link person notes')
+				.setDesc('Update person notes to link to the newly created place notes')
+				.addToggle(toggle => toggle
+					.setValue(this.autoLinkEnabled)
+					.onChange(value => {
+						this.autoLinkEnabled = value;
+					}));
+		}
 
 		// Selection controls
 		const controlsRow = contentEl.createDiv({ cls: 'crc-controls-row crc-mb-3' });
@@ -214,6 +233,7 @@ export class CreateMissingPlacesModal extends Modal {
 
 			let created = 0;
 			const errors: string[] = [];
+			const createdPlaces: string[] = [];
 
 			for (const placeName of this.selectedPlaces) {
 				try {
@@ -224,14 +244,23 @@ export class CreateMissingPlacesModal extends Modal {
 						openAfterCreate: false
 					});
 					created++;
+					createdPlaces.push(placeName);
 				} catch (error) {
 					errors.push(`${placeName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
 				}
 			}
 
+			// Auto-link person notes if enabled
+			let linkedCount = 0;
+			if (this.autoLinkEnabled && this.placeGraph && createdPlaces.length > 0) {
+				linkedCount = await this.autoLinkPersonNotes(createdPlaces);
+			}
+
 			if (errors.length > 0) {
 				console.error('Errors creating place notes:', errors);
 				new Notice(`Created ${created} place notes. ${errors.length} failed.`);
+			} else if (linkedCount > 0) {
+				new Notice(`Created ${created} place notes and updated ${linkedCount} person notes`);
 			}
 
 			if (this.onComplete) {
@@ -243,5 +272,105 @@ export class CreateMissingPlacesModal extends Modal {
 			console.error('Failed to create place notes:', error);
 			new Notice(`Failed to create place notes: ${error instanceof Error ? error.message : 'Unknown error'}`);
 		}
+	}
+
+	/**
+	 * Auto-link person notes to newly created place notes
+	 * Updates frontmatter to convert plain text place names to wikilinks
+	 */
+	private async autoLinkPersonNotes(createdPlaces: string[]): Promise<number> {
+		if (!this.placeGraph) return 0;
+
+		// Reload the cache to get fresh references
+		this.placeGraph.reloadCache();
+		const allRefs = this.placeGraph.getPlaceReferences();
+
+		// Find unlinked references that match our created places
+		const refsToUpdate: PlaceReference[] = allRefs.filter(ref =>
+			!ref.isLinked && createdPlaces.includes(ref.rawValue)
+		);
+
+		if (refsToUpdate.length === 0) return 0;
+
+		// Group references by person file
+		const refsByPerson = new Map<string, PlaceReference[]>();
+		for (const ref of refsToUpdate) {
+			const existing = refsByPerson.get(ref.personId) || [];
+			existing.push(ref);
+			refsByPerson.set(ref.personId, existing);
+		}
+
+		let updatedCount = 0;
+
+		// Update each person's frontmatter
+		for (const [personId, refs] of refsByPerson) {
+			try {
+				// Find the person's file
+				const personFile = this.findPersonFile(personId);
+				if (!personFile) continue;
+
+				await this.updatePersonFrontmatter(personFile, refs);
+				updatedCount++;
+			} catch (error) {
+				console.error(`Failed to auto-link places for person ${personId}:`, error);
+			}
+		}
+
+		return updatedCount;
+	}
+
+	/**
+	 * Find a person file by cr_id
+	 */
+	private findPersonFile(crId: string): TFile | null {
+		const files = this.app.vault.getMarkdownFiles();
+
+		for (const file of files) {
+			const cache = this.app.metadataCache.getFileCache(file);
+			const fm = cache?.frontmatter;
+
+			if (fm?.type === 'person' && fm?.cr_id === crId) {
+				return file;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Update person frontmatter to convert place strings to wikilinks
+	 */
+	private async updatePersonFrontmatter(file: TFile, refs: PlaceReference[]): Promise<void> {
+		// Map reference types to frontmatter fields
+		const fieldMap: Record<string, string> = {
+			birth: 'birth_place',
+			death: 'death_place',
+			burial: 'burial_place',
+			marriage: 'spouse_marriage_location' // Will handle spouse indexes
+		};
+
+		await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+			for (const ref of refs) {
+				const placeName = ref.rawValue;
+				const wikilink = `[[${placeName}]]`;
+
+				if (ref.referenceType === 'marriage') {
+					// Handle spouse marriage locations (spouse1_marriage_location, spouse2_marriage_location, etc.)
+					let spouseIndex = 1;
+					while (frontmatter[`spouse${spouseIndex}`] || frontmatter[`spouse${spouseIndex}_id`]) {
+						const field = `spouse${spouseIndex}_marriage_location`;
+						if (frontmatter[field] === placeName) {
+							frontmatter[field] = wikilink;
+						}
+						spouseIndex++;
+					}
+				} else {
+					const field = fieldMap[ref.referenceType];
+					if (field && frontmatter[field] === placeName) {
+						frontmatter[field] = wikilink;
+					}
+				}
+			}
+		});
 	}
 }

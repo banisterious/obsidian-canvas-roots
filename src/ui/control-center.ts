@@ -4723,10 +4723,12 @@ export class ControlCenterModal extends Modal {
 		// Create a selection modal
 		const modal = new CreateMissingPlacesModal(this.app, unlinked, {
 			directory: this.plugin.settings.peopleFolder || '',
+			placeGraph: placeService,
 			onComplete: (created: number) => {
-				new Notice(`Created ${created} place note${created !== 1 ? 's' : ''}`);
-				// Refresh the Places tab
-				this.showTab('places');
+				if (created > 0) {
+					// Refresh the Places tab
+					this.showTab('places');
+				}
 			}
 		});
 		modal.open();

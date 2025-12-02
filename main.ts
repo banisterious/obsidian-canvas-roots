@@ -2027,11 +2027,13 @@ export default class CanvasRootsPlugin extends Plugin {
 
 		// Show modal to select which places to create
 		const { CreateMissingPlacesModal } = await import('./src/ui/create-missing-places-modal');
+
 		const modal = new CreateMissingPlacesModal(
 			this.app,
 			missingPlaces.map(name => ({ name, count: 1 })),
 			{
 				directory: this.settings.peopleFolder || '',
+				placeGraph, // Reuse the placeGraph from earlier in this function
 				onComplete: (created: number) => {
 					if (created > 0) {
 						new Notice(`Created ${created} place note${created !== 1 ? 's' : ''}`);
