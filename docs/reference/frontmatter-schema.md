@@ -105,9 +105,9 @@ Canvas Roots can generate genealogical reference numbers:
 
 ---
 
-## Place Note Properties (Planned)
+## Place Note Properties
 
-> **Status:** Planned for future release. See [geographic-features-plan.md](../architecture/geographic-features-plan.md).
+> **Status:** Phase 1 implemented. See [geographic-features-plan.md](../architecture/geographic-features-plan.md) for future enhancements.
 
 ### Identity
 
@@ -168,6 +168,14 @@ historical_names:
   - name: "Lundenwic"
     period: "Anglo-Saxon"
 ```
+
+### Grouping
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `collection` | `string` | User-defined grouping (shared with person notes) | `"Smith Family"` |
+
+The `collection` property allows places to be grouped with related person notes. For example, a "Smith Family" collection could include both the Smith family members and the places associated with them.
 
 ---
 
@@ -241,7 +249,7 @@ Notes about this person...
 
 ---
 
-## Example Place Note (Planned)
+## Example Place Note
 
 ```yaml
 ---

@@ -23,6 +23,11 @@ import { StagingService, StagingSubfolderInfo } from '../core/staging-service';
 import { CrossImportDetectionService, CrossImportMatch } from '../core/cross-import-detection';
 import { MergeWizardModal } from './merge-wizard-modal';
 import { DataQualityService, DataQualityReport, DataQualityIssue, IssueSeverity, IssueCategory, NormalizationPreview, BatchOperationResult } from '../core/data-quality';
+import { PlaceGraphService } from '../core/place-graph';
+import { PlaceCategory, PlaceStatistics, PlaceIssue } from '../models/place';
+import { CreatePlaceModal } from './create-place-modal';
+import { CreateMissingPlacesModal } from './create-missing-places-modal';
+import { BuildPlaceHierarchyModal } from './build-place-hierarchy-modal';
 
 const logger = getLogger('ControlCenter');
 
@@ -245,6 +250,9 @@ export class ControlCenterModal extends Modal {
 				break;
 			case 'advanced':
 				this.showAdvancedTab();
+				break;
+			case 'places':
+				void this.showPlacesTab();
 				break;
 			default:
 				this.showPlaceholderTab(tabId);
@@ -4018,6 +4026,622 @@ export class ControlCenterModal extends Modal {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Show the Places tab with geographic statistics
+	 */
+	private async showPlacesTab(): Promise<void> {
+		const container = this.contentContainer;
+
+		// Actions Card
+		const actionsCard = this.createCard({
+			title: 'Actions',
+			icon: 'plus',
+			subtitle: 'Create and manage place notes'
+		});
+
+		const actionsContent = actionsCard.querySelector('.crc-card__content') as HTMLElement;
+
+		new Setting(actionsContent)
+			.setName('Create new place note')
+			.setDesc('Create a new place note with geographic information')
+			.addButton(button => button
+				.setButtonText('Create place')
+				.setCta()
+				.onClick(() => {
+					new CreatePlaceModal(this.app, {
+						directory: this.plugin.settings.peopleFolder || '',
+						familyGraph: this.plugin.createFamilyGraphService(),
+						placeGraph: new PlaceGraphService(this.app),
+						onCreated: () => {
+							// Refresh the Places tab
+							this.showTab('places');
+						}
+					}).open();
+				}));
+
+		new Setting(actionsContent)
+			.setName('Create missing place notes')
+			.setDesc('Generate place notes for locations referenced in person notes')
+			.addButton(button => button
+				.setButtonText('Find missing')
+				.onClick(() => {
+					void this.showCreateMissingPlacesModal();
+				}));
+
+		new Setting(actionsContent)
+			.setName('Build place hierarchy')
+			.setDesc('Assign parent places to orphan locations')
+			.addButton(button => button
+				.setButtonText('Build hierarchy')
+				.onClick(() => {
+					void this.showBuildHierarchyModal();
+				}));
+
+		container.appendChild(actionsCard);
+
+		// Overview Card
+		const overviewCard = this.createCard({
+			title: 'Place statistics',
+			icon: 'map-pin',
+			subtitle: 'Geographic data overview'
+		});
+
+		const overviewContent = overviewCard.querySelector('.crc-card__content') as HTMLElement;
+		overviewContent.createEl('p', {
+			text: 'Loading statistics...',
+			cls: 'crc-text--muted'
+		});
+
+		container.appendChild(overviewCard);
+
+		// Load statistics asynchronously
+		void this.loadPlaceStatistics(overviewContent);
+
+		// Place List Card
+		const listCard = this.createCard({
+			title: 'Place notes',
+			icon: 'globe',
+			subtitle: 'Defined place notes in your vault'
+		});
+
+		const listContent = listCard.querySelector('.crc-card__content') as HTMLElement;
+		listContent.createEl('p', {
+			text: 'Loading places...',
+			cls: 'crc-text--muted'
+		});
+
+		container.appendChild(listCard);
+
+		// Load place list asynchronously
+		void this.loadPlaceList(listContent);
+
+		// Referenced Places Card (places mentioned in person notes)
+		const referencedCard = this.createCard({
+			title: 'Referenced places',
+			icon: 'link',
+			subtitle: 'Places mentioned in person notes'
+		});
+
+		const referencedContent = referencedCard.querySelector('.crc-card__content') as HTMLElement;
+		referencedContent.createEl('p', {
+			text: 'Loading references...',
+			cls: 'crc-text--muted'
+		});
+
+		container.appendChild(referencedCard);
+
+		// Load referenced places asynchronously
+		void this.loadReferencedPlaces(referencedContent);
+
+		// Issues Card
+		const issuesCard = this.createCard({
+			title: 'Data quality issues',
+			icon: 'alert-triangle',
+			subtitle: 'Place-related issues requiring attention'
+		});
+
+		const issuesContent = issuesCard.querySelector('.crc-card__content') as HTMLElement;
+		issuesContent.createEl('p', {
+			text: 'Loading issues...',
+			cls: 'crc-text--muted'
+		});
+
+		container.appendChild(issuesCard);
+
+		// Load issues asynchronously
+		void this.loadPlaceIssues(issuesContent);
+	}
+
+	/**
+	 * Load place statistics into container
+	 */
+	private async loadPlaceStatistics(container: HTMLElement): Promise<void> {
+		container.empty();
+
+		const placeService = new PlaceGraphService(this.app);
+		placeService.reloadCache();
+
+		const stats = placeService.calculateStatistics();
+
+		// If no places, show getting started message
+		if (stats.totalPlaces === 0) {
+			const emptyState = container.createDiv({ cls: 'crc-empty-state' });
+			emptyState.createEl('p', {
+				text: 'No place notes found in your vault.',
+				cls: 'crc-text--muted'
+			});
+			emptyState.createEl('p', {
+				text: 'Place notes use type: place in their frontmatter. Create place notes to track geographic locations associated with your family tree.',
+				cls: 'crc-text--muted crc-text--small'
+			});
+			return;
+		}
+
+		// Overview statistics grid
+		const statsGrid = container.createDiv({ cls: 'crc-stats-grid' });
+
+		// Total places
+		this.createStatItem(statsGrid, 'Total places', stats.totalPlaces.toString(), 'map-pin');
+
+		// With coordinates
+		const coordPercent = stats.totalPlaces > 0
+			? Math.round((stats.withCoordinates / stats.totalPlaces) * 100)
+			: 0;
+		this.createStatItem(statsGrid, 'With coordinates', `${stats.withCoordinates} (${coordPercent}%)`, 'globe');
+
+		// Hierarchy depth
+		this.createStatItem(statsGrid, 'Max hierarchy depth', stats.maxHierarchyDepth.toString(), 'layers');
+
+		// Orphan places
+		this.createStatItem(statsGrid, 'Orphan places', stats.orphanPlaces.toString(), 'alert-circle');
+
+		// By Category breakdown
+		const categorySection = container.createDiv({ cls: 'crc-mt-4' });
+		categorySection.createEl('h4', { text: 'By category', cls: 'crc-section-title' });
+
+		const categoryGrid = categorySection.createDiv({ cls: 'crc-stats-grid crc-stats-grid--compact' });
+
+		const categories: PlaceCategory[] = ['real', 'historical', 'disputed', 'legendary', 'mythological', 'fictional'];
+		for (const category of categories) {
+			const count = stats.byCategory[category];
+			if (count > 0) {
+				this.createStatItem(categoryGrid, this.formatPlaceCategoryName(category), count.toString());
+			}
+		}
+
+		// Universes (if any fictional/mythological places)
+		const universeCount = Object.keys(stats.byUniverse).length;
+		if (universeCount > 0) {
+			const universeSection = container.createDiv({ cls: 'crc-mt-4' });
+			universeSection.createEl('h4', { text: 'By universe', cls: 'crc-section-title' });
+
+			const universeList = universeSection.createEl('ul', { cls: 'crc-list' });
+			for (const [universe, count] of Object.entries(stats.byUniverse).sort((a, b) => b[1] - a[1])) {
+				const item = universeList.createEl('li');
+				item.createEl('span', { text: universe });
+				item.createEl('span', { text: ` (${count})`, cls: 'crc-text--muted' });
+			}
+		}
+
+		// Collections (user-defined groupings)
+		const collectionCount = Object.keys(stats.byCollection).length;
+		if (collectionCount > 0) {
+			const collectionSection = container.createDiv({ cls: 'crc-mt-4' });
+			collectionSection.createEl('h4', { text: 'By collection', cls: 'crc-section-title' });
+
+			const collectionList = collectionSection.createEl('ul', { cls: 'crc-list' });
+			for (const [collection, count] of Object.entries(stats.byCollection).sort((a, b) => b[1] - a[1])) {
+				const item = collectionList.createEl('li');
+				item.createEl('span', { text: collection });
+				item.createEl('span', { text: ` (${count})`, cls: 'crc-text--muted' });
+			}
+		}
+
+		// Top birth places
+		if (stats.topBirthPlaces.length > 0) {
+			const birthSection = container.createDiv({ cls: 'crc-mt-4' });
+			birthSection.createEl('h4', { text: 'Most common birth places', cls: 'crc-section-title' });
+
+			const birthList = birthSection.createEl('ol', { cls: 'crc-list crc-list--numbered' });
+			for (const place of stats.topBirthPlaces.slice(0, 5)) {
+				const item = birthList.createEl('li');
+				item.createEl('span', { text: place.place });
+				item.createEl('span', { text: ` (${place.count})`, cls: 'crc-text--muted' });
+			}
+		}
+
+		// Top death places
+		if (stats.topDeathPlaces.length > 0) {
+			const deathSection = container.createDiv({ cls: 'crc-mt-4' });
+			deathSection.createEl('h4', { text: 'Most common death places', cls: 'crc-section-title' });
+
+			const deathList = deathSection.createEl('ol', { cls: 'crc-list crc-list--numbered' });
+			for (const place of stats.topDeathPlaces.slice(0, 5)) {
+				const item = deathList.createEl('li');
+				item.createEl('span', { text: place.place });
+				item.createEl('span', { text: ` (${place.count})`, cls: 'crc-text--muted' });
+			}
+		}
+
+		// Migration patterns
+		if (stats.migrationPatterns.length > 0) {
+			const migrationSection = container.createDiv({ cls: 'crc-mt-4' });
+			migrationSection.createEl('h4', { text: 'Migration patterns (birth → death)', cls: 'crc-section-title' });
+
+			const migrationList = migrationSection.createEl('ul', { cls: 'crc-list' });
+			for (const pattern of stats.migrationPatterns.slice(0, 5)) {
+				const item = migrationList.createEl('li');
+				item.createEl('span', { text: `${pattern.from} → ${pattern.to}` });
+				item.createEl('span', { text: ` (${pattern.count})`, cls: 'crc-text--muted' });
+			}
+		}
+	}
+
+	/**
+	 * Load place list into container
+	 */
+	private async loadPlaceList(container: HTMLElement): Promise<void> {
+		container.empty();
+
+		const placeService = new PlaceGraphService(this.app);
+		placeService.reloadCache();
+
+		const places = placeService.getAllPlaces();
+
+		if (places.length === 0) {
+			container.createEl('p', {
+				text: 'No place notes found. Create place notes with type: place in frontmatter.',
+				cls: 'crc-text--muted'
+			});
+			return;
+		}
+
+		// Sort by name
+		places.sort((a, b) => a.name.localeCompare(b.name));
+
+		// Group by category
+		const byCategory = new Map<PlaceCategory, typeof places>();
+		for (const place of places) {
+			if (!byCategory.has(place.category)) {
+				byCategory.set(place.category, []);
+			}
+			byCategory.get(place.category)!.push(place);
+		}
+
+		// Display categories in order
+		const categories: PlaceCategory[] = ['real', 'historical', 'disputed', 'legendary', 'mythological', 'fictional'];
+
+		for (const category of categories) {
+			const categoryPlaces = byCategory.get(category);
+			if (!categoryPlaces || categoryPlaces.length === 0) continue;
+
+			const categorySection = container.createDiv({ cls: 'crc-place-category' });
+
+			const categoryHeader = categorySection.createDiv({ cls: 'crc-collection-header' });
+			categoryHeader.createEl('strong', { text: `${this.formatPlaceCategoryName(category)} ` });
+			categoryHeader.createEl('span', {
+				cls: 'crc-badge',
+				text: categoryPlaces.length.toString()
+			});
+
+			const placeList = categorySection.createEl('ul', { cls: 'crc-list crc-mt-2' });
+
+			for (const place of categoryPlaces.slice(0, 10)) {
+				const item = placeList.createEl('li', { cls: 'crc-place-item' });
+
+				// Place name as link
+				const link = item.createEl('a', {
+					text: place.name,
+					cls: 'crc-link'
+				});
+				link.addEventListener('click', async (e) => {
+					e.preventDefault();
+					const file = this.app.vault.getAbstractFileByPath(place.filePath);
+					if (file instanceof TFile) {
+						await this.app.workspace.getLeaf(false).openFile(file);
+						this.close();
+					}
+				});
+
+				// Person count
+				const peopleAtPlace = placeService.getPeopleAtPlace(place.id);
+				if (peopleAtPlace.length > 0) {
+					item.createEl('span', {
+						text: ` (${peopleAtPlace.length} ${peopleAtPlace.length === 1 ? 'person' : 'people'})`,
+						cls: 'crc-text--muted'
+					});
+				}
+
+				// Place type badge
+				if (place.placeType) {
+					item.createEl('span', {
+						text: place.placeType,
+						cls: 'crc-badge crc-badge--small crc-ml-2'
+					});
+				}
+
+				// Universe badge for fictional places
+				if (place.universe) {
+					item.createEl('span', {
+						text: place.universe,
+						cls: 'crc-badge crc-badge--accent crc-badge--small crc-ml-1'
+					});
+				}
+			}
+
+			// Show "more" indicator if truncated
+			if (categoryPlaces.length > 10) {
+				categorySection.createEl('p', {
+					text: `+${categoryPlaces.length - 10} more...`,
+					cls: 'crc-text--muted crc-text--small'
+				});
+			}
+		}
+	}
+
+	/**
+	 * Load referenced places into container
+	 */
+	private async loadReferencedPlaces(container: HTMLElement): Promise<void> {
+		container.empty();
+
+		const placeService = new PlaceGraphService(this.app);
+		placeService.reloadCache();
+
+		const references = placeService.getReferencedPlaces();
+
+		if (references.size === 0) {
+			container.createEl('p', {
+				text: 'No place references found in person notes.',
+				cls: 'crc-text--muted'
+			});
+			return;
+		}
+
+		// Separate linked vs unlinked
+		const linked: Array<{ name: string; count: number }> = [];
+		const unlinked: Array<{ name: string; count: number }> = [];
+
+		for (const [name, info] of references.entries()) {
+			if (info.linked) {
+				linked.push({ name, count: info.count });
+			} else {
+				unlinked.push({ name, count: info.count });
+			}
+		}
+
+		// Sort by count (descending)
+		linked.sort((a, b) => b.count - a.count);
+		unlinked.sort((a, b) => b.count - a.count);
+
+		// Summary
+		const summary = container.createDiv({ cls: 'crc-stats-summary crc-mb-3' });
+		summary.createEl('span', { text: `${linked.length} linked`, cls: 'crc-text--success' });
+		summary.createEl('span', { text: ' • ', cls: 'crc-text--muted' });
+		summary.createEl('span', { text: `${unlinked.length} unlinked`, cls: unlinked.length > 0 ? 'crc-text--warning' : 'crc-text--muted' });
+
+		// Unlinked places (potential issues)
+		if (unlinked.length > 0) {
+			const unlinkedSection = container.createDiv({ cls: 'crc-mt-3' });
+			unlinkedSection.createEl('h4', { text: 'Unlinked places', cls: 'crc-section-title' });
+			unlinkedSection.createEl('p', {
+				text: 'These place names appear in person notes but have no corresponding place notes.',
+				cls: 'crc-text--muted crc-text--small'
+			});
+
+			const unlinkedList = unlinkedSection.createEl('ul', { cls: 'crc-list' });
+			for (const place of unlinked.slice(0, 15)) {
+				const item = unlinkedList.createEl('li');
+				item.createEl('span', { text: place.name });
+				item.createEl('span', { text: ` (${place.count} references)`, cls: 'crc-text--muted' });
+			}
+
+			if (unlinked.length > 15) {
+				unlinkedSection.createEl('p', {
+					text: `+${unlinked.length - 15} more...`,
+					cls: 'crc-text--muted crc-text--small'
+				});
+			}
+		}
+
+		// Linked places
+		if (linked.length > 0) {
+			const linkedSection = container.createDiv({ cls: 'crc-mt-3' });
+			linkedSection.createEl('h4', { text: 'Linked places', cls: 'crc-section-title' });
+
+			const linkedList = linkedSection.createEl('ul', { cls: 'crc-list' });
+			for (const place of linked.slice(0, 10)) {
+				const item = linkedList.createEl('li');
+				item.createEl('span', { text: place.name });
+				item.createEl('span', { text: ` (${place.count} references)`, cls: 'crc-text--muted' });
+			}
+
+			if (linked.length > 10) {
+				linkedSection.createEl('p', {
+					text: `+${linked.length - 10} more...`,
+					cls: 'crc-text--muted crc-text--small'
+				});
+			}
+		}
+	}
+
+	/**
+	 * Load place issues into container
+	 */
+	private async loadPlaceIssues(container: HTMLElement): Promise<void> {
+		container.empty();
+
+		const placeService = new PlaceGraphService(this.app);
+		placeService.reloadCache();
+
+		const stats = placeService.calculateStatistics();
+		const issues = stats.issues;
+
+		if (issues.length === 0) {
+			container.createEl('p', {
+				text: 'No issues found.',
+				cls: 'crc-text--success'
+			});
+			return;
+		}
+
+		// Group by issue type
+		const byType = new Map<string, PlaceIssue[]>();
+		for (const issue of issues) {
+			if (!byType.has(issue.type)) {
+				byType.set(issue.type, []);
+			}
+			byType.get(issue.type)!.push(issue);
+		}
+
+		// Display issue groups
+		for (const [type, typeIssues] of byType.entries()) {
+			const issueSection = container.createDiv({ cls: 'crc-issue-group crc-mb-3' });
+
+			const header = issueSection.createDiv({ cls: 'crc-collection-header' });
+			header.createEl('strong', { text: `${this.formatIssueType(type)} ` });
+			header.createEl('span', {
+				cls: 'crc-badge crc-badge--warning',
+				text: typeIssues.length.toString()
+			});
+
+			const issueList = issueSection.createEl('ul', { cls: 'crc-list crc-list--compact' });
+			for (const issue of typeIssues.slice(0, 5)) {
+				const item = issueList.createEl('li', { cls: 'crc-text--small' });
+				item.textContent = issue.message;
+			}
+
+			if (typeIssues.length > 5) {
+				issueSection.createEl('p', {
+					text: `+${typeIssues.length - 5} more...`,
+					cls: 'crc-text--muted crc-text--small'
+				});
+			}
+		}
+	}
+
+	/**
+	 * Format place category name for display
+	 */
+	private formatPlaceCategoryName(category: PlaceCategory): string {
+		const names: Record<PlaceCategory, string> = {
+			real: 'Real',
+			historical: 'Historical',
+			disputed: 'Disputed',
+			legendary: 'Legendary',
+			mythological: 'Mythological',
+			fictional: 'Fictional'
+		};
+		return names[category] || category;
+	}
+
+	/**
+	 * Format issue type for display
+	 */
+	private formatIssueType(type: string): string {
+		const names: Record<string, string> = {
+			orphan_place: 'Orphan places',
+			missing_place_note: 'Missing place notes',
+			circular_hierarchy: 'Circular hierarchies',
+			duplicate_name: 'Duplicate names',
+			fictional_with_coords: 'Fictional places with coordinates',
+			real_missing_coords: 'Real places missing coordinates',
+			invalid_category: 'Invalid categories'
+		};
+		return names[type] || type;
+	}
+
+	/**
+	 * Show modal to create missing place notes
+	 */
+	private async showCreateMissingPlacesModal(): Promise<void> {
+		const placeService = new PlaceGraphService(this.app);
+		placeService.reloadCache();
+
+		const references = placeService.getReferencedPlaces();
+
+		// Find unlinked places (referenced but no note exists)
+		const unlinked: Array<{ name: string; count: number }> = [];
+		for (const [name, info] of references.entries()) {
+			if (!info.linked) {
+				unlinked.push({ name, count: info.count });
+			}
+		}
+
+		// Sort by reference count (most referenced first)
+		unlinked.sort((a, b) => b.count - a.count);
+
+		if (unlinked.length === 0) {
+			new Notice('All referenced places already have notes!');
+			return;
+		}
+
+		// Create a selection modal
+		const modal = new CreateMissingPlacesModal(this.app, unlinked, {
+			directory: this.plugin.settings.peopleFolder || '',
+			onComplete: (created: number) => {
+				new Notice(`Created ${created} place note${created !== 1 ? 's' : ''}`);
+				// Refresh the Places tab
+				this.showTab('places');
+			}
+		});
+		modal.open();
+	}
+
+	/**
+	 * Show modal to build place hierarchy (assign parents to orphan places)
+	 */
+	private async showBuildHierarchyModal(): Promise<void> {
+		const placeService = new PlaceGraphService(this.app);
+		placeService.reloadCache();
+
+		const allPlaces = placeService.getAllPlaces();
+
+		// Find orphan places (no parent and not top-level types)
+		const orphanPlaces = allPlaces.filter(place =>
+			!place.parentId &&
+			place.placeType &&
+			!['continent', 'country'].includes(place.placeType)
+		);
+
+		if (orphanPlaces.length === 0) {
+			new Notice('No orphan places found! All places have parent assignments or are top-level.');
+			return;
+		}
+
+		// Get potential parent places (higher-level places)
+		const potentialParents = allPlaces.filter(place =>
+			place.placeType && ['continent', 'country', 'state', 'province', 'region', 'county'].includes(place.placeType)
+		);
+
+		// Create hierarchy wizard modal
+		const modal = new BuildPlaceHierarchyModal(this.app, orphanPlaces, potentialParents, {
+			onComplete: (updated: number) => {
+				new Notice(`Updated ${updated} place${updated !== 1 ? 's' : ''} with parent assignments`);
+				// Refresh the Places tab
+				this.showTab('places');
+			}
+		});
+		modal.open();
+	}
+
+	/**
+	 * Create a stat item for the statistics grid
+	 */
+	private createStatItem(container: HTMLElement, label: string, value: string, icon?: LucideIconName): void {
+		const item = container.createDiv({ cls: 'crc-stat-item' });
+
+		if (icon) {
+			const iconEl = createLucideIcon(icon, 16);
+			iconEl.addClass('crc-stat-icon');
+			item.appendChild(iconEl);
+		}
+
+		const content = item.createDiv({ cls: 'crc-stat-content' });
+		content.createEl('div', { text: value, cls: 'crc-stat-value' });
+		content.createEl('div', { text: label, cls: 'crc-stat-label' });
 	}
 
 	/**

@@ -1,7 +1,7 @@
 # Geographic Features Plan
 
-> **Status:** Planning
-> **Target Version:** TBD (post v0.5.1)
+> **Status:** Phase 1 Complete, Phase 2 Complete, Phase 2.5 Partial
+> **Version:** 0.5.1+
 
 This document outlines the design for geographic/place-based features in Canvas Roots.
 
@@ -17,7 +17,7 @@ Geographic features will enable users to:
 
 ---
 
-## Phase 1: Place Notes Foundation
+## Phase 1: Place Notes Foundation ✓
 
 ### Place Note Schema
 
@@ -94,7 +94,7 @@ birth_place_id: place_abc123
 
 ---
 
-## Phase 2: Place Statistics
+## Phase 2: Place Statistics ✓
 
 A new section in the Control Center showing aggregate place data.
 
@@ -142,13 +142,13 @@ Place Hierarchy Issues
 
 ### Actions from Statistics Panel
 
-| Action | Description |
-|--------|-------------|
-| Create missing place notes | Generate notes for places referenced but not created |
-| Standardize place names | Find variations and unify them |
-| Build hierarchy | Wizard to assign parent places to orphans |
-| View place index | Alphabetical list with person counts |
-| Migration diagram | Visual showing flows between places |
+| Action | Status | Description |
+|--------|--------|-------------|
+| Create missing place notes | ✓ | Generate notes for places referenced but not created |
+| Build hierarchy | ✓ | Wizard to assign parent places to orphans |
+| View place index | ✓ | Alphabetical list with person counts |
+| Standardize place names | Planned | Find variations and unify them |
+| Migration diagram | Phase 3 | Visual showing flows between places |
 
 ---
 
@@ -193,6 +193,14 @@ D3-based visualizations without external map dependencies.
 - Define coordinate bounds for the image
 - Place pins using pixel or custom coordinate system
 
+**Map Upload/Selection in Create Place Modal:**
+- File picker to select an existing map image from the vault
+- Import from filesystem: drag-and-drop or file dialog to add external images to vault
+- Configurable destination folder for imported maps (e.g., `assets/maps/`)
+- Map preview with click-to-set coordinates
+- Remember recently used maps per universe/collection
+- Support common image formats: PNG, JPG, SVG, WebP
+
 **Features:**
 - Same pin/path visualization as real maps
 - Support multiple custom maps per universe
@@ -221,6 +229,75 @@ D3-based visualizations without external map dependencies.
 - Fictional place has real-world coordinates (likely mistake)
 - Real place missing coordinates
 - Person born in child place, died in ancestor place (geographically odd)
+
+---
+
+## Phase 2.5: UX Improvements (Partial)
+
+Enhancements to place creation and management workflow.
+
+### Parent Place Picker ✓
+
+Add a searchable dropdown for parent place selection in Create Place modal:
+- ✓ Similar pattern to collection dropdown
+- ✓ Group by place type (Countries, States, Regions, etc.)
+- ✓ Show place hierarchy path in dropdown (e.g., "London → England → UK")
+- Planned: Filter options based on selected place type
+
+### Coordinate Entry ✓
+
+Manual coordinate entry for real/historical/disputed places:
+- ✓ Latitude and longitude input fields
+- ✓ Validation (lat: -90 to 90, long: -180 to 180)
+- ✓ Auto-hide for fictional/mythological places
+
+### Quick-Create Place from Person Note
+
+When viewing a person note with unlinked place references:
+- Add action button/link next to unlinked birth_place, death_place fields
+- One-click to open Create Place modal pre-populated with the place name
+- Option to auto-link after creation
+
+### Place Note Template Configuration
+
+Allow users to customize place note templates:
+- Default place category per folder/collection
+- Auto-populate parent place based on folder structure
+- Custom frontmatter fields
+- Template selection in Create Place modal
+
+### Geocoding Integration Prep
+
+Prepare infrastructure for optional geocoding:
+- "Look up coordinates" button for real/historical places
+- Preview on mini-map (Phase 4 integration point)
+
+---
+
+## Integration Improvements
+
+Cross-feature integration with existing Canvas Roots functionality.
+
+### Filter Trees by Place
+
+Add place-based filtering to tree views:
+- Filter by birth place, death place, or any associated place
+- Show all people born in a specific country/region
+- Highlight migration paths on tree canvas
+
+### Place-Based Collections
+
+Auto-grouping based on geographic data:
+- Group people by birth country/region
+- Identify geographic clusters in family
+- "All people from Ireland" quick filter
+
+### Timeline Integration
+
+Connect places with temporal data:
+- Show when family moved to/from places
+- Generation-by-generation geographic spread
+- Historical context for place names (use correct period name)
 
 ---
 

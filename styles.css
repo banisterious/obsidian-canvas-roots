@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-01 23:40:38 UTC
+ * - Generated: 2025-12-02 01:46:26 UTC
  * - Components: 20 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -187,7 +187,7 @@
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 2036 lines, 36.84 KB */
+/* Component Size: 2087 lines, 37.82 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -2223,6 +2223,57 @@
 
 .crc-import-export-content {
   margin-top: 16px;
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+.crc-hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   CREATE PLACE MODAL
+   ========================================================================== */
+
+.crc-create-place-modal .modal-content {
+  max-width: 500px;
+}
+
+/* Coordinate inputs section */
+.crc-coord-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.crc-coord-header .setting-item-info {
+  flex: 1;
+}
+
+.crc-coord-inputs {
+  display: flex;
+  gap: 16px;
+}
+
+.crc-coord-inputs .setting-item {
+  flex: 1;
+  border: none;
+  padding: 4px 0;
+}
+
+.crc-coord-inputs .setting-item-info {
+  flex: 0 0 auto;
+  min-width: 70px;
+}
+
+.crc-coord-inputs .setting-item-control {
+  flex: 1;
+}
+
+.crc-coord-inputs input[type="text"] {
+  width: 100%;
 }
 
 
@@ -4933,10 +4984,10 @@
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-01 23:40:38 UTC
+ * Build completed: 2025-12-02 01:46:26 UTC
  * Components processed: 20
- * Total lines: 4730
- * Total size: 90.05 KB
+ * Total lines: 4781
+ * Total size: 91.03 KB
  * Build duration: 0.02 seconds
  *
  * Component breakdown:
@@ -4947,7 +4998,7 @@
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 2036 lines, 36.84 KB
+ * - modals.css: 2087 lines, 37.82 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

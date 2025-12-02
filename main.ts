@@ -27,6 +27,8 @@ import { FamilyChartView, VIEW_TYPE_FAMILY_CHART } from './src/ui/views/family-c
 import { TreePreviewRenderer } from './src/ui/tree-preview';
 import { FolderFilterService } from './src/core/folder-filter';
 import { SplitWizardModal } from './src/ui/split-wizard-modal';
+import { CreatePlaceModal } from './src/ui/create-place-modal';
+import { PlaceGraphService } from './src/core/place-graph';
 
 const logger = getLogger('CanvasRootsPlugin');
 
@@ -289,6 +291,29 @@ export default class CanvasRootsPlugin extends Plugin {
 			name: 'Split canvas wizard',
 			callback: () => {
 				new SplitWizardModal(this.app, this.settings, this.folderFilter ?? undefined).open();
+			}
+		});
+
+		// Add command: Create Place Note
+		this.addCommand({
+			id: 'create-place-note',
+			name: 'Create place note',
+			callback: () => {
+				new CreatePlaceModal(this.app, {
+					directory: this.settings.peopleFolder || '',
+					familyGraph: this.createFamilyGraphService(),
+					placeGraph: new PlaceGraphService(this.app)
+				}).open();
+			}
+		});
+
+		// Add command: Open Places Tab
+		this.addCommand({
+			id: 'open-places-tab',
+			name: 'Open places tab',
+			callback: () => {
+				const modal = new ControlCenterModal(this.app, this);
+				modal.openToTab('places');
 			}
 		});
 

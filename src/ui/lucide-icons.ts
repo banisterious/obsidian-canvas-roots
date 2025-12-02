@@ -67,7 +67,9 @@ export type LucideIconName =
 	| 'package'        // Staging/import packages
 	| 'shield-check'   // Data quality
 	| 'layers'         // Layers/generations
-	| 'arrow-up-down'; // Bidirectional/ancestor-descendant
+	| 'arrow-up-down'  // Bidirectional/ancestor-descendant
+	| 'map-pin'        // Places/locations
+	| 'globe';         // World/geography
 
 /**
  * Tab configuration for Control Center navigation
@@ -130,6 +132,12 @@ export const TAB_CONFIGS: TabConfig[] = [
 		name: 'Collections',
 		icon: 'folder',
 		description: 'Browse and organize family groups and collections'
+	},
+	{
+		id: 'places',
+		name: 'Places',
+		icon: 'map-pin',
+		description: 'Geographic locations and place statistics'
 	},
 	{
 		id: 'tree-generation',

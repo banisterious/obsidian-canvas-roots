@@ -2033,3 +2033,54 @@
 .crc-import-export-content {
   margin-top: 16px;
 }
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+.crc-hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   CREATE PLACE MODAL
+   ========================================================================== */
+
+.crc-create-place-modal .modal-content {
+  max-width: 500px;
+}
+
+/* Coordinate inputs section */
+.crc-coord-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.crc-coord-header .setting-item-info {
+  flex: 1;
+}
+
+.crc-coord-inputs {
+  display: flex;
+  gap: 16px;
+}
+
+.crc-coord-inputs .setting-item {
+  flex: 1;
+  border: none;
+  padding: 4px 0;
+}
+
+.crc-coord-inputs .setting-item-info {
+  flex: 0 0 auto;
+  min-width: 70px;
+}
+
+.crc-coord-inputs .setting-item-control {
+  flex: 1;
+}
+
+.crc-coord-inputs input[type="text"] {
+  width: 100%;
+}
