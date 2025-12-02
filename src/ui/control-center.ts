@@ -31,6 +31,7 @@ import { BuildPlaceHierarchyModal } from './build-place-hierarchy-modal';
 import { StandardizePlacesModal, findPlaceNameVariations } from './standardize-places-modal';
 import { MigrationDiagramModal } from './migration-diagram-modal';
 import { TemplateSnippetsModal } from './template-snippets-modal';
+import { CreatePersonModal } from './create-person-modal';
 
 const logger = getLogger('ControlCenter');
 
@@ -230,8 +231,8 @@ export class ControlCenterModal extends Modal {
 			case 'quick-settings':
 				this.showCanvasSettingsTab();
 				break;
-			case 'data-entry':
-				this.showDataEntryTab();
+			case 'people':
+				void this.showPeopleTab();
 				break;
 			case 'collections':
 				void this.showCollectionsTab();
@@ -247,9 +248,6 @@ export class ControlCenterModal extends Modal {
 				break;
 			case 'data-quality':
 				this.showDataQualityTab();
-				break;
-			case 'person-detail':
-				this.showPersonDetailTab();
 				break;
 			case 'advanced':
 				this.showAdvancedTab();
@@ -2170,154 +2168,272 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
-	 * Show Data Entry tab
+	 * Show People tab - combined statistics, actions, and person list
 	 */
-	private showDataEntryTab(): void {
+	private async showPeopleTab(): Promise<void> {
 		const container = this.contentContainer;
 
-		// Create card for person entry form
-		const card = this.createCard({
-			title: 'Create new person',
-			icon: 'user-plus'
+		// Actions Card
+		const actionsCard = this.createCard({
+			title: 'Actions',
+			icon: 'plus',
+			subtitle: 'Create and manage person notes'
 		});
 
-		const content = card.querySelector('.crc-card__content') as HTMLElement;
+		const actionsContent = actionsCard.querySelector('.crc-card__content') as HTMLElement;
 
-		// Name field
-		let nameInput: HTMLInputElement;
-		new Setting(content)
-			.setName('Name')
-			.addText(text => {
-				nameInput = text.inputEl;
-				text.setPlaceholder('John Robert Smith');
-			});
-
-		// cr_id field (read-only when auto-generate is checked)
-		let uuidInput: HTMLInputElement;
-		new Setting(content)
-			.setName('cr_id')
-			.setDesc('Unique identifier for this person')
-			.addText(text => {
-				uuidInput = text.inputEl;
-				text.setPlaceholder('abc-123-def-456');
-				// Set initial readonly state based on plugin settings
-				if (this.plugin.settings.autoGenerateCrId) {
-					uuidInput.setAttribute('readonly', 'true');
-				}
-			});
-
-		// Auto-generate cr_id toggle
-		let autoGenToggle: ToggleComponent;
-		new Setting(content)
-			.setName('Auto-generate cr_id')
-			.addToggle(toggle => {
-				autoGenToggle = toggle;
-				toggle
-					.setValue(this.plugin.settings.autoGenerateCrId)
-					.onChange(async (value) => {
-						// Update plugin settings
-						this.plugin.settings.autoGenerateCrId = value;
-						await this.plugin.saveSettings();
-
-						// Update UI state
-						if (value) {
-							uuidInput.setAttribute('readonly', 'true');
-							uuidInput.value = '';
-						} else {
-							uuidInput.removeAttribute('readonly');
+		new Setting(actionsContent)
+			.setName('Create new person note')
+			.setDesc('Create a new person note with family relationships')
+			.addButton(button => button
+				.setButtonText('Create person')
+				.setCta()
+				.onClick(() => {
+					new CreatePersonModal(this.app, {
+						directory: this.plugin.settings.peopleFolder || '',
+						familyGraph: this.plugin.createFamilyGraphService(),
+						onCreated: () => {
+							// Refresh the People tab
+							this.showTab('people');
 						}
+					}).open();
+				}));
+
+		new Setting(actionsContent)
+			.setName('Templater templates')
+			.setDesc('Copy ready-to-use templates for Templater integration')
+			.addButton(button => button
+				.setButtonText('View templates')
+				.onClick(() => {
+					new TemplateSnippetsModal(this.app).open();
+				}));
+
+		container.appendChild(actionsCard);
+
+		// Statistics Card
+		const statsCard = this.createCard({
+			title: 'Person statistics',
+			icon: 'users',
+			subtitle: 'Overview of person notes in your vault'
+		});
+
+		const statsContent = statsCard.querySelector('.crc-card__content') as HTMLElement;
+		statsContent.createEl('p', {
+			text: 'Loading statistics...',
+			cls: 'crc-text--muted'
+		});
+
+		container.appendChild(statsCard);
+
+		// Load statistics asynchronously
+		void this.loadPersonStatistics(statsContent);
+
+		// Person List Card
+		const listCard = this.createCard({
+			title: 'Person notes',
+			icon: 'user',
+			subtitle: 'All person notes in your vault'
+		});
+
+		const listContent = listCard.querySelector('.crc-card__content') as HTMLElement;
+		listContent.createEl('p', {
+			text: 'Loading people...',
+			cls: 'crc-text--muted'
+		});
+
+		container.appendChild(listCard);
+
+		// Load person list asynchronously
+		void this.loadPersonList(listContent);
+	}
+
+	/**
+	 * Load person statistics into container
+	 */
+	private async loadPersonStatistics(container: HTMLElement): Promise<void> {
+		container.empty();
+
+		const statsService = new VaultStatsService(this.app);
+		const stats = statsService.collectStats();
+
+		// If no people, show getting started message
+		if (stats.people.totalPeople === 0) {
+			const emptyState = container.createDiv({ cls: 'crc-empty-state' });
+			emptyState.createEl('p', {
+				text: 'No person notes found in your vault.',
+				cls: 'crc-text--muted'
+			});
+			emptyState.createEl('p', {
+				text: 'Person notes require a cr_id property in their frontmatter. Create person notes to start building your family tree.',
+				cls: 'crc-text--muted crc-text--small'
+			});
+			return;
+		}
+
+		// Overview statistics grid
+		const statsGrid = container.createDiv({ cls: 'crc-stats-grid' });
+
+		// Total people
+		this.createStatItem(statsGrid, 'Total people', stats.people.totalPeople.toString(), 'users');
+
+		// With birth date
+		const birthPercent = stats.people.totalPeople > 0
+			? Math.round((stats.people.peopleWithBirthDate / stats.people.totalPeople) * 100)
+			: 0;
+		this.createStatItem(statsGrid, 'With birth date', `${stats.people.peopleWithBirthDate} (${birthPercent}%)`, 'calendar');
+
+		// Living people
+		this.createStatItem(statsGrid, 'Living', stats.people.livingPeople.toString(), 'heart');
+
+		// Orphaned (no relationships)
+		this.createStatItem(statsGrid, 'No relationships', stats.people.orphanedPeople.toString(), 'user-minus');
+
+		// Relationship statistics section
+		const relSection = container.createDiv({ cls: 'crc-mt-4' });
+		relSection.createEl('h4', { text: 'Relationships', cls: 'crc-section-title' });
+
+		const relGrid = relSection.createDiv({ cls: 'crc-stats-grid crc-stats-grid--compact' });
+
+		// With father
+		const fatherPercent = stats.people.totalPeople > 0
+			? Math.round((stats.people.peopleWithFather / stats.people.totalPeople) * 100)
+			: 0;
+		this.createStatItem(relGrid, 'With father', `${stats.people.peopleWithFather} (${fatherPercent}%)`);
+
+		// With mother
+		const motherPercent = stats.people.totalPeople > 0
+			? Math.round((stats.people.peopleWithMother / stats.people.totalPeople) * 100)
+			: 0;
+		this.createStatItem(relGrid, 'With mother', `${stats.people.peopleWithMother} (${motherPercent}%)`);
+
+		// With spouse
+		const spousePercent = stats.people.totalPeople > 0
+			? Math.round((stats.people.peopleWithSpouse / stats.people.totalPeople) * 100)
+			: 0;
+		this.createStatItem(relGrid, 'With spouse', `${stats.people.peopleWithSpouse} (${spousePercent}%)`);
+
+		// Total relationships
+		this.createStatItem(relGrid, 'Total relationships', stats.relationships.totalRelationships.toString());
+	}
+
+	/**
+	 * Person list item for display
+	 */
+	private personListItems: { crId: string; name: string; birthDate?: string; deathDate?: string; file: TFile }[] = [];
+
+	/**
+	 * Load person list into container
+	 */
+	private async loadPersonList(container: HTMLElement): Promise<void> {
+		container.empty();
+
+		const familyGraph = this.plugin.createFamilyGraphService();
+		const people = familyGraph.getAllPeople();
+
+		if (people.length === 0) {
+			container.createEl('p', {
+				text: 'No person notes found. Create person notes with a cr_id in frontmatter.',
+				cls: 'crc-text--muted'
+			});
+			return;
+		}
+
+		// Map to display format
+		this.personListItems = people.map(p => ({
+			crId: p.crId,
+			name: p.name,
+			birthDate: p.birthDate,
+			deathDate: p.deathDate,
+			file: p.file
+		}));
+
+		// Sort by name
+		this.personListItems.sort((a, b) => a.name.localeCompare(b.name));
+
+		// Create search/filter input
+		const filterContainer = container.createDiv({ cls: 'crc-filter-container crc-mb-3' });
+		const filterInput = filterContainer.createEl('input', {
+			cls: 'crc-filter-input',
+			attr: {
+				type: 'text',
+				placeholder: `Search ${this.personListItems.length} people...`
+			}
+		});
+
+		// List container
+		const listContainer = container.createDiv({ cls: 'crc-person-list' });
+
+		// Render initial list
+		this.renderPersonListItems(listContainer, this.personListItems);
+
+		// Filter handler
+		filterInput.addEventListener('input', () => {
+			const query = filterInput.value.toLowerCase();
+			const filtered = this.personListItems.filter(p =>
+				p.name.toLowerCase().includes(query) ||
+				(p.birthDate && p.birthDate.includes(query)) ||
+				(p.deathDate && p.deathDate.includes(query))
+			);
+			this.renderPersonListItems(listContainer, filtered);
+		});
+	}
+
+	/**
+	 * Render person list items
+	 */
+	private renderPersonListItems(container: HTMLElement, people: { crId: string; name: string; birthDate?: string; deathDate?: string; file: TFile }[]): void {
+		container.empty();
+
+		if (people.length === 0) {
+			container.createEl('p', {
+				text: 'No matching people found.',
+				cls: 'crc-text--muted'
+			});
+			return;
+		}
+
+		// Create alphabetical index
+		const byLetter = new Map<string, typeof people>();
+		for (const person of people) {
+			const letter = person.name.charAt(0).toUpperCase();
+			if (!byLetter.has(letter)) {
+				byLetter.set(letter, []);
+			}
+			byLetter.get(letter)!.push(person);
+		}
+
+		// Render by letter
+		const sortedLetters = Array.from(byLetter.keys()).sort();
+		for (const letter of sortedLetters) {
+			const letterSection = container.createDiv({ cls: 'crc-person-letter-section' });
+			letterSection.createEl('h5', { text: letter, cls: 'crc-person-letter-header' });
+
+			const letterList = letterSection.createDiv({ cls: 'crc-person-letter-list' });
+			for (const person of byLetter.get(letter)!) {
+				const item = letterList.createDiv({ cls: 'crc-person-list-item' });
+
+				// Name (clickable)
+				const nameEl = item.createEl('span', {
+					text: person.name,
+					cls: 'crc-person-list-name'
+				});
+				nameEl.addEventListener('click', async () => {
+					// Open the person's file
+					await this.app.workspace.getLeaf(false).openFile(person.file);
+				});
+
+				// Dates
+				const dates = [];
+				if (person.birthDate) dates.push(`b. ${person.birthDate}`);
+				if (person.deathDate) dates.push(`d. ${person.deathDate}`);
+				if (dates.length > 0) {
+					item.createEl('span', {
+						text: dates.join(' – '),
+						cls: 'crc-person-list-dates crc-text--muted'
 					});
-			});
-
-		// Birth date field
-		let birthInput: HTMLInputElement;
-		new Setting(content)
-			.setName('Birth date')
-			.setDesc('Optional. Format: YYYY-MM-DD')
-			.addText(text => {
-				birthInput = text.inputEl;
-				text.inputEl.type = 'date';
-				text.setPlaceholder('YYYY-MM-DD');
-			});
-
-		// Death date field
-		let deathInput: HTMLInputElement;
-		new Setting(content)
-			.setName('Death date')
-			.setDesc('Optional. Format: YYYY-MM-DD')
-			.addText(text => {
-				deathInput = text.inputEl;
-				text.inputEl.type = 'date';
-				text.setPlaceholder('YYYY-MM-DD');
-			});
-
-		// Relationship fields with person picker
-		const fatherResult = this.createRelationshipField(content, 'Father', 'Click "Link" to select father', this.fatherField);
-		this.fatherInput = fatherResult.input;
-		this.fatherBtn = fatherResult.linkBtn;
-		this.fatherHelp = fatherResult.helpEl;
-
-		const motherResult = this.createRelationshipField(content, 'Mother', 'Click "Link" to select mother', this.motherField);
-		this.motherInput = motherResult.input;
-		this.motherBtn = motherResult.linkBtn;
-		this.motherHelp = motherResult.helpEl;
-
-		const spouseResult = this.createRelationshipField(content, 'Spouse', 'Click "Link" to select spouse', this.spouseField);
-		this.spouseInput = spouseResult.input;
-		this.spouseBtn = spouseResult.linkBtn;
-		this.spouseHelp = spouseResult.helpEl;
-
-		// Action buttons
-		const actions = card.createDiv({ cls: 'crc-card__actions' });
-
-		// Create & Open button
-		const createOpenBtn = actions.createEl('button', {
-			cls: 'crc-btn crc-btn--primary',
-			text: 'Create & open note'
-		});
-		createOpenBtn.addEventListener('click', () => {
-			void this.createPersonNote(
-				nameInput.value,
-				birthInput.value,
-				deathInput.value,
-				autoGenToggle.getValue(),
-				uuidInput.value,
-				this.fatherField.crId,
-				this.motherField.crId,
-				this.spouseField.crId,
-				true
-			);
-		});
-
-		// Create & Add Another button
-		const createAnotherBtn = actions.createEl('button', {
-			cls: 'crc-btn crc-btn--secondary',
-			text: 'Create & add another'
-		});
-		createAnotherBtn.addEventListener('click', () => {
-			void this.createPersonNote(
-				nameInput.value,
-				birthInput.value,
-				deathInput.value,
-				autoGenToggle.getValue(),
-				uuidInput.value,
-				this.fatherField.crId,
-				this.motherField.crId,
-				this.spouseField.crId,
-				false
-			);
-			// Clear form
-			nameInput.value = '';
-			birthInput.value = '';
-			deathInput.value = '';
-			uuidInput.value = '';
-			this.clearRelationshipFields();
-			autoGenToggle.setValue(true);
-			uuidInput.setAttribute('readonly', 'true');
-			nameInput.focus();
-		});
-
-		container.appendChild(card);
+				}
+			}
+		}
 	}
 
 	/**
@@ -6736,13 +6852,6 @@ export class ControlCenterModal extends Modal {
 			const modal = new ConfirmationModal(this.app, title, message, resolve);
 			modal.open();
 		});
-	}
-
-	/**
-	 * Show Person Detail tab
-	 */
-	private showPersonDetailTab(): void {
-		this.showPlaceholderTab('person-detail');
 	}
 
 	/**

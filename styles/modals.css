@@ -2512,3 +2512,90 @@
   font-size: 11px;
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   People Tab - Filter and List Styles
+   ========================================================================== */
+
+.crc-filter-container {
+  margin-bottom: 12px;
+}
+
+.crc-filter-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 14px;
+}
+
+.crc-filter-input:focus {
+  outline: none;
+  border-color: var(--interactive-accent);
+  box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.crc-filter-input::placeholder {
+  color: var(--text-faint);
+}
+
+.crc-person-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.crc-person-letter-section {
+  margin-bottom: 16px;
+}
+
+.crc-person-letter-section:last-child {
+  margin-bottom: 0;
+}
+
+.crc-person-letter-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.crc-person-letter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crc-person-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background 150ms ease;
+}
+
+.crc-person-list-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-person-list-name {
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-normal);
+}
+
+.crc-person-list-name:hover {
+  color: var(--text-accent);
+  text-decoration: underline;
+}
+
+.crc-person-list-dates {
+  font-size: 12px;
+  white-space: nowrap;
+}

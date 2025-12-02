@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-02 02:34:35 UTC
+ * - Generated: 2025-12-02 03:00:12 UTC
  * - Components: 20 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -187,7 +187,7 @@
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 2515 lines, 45.92 KB */
+/* Component Size: 2602 lines, 47.61 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -2701,6 +2701,93 @@
   border-radius: 4px;
   font-family: var(--font-monospace);
   font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   People Tab - Filter and List Styles
+   ========================================================================== */
+
+.crc-filter-container {
+  margin-bottom: 12px;
+}
+
+.crc-filter-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 14px;
+}
+
+.crc-filter-input:focus {
+  outline: none;
+  border-color: var(--interactive-accent);
+  box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.crc-filter-input::placeholder {
+  color: var(--text-faint);
+}
+
+.crc-person-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.crc-person-letter-section {
+  margin-bottom: 16px;
+}
+
+.crc-person-letter-section:last-child {
+  margin-bottom: 0;
+}
+
+.crc-person-letter-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.crc-person-letter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crc-person-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background 150ms ease;
+}
+
+.crc-person-list-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-person-list-name {
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-normal);
+}
+
+.crc-person-list-name:hover {
+  color: var(--text-accent);
+  text-decoration: underline;
+}
+
+.crc-person-list-dates {
+  font-size: 12px;
   white-space: nowrap;
 }
 
@@ -5412,11 +5499,11 @@
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-02 02:34:35 UTC
+ * Build completed: 2025-12-02 03:00:13 UTC
  * Components processed: 20
- * Total lines: 5209
- * Total size: 99.13 KB
- * Build duration: 0.04 seconds
+ * Total lines: 5296
+ * Total size: 100.82 KB
+ * Build duration: 0.02 seconds
  *
  * Component breakdown:
  * - variables.css: 31 lines, 0.72 KB
@@ -5426,7 +5513,7 @@
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 2515 lines, 45.92 KB
+ * - modals.css: 2602 lines, 47.61 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

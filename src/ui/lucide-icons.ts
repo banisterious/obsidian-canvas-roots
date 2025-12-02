@@ -123,22 +123,22 @@ export const TAB_CONFIGS: TabConfig[] = [
 		description: 'Analyze data quality and find issues'
 	},
 	{
-		id: 'data-entry',
-		name: 'Data entry',
-		icon: 'user-plus',
-		description: 'Create new person notes'
-	},
-	{
-		id: 'collections',
-		name: 'Collections',
-		icon: 'folder',
-		description: 'Browse and organize family groups and collections'
+		id: 'people',
+		name: 'People',
+		icon: 'users',
+		description: 'Person notes, statistics, and data entry'
 	},
 	{
 		id: 'places',
 		name: 'Places',
 		icon: 'map-pin',
 		description: 'Geographic locations and place statistics'
+	},
+	{
+		id: 'collections',
+		name: 'Collections',
+		icon: 'folder',
+		description: 'Browse and organize family groups and collections'
 	},
 	{
 		id: 'tree-generation',
@@ -151,12 +151,6 @@ export const TAB_CONFIGS: TabConfig[] = [
 		name: 'Canvas settings',
 		icon: 'settings',
 		description: 'Canvas layout and arrow styling settings'
-	},
-	{
-		id: 'person-detail',
-		name: 'Person details',
-		icon: 'user',
-		description: 'Person detail panel settings'
 	},
 	{
 		id: 'advanced',
