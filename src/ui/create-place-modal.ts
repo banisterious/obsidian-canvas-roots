@@ -17,7 +17,30 @@ interface ParentPlaceOption {
 	id: string;
 	name: string;
 	path: string; // Hierarchy path like "England → UK"
+	placeType?: string; // The place type for filtering
 }
+
+/**
+ * Hierarchy ordering for place types (smaller number = higher in hierarchy)
+ */
+const PLACE_TYPE_HIERARCHY: Record<string, number> = {
+	continent: 1,
+	country: 2,
+	state: 3,
+	province: 3,
+	region: 4,
+	county: 5,
+	district: 6,
+	city: 7,
+	town: 8,
+	village: 9,
+	parish: 10,
+	estate: 11,
+	castle: 11,
+	church: 12,
+	cemetery: 12,
+	other: 99
+};
 
 /**
  * Modal for creating new place notes
@@ -30,7 +53,10 @@ export class CreatePlaceModal extends Modal {
 	private placeGraph?: PlaceGraphService;
 	private existingCollections: string[] = [];
 	private parentPlaceOptions: Map<string, ParentPlaceOption[]> = new Map();
+	private allParentOptions: ParentPlaceOption[] = []; // Flat list for filtering
 	private coordSectionEl?: HTMLElement;
+	private parentPlaceSettingEl?: HTMLElement;
+	private parentDropdownEl?: HTMLSelectElement;
 
 	constructor(
 		app: App,
@@ -90,6 +116,7 @@ export class CreatePlaceModal extends Modal {
 	 */
 	private loadParentPlaceOptions(): void {
 		this.parentPlaceOptions.clear();
+		this.allParentOptions = [];
 
 		if (!this.placeGraph) return;
 
@@ -97,7 +124,8 @@ export class CreatePlaceModal extends Modal {
 
 		// Group by place type
 		for (const place of allPlaces) {
-			const type = this.formatPlaceType(place.placeType || 'other');
+			const rawType = place.placeType || 'other';
+			const type = this.formatPlaceType(rawType);
 
 			if (!this.parentPlaceOptions.has(type)) {
 				this.parentPlaceOptions.set(type, []);
@@ -106,17 +134,24 @@ export class CreatePlaceModal extends Modal {
 			// Build hierarchy path
 			const path = this.buildHierarchyPath(place);
 
-			this.parentPlaceOptions.get(type)!.push({
+			const option: ParentPlaceOption = {
 				id: place.id,
 				name: place.name,
-				path
-			});
+				path,
+				placeType: rawType
+			};
+
+			this.parentPlaceOptions.get(type)!.push(option);
+			this.allParentOptions.push(option);
 		}
 
 		// Sort each group alphabetically by name
 		for (const options of this.parentPlaceOptions.values()) {
 			options.sort((a, b) => a.name.localeCompare(b.name));
 		}
+
+		// Sort flat list alphabetically
+		this.allParentOptions.sort((a, b) => a.name.localeCompare(b.name));
 	}
 
 	/**
@@ -242,6 +277,8 @@ export class CreatePlaceModal extends Modal {
 				.setValue(this.placeData.placeType || '')
 				.onChange(value => {
 					this.placeData.placeType = value as PlaceType || undefined;
+					// Update parent place dropdown to filter by hierarchy
+					this.updateParentPlaceDropdown();
 				}));
 
 		// Universe (for fictional/mythological/legendary places)
@@ -260,26 +297,14 @@ export class CreatePlaceModal extends Modal {
 		const parentPlaceSetting = new Setting(form)
 			.setName('Parent place')
 			.setDesc('The parent location in the hierarchy (e.g., England for London)');
+		this.parentPlaceSettingEl = parentPlaceSetting.settingEl;
 
 		if (this.parentPlaceOptions.size > 0) {
 			let customParentInput: HTMLInputElement | null = null;
 
 			parentPlaceSetting.addDropdown(dropdown => {
-				dropdown.addOption('', '(None)');
-				dropdown.addOption('__custom__', '+ Enter manually...');
-
-				// Add options grouped by type
-				for (const [typeName, options] of this.parentPlaceOptions.entries()) {
-					// Add optgroup-like separator
-					dropdown.addOption(`__group_${typeName}`, `── ${typeName} ──`);
-					for (const opt of options) {
-						// Show hierarchy path in dropdown for context
-						const displayName = opt.path !== opt.name
-							? `  ${opt.name} (${opt.path})`
-							: `  ${opt.name}`;
-						dropdown.addOption(opt.id, displayName);
-					}
-				}
+				this.parentDropdownEl = dropdown.selectEl;
+				this.populateParentDropdown(dropdown.selectEl);
 
 				dropdown.onChange(value => {
 					if (value.startsWith('__group_')) {
@@ -479,6 +504,108 @@ export class CreatePlaceModal extends Modal {
 	onClose() {
 		const { contentEl } = this;
 		contentEl.empty();
+	}
+
+	/**
+	 * Populate the parent place dropdown with options
+	 * Optionally filters by selected place type
+	 */
+	private populateParentDropdown(selectEl: HTMLSelectElement, filterByType?: string): void {
+		// Clear existing options
+		selectEl.empty();
+
+		// Add default options
+		selectEl.createEl('option', { value: '', text: '(None)' });
+		selectEl.createEl('option', { value: '__custom__', text: '+ Enter manually...' });
+
+		// Get filtered options
+		const filteredOptions = this.getFilteredParentOptions(filterByType);
+
+		if (filteredOptions.length === 0 && filterByType) {
+			// Show message if no valid parents for this type
+			const noOptionsEl = selectEl.createEl('option', {
+				value: '__no_options__',
+				text: `── No valid parent types for ${filterByType} ──`
+			});
+			noOptionsEl.disabled = true;
+			return;
+		}
+
+		// Group filtered options by type
+		const groupedOptions = new Map<string, ParentPlaceOption[]>();
+		for (const opt of filteredOptions) {
+			const typeName = this.formatPlaceType(opt.placeType || 'other');
+			if (!groupedOptions.has(typeName)) {
+				groupedOptions.set(typeName, []);
+			}
+			groupedOptions.get(typeName)!.push(opt);
+		}
+
+		// Add options grouped by type
+		for (const [typeName, options] of groupedOptions.entries()) {
+			// Add optgroup-like separator
+			const groupHeader = selectEl.createEl('option', {
+				value: `__group_${typeName}`,
+				text: `── ${typeName} ──`
+			});
+			groupHeader.disabled = true;
+
+			for (const opt of options) {
+				// Show hierarchy path in dropdown for context
+				const displayName = opt.path !== opt.name
+					? `  ${opt.name} (${opt.path})`
+					: `  ${opt.name}`;
+				selectEl.createEl('option', { value: opt.id, text: displayName });
+			}
+		}
+	}
+
+	/**
+	 * Get parent place options filtered by the selected place type
+	 * Returns only places that are higher in the hierarchy than the selected type
+	 */
+	private getFilteredParentOptions(selectedType?: string): ParentPlaceOption[] {
+		if (!selectedType) {
+			// No type selected, show all options
+			return this.allParentOptions;
+		}
+
+		const selectedLevel = PLACE_TYPE_HIERARCHY[selectedType] ?? 99;
+
+		// Filter to only show places that are higher in the hierarchy (smaller number)
+		// A city (7) can have country (2), state (3), region (4), county (5), district (6) as parents
+		// but not another city (7), town (8), village (9), etc.
+		return this.allParentOptions.filter(opt => {
+			const optLevel = PLACE_TYPE_HIERARCHY[opt.placeType || 'other'] ?? 99;
+			return optLevel < selectedLevel;
+		});
+	}
+
+	/**
+	 * Update the parent place dropdown based on selected place type
+	 */
+	private updateParentPlaceDropdown(): void {
+		if (!this.parentDropdownEl) return;
+
+		const selectedType = this.placeData.placeType;
+		const currentValue = this.placeData.parentPlaceId || '';
+
+		// Repopulate dropdown with filtered options
+		this.populateParentDropdown(this.parentDropdownEl, selectedType);
+
+		// Try to restore the previous selection if it's still valid
+		const isValidOption = Array.from(this.parentDropdownEl.options).some(
+			opt => opt.value === currentValue && !opt.disabled
+		);
+
+		if (isValidOption) {
+			this.parentDropdownEl.value = currentValue;
+		} else {
+			// Clear selection if the previous parent is no longer valid
+			this.parentDropdownEl.value = '';
+			this.placeData.parentPlaceId = undefined;
+			this.placeData.parentPlace = undefined;
+		}
 	}
 
 	/**

@@ -1,6 +1,6 @@
 # Geographic Features Plan
 
-> **Status:** Phase 1 Complete, Phase 2 Complete, Phase 2.5 Partial, Phase 3 Partial
+> **Status:** Phase 1 Complete, Phase 2 Complete, Phase 2.5 Mostly Complete, Phase 3 Partial
 > **Version:** 0.5.1+
 
 This document outlines the design for geographic/place-based features in Canvas Roots.
@@ -245,7 +245,7 @@ Add a searchable dropdown for parent place selection in Create Place modal:
 - ✓ Similar pattern to collection dropdown
 - ✓ Group by place type (Countries, States, Regions, etc.)
 - ✓ Show place hierarchy path in dropdown (e.g., "London → England → UK")
-- Planned: Filter options based on selected place type
+- ✓ Filter options based on selected place type (hierarchy-aware filtering)
 
 ### Coordinate Entry ✓
 
@@ -254,12 +254,15 @@ Manual coordinate entry for real/historical/disputed places:
 - ✓ Validation (lat: -90 to 90, long: -180 to 180)
 - ✓ Auto-hide for fictional/mythological places
 
-### Quick-Create Place from Person Note
+### Quick-Create Place from Person Note ✓
 
 When viewing a person note with unlinked place references:
-- Add action button/link next to unlinked birth_place, death_place fields
-- One-click to open Create Place modal pre-populated with the place name
-- Option to auto-link after creation
+- ✓ Context menu option "Create place notes..." on person notes
+- ✓ Extract unlinked place references from birth_place, death_place, burial_place, marriage locations
+- ✓ Filter out already-linked places and existing place notes
+- ✓ Open CreateMissingPlacesModal for batch creation
+- Planned: Add action button/link next to unlinked fields in person detail view
+- Planned: Auto-link after creation option
 
 ### Place Note Template Configuration (Partial)
 
