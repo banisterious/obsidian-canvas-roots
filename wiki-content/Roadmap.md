@@ -28,7 +28,7 @@ The following priority order guides future development:
 |:--------:|---------|--------|
 | 1 | [Import/Export Enhancements](#importexport-enhancements) | ✅ Complete (v0.6.0) |
 | 2 | [Geographic Features (Phase 4)](#geographic-features-phase-4) | ✅ Complete (v0.6.0) |
-| 3 | [Maps Tab (Control Center)](#maps-tab-control-center) | Planned |
+| 3 | [Maps Tab (Control Center)](#maps-tab-control-center) | ✅ Complete (v0.6.2) |
 | 4 | [Custom Relationship Types](#custom-relationship-types) | Planned |
 | 5 | [Schema Validation](#schema-validation--consistency-checks) | Planned |
 | 6 | [Fictional Date Systems](#fictional-date-systems) | Planned |
@@ -67,33 +67,27 @@ The following priority order guides future development:
 
 ---
 
-### Maps Tab (Control Center)
+### Maps Tab (Control Center) ✅
 
-**Summary:** A dedicated Maps tab in the Control Center to consolidate map visualization features.
+> **Complete in v0.6.2.** See [maps-tab.md](../docs/planning/maps-tab.md) for implementation details.
 
-**Status:** Planned
+**Implemented Features:**
+- Dedicated Maps tab in Control Center with 4 cards
+- **Open Map View card**: Quick access with coordinate coverage stats
+- **Custom Maps gallery**: Thumbnail grid with image previews (~150×100px)
+  - Map name overlay and universe badge
+  - Hover actions: Edit button and context menu button
+  - Click thumbnail to open map in Map View
+- **Visualizations card**: Migration diagrams and place network tools
+- **Map Statistics card**: Coordinate coverage, custom map count, universe list
 
-**Motivation:**
-- Map features currently scattered (Map View via command, migration diagrams in Places tab)
-- Custom image maps lack a central management location
-- Separates map *visualization* from place *data management*
-
-**Planned Contents:**
-
-| Card | Description |
-|------|-------------|
-| **Open Map View** | Primary action button with quick stats (places with coordinates) |
-| **Custom Maps** | Thumbnail grid showing map image previews, names, and universes |
-| **Visualizations** | Migration diagrams and place network tools (moved from Places tab) |
-| **Map Statistics** | Coordinate coverage, custom map count, universe list |
-
-**Custom Maps Gallery:**
-- Thumbnail previews of each custom image map (~150×100px)
-- Map name overlay and universe badge
-- Click to open in Map View
-- "Create custom map" action
-
-**See also:** [maps-tab.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/maps-tab.md) for full implementation plan.
+**Custom Map Management:**
+- Create Map Modal for new map notes with image picker, bounds, and universe
+- Edit Map Modal to update existing map properties
+- Duplicate map with auto-generated unique ID
+- Export map configuration to JSON
+- Import map from JSON with duplicate ID detection
+- Delete map with confirmation dialog
 
 ---
 
