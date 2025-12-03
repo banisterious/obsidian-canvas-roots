@@ -82,6 +82,7 @@ export interface CanvasRootsSettings {
 	peopleFolder: string;
 	placesFolder: string;
 	mapsFolder: string;
+	schemasFolder: string;
 	canvasesFolder: string;
 	logExportPath: string;
 	logLevel: LogLevel;
@@ -186,6 +187,7 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	peopleFolder: 'Canvas Roots/People',
 	placesFolder: 'Canvas Roots/Places',
 	mapsFolder: 'Canvas Roots/Places/Maps',
+	schemasFolder: 'Canvas Roots/Schemas',
 	canvasesFolder: 'Canvas Roots/Canvases',
 	logExportPath: '.canvas-roots/logs',
 	logLevel: 'debug',
