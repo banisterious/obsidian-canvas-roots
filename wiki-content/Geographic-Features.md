@@ -108,6 +108,95 @@ Compare different views side-by-side:
 - Creates an SVG file with markers and paths
 - Can be embedded in notes or edited in vector graphics software
 
+## Maps Tab (Control Center)
+
+The Maps tab in Control Center provides a central location for managing custom maps and accessing map visualizations.
+
+### Opening the Maps Tab
+
+1. Open Control Center (click the Canvas Roots icon in the ribbon or use Command Palette)
+2. Click the **Maps** tab in the sidebar
+
+### Tab Contents
+
+The Maps tab contains four cards:
+
+| Card | Description |
+|------|-------------|
+| **Open Map View** | Quick access button to launch the Map View, with coordinate coverage stats |
+| **Custom Maps** | Thumbnail gallery of all custom map images with management actions |
+| **Visualizations** | Migration diagrams and place network visualization tools |
+| **Map Statistics** | Coordinate coverage percentage, custom map count, and universe list |
+
+### Custom Maps Gallery
+
+The gallery displays thumbnail previews of all map notes in your vault (notes with `type: map` frontmatter).
+
+**Thumbnail display:**
+- Image preview (~150×100px) with the map image
+- Map name overlay at the bottom
+- Universe badge (if assigned)
+
+**Interactions:**
+- **Click thumbnail** → Open map in Map View
+- **Hover** → Reveals action buttons (Edit and Menu)
+- **Edit button** (pencil icon) → Open Edit Map modal
+- **Menu button** (three dots) → Context menu with additional actions
+
+### Context Menu Actions
+
+Right-click a thumbnail or click the menu button to access:
+
+| Action | Description |
+|--------|-------------|
+| **Open in Map View** | Launch Map View with this map selected |
+| **Edit map** | Open the Edit Map modal to modify properties |
+| **Duplicate map** | Create a copy with auto-generated unique ID |
+| **Export to JSON** | Download map configuration as a JSON file |
+| **Open note** | Open the map note in the editor |
+| **Delete map** | Remove the map note (with confirmation) |
+
+### Creating a Custom Map
+
+1. In the Custom Maps card, click **Create map** (or **Import JSON** to import)
+2. Fill in the Create Map modal:
+   - **Map name** (required): Display name for the map
+   - **Map image**: Click "Browse" to select an image from your vault
+   - **Universe**: Optional grouping for fictional worlds (e.g., "got", "lotr")
+   - **Coordinate system**: Geographic (lat/lng) or Pixel (for hand-drawn maps)
+   - **Bounds/Dimensions**: Define the coordinate space
+3. Click **Create**
+
+The map note is created in your configured maps folder.
+
+### Editing a Custom Map
+
+1. Hover over a map thumbnail and click the **Edit** button (pencil icon)
+2. Modify any properties in the Edit Map modal
+3. Click **Save changes**
+
+### Duplicating a Map
+
+Useful for creating variations or backups:
+
+1. Right-click a thumbnail → **Duplicate map**
+2. A copy is created with "-copy" appended to the map ID
+3. If "-copy" already exists, it becomes "-copy-2", "-copy-3", etc.
+4. The duplicate opens immediately in edit mode
+
+### Exporting and Importing Maps
+
+**Export to JSON:**
+1. Right-click a thumbnail → **Export to JSON**
+2. Save the JSON file to your computer
+3. The file contains all map frontmatter properties
+
+**Import from JSON:**
+1. Click **Import JSON** button in the Custom Maps card
+2. Select a JSON file from your computer
+3. If a map with the same ID exists, you'll be warned
+4. The imported map note is created in your maps folder
+
 ### Custom Image Maps
 
 For fictional worlds or historical maps, you can use your own map images:
