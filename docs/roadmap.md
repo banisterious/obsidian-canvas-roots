@@ -49,6 +49,8 @@ The following priority order guides future development:
 **Implemented Features:**
 - Interactive Map View with Leaflet.js and OpenStreetMap tiles
 - Color-coded markers (birth, death, marriage, burial) with clustering
+- Additional marker types (residence, occupation, education, military, immigration, religious, custom)
+- Events array support for multiple life events per person
 - Migration paths with directional arrows and person name labels (TextPath)
 - Custom image maps for fictional worlds with universe-based switching
 - Time slider animation ("who was alive in year X?")
@@ -60,7 +62,6 @@ The following priority order guides future development:
 - Pixel-based coordinates (L.CRS.Simple) for worldbuilders
 
 **Future Enhancements (v2+):** See [leaflet-maps-plan.md § Future Considerations](architecture/leaflet-maps-plan.md#future-considerations-v2)
-- Additional marker types (residence, occupation, education, military, religious)
 - Route/journey visualization (connect all life events chronologically)
 - Offline tile caching for OSM
 - Tiled image maps (Zoomify/DeepZoom) for massive images

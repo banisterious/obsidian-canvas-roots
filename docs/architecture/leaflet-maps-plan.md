@@ -41,7 +41,8 @@ Add interactive map visualization to Canvas Roots, enabling users to:
 |---------|-------------|-----------------|--------|
 | **Map View** | Dedicated leaf view (like Family Chart View) | Obsidian ItemView | ✅ Complete |
 | **OpenStreetMap tiles** | Real-world base maps | Leaflet + OSM | ✅ Complete |
-| **Pin markers** | Birth (green), death (red), other (blue) | Core Leaflet | ✅ Complete |
+| **Pin markers** | Birth (green), death (red), marriage, burial, events | Core Leaflet | ✅ Complete |
+| **Additional markers** | Residence, occupation, education, military, immigration, religious, custom | Events array parsing | ✅ Complete |
 | **Marker clustering** | Collapse dense marker areas | Leaflet.markercluster | ✅ Complete |
 | **Migration paths** | Lines connecting birth → death | Core Leaflet polylines | ✅ Complete |
 | **Path text labels** | Person names along migration paths | Leaflet.TextPath | ✅ Complete |
@@ -106,17 +107,26 @@ this.addCommand({
 Map Container
 ├── Tile Layer (OpenStreetMap) OR Image Overlay (custom maps)
 ├── Heat Layer (toggle-able)
-├── Cluster Layer
-│   ├── Birth Markers (green)
-│   ├── Death Markers (red)
-│   └── Other Markers (blue)
+├── Cluster Layers
+│   ├── Birth Cluster (green markers)
+│   ├── Death Cluster (red markers)
+│   ├── Marriage Cluster (purple markers)
+│   ├── Burial Cluster (gray markers)
+│   └── Events Cluster (all other event types)
+│       ├── Residence (blue)
+│       ├── Occupation (orange)
+│       ├── Education (teal)
+│       ├── Military (brown)
+│       ├── Immigration (cyan)
+│       ├── Religious (light purple - baptism, confirmation, ordination)
+│       └── Custom (pink)
 ├── Path Layer
 │   └── Migration Polylines with arrow decorations
 └── Controls
     ├── Zoom
     ├── Fullscreen
     ├── Mini-map
-    ├── Layer Toggle
+    ├── Layer Toggle (per marker type)
     ├── Filter Panel
     └── Legend
 ```
@@ -302,14 +312,26 @@ Note: Some plugins may need manual type declarations in `src/maps/types/`.
 interface MapMarker {
   personId: string;        // cr_id of person
   personName: string;
-  type: 'birth' | 'death' | 'marriage' | 'burial';
+  type: MarkerType;        // See MarkerType union below
   lat: number;
   lng: number;
+  pixelX?: number;         // For pixel coordinate system
+  pixelY?: number;         // For pixel coordinate system
   placeName: string;
   placeId?: string;        // cr_id of place note
   date?: string;           // ISO date string
+  year?: number;           // Extracted for filtering
+  dateTo?: string;         // End date for duration events
+  yearTo?: number;         // End year for filtering
+  description?: string;    // Event description
   collection?: string;
+  universe?: string;       // For fictional places
 }
+
+type MarkerType =
+  | 'birth' | 'death' | 'marriage' | 'burial'
+  | 'residence' | 'occupation' | 'education' | 'military'
+  | 'immigration' | 'baptism' | 'confirmation' | 'ordination' | 'custom';
 
 interface MigrationPath {
   personId: string;
@@ -622,20 +644,149 @@ Export markers and migration paths as a standalone SVG file for embedding in not
   - Faster map loading for frequently-viewed regions
   - Privacy-conscious users who want to minimize external requests
 
-### Additional Marker Types
-- Expand beyond birth/death/marriage/burial markers
-- New event types:
-  - **Residence** - Places where a person lived (with date ranges)
-  - **Occupation** - Workplaces, businesses owned
-  - **Education** - Schools, universities attended
-  - **Military** - Service locations, battles
-  - **Religious** - Baptism, confirmation, ordination locations
-  - **Custom events** - User-defined event types
-- Implementation:
-  - Extend person note schema with `events` array
-  - Each event has type, place, date_from, date_to
-  - Layer toggles for each event type
-  - Distinct marker colors/icons per type
+### Additional Marker Types ✅ Implemented
+
+Expanded beyond birth/death/marriage/burial markers to support life events.
+
+**Event Type Hierarchy:**
+
+```mermaid
+graph TB
+    subgraph "Core Life Events (existing)"
+        birth[birth]
+        death[death]
+        marriage[marriage]
+        burial[burial]
+    end
+
+    subgraph "Residence Events"
+        residence[residence]
+        immigration[immigration]
+    end
+
+    subgraph "Career Events"
+        occupation[occupation]
+        education[education]
+        military[military]
+    end
+
+    subgraph "Religious Events"
+        baptism[baptism]
+        confirmation[confirmation]
+        ordination[ordination]
+    end
+
+    subgraph "Custom"
+        custom[custom]
+    end
+```
+
+**Schema Design (Hybrid Approach):**
+
+Existing flat properties (`birth_place`, `death_place`, etc.) remain unchanged. New `events` array handles additional life events:
+
+```yaml
+# Person note frontmatter
+birth_place: "[[Boston]]"
+death_place: "[[Miami]]"
+
+# Events array for additional life events
+events:
+  - event_type: residence
+    place: "[[New York]]"
+    date_from: "1920"
+    date_to: "1935"
+    description: "Family home on 5th Ave"
+  - event_type: occupation
+    place: "[[Chicago]]"
+    date_from: "1935"
+    date_to: "1942"
+    description: "Steel mill foreman"
+  - event_type: military
+    place: "[[Normandy]]"
+    date_from: "1944-06-06"
+    date_to: "1944-08-25"
+    description: "D-Day invasion"
+  - event_type: education
+    place: "[[Harvard University]]"
+    date_from: "1915"
+    date_to: "1919"
+    description: "BA in History"
+```
+
+**Event Properties:**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `event_type` | string | Yes | Event category (see types above) |
+| `place` | wikilink | Yes | Location of event |
+| `date_from` | string | No | Start date (YYYY, YYYY-MM, or YYYY-MM-DD) |
+| `date_to` | string | No | End date (for duration events) |
+| `description` | string | No | Brief description |
+
+**Data Flow:**
+
+```mermaid
+flowchart LR
+    subgraph "Person Note"
+        FP[Flat Properties<br/>birth_place, death_place]
+        EA[Events Array]
+    end
+
+    subgraph "MapDataService"
+        PP[parsePerson]
+        PE[parseEvents]
+        MM[mergeMarkers]
+    end
+
+    subgraph "Output"
+        ML[Marker Layers<br/>by event type]
+        TL[Timeline Data]
+    end
+
+    FP --> PP
+    EA --> PE
+    PP --> MM
+    PE --> MM
+    MM --> ML
+    MM --> TL
+```
+
+**Marker Colors:**
+
+| Event Type | Color | Hex |
+|------------|-------|-----|
+| birth | Green | #22c55e |
+| death | Red | #ef4444 |
+| marriage | Purple | #a855f7 |
+| burial | Gray | #6b7280 |
+| residence | Blue | #3b82f6 |
+| occupation | Orange | #f97316 |
+| education | Teal | #14b8a6 |
+| military | Brown | #78716c |
+| immigration | Cyan | #06b6d4 |
+| baptism | Light Purple | #c084fc |
+| confirmation | Light Purple | #c084fc |
+| ordination | Light Purple | #c084fc |
+| custom | Pink | #ec4899 |
+
+**Implementation Tasks:**
+
+1. Update `map-types.ts` - Add new event types to `MarkerType`
+2. Update `map-data-service.ts` - Parse `events` array from person notes
+3. Update `map-controller.ts` - Add layer groups for each event type
+4. Update `map-view.ts` - Add layer toggle checkboxes in Layers dropdown
+5. Update `frontmatter-schema.md` - Document events array schema
+6. Update export modules - Include events in GEDCOM/GEDCOM X/Gramps exports
+
+**Export Compatibility:**
+
+| Format | Support | Notes |
+|--------|---------|-------|
+| GEDCOM | ✅ | Maps to RESI, OCCU, EDUC, MILI, etc. |
+| GEDCOM X | ✅ | Maps to `facts` array |
+| Gramps XML | ✅ | Native event support |
+| CSV | ✅ | Separate events.csv or flattened columns |
 
 ### Route/Journey Visualization
 - Show a person's movements through life, not just birth→death

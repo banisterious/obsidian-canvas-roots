@@ -79,6 +79,7 @@ import type {
 	CRPolyline,
 	CustomMapConfig
 } from './types/map-types';
+import { getMarkerColor, isMarkerTypeVisible } from './types/map-types';
 import { ImageMapManager } from './image-map-manager';
 
 const logger = getLogger('MapController');
@@ -104,6 +105,8 @@ export class MapController {
 	private deathClusterGroup: L.MarkerClusterGroup | null = null;
 	private marriageClusterGroup: L.MarkerClusterGroup | null = null;
 	private burialClusterGroup: L.MarkerClusterGroup | null = null;
+	// Single cluster group for all additional event types (residence, occupation, etc.)
+	private eventsClusterGroup: L.MarkerClusterGroup | null = null;
 	private pathLayer: L.LayerGroup | null = null;
 	private heatLayer: L.Layer | null = null;
 
@@ -123,10 +126,20 @@ export class MapController {
 	// Current data
 	private currentData: MapData | null = null;
 	private currentLayers: LayerVisibility = {
+		// Core life events
 		births: true,
 		deaths: true,
 		marriages: false,
 		burials: false,
+		// Additional life events
+		residences: true,
+		occupations: true,
+		educations: true,
+		military: true,
+		immigrations: true,
+		religious: true,
+		custom: true,
+		// Other layers
 		paths: true,
 		heatMap: false
 	};
@@ -217,12 +230,22 @@ export class MapController {
 			...clusterOptions,
 			iconCreateFunction: (cluster) => this.createClusterIcon(cluster, this.settings.marriageMarkerColor)
 		});
+		this.marriageClusterGroup.addTo(this.map);
 
 		// Burial markers (gray)
 		this.burialClusterGroup = createMarkerClusterGroup({
 			...clusterOptions,
 			iconCreateFunction: (cluster) => this.createClusterIcon(cluster, this.settings.burialMarkerColor)
 		});
+		this.burialClusterGroup.addTo(this.map);
+
+		// Events cluster group (for additional life events: residence, occupation, etc.)
+		// Uses a neutral color for the cluster since individual markers have their own colors
+		this.eventsClusterGroup = createMarkerClusterGroup({
+			...clusterOptions,
+			iconCreateFunction: (cluster) => this.createClusterIcon(cluster, this.settings.residenceMarkerColor)
+		});
+		this.eventsClusterGroup.addTo(this.map);
 	}
 
 	/**
@@ -422,8 +445,14 @@ export class MapController {
 		this.deathClusterGroup?.clearLayers();
 		this.marriageClusterGroup?.clearLayers();
 		this.burialClusterGroup?.clearLayers();
+		this.eventsClusterGroup?.clearLayers();
 
 		for (const marker of markers) {
+			// Check if this marker type is visible before creating it
+			if (!isMarkerTypeVisible(marker.type, this.currentLayers)) {
+				continue;
+			}
+
 			const leafletMarker = this.createMarker(marker);
 
 			switch (marker.type) {
@@ -439,6 +468,18 @@ export class MapController {
 				case 'burial':
 					this.burialClusterGroup?.addLayer(leafletMarker);
 					break;
+				// Additional life events go to eventsClusterGroup
+				case 'residence':
+				case 'occupation':
+				case 'education':
+				case 'military':
+				case 'immigration':
+				case 'baptism':
+				case 'confirmation':
+				case 'ordination':
+				case 'custom':
+					this.eventsClusterGroup?.addLayer(leafletMarker);
+					break;
 			}
 		}
 
@@ -449,7 +490,7 @@ export class MapController {
 	 * Create a Leaflet marker from map marker data
 	 */
 	private createMarker(data: MapMarker): CRMarker {
-		const color = this.getMarkerColor(data.type);
+		const color = this.getMarkerColorForType(data.type);
 		const icon = this.createMarkerIcon(color);
 
 		// Use pixel coordinates for pixel CRS, otherwise use lat/lng
@@ -486,19 +527,8 @@ export class MapController {
 	/**
 	 * Get marker color based on type
 	 */
-	private getMarkerColor(type: MapMarker['type']): string {
-		switch (type) {
-			case 'birth':
-				return this.settings.birthMarkerColor;
-			case 'death':
-				return this.settings.deathMarkerColor;
-			case 'marriage':
-				return this.settings.marriageMarkerColor;
-			case 'burial':
-				return this.settings.burialMarkerColor;
-			default:
-				return this.settings.otherMarkerColor;
-		}
+	private getMarkerColorForType(type: MapMarker['type']): string {
+		return getMarkerColor(type, this.settings);
 	}
 
 	/**
@@ -786,6 +816,25 @@ export class MapController {
 			}
 		}
 
+		// Events cluster group (residence, occupation, etc.)
+		// Show if any event type is enabled
+		const anyEventsEnabled = layers.residences || layers.occupations ||
+			layers.educations || layers.military || layers.immigrations ||
+			layers.religious || layers.custom;
+		if (this.eventsClusterGroup) {
+			if (anyEventsEnabled && !this.map.hasLayer(this.eventsClusterGroup)) {
+				this.map.addLayer(this.eventsClusterGroup);
+			} else if (!anyEventsEnabled && this.map.hasLayer(this.eventsClusterGroup)) {
+				this.map.removeLayer(this.eventsClusterGroup);
+			}
+		}
+
+		// Re-render markers to filter by visibility settings
+		// This ensures individual event types are correctly filtered
+		if (this.currentData) {
+			this.renderMarkers(this.currentData.markers);
+		}
+
 		// Migration paths
 		if (this.pathLayer) {
 			if (layers.paths && !this.map.hasLayer(this.pathLayer)) {
@@ -918,6 +967,7 @@ export class MapController {
 		this.deathClusterGroup?.clearLayers();
 		this.marriageClusterGroup?.clearLayers();
 		this.burialClusterGroup?.clearLayers();
+		this.eventsClusterGroup?.clearLayers();
 		this.pathLayer?.clearLayers();
 
 		if (this.heatLayer && this.map) {
@@ -952,6 +1002,7 @@ export class MapController {
 		this.deathClusterGroup = null;
 		this.marriageClusterGroup = null;
 		this.burialClusterGroup = null;
+		this.eventsClusterGroup = null;
 		this.pathLayer = null;
 		this.fullscreenControl = null;
 		this.miniMap = null;
@@ -1569,7 +1620,7 @@ export class MapController {
 		// Markers
 		for (const marker of markers) {
 			const pos = project(marker.lat, marker.lng);
-			const color = this.getMarkerColor(marker.type);
+			const color = this.getMarkerColorForType(marker.type);
 
 			svg += `  <circle cx="${pos.x}" cy="${pos.y}" r="6" fill="${color}" stroke="white" stroke-width="1"/>\n`;
 
@@ -1615,6 +1666,7 @@ export class MapController {
 		this.deathClusterGroup?.clearLayers();
 		this.marriageClusterGroup?.clearLayers();
 		this.burialClusterGroup?.clearLayers();
+		this.eventsClusterGroup?.clearLayers();
 		this.pathLayer?.clearLayers();
 
 		// Clean up distortable overlay if active

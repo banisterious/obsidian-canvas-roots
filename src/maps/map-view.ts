@@ -58,10 +58,20 @@ export class MapView extends ItemView {
 	private filters: MapFilters = {};
 	private customMaps: CustomMapConfig[] = [];
 	private layers: LayerVisibility = {
+		// Core life events
 		births: true,
 		deaths: true,
 		marriages: false,
 		burials: false,
+		// Additional life events
+		residences: true,
+		occupations: true,
+		educations: true,
+		military: true,
+		immigrations: true,
+		religious: true,
+		custom: true,
+		// Other layers
 		paths: true,
 		heatMap: false
 	};
@@ -348,6 +358,7 @@ export class MapView extends ItemView {
 	private showLayersMenu(e: MouseEvent): void {
 		const menu = new Menu();
 
+		// Core life events section
 		menu.addItem((item) => {
 			item.setTitle('Birth markers')
 				.setChecked(this.layers.births)
@@ -367,6 +378,93 @@ export class MapView extends ItemView {
 		});
 
 		menu.addItem((item) => {
+			item.setTitle('Marriage markers')
+				.setChecked(this.layers.marriages)
+				.onClick(() => {
+					this.layers.marriages = !this.layers.marriages;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addItem((item) => {
+			item.setTitle('Burial markers')
+				.setChecked(this.layers.burials)
+				.onClick(() => {
+					this.layers.burials = !this.layers.burials;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addSeparator();
+
+		// Additional life events section
+		menu.addItem((item) => {
+			item.setTitle('Residence markers')
+				.setChecked(this.layers.residences)
+				.onClick(() => {
+					this.layers.residences = !this.layers.residences;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addItem((item) => {
+			item.setTitle('Occupation markers')
+				.setChecked(this.layers.occupations)
+				.onClick(() => {
+					this.layers.occupations = !this.layers.occupations;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addItem((item) => {
+			item.setTitle('Education markers')
+				.setChecked(this.layers.educations)
+				.onClick(() => {
+					this.layers.educations = !this.layers.educations;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addItem((item) => {
+			item.setTitle('Military markers')
+				.setChecked(this.layers.military)
+				.onClick(() => {
+					this.layers.military = !this.layers.military;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addItem((item) => {
+			item.setTitle('Immigration markers')
+				.setChecked(this.layers.immigrations)
+				.onClick(() => {
+					this.layers.immigrations = !this.layers.immigrations;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addItem((item) => {
+			item.setTitle('Religious markers')
+				.setChecked(this.layers.religious)
+				.onClick(() => {
+					this.layers.religious = !this.layers.religious;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addItem((item) => {
+			item.setTitle('Custom markers')
+				.setChecked(this.layers.custom)
+				.onClick(() => {
+					this.layers.custom = !this.layers.custom;
+					this.mapController?.setLayerVisibility(this.layers);
+				});
+		});
+
+		menu.addSeparator();
+
+		// Other layers section
+		menu.addItem((item) => {
 			item.setTitle('Migration paths')
 				.setChecked(this.layers.paths)
 				.onClick(() => {
@@ -374,8 +472,6 @@ export class MapView extends ItemView {
 					this.mapController?.setLayerVisibility(this.layers);
 				});
 		});
-
-		menu.addSeparator();
 
 		menu.addItem((item) => {
 			item.setTitle('Heat map')
@@ -1086,17 +1182,28 @@ export class MapView extends ItemView {
 			tileProvider: 'openstreetmap',
 			defaultCenter: { lat: 40, lng: -40 },
 			defaultZoom: 3,
-			birthMarkerColor: '#22c55e',
-			deathMarkerColor: '#ef4444',
-			marriageMarkerColor: '#a855f7',
-			burialMarkerColor: '#6b7280',
-			otherMarkerColor: '#3b82f6',
+			// Core life event colors
+			birthMarkerColor: '#22c55e',      // green
+			deathMarkerColor: '#ef4444',      // red
+			marriageMarkerColor: '#a855f7',   // purple
+			burialMarkerColor: '#6b7280',     // gray
+			// Additional event colors
+			residenceMarkerColor: '#3b82f6',  // blue
+			occupationMarkerColor: '#f97316', // orange
+			educationMarkerColor: '#14b8a6',  // teal
+			militaryMarkerColor: '#78716c',   // brown/stone
+			immigrationMarkerColor: '#06b6d4', // cyan
+			religiousMarkerColor: '#c084fc',  // light purple
+			customMarkerColor: '#ec4899',     // pink
+			// Path settings
 			showMigrationPaths: true,
 			pathColor: '#6366f1',
 			pathWeight: 2,
 			showPathLabels: true,
+			// Heat map settings
 			heatMapBlur: 15,
 			heatMapRadius: 25,
+			// Custom maps folder
 			customMapsFolder: this.plugin.settings.mapsFolder || 'Canvas Roots/Places/Maps'
 		};
 	}

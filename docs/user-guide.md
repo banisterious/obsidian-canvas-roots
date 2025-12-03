@@ -1570,6 +1570,77 @@ birth_place: "London, England"
 ---
 ```
 
+### Life Events Array
+
+Beyond core life events (birth, death, marriage, burial), you can track additional life events using the `events` array in person frontmatter. These events appear as color-coded markers in the Map View.
+
+**Supported Event Types:**
+
+| Event Type | Color | Use For |
+|------------|-------|---------|
+| `residence` | Blue | Places lived (homes, apartments) |
+| `occupation` | Orange | Work locations (offices, factories) |
+| `education` | Teal | Schools, universities, training |
+| `military` | Brown | Military service locations |
+| `immigration` | Cyan | Border crossings, ports of entry |
+| `baptism` | Light Purple | Baptism locations |
+| `confirmation` | Light Purple | Confirmation ceremonies |
+| `ordination` | Light Purple | Religious ordinations |
+| `custom` | Pink | Any other life event |
+
+**Example Events Array:**
+
+```yaml
+---
+birth_place: "[[Boston]]"
+death_place: "[[Miami]]"
+
+events:
+  - event_type: residence
+    place: "[[New York]]"
+    date_from: "1920"
+    date_to: "1935"
+    description: "Family home on 5th Ave"
+  - event_type: occupation
+    place: "[[Chicago]]"
+    date_from: "1935"
+    date_to: "1942"
+    description: "Steel mill foreman"
+  - event_type: military
+    place: "[[Normandy]]"
+    date_from: "1944-06-06"
+    date_to: "1944-08-25"
+    description: "D-Day invasion"
+  - event_type: education
+    place: "[[Harvard University]]"
+    date_from: "1915"
+    date_to: "1919"
+    description: "BA in History"
+---
+```
+
+**Event Properties:**
+
+| Property | Required | Description |
+|----------|----------|-------------|
+| `event_type` | Yes | One of the types listed above |
+| `place` | Yes | Wikilink to a place note |
+| `date_from` | No | Start date (YYYY, YYYY-MM, or YYYY-MM-DD) |
+| `date_to` | No | End date (for duration events) |
+| `description` | No | Brief description of the event |
+
+**Map View Layer Toggles:**
+
+In Map View, you can toggle visibility of each event type:
+1. Click the **Layers** button in the toolbar
+2. Each event category has its own checkbox
+3. Religious events (baptism, confirmation, ordination) are grouped under "Religious"
+
+**Tips:**
+- Events with both `date_from` and `date_to` represent duration events (e.g., a residence from 1920-1935)
+- The `place` field should be a wikilink to enable coordinate lookup
+- Use `custom` event type for events that don't fit other categories
+
 ### Place Statistics
 
 The Places tab in Control Center shows aggregate statistics:

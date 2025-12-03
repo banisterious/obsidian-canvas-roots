@@ -36,10 +36,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - "Reset to default" clears alignment and restores rectangular bounds
   - Powered by Leaflet.DistortableImage library
 
+- **Additional Marker Types**: Extended life event visualization beyond core events
+  - New marker types: residence, occupation, education, military, immigration
+  - Religious event markers: baptism, confirmation, ordination
+  - Custom event type for user-defined life events
+  - Events array in person frontmatter for multiple events per person
+  - Each event type has configurable color in settings
+  - Layer toggles for each marker category (residences, occupations, etc.)
+  - Religious events grouped under single "Religious" toggle
+
 - **Map Filtering & Controls**
   - Filter by collection (family branch)
   - Year range filtering with min/max inputs
-  - Layer toggles: births, deaths, marriages, paths, heat map
+  - Layer toggles for all marker types and paths/heat map
   - Map selector dropdown for switching between real-world and custom maps
 
 - **Time Slider Animation**: "Who was alive when?" visualization

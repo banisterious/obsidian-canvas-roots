@@ -10,8 +10,53 @@ import type * as L from 'leaflet';
 
 /**
  * Types of markers displayed on the map
+ * Core life events: birth, death, marriage, burial
+ * Additional events: residence, occupation, education, military, immigration, baptism, confirmation, ordination, custom
  */
-export type MarkerType = 'birth' | 'death' | 'marriage' | 'burial' | 'residence';
+export type MarkerType =
+	| 'birth'
+	| 'death'
+	| 'marriage'
+	| 'burial'
+	| 'residence'
+	| 'occupation'
+	| 'education'
+	| 'military'
+	| 'immigration'
+	| 'baptism'
+	| 'confirmation'
+	| 'ordination'
+	| 'custom';
+
+/**
+ * Event types that can be stored in the events array
+ */
+export type EventType =
+	| 'residence'
+	| 'occupation'
+	| 'education'
+	| 'military'
+	| 'immigration'
+	| 'baptism'
+	| 'confirmation'
+	| 'ordination'
+	| 'custom';
+
+/**
+ * A life event from the events array in person frontmatter
+ */
+export interface LifeEvent {
+	/** Type of event */
+	event_type: EventType;
+	/** Wikilink to place note */
+	place: string;
+	/** Start date (YYYY, YYYY-MM, or YYYY-MM-DD) */
+	date_from?: string;
+	/** End date for duration events */
+	date_to?: string;
+	/** Brief description */
+	description?: string;
+}
 
 /**
  * A marker representing a person's life event location
@@ -45,6 +90,12 @@ export interface MapMarker {
 	universe?: string;
 	/** Place category (real, fictional, etc.) */
 	placeCategory?: string;
+	/** Description of the event (for events array entries) */
+	description?: string;
+	/** End date for duration events (ISO format) */
+	dateTo?: string;
+	/** End year extracted from dateTo (for filtering) */
+	yearTo?: number;
 }
 
 /**
@@ -182,6 +233,7 @@ export interface MapFilters {
  * Layer visibility toggles
  */
 export interface LayerVisibility {
+	// Core life events
 	/** Show birth markers */
 	births: boolean;
 	/** Show death markers */
@@ -190,6 +242,24 @@ export interface LayerVisibility {
 	marriages: boolean;
 	/** Show burial markers */
 	burials: boolean;
+
+	// Additional life events
+	/** Show residence markers */
+	residences: boolean;
+	/** Show occupation markers */
+	occupations: boolean;
+	/** Show education markers */
+	educations: boolean;
+	/** Show military markers */
+	military: boolean;
+	/** Show immigration markers */
+	immigrations: boolean;
+	/** Show religious event markers (baptism, confirmation, ordination) */
+	religious: boolean;
+	/** Show custom event markers */
+	custom: boolean;
+
+	// Other layers
 	/** Show migration paths */
 	paths: boolean;
 	/** Show heat map layer */
@@ -364,6 +434,7 @@ export interface MapSettings {
 	/** Default zoom level */
 	defaultZoom: number;
 
+	// Core life event colors
 	/** Birth marker color */
 	birthMarkerColor: string;
 	/** Death marker color */
@@ -372,8 +443,22 @@ export interface MapSettings {
 	marriageMarkerColor: string;
 	/** Burial marker color */
 	burialMarkerColor: string;
-	/** Other marker color */
-	otherMarkerColor: string;
+
+	// Additional event colors
+	/** Residence marker color */
+	residenceMarkerColor: string;
+	/** Occupation marker color */
+	occupationMarkerColor: string;
+	/** Education marker color */
+	educationMarkerColor: string;
+	/** Military marker color */
+	militaryMarkerColor: string;
+	/** Immigration marker color */
+	immigrationMarkerColor: string;
+	/** Religious event marker color (baptism, confirmation, ordination) */
+	religiousMarkerColor: string;
+	/** Custom event marker color */
+	customMarkerColor: string;
 
 	/** Show migration paths by default */
 	showMigrationPaths: boolean;
@@ -400,11 +485,22 @@ export const DEFAULT_MAP_SETTINGS: MapSettings = {
 	tileProvider: 'openstreetmap',
 	defaultCenter: { lat: 40, lng: -40 },
 	defaultZoom: 3,
-	birthMarkerColor: '#22c55e',  // green
-	deathMarkerColor: '#ef4444',  // red
-	marriageMarkerColor: '#a855f7', // purple
-	burialMarkerColor: '#6b7280',  // gray
-	otherMarkerColor: '#3b82f6',  // blue
+
+	// Core life event colors
+	birthMarkerColor: '#22c55e',      // green
+	deathMarkerColor: '#ef4444',      // red
+	marriageMarkerColor: '#a855f7',   // purple
+	burialMarkerColor: '#6b7280',     // gray
+
+	// Additional event colors
+	residenceMarkerColor: '#3b82f6',  // blue
+	occupationMarkerColor: '#f97316', // orange
+	educationMarkerColor: '#14b8a6',  // teal
+	militaryMarkerColor: '#78716c',   // brown/stone
+	immigrationMarkerColor: '#06b6d4', // cyan
+	religiousMarkerColor: '#c084fc',  // light purple
+	customMarkerColor: '#ec4899',     // pink
+
 	showMigrationPaths: true,
 	pathColor: '#6366f1',  // indigo
 	pathWeight: 2,
@@ -412,4 +508,96 @@ export const DEFAULT_MAP_SETTINGS: MapSettings = {
 	heatMapBlur: 15,
 	heatMapRadius: 25,
 	customMapsFolder: 'Canvas Roots/Places/Maps'
+};
+
+/**
+ * Get the marker color for a given event type
+ */
+export function getMarkerColor(type: MarkerType, settings: MapSettings): string {
+	switch (type) {
+		case 'birth':
+			return settings.birthMarkerColor;
+		case 'death':
+			return settings.deathMarkerColor;
+		case 'marriage':
+			return settings.marriageMarkerColor;
+		case 'burial':
+			return settings.burialMarkerColor;
+		case 'residence':
+			return settings.residenceMarkerColor;
+		case 'occupation':
+			return settings.occupationMarkerColor;
+		case 'education':
+			return settings.educationMarkerColor;
+		case 'military':
+			return settings.militaryMarkerColor;
+		case 'immigration':
+			return settings.immigrationMarkerColor;
+		case 'baptism':
+		case 'confirmation':
+		case 'ordination':
+			return settings.religiousMarkerColor;
+		case 'custom':
+			return settings.customMarkerColor;
+		default:
+			return settings.residenceMarkerColor; // fallback
+	}
+}
+
+/**
+ * Check if a marker type is visible based on layer settings
+ */
+export function isMarkerTypeVisible(type: MarkerType, layers: LayerVisibility): boolean {
+	switch (type) {
+		case 'birth':
+			return layers.births;
+		case 'death':
+			return layers.deaths;
+		case 'marriage':
+			return layers.marriages;
+		case 'burial':
+			return layers.burials;
+		case 'residence':
+			return layers.residences;
+		case 'occupation':
+			return layers.occupations;
+		case 'education':
+			return layers.educations;
+		case 'military':
+			return layers.military;
+		case 'immigration':
+			return layers.immigrations;
+		case 'baptism':
+		case 'confirmation':
+		case 'ordination':
+			return layers.religious;
+		case 'custom':
+			return layers.custom;
+		default:
+			return true;
+	}
+}
+
+/**
+ * Default layer visibility (all enabled)
+ */
+export const DEFAULT_LAYER_VISIBILITY: LayerVisibility = {
+	// Core life events
+	births: true,
+	deaths: true,
+	marriages: true,
+	burials: true,
+
+	// Additional life events
+	residences: true,
+	occupations: true,
+	educations: true,
+	military: true,
+	immigrations: true,
+	religious: true,
+	custom: true,
+
+	// Other layers
+	paths: true,
+	heatMap: false
 };

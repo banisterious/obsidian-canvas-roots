@@ -15,7 +15,9 @@ import type {
 	MapFilters,
 	CustomMapConfig,
 	MarkerType,
-	PersonLifeSpan
+	PersonLifeSpan,
+	LifeEvent,
+	EventType
 } from './types/map-types';
 
 const logger = getLogger('MapDataService');
@@ -51,7 +53,14 @@ interface PersonData {
 	birthPlaceId?: string;
 	deathPlace?: string;
 	deathPlaceId?: string;
+	marriagePlace?: string;
+	marriagePlaceId?: string;
+	marriageDate?: string;
+	burialPlace?: string;
+	burialPlaceId?: string;
 	collection?: string;
+	/** Life events from the events array */
+	events?: LifeEvent[];
 }
 
 /**
@@ -238,7 +247,13 @@ export class MapDataService {
 				birthPlaceId: fm.birth_place_id,
 				deathPlace: this.extractPlaceString(fm.death_place),
 				deathPlaceId: fm.death_place_id,
-				collection: fm.collection
+				marriagePlace: this.extractPlaceString(fm.marriage_place),
+				marriagePlaceId: fm.marriage_place_id,
+				marriageDate: fm.marriage_date,
+				burialPlace: this.extractPlaceString(fm.burial_place),
+				burialPlaceId: fm.burial_place_id,
+				collection: fm.collection,
+				events: this.parseEventsArray(fm.events)
 			};
 
 			people.push(personData);
@@ -246,6 +261,43 @@ export class MapDataService {
 
 		logger.debug('person-data', `Found ${people.length} people`);
 		return people;
+	}
+
+	/**
+	 * Parse the events array from frontmatter
+	 */
+	private parseEventsArray(events: unknown): LifeEvent[] | undefined {
+		if (!Array.isArray(events)) return undefined;
+
+		const parsed: LifeEvent[] = [];
+
+		for (const event of events) {
+			if (typeof event !== 'object' || event === null) continue;
+
+			const eventObj = event as Record<string, unknown>;
+			const eventType = eventObj.event_type as string;
+			const place = eventObj.place as string;
+
+			// Must have event_type and place
+			if (!eventType || !place) continue;
+
+			// Validate event_type is a known type
+			const validTypes: EventType[] = [
+				'residence', 'occupation', 'education', 'military',
+				'immigration', 'baptism', 'confirmation', 'ordination', 'custom'
+			];
+			if (!validTypes.includes(eventType as EventType)) continue;
+
+			parsed.push({
+				event_type: eventType as EventType,
+				place: place,
+				date_from: eventObj.date_from as string | undefined,
+				date_to: eventObj.date_to as string | undefined,
+				description: eventObj.description as string | undefined
+			});
+		}
+
+		return parsed.length > 0 ? parsed : undefined;
 	}
 
 	/**
@@ -261,69 +313,152 @@ export class MapDataService {
 			}
 
 			// Birth marker
-			const birthPlace = this.resolvePlace(person.birthPlaceId, person.birthPlace);
-			if (birthPlace && this.hasValidCoordinates(birthPlace)) {
-				// Apply universe filter - only show markers matching the selected universe
-				if (filters.universe && birthPlace.universe !== filters.universe) {
-					// Skip this marker - wrong universe
-				} else {
-					const birthYear = this.extractYear(person.born);
-
-					// Apply year filter
-					if (this.isInYearRange(birthYear, filters)) {
-						markers.push({
-							personId: person.crId,
-							personName: person.name,
-							type: 'birth',
-							lat: birthPlace.lat ?? 0,
-							lng: birthPlace.lng ?? 0,
-							pixelX: birthPlace.pixelX,
-							pixelY: birthPlace.pixelY,
-							placeName: birthPlace.name,
-							placeId: birthPlace.crId,
-							date: person.born,
-							year: birthYear,
-							collection: person.collection,
-							universe: birthPlace.universe,
-							placeCategory: birthPlace.category
-						});
-					}
-				}
-			}
+			const birthMarker = this.createMarkerFromPlace(
+				person, 'birth', person.birthPlaceId, person.birthPlace, person.born, filters
+			);
+			if (birthMarker) markers.push(birthMarker);
 
 			// Death marker
-			const deathPlace = this.resolvePlace(person.deathPlaceId, person.deathPlace);
-			if (deathPlace && this.hasValidCoordinates(deathPlace)) {
-				// Apply universe filter - only show markers matching the selected universe
-				if (filters.universe && deathPlace.universe !== filters.universe) {
-					// Skip this marker - wrong universe
-				} else {
-					const deathYear = this.extractYear(person.died);
+			const deathMarker = this.createMarkerFromPlace(
+				person, 'death', person.deathPlaceId, person.deathPlace, person.died, filters
+			);
+			if (deathMarker) markers.push(deathMarker);
 
-					// Apply year filter
-					if (this.isInYearRange(deathYear, filters)) {
-						markers.push({
-							personId: person.crId,
-							personName: person.name,
-							type: 'death',
-							lat: deathPlace.lat ?? 0,
-							lng: deathPlace.lng ?? 0,
-							pixelX: deathPlace.pixelX,
-							pixelY: deathPlace.pixelY,
-							placeName: deathPlace.name,
-							placeId: deathPlace.crId,
-							date: person.died,
-							year: deathYear,
-							collection: person.collection,
-							universe: deathPlace.universe,
-							placeCategory: deathPlace.category
-						});
-					}
+			// Marriage marker
+			const marriageMarker = this.createMarkerFromPlace(
+				person, 'marriage', person.marriagePlaceId, person.marriagePlace, person.marriageDate, filters
+			);
+			if (marriageMarker) markers.push(marriageMarker);
+
+			// Burial marker
+			const burialMarker = this.createMarkerFromPlace(
+				person, 'burial', person.burialPlaceId, person.burialPlace, person.died, filters
+			);
+			if (burialMarker) markers.push(burialMarker);
+
+			// Event markers from events array
+			if (person.events) {
+				for (const event of person.events) {
+					const eventMarker = this.createMarkerFromEvent(person, event, filters);
+					if (eventMarker) markers.push(eventMarker);
 				}
 			}
 		}
 
 		return markers;
+	}
+
+	/**
+	 * Create a marker from a place reference
+	 */
+	private createMarkerFromPlace(
+		person: PersonData,
+		type: MarkerType,
+		placeId: string | undefined,
+		placeName: string | undefined,
+		date: string | undefined,
+		filters: MapFilters
+	): MapMarker | null {
+		const place = this.resolvePlace(placeId, placeName);
+		if (!place || !this.hasValidCoordinates(place)) return null;
+
+		// Apply universe filter
+		if (filters.universe && place.universe !== filters.universe) return null;
+
+		const year = this.extractYear(date);
+
+		// Apply year filter
+		if (!this.isInYearRange(year, filters)) return null;
+
+		return {
+			personId: person.crId,
+			personName: person.name,
+			type,
+			lat: place.lat ?? 0,
+			lng: place.lng ?? 0,
+			pixelX: place.pixelX,
+			pixelY: place.pixelY,
+			placeName: place.name,
+			placeId: place.crId,
+			date,
+			year,
+			collection: person.collection,
+			universe: place.universe,
+			placeCategory: place.category
+		};
+	}
+
+	/**
+	 * Create a marker from a life event
+	 */
+	private createMarkerFromEvent(
+		person: PersonData,
+		event: LifeEvent,
+		filters: MapFilters
+	): MapMarker | null {
+		// Extract place from wikilink in event.place
+		const placeName = this.extractPlaceString(event.place);
+		const place = this.resolvePlace(undefined, placeName);
+		if (!place || !this.hasValidCoordinates(place)) return null;
+
+		// Apply universe filter
+		if (filters.universe && place.universe !== filters.universe) return null;
+
+		const year = this.extractYear(event.date_from);
+		const yearTo = this.extractYear(event.date_to);
+
+		// Apply year filter (check if event overlaps with filter range)
+		if (!this.isEventInYearRange(year, yearTo, filters)) return null;
+
+		return {
+			personId: person.crId,
+			personName: person.name,
+			type: event.event_type,
+			lat: place.lat ?? 0,
+			lng: place.lng ?? 0,
+			pixelX: place.pixelX,
+			pixelY: place.pixelY,
+			placeName: place.name,
+			placeId: place.crId,
+			date: event.date_from,
+			year,
+			dateTo: event.date_to,
+			yearTo,
+			description: event.description,
+			collection: person.collection,
+			universe: place.universe,
+			placeCategory: place.category
+		};
+	}
+
+	/**
+	 * Check if an event with date range overlaps with the filter range
+	 */
+	private isEventInYearRange(
+		yearFrom: number | undefined,
+		yearTo: number | undefined,
+		filters: MapFilters
+	): boolean {
+		// No years defined = include by default
+		if (yearFrom === undefined && yearTo === undefined) return true;
+
+		// If no filter range, include all
+		if (filters.yearFrom === undefined && filters.yearTo === undefined) return true;
+
+		// Check for overlap
+		const eventStart = yearFrom ?? yearTo;
+		const eventEnd = yearTo ?? yearFrom;
+
+		if (eventStart === undefined || eventEnd === undefined) {
+			// Single year defined, use simple range check
+			return this.isInYearRange(yearFrom ?? yearTo, filters);
+		}
+
+		// Check if ranges overlap
+		const filterStart = filters.yearFrom ?? -Infinity;
+		const filterEnd = filters.yearTo ?? Infinity;
+
+		return eventStart <= filterEnd && eventEnd >= filterStart;
 	}
 
 	/**

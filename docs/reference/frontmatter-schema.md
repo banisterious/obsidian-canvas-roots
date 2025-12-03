@@ -20,6 +20,8 @@ erDiagram
     PERSON }o--o| PLACE : "birth_place"
     PERSON }o--o| PLACE : "death_place"
     PERSON }o--o| PLACE : "burial_place"
+    PERSON ||--o{ EVENT : "events"
+    EVENT }o--o| PLACE : "place"
     PLACE ||--o| PLACE : "parent_place"
 
     PERSON {
@@ -31,6 +33,14 @@ erDiagram
         string father_id FK
         string mother_id FK
         string collection
+    }
+
+    EVENT {
+        string event_type
+        string place FK
+        string date_from
+        string date_to
+        string description
     }
 
     PLACE {
@@ -47,6 +57,7 @@ erDiagram
 **Key relationships:**
 - **Person → Person**: Family relationships (father, mother, spouse, child) with dual wikilink + `_id` storage
 - **Person → Place**: Geographic links for life events (birth, death, burial, marriage locations)
+- **Person → Event → Place**: Life events (residence, occupation, education, military, etc.) with locations
 - **Place → Place**: Hierarchical structure (city → state → country)
 - **Collection**: Shared grouping property across both entity types
 
@@ -135,6 +146,54 @@ spouses:
 |----------|------|-------------|---------|
 | `cr_root` | `boolean` | Designates this person as root of a tree | `true` |
 | `collection` | `string` | User-defined grouping/collection name | `"Smith Family"` |
+
+### Life Events
+
+Beyond birth, death, and marriage (which use flat properties above), additional life events can be recorded in an `events` array. These events appear as markers on the Map View.
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `events` | `array` | Array of life event objects | See below |
+
+**Event Object Properties:**
+
+| Property | Type | Required | Description | Example |
+|----------|------|----------|-------------|---------|
+| `event_type` | `string` | Yes | Type of event | `"residence"` |
+| `place` | `string` | Yes | Wikilink to place note | `"[[New York]]"` |
+| `date_from` | `string` | No | Start date | `"1920"` or `"1920-05-15"` |
+| `date_to` | `string` | No | End date (for duration events) | `"1935"` |
+| `description` | `string` | No | Brief description | `"Family home"` |
+
+**Supported Event Types:**
+
+| Category | Event Types |
+|----------|-------------|
+| Residence | `residence`, `immigration` |
+| Career | `occupation`, `education`, `military` |
+| Religious | `baptism`, `confirmation`, `ordination` |
+| Other | `custom` |
+
+**Example:**
+
+```yaml
+events:
+  - event_type: residence
+    place: "[[New York]]"
+    date_from: "1920"
+    date_to: "1935"
+    description: "Family home on 5th Ave"
+  - event_type: military
+    place: "[[Normandy]]"
+    date_from: "1944-06-06"
+    date_to: "1944-08-25"
+    description: "D-Day invasion"
+  - event_type: education
+    place: "[[Harvard University]]"
+    date_from: "1915"
+    date_to: "1919"
+    description: "BA in History"
+```
 
 ### Reference Numbering Systems
 
