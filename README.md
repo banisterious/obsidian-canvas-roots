@@ -110,11 +110,11 @@ See [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap
 
 | Feature | Description |
 |---------|-------------|
+| **Schema Validation** | User-defined JSON schemas to enforce property rules and catch inconsistencies |
 | **Custom Relationships** | Non-familial relationships (mentor, liege, rival) with colored canvas edges |
 | **Fictional Dates** | Custom calendars and eras for world-building (e.g., "Third Age 2941") |
-| **Schema Validation** | User-defined JSON schemas to enforce property rules and catch inconsistencies |
-| **Organization Charts** | Track houses, guilds, and factions with hierarchical D3 visualizations |
 | **Source Media Gallery** | Centralized evidence management with thumbnails and citation generation |
+| **Organization Charts** | Track houses, guilds, and factions with hierarchical D3 visualizations |
 | **Canvas Media Nodes** | Media files as first-class canvas entities with intelligent placement |
 | **Oral History Tools** | Timestamped transcript citations, interview subject graphs, chronological story mapping |
 
