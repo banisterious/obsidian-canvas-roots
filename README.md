@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.6.2-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, and world-builders.
 
@@ -122,6 +122,19 @@ See [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap
 
 ## Screenshots
 
+### Interactive Map View
+![Interactive Map View](docs/images/canvas-roots-interactive-map-view.png)
+*Leaflet-powered geographic visualization with color-coded markers (green=birth, red=death), marker clustering, migration paths with person labels, and mini-map overview.*
+
+### Control Center Dashboard
+![Control Center Status Tab](docs/images/canvas-roots-control-center-status-tab.png)
+*Status tab showing comprehensive vault statistics: people, relationships, places, custom maps, canvases, vault health, and recent GEDCOM imports.*
+
+### Maps Tab & Custom Maps Gallery
+![Maps Tab](docs/images/canvas-roots-control-center-maps-tab.png)
+*Dedicated Maps tab with custom map thumbnail gallery, visualization tools, and geographic statistics.*
+
+### Tree Generation
 | Tree Output Interface | Generated Family Tree |
 |:---------------------:|:---------------------:|
 | ![Tree Output interface](docs/images/tree-output-ui.png) | ![Family tree canvas](docs/images/family-tree-canvas.png) |
@@ -176,11 +189,11 @@ died: 1952-08-20
 ---
 ```
 
-**Or use Obsidian Bases:** Control Center → Quick Actions → "Create Bases template"
+**Or use Obsidian Bases:** Control Center → Advanced tab → "Create Bases template"
 
 ### 2. Generate Tree
 
-1. Open Control Center → Tree Generation tab
+1. Open Control Center → Tree output tab
 2. Select root person
 3. Configure tree type and layout
 4. Click "Generate family tree"
