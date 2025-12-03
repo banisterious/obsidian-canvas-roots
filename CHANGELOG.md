@@ -7,7 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.6.0] - Unreleased
+## [0.6.1] - 2025-12-03
+
+### Changed
+
+- **Guide Tab Overhaul**: Streamlined Control Center Guide tab for better usability
+  - Reduced from 19 cards (~976 lines) to 5 focused cards (~254 lines)
+  - New collapsible sections for essential properties reference (Person, Place, Map notes)
+  - Task grid component for quick navigation to common features
+  - Integrated wiki links for detailed documentation
+  - Streamlined "Getting Started" with clear 3-step workflow
+
+### Added
+
+- **New UI Components**
+  - `createCollapsible()` helper method for reusable accordion sections
+  - Task grid CSS component for quick action navigation
+  - Guide step badges for visual workflow clarity
+  - New icon types: `lightbulb`, `list-checks`, `map`
+
+---
+
+## [0.6.0] - 2025-12-03
 
 ### Added
 
