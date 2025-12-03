@@ -104,7 +104,7 @@
 
 ## Planned Features
 
-See [Roadmap](docs/roadmap.md) for detailed descriptions and development priorities.
+See [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap) for detailed descriptions and development priorities.
 
 ### Coming Soon
 
@@ -189,7 +189,7 @@ died: 1952-08-20
 
 Right-click canvas → "Regenerate canvas" after editing relationships.
 
-See [User Guide](docs/user-guide.md) for complete documentation.
+See the [Wiki](https://github.com/banisterious/obsidian-canvas-roots/wiki) for complete documentation.
 
 ---
 
@@ -203,12 +203,20 @@ If you find this plugin useful, please consider supporting its development!
 
 ## Documentation
 
-### For Users
-- [User Guide](docs/user-guide.md) - Complete workflow and features
-- [Frontmatter Schema](docs/reference/frontmatter-schema.md) - Property reference for person and place notes
-- [Bases Integration](docs/bases-integration.md) - Bulk data management
+📖 **[Full Documentation on the Wiki](https://github.com/banisterious/obsidian-canvas-roots/wiki)**
+
+### Quick Links
+- [Getting Started](https://github.com/banisterious/obsidian-canvas-roots/wiki/Getting-Started) - Installation and first steps
+- [Data Entry](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Entry) - Creating person notes
+- [Tree Generation](https://github.com/banisterious/obsidian-canvas-roots/wiki/Tree-Generation) - Generating family trees
+- [Import & Export](https://github.com/banisterious/obsidian-canvas-roots/wiki/Import-Export) - GEDCOM and CSV support
+- [Geographic Features](https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features) - Maps and places
+- [FAQ](https://github.com/banisterious/obsidian-canvas-roots/wiki/FAQ) - Common questions
+- [Troubleshooting](https://github.com/banisterious/obsidian-canvas-roots/wiki/Troubleshooting) - Problem solving
+
+### Other Resources
 - [Changelog](CHANGELOG.md) - Version history
-- [Roadmap](docs/roadmap.md) - Planned features
+- [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap) - Planned features
 
 ### For Developers
 - [Contributing Guide](CONTRIBUTING.md) - Development setup
