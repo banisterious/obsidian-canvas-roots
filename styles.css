@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-03 22:27:16 UTC
+ * - Generated: 2025-12-03 22:35:44 UTC
  * - Components: 21 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -187,7 +187,7 @@
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 3549 lines, 65.09 KB */
+/* Component Size: 3696 lines, 67.44 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -3736,6 +3736,153 @@
 
 .crc-validation-status {
   min-height: 20px;
+}
+
+/* Schema Modal */
+.crc-create-schema-modal {
+  width: 600px;
+  max-width: 90vw;
+}
+
+.crc-create-schema-modal .modal-content {
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.crc-schema-form-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 16px;
+}
+
+/* Sections */
+.crc-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.crc-section-title {
+  margin: 0 0 4px 0;
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-semibold);
+}
+
+.crc-section-desc {
+  margin: 0 0 12px 0;
+}
+
+/* Required Properties */
+.crc-required-props {
+  margin-bottom: 12px;
+}
+
+.crc-prop-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.crc-prop-row .crc-form-input {
+  flex: 1;
+}
+
+/* Property Cards */
+.crc-properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.crc-property-card {
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+  padding: 12px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-property-card-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.crc-property-name-input {
+  flex: 1;
+  font-weight: var(--font-medium);
+}
+
+.crc-property-settings .setting-item {
+  border-top: none;
+  padding: 6px 0;
+}
+
+.crc-range-row {
+  display: flex;
+  gap: 16px;
+}
+
+.crc-range-row .setting-item {
+  flex: 1;
+}
+
+/* Constraint Cards */
+.crc-constraints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.crc-constraint-card {
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+  padding: 12px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-constraint-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.crc-constraint-label {
+  font-weight: var(--font-medium);
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+}
+
+.crc-constraint-card .setting-item {
+  border-top: none;
+  padding: 6px 0;
+}
+
+/* Help text */
+.crc-help-text ul {
+  margin: 4px 0 0 0;
+  padding-left: 20px;
+}
+
+.crc-help-text li {
+  margin-bottom: 2px;
+}
+
+/* Small buttons */
+.crc-btn--small {
+  padding: 4px 12px;
+  font-size: var(--font-ui-smaller);
+}
+
+/* Icon button danger variant */
+.crc-btn--danger:hover {
+  color: var(--text-error);
 }
 
 
@@ -8242,10 +8389,10 @@ input[type="text"]::-webkit-input-placeholder {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-03 22:27:16 UTC
+ * Build completed: 2025-12-03 22:35:44 UTC
  * Components processed: 21
- * Total lines: 8030
- * Total size: 154.81 KB
+ * Total lines: 8177
+ * Total size: 157.16 KB
  * Build duration: 0.02 seconds
  *
  * Component breakdown:
@@ -8256,7 +8403,7 @@ input[type="text"]::-webkit-input-placeholder {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 3549 lines, 65.09 KB
+ * - modals.css: 3696 lines, 67.44 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

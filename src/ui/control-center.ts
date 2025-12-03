@@ -34,6 +34,7 @@ import { PlaceNetworkModal } from './place-network-modal';
 import { TemplateSnippetsModal } from './template-snippets-modal';
 import { CreatePersonModal } from './create-person-modal';
 import { CreateMapModal } from './create-map-modal';
+import { CreateSchemaModal } from './create-schema-modal';
 import { SchemaService, ValidationService } from '../schemas';
 import type { SchemaNote, ValidationResult, ValidationSummary } from '../schemas';
 
@@ -5522,8 +5523,11 @@ export class ControlCenterModal extends Modal {
 			.addButton(button => button
 				.setButtonText('Create schema')
 				.onClick(() => {
-					// TODO: Open CreateSchemaModal
-					new Notice('Create schema modal coming soon');
+					new CreateSchemaModal(this.app, this.plugin, {
+						onCreated: () => {
+							void this.loadSchemasGallery(schemaService, schemasGridContainer);
+						}
+					}).open();
 				}))
 			.addButton(button => button
 				.setButtonText('Import JSON')
@@ -5635,8 +5639,12 @@ export class ControlCenterModal extends Modal {
 			});
 			setLucideIcon(editBtn, 'edit', 14);
 			editBtn.addEventListener('click', () => {
-				// TODO: Open EditSchemaModal
-				new Notice('Edit schema modal coming soon');
+				new CreateSchemaModal(this.app, this.plugin, {
+					editSchema: schema,
+					onUpdated: () => {
+						void this.loadSchemasGallery(schemaService, container);
+					}
+				}).open();
 			});
 
 			// More options button
@@ -5695,8 +5703,12 @@ export class ControlCenterModal extends Modal {
 				.setTitle('Edit schema')
 				.setIcon('edit')
 				.onClick(() => {
-					// TODO: Open EditSchemaModal
-					new Notice('Edit schema modal coming soon');
+					new CreateSchemaModal(this.app, this.plugin, {
+						editSchema: schema,
+						onUpdated: () => {
+							void this.loadSchemasGallery(schemaService, galleryContainer);
+						}
+					}).open();
 				});
 		});
 
