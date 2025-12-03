@@ -18,6 +18,7 @@
 - [Staging & Cleanup](Staging-And-Cleanup)
 
 ### Tools & Features
+- [Context Menus](Context-Menus)
 - [Relationship Tools](Relationship-Tools)
 - [Geographic Features](Geographic-Features)
 - [Advanced Features](Advanced-Features)
