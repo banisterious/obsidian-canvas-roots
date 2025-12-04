@@ -87,7 +87,14 @@ export class TemplateSnippetsModal extends Modal {
 		// Schema documentation link
 		const schemaSection = contentEl.createDiv({ cls: 'crc-template-schema-link crc-mt-3' });
 		const schemaNote = schemaSection.createEl('p', { cls: 'crc-text--muted' });
-		schemaNote.innerHTML = 'These templates include common fields. For the complete list of supported frontmatter properties, see the <a href="https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/reference/frontmatter-schema.md" class="crc-link" target="_blank">Frontmatter Schema Reference</a>.';
+		schemaNote.appendText('These templates include common fields. For the complete list of supported frontmatter properties, see the ');
+		const schemaLink = schemaNote.createEl('a', {
+			text: 'Frontmatter Schema Reference',
+			cls: 'crc-link',
+			href: 'https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/reference/frontmatter-schema.md'
+		});
+		schemaLink.setAttribute('target', '_blank');
+		schemaNote.appendText('.');
 
 		// Close button
 		const buttonContainer = contentEl.createDiv({ cls: 'crc-modal-buttons crc-mt-4' });

@@ -393,7 +393,7 @@ export class ValidationService {
 			return {
 				type: 'invalid_enum',
 				property: propName,
-				message: `Invalid value "${value}" for "${propName}". Allowed: ${allowedValues.join(', ')}`,
+				message: `Invalid value "${String(value)}" for "${propName}". Allowed: ${allowedValues.join(', ')}`,
 				expectedValues: allowedValues
 			};
 		}
@@ -492,7 +492,6 @@ export class ValidationService {
 			const sandbox = this.createSandbox(frontmatter);
 
 			// Use Function constructor with restricted scope
-			// eslint-disable-next-line no-new-func
 			const fn = new Function(...Object.keys(sandbox), `return (${constraint.rule});`);
 			const result = fn(...Object.values(sandbox));
 

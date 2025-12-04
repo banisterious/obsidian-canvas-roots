@@ -25,7 +25,7 @@ export class FolderStatisticsModal extends Modal {
 		this.folderFilter = folderFilter;
 	}
 
-	async onOpen() {
+	onOpen(): void {
 		const { contentEl } = this;
 		contentEl.empty();
 
@@ -47,7 +47,7 @@ export class FolderStatisticsModal extends Modal {
 			if (this.folderFilter) {
 				graphService.setFolderFilter(this.folderFilter);
 			}
-			this.analytics = await graphService.calculateCollectionAnalytics();
+			this.analytics = graphService.calculateCollectionAnalytics();
 			this.loading = false;
 
 			// Remove loading and render stats

@@ -150,7 +150,6 @@ export class StagingService {
 			return { success: false, newPath: '', error: 'File is not in staging folder' };
 		}
 
-		const _stagingPath = this.settings.stagingFolder;
 		const mainPath = this.settings.peopleFolder;
 
 		// Calculate new path: replace staging folder with main folder
@@ -268,10 +267,10 @@ export class StagingService {
 		try {
 			// Delete all files in folder first
 			for (const file of files) {
-				await this.app.vault.delete(file);
+				await this.app.fileManager.trashFile(file);
 			}
 
-			// Delete the folder itself
+			// Delete the folder itself (folders use vault.delete, not trashFile)
 			await this.app.vault.delete(folder);
 
 			return { success: true, filesDeleted: fileCount };
@@ -290,7 +289,7 @@ export class StagingService {
 
 		try {
 			for (const file of files) {
-				await this.app.vault.delete(file);
+				await this.app.fileManager.trashFile(file);
 				deletedCount++;
 			}
 

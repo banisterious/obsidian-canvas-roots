@@ -101,7 +101,7 @@ export class PersonPickerModal extends Modal {
 		this.folderFilter = folderFilter;
 	}
 
-	async onOpen() {
+	onOpen(): void {
 		const { contentEl } = this;
 		contentEl.empty();
 
@@ -109,7 +109,7 @@ export class PersonPickerModal extends Modal {
 		this.modalEl.addClass('crc-person-picker-modal');
 
 		// Load all people from vault
-		await this.loadPeople();
+		this.loadPeople();
 
 		// Create modal structure
 		this.createModalContent();
@@ -123,7 +123,7 @@ export class PersonPickerModal extends Modal {
 	/**
 	 * Load all person notes from the vault
 	 */
-	private async loadPeople(): Promise<void> {
+	private loadPeople(): void {
 		this.allPeople = [];
 		const files = this.app.vault.getMarkdownFiles();
 
@@ -140,7 +140,7 @@ export class PersonPickerModal extends Modal {
 		}
 
 		// Load family components
-		await this.loadFamilyComponents();
+		this.loadFamilyComponents();
 
 		// Initial sort by name
 		this.sortPeople();
@@ -150,13 +150,13 @@ export class PersonPickerModal extends Modal {
 	/**
 	 * Load family components and build component map
 	 */
-	private async loadFamilyComponents(): Promise<void> {
+	private loadFamilyComponents(): void {
 		try {
 			const graphService = new FamilyGraphService(this.app);
 			if (this.folderFilter) {
 				graphService.setFolderFilter(this.folderFilter);
 			}
-			this.familyComponents = await graphService.findAllFamilyComponents();
+			this.familyComponents = graphService.findAllFamilyComponents();
 
 			// Build component map (cr_id -> component index)
 			this.componentMap.clear();

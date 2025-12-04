@@ -345,7 +345,7 @@ export class ControlCenterModal extends Modal {
 			// Find all family components
 			logger.info('generate-all-trees', 'Finding all family components in vault');
 			new Notice('Scanning vault for family groups...');
-			const components = await graphService.findAllFamilyComponents();
+			const components = graphService.findAllFamilyComponents();
 
 			if (components.length === 0) {
 				new Notice('No family trees found in vault. Please add some person notes first.');
@@ -385,7 +385,7 @@ export class ControlCenterModal extends Modal {
 						includeSpouses: true
 					};
 
-					const familyTree = await graphService.generateTree(treeOptions);
+					const familyTree = graphService.generateTree(treeOptions);
 
 					if (!familyTree) {
 						logger.error('generate-all-trees', `Failed to generate tree for ${rep.name}: root not found`);
@@ -1197,7 +1197,7 @@ export class ControlCenterModal extends Modal {
 		});
 
 		const schemaLink = propsContent.createEl('a', {
-			text: 'Full Frontmatter Reference →',
+			text: 'Full frontmatter reference →',
 			href: `${WIKI_BASE}/Frontmatter-Reference`,
 			cls: 'crc-link crc-mt-3 cr-inline-block'
 		});
@@ -1262,7 +1262,7 @@ export class ControlCenterModal extends Modal {
 			{ icon: 'upload', title: 'Import data', desc: 'GEDCOM, CSV, Gramps', tab: 'import-export' },
 			{ icon: 'download', title: 'Export data', desc: 'GEDCOM, CSV formats', tab: 'import-export' },
 			{ icon: 'git-branch', title: 'Generate tree', desc: 'Create visual canvas', tab: 'tree-generation' },
-			{ icon: 'map', title: 'Open Map View', desc: 'Geographic visualization', tab: null, command: 'canvas-roots:open-map-view' },
+			{ icon: 'map', title: 'Open map view', desc: 'Geographic visualization', tab: null, command: 'canvas-roots:open-map-view' },
 			{ icon: 'users', title: 'Manage people', desc: 'Browse and edit', tab: 'people' },
 			{ icon: 'clipboard-check', title: 'Validate schemas', desc: 'Check data consistency', tab: 'schemas' }
 		];
@@ -1301,11 +1301,11 @@ export class ControlCenterModal extends Modal {
 		const wikiSection = learnContent.createDiv({ cls: 'crc-mb-4' });
 		wikiSection.createEl('h4', { text: 'Documentation', cls: 'crc-mb-2' });
 		const wikiLinks = [
-			{ text: 'Getting Started', wiki: 'Getting-Started' },
-			{ text: 'Data Entry Guide', wiki: 'Data-Entry' },
-			{ text: 'Tree Generation', wiki: 'Tree-Generation' },
-			{ text: 'Geographic Features', wiki: 'Geographic-Features' },
-			{ text: 'Context Menus', wiki: 'Context-Menus' }
+			{ text: 'Getting started', wiki: 'Getting-Started' },
+			{ text: 'Data entry guide', wiki: 'Data-Entry' },
+			{ text: 'Tree generation', wiki: 'Tree-Generation' },
+			{ text: 'Geographic features', wiki: 'Geographic-Features' },
+			{ text: 'Context menus', wiki: 'Context-Menus' }
 		];
 		const wikiList = wikiSection.createEl('ul', { cls: 'crc-wiki-links' });
 		wikiLinks.forEach(link => {
@@ -2110,7 +2110,7 @@ export class ControlCenterModal extends Modal {
 		// Collection filter dropdown
 		let collectionSelect: HTMLSelectElement;
 		const graphService = this.plugin.createFamilyGraphService();
-		const userCollections = await graphService.getUserCollections();
+		const userCollections = graphService.getUserCollections();
 
 		new Setting(configContent)
 			.setName('Filter by collection')
@@ -2421,7 +2421,7 @@ export class ControlCenterModal extends Modal {
 
 		// Wire up preview button
 		generatePreviewBtn.addEventListener('click', () => {
-			void (async () => {
+			void (() => {
 				if (!rootPersonField.crId) {
 					new Notice('Please select a root person first');
 					return;
@@ -2445,7 +2445,7 @@ export class ControlCenterModal extends Modal {
 						} : undefined
 					};
 
-					const familyTree = await graphService.generateTree(treeOptions);
+					const familyTree = graphService.generateTree(treeOptions);
 
 					if (!familyTree) {
 						new Notice('Failed to build family tree. Root person may not exist.');
@@ -2871,7 +2871,7 @@ export class ControlCenterModal extends Modal {
 			});
 
 			const graphService = this.plugin.createFamilyGraphService();
-			const familyTree = await graphService.generateTree(treeOptions);
+			const familyTree = graphService.generateTree(treeOptions);
 
 			if (!familyTree) {
 				logger.error('tree-generation', 'Failed to generate tree: root person not found');
@@ -2901,7 +2901,7 @@ export class ControlCenterModal extends Modal {
 
 			// Check for disconnected people (only for full trees)
 			if (treeOptions.treeType === 'full') {
-				const totalPeople = await graphService.getTotalPeopleCount();
+				const totalPeople = graphService.getTotalPeopleCount();
 				const connectedPeople = familyTree.nodes.size;
 				const disconnectedCount = totalPeople - connectedPeople;
 
@@ -3034,8 +3034,8 @@ export class ControlCenterModal extends Modal {
 			const graphService = this.plugin.createFamilyGraphService();
 
 			// Get both detected families and user collections
-			const families = await graphService.findAllFamilyComponents();
-			const userCollections = await graphService.getUserCollections();
+			const families = graphService.findAllFamilyComponents();
+			const userCollections = graphService.getUserCollections();
 
 			// Combine them into a single collection list
 			const allCollections = [
@@ -3057,7 +3057,7 @@ export class ControlCenterModal extends Modal {
 			}
 
 			// Get connections between collections
-			const connections = await graphService.detectCollectionConnections();
+			const connections = graphService.detectCollectionConnections();
 
 			// Generate the overview canvas
 			const canvasGenerator = new CanvasGenerator();
@@ -3106,10 +3106,10 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Loads and displays analytics data
 	 */
-	private async loadAnalyticsData(container: HTMLElement): Promise<void> {
+	private loadAnalyticsData(container: HTMLElement): void {
 		try {
 			const graphService = this.plugin.createFamilyGraphService();
-			const analytics = await graphService.calculateCollectionAnalytics();
+			const analytics = graphService.calculateCollectionAnalytics();
 
 			// Clear loading message
 			container.empty();
@@ -3544,7 +3544,7 @@ export class ControlCenterModal extends Modal {
 			const exporter = new GedcomExporter(this.app);
 
 			// Export to GEDCOM
-			const result = await exporter.exportToGedcom({
+			const result = exporter.exportToGedcom({
 				peopleFolder: this.plugin.settings.peopleFolder,
 				collectionFilter: options.collectionFilter,
 				branchRootCrId: options.branchRootCrId,
@@ -3602,7 +3602,7 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Show Collections tab
 	 */
-	private async showCollectionsTab(): Promise<void> {
+	private showCollectionsTab(): void {
 		const container = this.contentContainer;
 
 		// Browse Mode Card
@@ -3625,9 +3625,9 @@ export class ControlCenterModal extends Modal {
 				.addOption('families', 'Detected families - auto-detected family groups')
 				.addOption('collections', 'My collections - user-defined collections')
 				.setValue(selectedMode)
-				.onChange(async (value) => {
+				.onChange((value) => {
 					selectedMode = value;
-					await this.updateCollectionsList(container, selectedMode);
+					this.updateCollectionsList(container, selectedMode);
 				}));
 
 		container.appendChild(browseCard);
@@ -3670,13 +3670,13 @@ export class ControlCenterModal extends Modal {
 		void this.loadAnalyticsData(analyticsContent);
 
 		// Collections List Card
-		await this.updateCollectionsList(container, selectedMode);
+		this.updateCollectionsList(container, selectedMode);
 	}
 
 	/**
 	 * Update the collections list based on selected browse mode
 	 */
-	private async updateCollectionsList(container: HTMLElement, mode: string): Promise<void> {
+	private updateCollectionsList(container: HTMLElement, mode: string): void {
 		// Remove existing list card if present
 		const existingList = container.querySelector('.crc-collections-list');
 		if (existingList) {
@@ -3687,7 +3687,7 @@ export class ControlCenterModal extends Modal {
 
 		if (mode === 'all') {
 			// Show all people
-			await graphService.getTotalPeopleCount(); // This loads the cache
+			graphService.getTotalPeopleCount(); // This loads the cache
 			const allPeople = graphService.getAllPeople();
 
 			const listCard = this.createCard({
@@ -3707,7 +3707,7 @@ export class ControlCenterModal extends Modal {
 
 		} else if (mode === 'families') {
 			// Show detected families
-			const components = await graphService.findAllFamilyComponents();
+			const components = graphService.findAllFamilyComponents();
 
 			const listCard = this.createCard({
 				title: `Detected families (${components.length})`,
@@ -3746,7 +3746,7 @@ export class ControlCenterModal extends Modal {
 
 		} else if (mode === 'collections') {
 			// Show user collections
-			const collections = await graphService.getUserCollections();
+			const collections = graphService.getUserCollections();
 
 			const listCard = this.createCard({
 				title: `My collections (${collections.length})`,
@@ -3779,7 +3779,7 @@ export class ControlCenterModal extends Modal {
 
 			// Show cross-collection connections if there are multiple collections
 			if (collections.length >= 2) {
-				const connections = await graphService.detectCollectionConnections();
+				const connections = graphService.detectCollectionConnections();
 
 				if (connections.length > 0) {
 					const connectionsCard = this.createCard({
@@ -4467,9 +4467,9 @@ export class ControlCenterModal extends Modal {
 	private showMapsTab(): void {
 		const container = this.contentContainer;
 
-		// Card 1: Open Map View
+		// Card 1: Open map view
 		const mapViewCard = this.createCard({
-			title: 'Open Map View',
+			title: 'Open map view',
 			icon: 'map',
 			subtitle: 'Interactive geographic visualization'
 		});
@@ -4488,7 +4488,7 @@ export class ControlCenterModal extends Modal {
 		});
 
 		new Setting(mapViewContent)
-			.setName('Open Map View')
+			.setName('Open map view')
 			.setDesc('View all geographic data on an interactive map')
 			.addButton(button => button
 				.setButtonText('Open map')
@@ -4499,7 +4499,7 @@ export class ControlCenterModal extends Modal {
 				}));
 
 		new Setting(mapViewContent)
-			.setName('Open new Map View')
+			.setName('Open new map view')
 			.setDesc('Open a second map view for side-by-side comparison')
 			.addButton(button => button
 				.setButtonText('Open new map')
@@ -4600,11 +4600,11 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Load custom maps into a thumbnail grid
 	 */
-	private async loadCustomMapsGrid(container: HTMLElement): Promise<void> {
+	private loadCustomMapsGrid(container: HTMLElement): void {
 		container.empty();
 
 		// Find all map notes (type: map in frontmatter)
-		const customMaps = await this.getCustomMaps();
+		const customMaps = this.getCustomMaps();
 
 		if (customMaps.length === 0) {
 			const emptyState = container.createDiv({ cls: 'crc-empty-state' });
@@ -4727,7 +4727,7 @@ export class ControlCenterModal extends Modal {
 
 		menu.addItem((item: MenuItem) => {
 			item
-				.setTitle('Open in Map View')
+				.setTitle('Open in map view')
 				.setIcon('map')
 				.onClick(async () => {
 					this.close();
@@ -4874,7 +4874,7 @@ export class ControlCenterModal extends Modal {
 		let suffix = 1;
 		const parentPath = file.parent?.path || '';
 
-		// eslint-disable-next-line no-constant-condition
+		// eslint-disable-next-line no-constant-condition -- Intentional infinite loop with break condition inside
 		while (true) {
 			const testPath = parentPath
 				? `${parentPath}/${finalName}.md`
@@ -4928,7 +4928,7 @@ export class ControlCenterModal extends Modal {
 			new Notice(`Created "${finalName}"`);
 
 			// Refresh the grid
-			await this.loadCustomMapsGrid(gridContainer);
+			this.loadCustomMapsGrid(gridContainer);
 
 			// Open the new map in edit mode
 			const newCache = this.app.metadataCache.getFileCache(newFile);
@@ -5034,9 +5034,9 @@ export class ControlCenterModal extends Modal {
 		try {
 			// Check if file already exists
 			const existingFile = this.app.vault.getAbstractFileByPath(exportFileName);
-			if (existingFile) {
-				await this.app.vault.modify(existingFile as TFile, jsonContent);
-			} else {
+			if (existingFile instanceof TFile) {
+				await this.app.vault.modify(existingFile, jsonContent);
+			} else if (!existingFile) {
 				await this.app.vault.create(exportFileName, jsonContent);
 			}
 			new Notice(`Exported "${mapName}" to ${exportFileName}`);
@@ -5075,7 +5075,7 @@ export class ControlCenterModal extends Modal {
 				}
 
 				// Check if a map with this ID already exists
-				const existingMaps = await this.getCustomMaps();
+				const existingMaps = this.getCustomMaps();
 				const existingMap = existingMaps.find(m => m.id === mapId);
 				if (existingMap) {
 					new Notice(`A map with ID "${mapId}" already exists. Please edit the JSON or delete the existing map.`);
@@ -5091,13 +5091,13 @@ export class ControlCenterModal extends Modal {
 				];
 
 				if (data.universe) {
-					frontmatterLines.push(`universe: ${data.universe}`);
+					frontmatterLines.push(`universe: ${String(data.universe)}`);
 				}
 				if (data.image) {
-					frontmatterLines.push(`image: ${data.image}`);
+					frontmatterLines.push(`image: ${String(data.image)}`);
 				}
 				if (data.coordinate_system) {
-					frontmatterLines.push(`coordinate_system: ${data.coordinate_system}`);
+					frontmatterLines.push(`coordinate_system: ${String(data.coordinate_system)}`);
 				}
 
 				// Handle bounds (geographic) or dimensions (pixel)
@@ -5138,7 +5138,7 @@ export class ControlCenterModal extends Modal {
 
 				frontmatterLines.push('---');
 				frontmatterLines.push('');
-				frontmatterLines.push(`# ${data.name}`);
+				frontmatterLines.push(`# ${String(data.name)}`);
 				frontmatterLines.push('');
 				frontmatterLines.push('*Imported from JSON*');
 
@@ -5146,7 +5146,7 @@ export class ControlCenterModal extends Modal {
 
 				// Determine file path - use configured maps folder or vault root
 				const mapsDir = this.plugin.settings.mapsFolder || '';
-				const safeFileName = (data.name).replace(/[^a-z0-9\s-]/gi, '').replace(/\s+/g, '-');
+				const safeFileName = String(data.name).replace(/[^a-z0-9\s-]/gi, '').replace(/\s+/g, '-');
 				const filePath = mapsDir
 					? `${mapsDir}/${safeFileName}.md`
 					: `${safeFileName}.md`;
@@ -5171,7 +5171,7 @@ export class ControlCenterModal extends Modal {
 				new Notice(`Imported "${data.name}" from JSON`);
 
 				// Refresh the grid
-				await this.loadCustomMapsGrid(gridContainer);
+				this.loadCustomMapsGrid(gridContainer);
 
 			} catch (error) {
 				if (error instanceof SyntaxError) {
@@ -5203,9 +5203,9 @@ export class ControlCenterModal extends Modal {
 		}
 
 		try {
-			await this.app.vault.trash(file, true); // Move to system trash
+			await this.app.fileManager.trashFile(file);
 			new Notice(`Deleted "${mapName}"`);
-			await this.loadCustomMapsGrid(gridContainer);
+			this.loadCustomMapsGrid(gridContainer);
 		} catch (error) {
 			new Notice(`Failed to delete: ${getErrorMessage(error)}`);
 		}
@@ -5870,14 +5870,12 @@ export class ControlCenterModal extends Modal {
 		modal.titleEl.setText('Import schema from JSON');
 
 		const textarea = modal.contentEl.createEl('textarea', {
-			cls: 'crc-form-textarea',
+			cls: 'crc-form-textarea crc-form-textarea--code',
 			attr: {
 				placeholder: 'Paste schema JSON here...',
 				rows: '10'
 			}
 		});
-		textarea.style.width = '100%';
-		textarea.style.fontFamily = 'monospace';
 
 		const buttonContainer = modal.contentEl.createDiv({ cls: 'crc-button-row crc-mt-3' });
 
@@ -5930,7 +5928,7 @@ export class ControlCenterModal extends Modal {
 		const list = container.createEl('ul', { cls: 'crc-violations-list' });
 
 		for (const result of topViolations) {
-			const item = list.createEl('li', { cls: 'crc-violation-item' });
+			const item = list.createEl('li', { cls: 'crc-violation-item crc-clickable' });
 
 			const header = item.createDiv({ cls: 'crc-violation-header' });
 			header.createEl('span', { text: result.personName, cls: 'crc-violation-person' });
@@ -5962,7 +5960,6 @@ export class ControlCenterModal extends Modal {
 					this.close();
 				}
 			});
-			item.style.cursor = 'pointer';
 		}
 
 		if (invalidResults.length > 10) {
@@ -6041,7 +6038,7 @@ export class ControlCenterModal extends Modal {
 
 		const schemaLink = header.createEl('button', {
 			cls: 'crc-link-button',
-			text: 'Open Schemas tab'
+			text: 'Open schemas tab'
 		});
 		setIcon(schemaLink.createSpan({ cls: 'crc-button-icon-right' }), 'external-link');
 		schemaLink.addEventListener('click', () => {
@@ -6233,7 +6230,7 @@ export class ControlCenterModal extends Modal {
 		const relationshipService = new RelationshipService(this.plugin);
 
 		// Relationship Types card
-		await this.renderRelationshipTypesCard(container, relationshipService);
+		this.renderRelationshipTypesCard(container, relationshipService);
 
 		// Relationships Overview card
 		await this.renderRelationshipsOverviewCard(container, relationshipService);
@@ -6245,9 +6242,9 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Show Organizations tab with organization list and statistics
 	 */
-	private async showOrganizationsTab(): Promise<void> {
+	private showOrganizationsTab(): void {
 		const container = this.contentContainer;
-		await renderOrganizationsTab(
+		renderOrganizationsTab(
 			container,
 			this.plugin,
 			(options) => this.createCard(options),
@@ -6359,7 +6356,11 @@ export class ControlCenterModal extends Modal {
 					setIcon(deleteBtn, 'trash');
 					deleteBtn.setAttribute('aria-label', 'Delete');
 					deleteBtn.addEventListener('click', () => void (async () => {
-						if (confirm(`Delete relationship type "${type.name}"?`)) {
+						const confirmed = await this.confirmAction(
+							'Delete relationship type',
+							`Are you sure you want to delete "${type.name}"? This cannot be undone.`
+						);
+						if (confirmed) {
 							try {
 								await service.deleteRelationshipType(type.id);
 								new Notice(`Deleted relationship type: ${type.name}`);
@@ -7026,7 +7027,7 @@ export class ControlCenterModal extends Modal {
 						// Show/hide subfolder input
 						// eslint-disable-next-line @typescript-eslint/no-misused-promises -- subfolderSetting is hoisted Setting, not a Promise
 						if (subfolderSetting) {
-							subfolderSetting.settingEl.style.display = value === 'staging' ? '' : 'none';
+							subfolderSetting.settingEl.toggleClass('cr-hidden', value !== 'staging');
 						}
 					})
 				);
@@ -7042,7 +7043,7 @@ export class ControlCenterModal extends Modal {
 						stagingSubfolder = value || `import-${new Date().toISOString().slice(0, 7)}`;
 					})
 				);
-			subfolderSetting.settingEl.style.display = 'none';
+			subfolderSetting.settingEl.addClass('cr-hidden');
 		}
 
 		// File selection button
@@ -7124,7 +7125,7 @@ export class ControlCenterModal extends Modal {
 
 				// Load collections
 				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
-				const collections = await graphService.getUserCollections();
+				const collections = graphService.getUserCollections();
 				collections.forEach(collection => {
 					dropdown.addOption(collection.name, collection.name);
 				});
@@ -7195,18 +7196,18 @@ export class ControlCenterModal extends Modal {
 		let privacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
 
 		// Define updatePrivacyPreview before the settings that use it
-		// eslint-disable-next-line prefer-const
+		// eslint-disable-next-line prefer-const -- Must be declared before assignment due to hoisting; used in callbacks before initialization
 		let updatePrivacyPreview: () => Promise<void>;
 
-		const _privacyOverrideSetting = new Setting(content)
+		new Setting(content)
 			.setName('Override privacy settings')
 			.setDesc('Use different privacy settings for this export only')
 			.addToggle(toggle => toggle
 				.setValue(false)
 				.onChange(value => {
 					privacyOverrideEnabled = value;
-					privacyProtectionSetting.settingEl.style.display = value ? '' : 'none';
-					privacyFormatSetting.settingEl.style.display = value && privacyOverrideProtection ? '' : 'none';
+					privacyProtectionSetting.settingEl.toggleClass('cr-hidden', !value);
+					privacyFormatSetting.settingEl.toggleClass('cr-hidden', !(value && privacyOverrideProtection));
 					void updatePrivacyPreview();
 				})
 			);
@@ -7218,11 +7219,11 @@ export class ControlCenterModal extends Modal {
 				.setValue(privacyOverrideProtection)
 				.onChange(value => {
 					privacyOverrideProtection = value;
-					privacyFormatSetting.settingEl.style.display = value ? '' : 'none';
+					privacyFormatSetting.settingEl.toggleClass('cr-hidden', !value);
 					void updatePrivacyPreview();
 				})
 			);
-		privacyProtectionSetting.settingEl.style.display = 'none';
+		privacyProtectionSetting.settingEl.addClass('cr-hidden');
 
 		const privacyFormatSetting = new Setting(content)
 			.setName('Privacy display format')
@@ -7238,11 +7239,10 @@ export class ControlCenterModal extends Modal {
 					void updatePrivacyPreview();
 				})
 			);
-		privacyFormatSetting.settingEl.style.display = 'none';
+		privacyFormatSetting.settingEl.addClass('cr-hidden');
 
 		// Privacy preview section
-		const privacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4' });
-		privacyPreviewEl.style.display = 'none';
+		const privacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4 cr-hidden' });
 
 		updatePrivacyPreview = async (): Promise<void> => {
 			const effectiveProtection = privacyOverrideEnabled
@@ -7253,7 +7253,7 @@ export class ControlCenterModal extends Modal {
 				: this.plugin.settings.privacyDisplayFormat;
 
 			if (!effectiveProtection) {
-				privacyPreviewEl.style.display = 'none';
+				privacyPreviewEl.addClass('cr-hidden');
 				return;
 			}
 
@@ -7276,7 +7276,7 @@ export class ControlCenterModal extends Modal {
 			const summary = privacyService.getPrivacySummary(allPeople);
 
 			privacyPreviewEl.empty();
-			privacyPreviewEl.style.display = '';
+			privacyPreviewEl.removeClass('cr-hidden');
 
 			const previewText = effectiveFormat === 'hidden'
 				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
@@ -7363,7 +7363,7 @@ export class ControlCenterModal extends Modal {
 						// Show/hide subfolder input
 						// eslint-disable-next-line @typescript-eslint/no-misused-promises -- subfolderSetting is hoisted Setting, not a Promise
 						if (subfolderSetting) {
-							subfolderSetting.settingEl.style.display = value === 'staging' ? '' : 'none';
+							subfolderSetting.settingEl.toggleClass('cr-hidden', value !== 'staging');
 						}
 					})
 				);
@@ -7379,7 +7379,7 @@ export class ControlCenterModal extends Modal {
 						stagingSubfolder = value || `import-${new Date().toISOString().slice(0, 7)}`;
 					})
 				);
-			subfolderSetting.settingEl.style.display = 'none';
+			subfolderSetting.settingEl.addClass('cr-hidden');
 		}
 
 		// File selection button
@@ -7593,7 +7593,7 @@ export class ControlCenterModal extends Modal {
 
 				// Load collections
 				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
-				const collections = await graphService.getUserCollections();
+				const collections = graphService.getUserCollections();
 				collections.forEach(collection => {
 					dropdown.addOption(collection.name, collection.name);
 				});
@@ -7652,18 +7652,18 @@ export class ControlCenterModal extends Modal {
 		let gxPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
 
 		// Define updateGxPrivacyPreview before the settings that use it
-		// eslint-disable-next-line prefer-const
+		// eslint-disable-next-line prefer-const -- Must be declared before assignment due to hoisting; used in callbacks before initialization
 		let updateGxPrivacyPreview: () => Promise<void>;
 
-		const _gxPrivacyOverrideSetting = new Setting(content)
+		new Setting(content)
 			.setName('Override privacy settings')
 			.setDesc('Use different privacy settings for this export only')
 			.addToggle(toggle => toggle
 				.setValue(false)
 				.onChange(value => {
 					gxPrivacyOverrideEnabled = value;
-					gxPrivacyProtectionSetting.settingEl.style.display = value ? '' : 'none';
-					gxPrivacyFormatSetting.settingEl.style.display = value && gxPrivacyOverrideProtection ? '' : 'none';
+					gxPrivacyProtectionSetting.settingEl.toggleClass('cr-hidden', !value);
+					gxPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !(value && gxPrivacyOverrideProtection));
 					void updateGxPrivacyPreview();
 				})
 			);
@@ -7675,11 +7675,11 @@ export class ControlCenterModal extends Modal {
 				.setValue(gxPrivacyOverrideProtection)
 				.onChange(value => {
 					gxPrivacyOverrideProtection = value;
-					gxPrivacyFormatSetting.settingEl.style.display = value ? '' : 'none';
+					gxPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !value);
 					void updateGxPrivacyPreview();
 				})
 			);
-		gxPrivacyProtectionSetting.settingEl.style.display = 'none';
+		gxPrivacyProtectionSetting.settingEl.addClass('cr-hidden');
 
 		const gxPrivacyFormatSetting = new Setting(content)
 			.setName('Privacy display format')
@@ -7695,11 +7695,10 @@ export class ControlCenterModal extends Modal {
 					void updateGxPrivacyPreview();
 				})
 			);
-		gxPrivacyFormatSetting.settingEl.style.display = 'none';
+		gxPrivacyFormatSetting.settingEl.addClass('cr-hidden');
 
 		// Privacy preview section
-		const gxPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4' });
-		gxPrivacyPreviewEl.style.display = 'none';
+		const gxPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4 cr-hidden' });
 
 		updateGxPrivacyPreview = async (): Promise<void> => {
 			const effectiveProtection = gxPrivacyOverrideEnabled
@@ -7710,7 +7709,7 @@ export class ControlCenterModal extends Modal {
 				: this.plugin.settings.privacyDisplayFormat;
 
 			if (!effectiveProtection) {
-				gxPrivacyPreviewEl.style.display = 'none';
+				gxPrivacyPreviewEl.addClass('cr-hidden');
 				return;
 			}
 
@@ -7732,7 +7731,7 @@ export class ControlCenterModal extends Modal {
 			const summary = privacyService.getPrivacySummary(allPeople);
 
 			gxPrivacyPreviewEl.empty();
-			gxPrivacyPreviewEl.style.display = '';
+			gxPrivacyPreviewEl.removeClass('cr-hidden');
 
 			const previewText = effectiveFormat === 'hidden'
 				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
@@ -7894,7 +7893,7 @@ export class ControlCenterModal extends Modal {
 						// Show/hide subfolder input
 						// eslint-disable-next-line @typescript-eslint/no-misused-promises -- subfolderSetting is hoisted Setting, not a Promise
 						if (subfolderSetting) {
-							subfolderSetting.settingEl.style.display = value === 'staging' ? '' : 'none';
+							subfolderSetting.settingEl.toggleClass('cr-hidden', value !== 'staging');
 						}
 					})
 				);
@@ -7910,7 +7909,7 @@ export class ControlCenterModal extends Modal {
 						stagingSubfolder = value || `import-${new Date().toISOString().slice(0, 7)}`;
 					})
 				);
-			subfolderSetting.settingEl.style.display = 'none';
+			subfolderSetting.settingEl.addClass('cr-hidden');
 		}
 
 		// File selection button
@@ -8124,7 +8123,7 @@ export class ControlCenterModal extends Modal {
 
 				// Load collections
 				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
-				const collections = await graphService.getUserCollections();
+				const collections = graphService.getUserCollections();
 				collections.forEach(collection => {
 					dropdown.addOption(collection.name, collection.name);
 				});
@@ -8183,18 +8182,18 @@ export class ControlCenterModal extends Modal {
 		let grampsPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
 
 		// Define updateGrampsPrivacyPreview before the settings that use it
-		// eslint-disable-next-line prefer-const
+		// eslint-disable-next-line prefer-const -- Must be declared before assignment due to hoisting; used in callbacks before initialization
 		let updateGrampsPrivacyPreview: () => Promise<void>;
 
-		const _grampsPrivacyOverrideSetting = new Setting(content)
+		new Setting(content)
 			.setName('Override privacy settings')
 			.setDesc('Use different privacy settings for this export only')
 			.addToggle(toggle => toggle
 				.setValue(false)
 				.onChange(value => {
 					grampsPrivacyOverrideEnabled = value;
-					grampsPrivacyProtectionSetting.settingEl.style.display = value ? '' : 'none';
-					grampsPrivacyFormatSetting.settingEl.style.display = value && grampsPrivacyOverrideProtection ? '' : 'none';
+					grampsPrivacyProtectionSetting.settingEl.toggleClass('cr-hidden', !value);
+					grampsPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !(value && grampsPrivacyOverrideProtection));
 					void updateGrampsPrivacyPreview();
 				})
 			);
@@ -8206,11 +8205,11 @@ export class ControlCenterModal extends Modal {
 				.setValue(grampsPrivacyOverrideProtection)
 				.onChange(value => {
 					grampsPrivacyOverrideProtection = value;
-					grampsPrivacyFormatSetting.settingEl.style.display = value ? '' : 'none';
+					grampsPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !value);
 					void updateGrampsPrivacyPreview();
 				})
 			);
-		grampsPrivacyProtectionSetting.settingEl.style.display = 'none';
+		grampsPrivacyProtectionSetting.settingEl.addClass('cr-hidden');
 
 		const grampsPrivacyFormatSetting = new Setting(content)
 			.setName('Privacy display format')
@@ -8226,11 +8225,10 @@ export class ControlCenterModal extends Modal {
 					void updateGrampsPrivacyPreview();
 				})
 			);
-		grampsPrivacyFormatSetting.settingEl.style.display = 'none';
+		grampsPrivacyFormatSetting.settingEl.addClass('cr-hidden');
 
 		// Privacy preview section
-		const grampsPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4' });
-		grampsPrivacyPreviewEl.style.display = 'none';
+		const grampsPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4 cr-hidden' });
 
 		updateGrampsPrivacyPreview = async (): Promise<void> => {
 			const effectiveProtection = grampsPrivacyOverrideEnabled
@@ -8241,7 +8239,7 @@ export class ControlCenterModal extends Modal {
 				: this.plugin.settings.privacyDisplayFormat;
 
 			if (!effectiveProtection) {
-				grampsPrivacyPreviewEl.style.display = 'none';
+				grampsPrivacyPreviewEl.addClass('cr-hidden');
 				return;
 			}
 
@@ -8263,7 +8261,7 @@ export class ControlCenterModal extends Modal {
 			const summary = privacyService.getPrivacySummary(allPeople);
 
 			grampsPrivacyPreviewEl.empty();
-			grampsPrivacyPreviewEl.style.display = '';
+			grampsPrivacyPreviewEl.removeClass('cr-hidden');
 
 			const previewText = effectiveFormat === 'hidden'
 				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
@@ -8425,7 +8423,7 @@ export class ControlCenterModal extends Modal {
 						// Show/hide subfolder input
 						// eslint-disable-next-line @typescript-eslint/no-misused-promises -- csvSubfolderSetting is hoisted Setting, not a Promise
 						if (csvSubfolderSetting) {
-							csvSubfolderSetting.settingEl.style.display = value === 'staging' ? '' : 'none';
+							csvSubfolderSetting.settingEl.toggleClass('cr-hidden', value !== 'staging');
 						}
 					})
 				);
@@ -8441,7 +8439,7 @@ export class ControlCenterModal extends Modal {
 						csvStagingSubfolder = value || `import-${new Date().toISOString().slice(0, 7)}`;
 					})
 				);
-			csvSubfolderSetting.settingEl.style.display = 'none';
+			csvSubfolderSetting.settingEl.addClass('cr-hidden');
 		}
 
 		// File selection button
@@ -8523,7 +8521,7 @@ export class ControlCenterModal extends Modal {
 
 				// Load collections
 				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
-				const collections = await graphService.getUserCollections();
+				const collections = graphService.getUserCollections();
 				collections.forEach(collection => {
 					dropdown.addOption(collection.name, collection.name);
 				});
@@ -8582,18 +8580,18 @@ export class ControlCenterModal extends Modal {
 		let csvPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
 
 		// Define updateCsvPrivacyPreview before the settings that use it
-		// eslint-disable-next-line prefer-const
+		// eslint-disable-next-line prefer-const -- Must be declared before assignment due to hoisting; used in callbacks before initialization
 		let updateCsvPrivacyPreview: () => Promise<void>;
 
-		const _csvPrivacyOverrideSetting = new Setting(content)
+		new Setting(content)
 			.setName('Override privacy settings')
 			.setDesc('Use different privacy settings for this export only')
 			.addToggle(toggle => toggle
 				.setValue(false)
 				.onChange(value => {
 					csvPrivacyOverrideEnabled = value;
-					csvPrivacyProtectionSetting.settingEl.style.display = value ? '' : 'none';
-					csvPrivacyFormatSetting.settingEl.style.display = value && csvPrivacyOverrideProtection ? '' : 'none';
+					csvPrivacyProtectionSetting.settingEl.toggleClass('cr-hidden', !value);
+					csvPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !(value && csvPrivacyOverrideProtection));
 					void updateCsvPrivacyPreview();
 				})
 			);
@@ -8605,11 +8603,11 @@ export class ControlCenterModal extends Modal {
 				.setValue(csvPrivacyOverrideProtection)
 				.onChange(value => {
 					csvPrivacyOverrideProtection = value;
-					csvPrivacyFormatSetting.settingEl.style.display = value ? '' : 'none';
+					csvPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !value);
 					void updateCsvPrivacyPreview();
 				})
 			);
-		csvPrivacyProtectionSetting.settingEl.style.display = 'none';
+		csvPrivacyProtectionSetting.settingEl.addClass('cr-hidden');
 
 		const csvPrivacyFormatSetting = new Setting(content)
 			.setName('Privacy display format')
@@ -8625,11 +8623,10 @@ export class ControlCenterModal extends Modal {
 					void updateCsvPrivacyPreview();
 				})
 			);
-		csvPrivacyFormatSetting.settingEl.style.display = 'none';
+		csvPrivacyFormatSetting.settingEl.addClass('cr-hidden');
 
 		// Privacy preview section for CSV
-		const csvPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4' });
-		csvPrivacyPreviewEl.style.display = 'none';
+		const csvPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4 cr-hidden' });
 
 		updateCsvPrivacyPreview = async (): Promise<void> => {
 			const effectiveProtection = csvPrivacyOverrideEnabled
@@ -8640,7 +8637,7 @@ export class ControlCenterModal extends Modal {
 				: this.plugin.settings.privacyDisplayFormat;
 
 			if (!effectiveProtection) {
-				csvPrivacyPreviewEl.style.display = 'none';
+				csvPrivacyPreviewEl.addClass('cr-hidden');
 				return;
 			}
 
@@ -8663,7 +8660,7 @@ export class ControlCenterModal extends Modal {
 			const summary = privacyService.getPrivacySummary(allPeople);
 
 			csvPrivacyPreviewEl.empty();
-			csvPrivacyPreviewEl.style.display = '';
+			csvPrivacyPreviewEl.removeClass('cr-hidden');
 
 			const previewText = effectiveFormat === 'hidden'
 				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
@@ -9490,7 +9487,7 @@ export class ControlCenterModal extends Modal {
 
 		// Load family components
 		const graphService = this.plugin.createFamilyGraphService();
-		const familyComponents = await graphService.findAllFamilyComponents();
+		const familyComponents = graphService.findAllFamilyComponents();
 
 		// Build component map
 		const componentMap = new Map<string, number>();
@@ -9885,10 +9882,10 @@ export class ControlCenterModal extends Modal {
 		});
 
 		// Check for multiple components and update badge
-		void (async () => {
+		void (() => {
 			try {
 				const graphService = this.plugin.createFamilyGraphService();
-				const components = await graphService.findAllFamilyComponents();
+				const components = graphService.findAllFamilyComponents();
 
 				if (components.length > 1) {
 					countBadge.setText(`${components.length} groups`);

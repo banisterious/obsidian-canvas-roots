@@ -135,13 +135,13 @@ export class SplitWizardModal extends Modal {
 		this.outputFolder = settings.peopleFolder || '';
 	}
 
-	async onOpen(): Promise<void> {
+	onOpen(): void {
 		const { contentEl, titleEl } = this;
 		titleEl.setText('Split canvas wizard');
 		contentEl.addClass('crc-split-wizard');
 
 		// Load family tree data
-		await this.loadFamilyTree();
+		this.loadFamilyTree();
 
 		this.render();
 	}
@@ -153,10 +153,10 @@ export class SplitWizardModal extends Modal {
 	/**
 	 * Load family tree data for the wizard
 	 */
-	private async loadFamilyTree(): Promise<void> {
+	private loadFamilyTree(): void {
 		try {
 			// Find all people and build tree
-			const components = await this.familyGraph.findAllFamilyComponents();
+			const components = this.familyGraph.findAllFamilyComponents();
 			if (components.length === 0) {
 				return;
 			}
@@ -1894,7 +1894,7 @@ export class SplitWizardModal extends Modal {
 		const results: CanvasWriteResult[] = [];
 
 		// Find all people matching the selected surnames
-		const peopleByFile = await this.findPeopleBySurname(this.selectedSurnames);
+		const peopleByFile = this.findPeopleBySurname(this.selectedSurnames);
 
 		if (peopleByFile.size === 0) {
 			return [{ success: false, path: '', error: 'No people found with selected surnames' }];

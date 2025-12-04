@@ -442,7 +442,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				.setDesc('One folder path per line. Subfolders are included automatically.')
 				.addTextArea(textArea => textArea
 					.setPlaceholder(isExcludeMode
-						? 'templates\narchive\n.obsidian'
+						? `templates\narchive\n${this.app.vault.configDir}`
 						: 'People\nFamily')
 					.setValue(folders.join('\n'))
 					.onChange(async (value) => {

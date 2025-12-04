@@ -54,12 +54,12 @@ export class RelationshipCalculator {
 	/**
 	 * Calculate the relationship between two people
 	 */
-	async calculateRelationship(
+	calculateRelationship(
 		personACrId: string,
 		personBCrId: string
-	): Promise<RelationshipResult | null> {
+	): RelationshipResult | null {
 		// Load the family graph
-		await this.familyGraph.ensureCacheLoaded();
+		this.familyGraph.ensureCacheLoaded();
 
 		const personA = this.familyGraph.getPersonByCrId(personACrId);
 		const personB = this.familyGraph.getPersonByCrId(personBCrId);

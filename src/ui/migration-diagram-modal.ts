@@ -139,7 +139,7 @@ export class MigrationDiagramModal extends Modal {
 			endInput.max = String(this.yearRange.max);
 
 			// Year range info
-			const _yearInfo = controlsRow2.createEl('span', {
+			controlsRow2.createEl('span', {
 				text: `(data spans ${this.yearRange.min}–${this.yearRange.max})`,
 				cls: 'crc-text--muted crc-migration-year-info'
 			});
@@ -213,7 +213,7 @@ export class MigrationDiagramModal extends Modal {
 			});
 
 			// "No grouping" option
-			const _noGroupOption = aggregationSelect.createEl('option', {
+			aggregationSelect.createEl('option', {
 				text: 'No grouping (show all places)',
 				value: '-1'
 			});
@@ -291,12 +291,17 @@ export class MigrationDiagramModal extends Modal {
 
 		// Legend
 		const legend = contentEl.createDiv({ cls: 'crc-migration-legend' });
-		legend.createEl('div', { cls: 'crc-migration-legend-item' }).innerHTML =
-			'<span class="crc-migration-legend-dot crc-migration-legend-dot--birth"></span> Birth location';
-		legend.createEl('div', { cls: 'crc-migration-legend-item' }).innerHTML =
-			'<span class="crc-migration-legend-dot crc-migration-legend-dot--death"></span> Death location';
-		legend.createEl('div', { cls: 'crc-migration-legend-item' }).innerHTML =
-			'<span class="crc-migration-legend-line"></span> Migration flow (thicker = more people)';
+		const birthItem = legend.createEl('div', { cls: 'crc-migration-legend-item' });
+		birthItem.createSpan({ cls: 'crc-migration-legend-dot crc-migration-legend-dot--birth' });
+		birthItem.appendText(' Birth location');
+
+		const deathItem = legend.createEl('div', { cls: 'crc-migration-legend-item' });
+		deathItem.createSpan({ cls: 'crc-migration-legend-dot crc-migration-legend-dot--death' });
+		deathItem.appendText(' Death location');
+
+		const flowItem = legend.createEl('div', { cls: 'crc-migration-legend-item' });
+		flowItem.createSpan({ cls: 'crc-migration-legend-line' });
+		flowItem.appendText(' Migration flow (thicker = more people)');
 	}
 
 	onClose() {
@@ -513,7 +518,7 @@ export class MigrationDiagramModal extends Modal {
 			path.setAttribute('class', 'crc-migration-arc');
 
 			// Add arrow marker
-			const arrowId = `arrow-${Math.random().toString(36).substr(2, 9)}`;
+			const arrowId = `arrow-${Math.random().toString(36).substring(2, 11)}`;
 			const defs = svg.querySelector('defs') || svg.insertBefore(
 				document.createElementNS('http://www.w3.org/2000/svg', 'defs'),
 				svg.firstChild
@@ -612,8 +617,7 @@ export class MigrationDiagramModal extends Modal {
 	 * Add tooltip handler for arcs
 	 */
 	private addTooltipHandler(container: HTMLElement): void {
-		const tooltip = container.createDiv({ cls: 'crc-migration-tooltip' });
-		tooltip.style.display = 'none';
+		const tooltip = container.createDiv({ cls: 'crc-migration-tooltip cr-hidden' });
 
 		const arcs = container.querySelectorAll('.crc-migration-arc');
 		arcs.forEach((arc) => {
@@ -622,7 +626,7 @@ export class MigrationDiagramModal extends Modal {
 				const text = target.getAttribute('data-tooltip');
 				if (text) {
 					tooltip.textContent = text;
-					tooltip.style.display = 'block';
+					tooltip.removeClass('cr-hidden');
 				}
 			});
 
@@ -634,7 +638,7 @@ export class MigrationDiagramModal extends Modal {
 			});
 
 			arc.addEventListener('mouseleave', () => {
-				tooltip.style.display = 'none';
+				tooltip.addClass('cr-hidden');
 			});
 		});
 	}

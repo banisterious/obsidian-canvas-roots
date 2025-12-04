@@ -162,7 +162,7 @@ export class CreateMapModal extends Modal {
 		contentEl.createEl('p', {
 			text: this.editMode
 				? 'Edit the map configuration. Changes will be saved to the frontmatter.'
-				: 'Create a map note for a fictional world or historical map. Custom maps can be used in the Map View to display places from your universe.',
+				: 'Create a map note for a fictional world or historical map. Custom maps can be used in the map view to display places from your universe.',
 			cls: 'crc-modal-description'
 		});
 
@@ -187,7 +187,7 @@ export class CreateMapModal extends Modal {
 				}));
 
 		// Map ID (required, auto-generated in create mode)
-		const _mapIdSetting = new Setting(form)
+		new Setting(form)
 			.setName('Map ID')
 			.setDesc(this.editMode
 				? 'Unique identifier (changing this may break references)'
@@ -237,8 +237,8 @@ export class CreateMapModal extends Modal {
 
 		imagePathSetting.addButton(btn => {
 			btn.setButtonText('Browse')
-				.onClick(async () => {
-					await this.browseForImage();
+				.onClick(() => {
+					this.browseForImage();
 				});
 		});
 

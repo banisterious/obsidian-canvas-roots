@@ -160,8 +160,8 @@ export class MergeWizardModal extends Modal {
 		} else {
 			const select = choiceCell.createEl('select', { cls: 'cr-merge-select' });
 
-			const _mainOption = select.createEl('option', { value: 'main', text: 'Main' });
-			const _stagingOption = select.createEl('option', { value: 'staging', text: 'Staging' });
+			select.createEl('option', { value: 'main', text: 'Main' });
+			select.createEl('option', { value: 'staging', text: 'Staging' });
 
 			if (diff.canCombine) {
 				select.createEl('option', { value: 'both', text: 'Both' });

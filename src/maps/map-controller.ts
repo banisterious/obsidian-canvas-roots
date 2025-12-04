@@ -662,7 +662,7 @@ export class MapController {
 			const LSymbol = L.Symbol;
 
 			if (LPolylineDecorator && LSymbol) {
-				const _decorator = LPolylineDecorator(polyline, {
+				LPolylineDecorator(polyline, {
 					patterns: [
 						{
 							offset: '50%',
@@ -1453,8 +1453,9 @@ export class MapController {
 				const originalSelect = distortableOverlay.select.bind(distortableOverlay);
 				let cornersReady = false;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(distortableOverlay as any).select = function(e?: Event) {
+				// Override select method to prevent errors during initialization
+				// The library type allows this reassignment through the interface
+				distortableOverlay.select = function(this: L.DistortableImageOverlay, e?: Event) {
 					if (!cornersReady) {
 						logger.debug('edit-mode', 'Ignoring select() call - corners not ready yet');
 						if (e) {

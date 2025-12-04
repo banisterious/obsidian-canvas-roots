@@ -3,7 +3,7 @@
  * Simple modal for creating new place notes
  */
 
-import { App, Modal, Setting, TFile, Notice, normalizePath } from 'obsidian';
+import { App, Modal, Setting, TFile, Notice, normalizePath, requestUrl } from 'obsidian';
 import { createPlaceNote, updatePlaceNote, PlaceData } from '../core/place-note-writer';
 import { PlaceCategory, PlaceType, PlaceNode, KNOWN_PLACE_TYPES } from '../models/place';
 import { createLucideIcon } from './lucide-icons';
@@ -461,7 +461,7 @@ export class CreatePlaceModal extends Modal {
 				if (value === '__custom__') {
 					// Show custom type input
 					if (this.customTypeInputEl) {
-						this.customTypeInputEl.style.display = 'block';
+						this.customTypeInputEl.removeClass('cr-hidden');
 						this.customTypeInputEl.focus();
 					}
 					// Keep the previous custom value or clear
@@ -471,7 +471,7 @@ export class CreatePlaceModal extends Modal {
 				} else {
 					// Hide custom input and use selected value
 					if (this.customTypeInputEl) {
-						this.customTypeInputEl.style.display = 'none';
+						this.customTypeInputEl.addClass('cr-hidden');
 						this.customTypeInputEl.value = '';
 					}
 					this.placeData.placeType = value || undefined;
@@ -499,11 +499,11 @@ export class CreatePlaceModal extends Modal {
 
 			if (isCustomType) {
 				text.setValue(initialType);
-				text.inputEl.style.display = 'block';
+				text.inputEl.removeClass('cr-hidden');
 			} else {
-				text.inputEl.style.display = 'none';
+				text.inputEl.addClass('cr-hidden');
 			}
-			text.inputEl.style.marginLeft = '8px';
+			text.inputEl.addClass('crc-input--inline');
 		});
 
 		// Universe (for fictional/mythological/legendary places)
@@ -545,7 +545,7 @@ export class CreatePlaceModal extends Modal {
 					if (value === '__custom__') {
 						// Show custom input
 						if (customParentInput) {
-							customParentInput.style.display = 'block';
+							customParentInput.removeClass('cr-hidden');
 							customParentInput.focus();
 						}
 						this.placeData.parentPlaceId = undefined;
@@ -553,7 +553,7 @@ export class CreatePlaceModal extends Modal {
 					} else if (value) {
 						// Hide custom input and use selected place
 						if (customParentInput) {
-							customParentInput.style.display = 'none';
+							customParentInput.addClass('cr-hidden');
 							customParentInput.value = '';
 						}
 						const selectedPlace = this.findPlaceById(value);
@@ -562,7 +562,7 @@ export class CreatePlaceModal extends Modal {
 					} else {
 						// No parent
 						if (customParentInput) {
-							customParentInput.style.display = 'none';
+							customParentInput.addClass('cr-hidden');
 							customParentInput.value = '';
 						}
 						this.placeData.parentPlaceId = undefined;
@@ -581,8 +581,7 @@ export class CreatePlaceModal extends Modal {
 						// Track for potential auto-creation
 						this.pendingParentPlace = value?.trim() || undefined;
 					});
-				text.inputEl.style.display = 'none';
-				text.inputEl.style.marginLeft = '8px';
+				text.inputEl.addClass('cr-hidden crc-input--inline');
 			});
 		} else {
 			// No existing places, just show text input
@@ -634,14 +633,14 @@ export class CreatePlaceModal extends Modal {
 					if (value === '__custom__') {
 						// Show custom input
 						if (customInput) {
-							customInput.style.display = 'block';
+							customInput.removeClass('cr-hidden');
 							customInput.focus();
 						}
 						this.placeData.collection = undefined;
 					} else {
 						// Hide custom input and use selected value
 						if (customInput) {
-							customInput.style.display = 'none';
+							customInput.addClass('cr-hidden');
 							customInput.value = '';
 						}
 						this.placeData.collection = value || undefined;
@@ -656,8 +655,7 @@ export class CreatePlaceModal extends Modal {
 					.onChange(value => {
 						this.placeData.collection = value || undefined;
 					});
-				text.inputEl.style.display = 'none';
-				text.inputEl.style.marginLeft = '8px';
+				text.inputEl.addClass('cr-hidden crc-input--inline');
 			});
 		} else {
 			// No existing collections, just show text input
@@ -980,25 +978,22 @@ export class CreatePlaceModal extends Modal {
 			// Use Nominatim API (free, but rate-limited to 1 request/second)
 			const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&format=json&limit=1`;
 
-			const response = await fetch(url, {
+			const response = await requestUrl({
+				url,
 				headers: {
 					// Nominatim requires a User-Agent header
-					'User-Agent': 'CanvasRoots/0.5.1 (Obsidian Plugin)'
+					'User-Agent': 'CanvasRoots/0.7.0 (Obsidian Plugin)'
 				}
 			});
 
-			if (!response.ok) {
-				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-			}
-
-			const results = await response.json();
+			const results = response.json as unknown[];
 
 			if (!results || results.length === 0) {
 				new Notice(`No coordinates found for "${searchQuery}". Try a more specific name.`);
 				return;
 			}
 
-			const result = results[0];
+			const result = results[0] as { lat: string; lon: string; display_name: string };
 			const lat = parseFloat(result.lat);
 			const long = parseFloat(result.lon);
 

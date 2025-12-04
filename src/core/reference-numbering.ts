@@ -56,7 +56,7 @@ export class ReferenceNumberingService {
 	 * Example: Self=1, Father=2, Mother=3, PGF=4, PGM=5, MGF=6, MGM=7
 	 */
 	async assignAhnentafel(rootCrId: string): Promise<NumberingStats> {
-		await this.graphService.ensureCacheLoaded();
+		this.graphService.ensureCacheLoaded();
 
 		const rootPerson = this.graphService.getPersonByCrId(rootCrId);
 		if (!rootPerson) {
@@ -125,7 +125,7 @@ export class ReferenceNumberingService {
 	 * - Grandchildren = 1.1.1, 1.1.2, 1.2.1, etc.
 	 */
 	async assignDAboville(rootCrId: string): Promise<NumberingStats> {
-		await this.graphService.ensureCacheLoaded();
+		this.graphService.ensureCacheLoaded();
 
 		const rootPerson = this.graphService.getPersonByCrId(rootCrId);
 		if (!rootPerson) {
@@ -184,7 +184,7 @@ export class ReferenceNumberingService {
 	 * For children 10+, letters are used: A=10, B=11, etc.
 	 */
 	async assignHenry(rootCrId: string): Promise<NumberingStats> {
-		await this.graphService.ensureCacheLoaded();
+		this.graphService.ensureCacheLoaded();
 
 		const rootPerson = this.graphService.getPersonByCrId(rootCrId);
 		if (!rootPerson) {
@@ -250,7 +250,7 @@ export class ReferenceNumberingService {
 	 * This traverses both ancestors and descendants from the root.
 	 */
 	async assignGeneration(rootCrId: string): Promise<NumberingStats> {
-		await this.graphService.ensureCacheLoaded();
+		this.graphService.ensureCacheLoaded();
 
 		const rootPerson = this.graphService.getPersonByCrId(rootCrId);
 		if (!rootPerson) {
@@ -358,7 +358,7 @@ export class ReferenceNumberingService {
 	 * Clear reference numbers of a specific type from all notes
 	 */
 	async clearNumbers(system: NumberingSystem): Promise<number> {
-		await this.graphService.ensureCacheLoaded();
+		this.graphService.ensureCacheLoaded();
 
 		const allPeople = this.graphService.getAllPeople();
 		let clearedCount = 0;

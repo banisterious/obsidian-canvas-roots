@@ -615,21 +615,21 @@ export class PlaceNetworkModal extends Modal {
 				item.createSpan({ text: type.charAt(0).toUpperCase() + type.slice(1) });
 			}
 		} else {
-			legend.createDiv({ cls: 'crc-network-legend-item' }).innerHTML =
-				'<span class="crc-network-legend-gradient"></span> Shallow → Deep';
+			const gradientItem = legend.createDiv({ cls: 'crc-network-legend-item' });
+			gradientItem.createSpan({ cls: 'crc-network-legend-gradient' });
+			gradientItem.appendText(' Shallow → Deep');
 		}
 
 		// Size explanation
 		const sizeExplanation = legend.createDiv({ cls: 'crc-network-legend-item crc-mt-2' });
-		sizeExplanation.innerHTML = '<span class="crc-text--muted">Node size indicates number of associated people</span>';
+		sizeExplanation.createSpan({ cls: 'crc-text--muted', text: 'Node size indicates number of associated people' });
 	}
 
 	/**
 	 * Add tooltip handler for nodes and migration flows
 	 */
 	private addTooltipHandler(container: HTMLElement): void {
-		const tooltip = container.createDiv({ cls: 'crc-network-tooltip' });
-		tooltip.style.display = 'none';
+		const tooltip = container.createDiv({ cls: 'crc-network-tooltip cr-hidden' });
 
 		// Handler for nodes
 		const nodes = container.querySelectorAll('.crc-network-node');
@@ -638,8 +638,12 @@ export class PlaceNetworkModal extends Modal {
 				const target = e.currentTarget as SVGGElement;
 				const text = target.getAttribute('data-tooltip');
 				if (text) {
-					tooltip.innerHTML = text.replace(/\n/g, '<br>');
-					tooltip.style.display = 'block';
+					tooltip.empty();
+					text.split('\n').forEach((line, i) => {
+						if (i > 0) tooltip.createEl('br');
+						tooltip.appendText(line);
+					});
+					tooltip.removeClass('cr-hidden');
 				}
 			});
 
@@ -651,7 +655,7 @@ export class PlaceNetworkModal extends Modal {
 			});
 
 			node.addEventListener('mouseleave', () => {
-				tooltip.style.display = 'none';
+				tooltip.addClass('cr-hidden');
 			});
 		});
 
@@ -663,7 +667,7 @@ export class PlaceNetworkModal extends Modal {
 				const text = target.getAttribute('data-tooltip');
 				if (text) {
 					tooltip.textContent = text;
-					tooltip.style.display = 'block';
+					tooltip.removeClass('cr-hidden');
 				}
 			});
 
@@ -675,7 +679,7 @@ export class PlaceNetworkModal extends Modal {
 			});
 
 			flow.addEventListener('mouseleave', () => {
-				tooltip.style.display = 'none';
+				tooltip.addClass('cr-hidden');
 			});
 		});
 	}

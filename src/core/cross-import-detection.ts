@@ -301,8 +301,6 @@ export class CrossImportDetectionService {
 	 * Get people from staging folder
 	 */
 	private getStagingPeople(subfolderPath?: string): PersonNode[] {
-		const _graphService = new FamilyGraphService(this.app);
-
 		// Get staging files
 		const stagingFiles = subfolderPath
 			? this.getStagingFilesInSubfolder(subfolderPath)

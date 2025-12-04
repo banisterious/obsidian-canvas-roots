@@ -410,7 +410,7 @@ function buildYamlFrontmatter(frontmatter: Record<string, unknown>): string {
 				lines.push(`  ${line}`);
 			}
 		} else {
-			lines.push(`${key}: ${value}`);
+			lines.push(`${key}: ${String(value)}`);
 		}
 	}
 
@@ -431,9 +431,9 @@ function formatObjectForYaml(obj: Record<string, unknown>, indent: number = 0): 
 
 		if (i === 0 && indent > 0) {
 			// First property on same line as array dash
-			lines.push(`${key}: ${value}`);
+			lines.push(`${key}: ${String(value)}`);
 		} else {
-			lines.push(`${key}: ${value}`);
+			lines.push(`${key}: ${String(value)}`);
 		}
 	}
 

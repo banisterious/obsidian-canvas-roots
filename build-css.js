@@ -45,6 +45,9 @@ const CONFIG = {
     'relationships.css', // Custom relationships tab
     'canvas-navigation.css', // Canvas navigation and split wizard
     'map-view.css',      // Leaflet map view (includes bundled Leaflet CSS)
+    'leaflet-distortable.css', // Leaflet toolbar/distortable image plugins (vendored)
+    'date-systems.css',  // Date systems card
+    'organizations.css', // Organizations tab
     'animations.css',    // Keyframes and transitions
     'responsive.css',    // Responsive breakpoints
     'theme.css'          // Theme compatibility (last)

@@ -254,13 +254,13 @@ export class CreatePersonModal extends Modal {
 				dropdown.onChange(value => {
 					if (value === '__custom__') {
 						if (customInput) {
-							customInput.style.display = 'block';
+							customInput.removeClass('cr-hidden');
 							customInput.focus();
 						}
 						collectionValue = undefined;
 					} else {
 						if (customInput) {
-							customInput.style.display = 'none';
+							customInput.addClass('cr-hidden');
 							customInput.value = '';
 						}
 						collectionValue = value || undefined;
@@ -275,8 +275,7 @@ export class CreatePersonModal extends Modal {
 					.onChange(value => {
 						collectionValue = value || undefined;
 					});
-				text.inputEl.style.display = 'none';
-				text.inputEl.style.marginLeft = '8px';
+				text.inputEl.addClass('cr-hidden crc-input--inline');
 			});
 
 			// Store the value getter for use when creating
@@ -448,8 +447,6 @@ export class CreatePersonModal extends Modal {
 				data.spouseName = [this.spouseField.name];
 			}
 
-			// Get collection value from the closure
-			const _collection = this.getCollectionValue();
 			// Note: PersonData doesn't have a collection field yet
 			// This would need to be added to person-note-writer.ts if needed
 

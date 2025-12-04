@@ -295,7 +295,7 @@ export class RelationshipService {
 	/**
 	 * Refresh the relationship cache from vault
 	 */
-	async refreshCache(): Promise<void> {
+	refreshCache(): void {
 		this.relationshipCache.clear();
 		this.personCrIdToFilePath.clear();
 
@@ -314,7 +314,7 @@ export class RelationshipService {
 
 		// Second pass: parse relationships
 		for (const file of files) {
-			const relationships = await this.parsePersonRelationships(file);
+			const relationships = this.parsePersonRelationships(file);
 			if (relationships.length > 0) {
 				const cache = this.plugin.app.metadataCache.getFileCache(file);
 				const crId = cache?.frontmatter?.cr_id as string;

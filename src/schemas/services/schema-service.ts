@@ -202,7 +202,7 @@ export class SchemaService {
 
 		const file = this.plugin.app.vault.getAbstractFileByPath(schema.filePath);
 		if (file instanceof TFile) {
-			await this.plugin.app.vault.delete(file);
+			await this.plugin.app.fileManager.trashFile(file);
 		}
 
 		// Update cache

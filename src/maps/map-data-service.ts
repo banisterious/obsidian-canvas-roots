@@ -93,7 +93,7 @@ export class MapDataService {
 		await this.refreshPlaceCache(forceRefresh);
 
 		// Get person data
-		const people = await this.getPersonData();
+		const people = this.getPersonData();
 
 		// Build markers
 		const markers = this.buildMarkers(people, filters);

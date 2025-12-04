@@ -842,8 +842,8 @@ export default class CanvasRootsPlugin extends Plugin {
 									subItem
 										.setTitle('Edit place')
 										.setIcon('edit')
-										.onClick(async () => {
-											await this.openEditPlaceModal(file);
+										.onClick(() => {
+											this.openEditPlaceModal(file);
 										});
 								});
 
@@ -899,8 +899,8 @@ export default class CanvasRootsPlugin extends Plugin {
 								item
 									.setTitle('Canvas Roots: Edit place')
 									.setIcon('edit')
-									.onClick(async () => {
-										await this.openEditPlaceModal(file);
+									.onClick(() => {
+										this.openEditPlaceModal(file);
 									});
 							});
 
@@ -976,8 +976,8 @@ export default class CanvasRootsPlugin extends Plugin {
 									subItem
 										.setTitle('Edit person')
 										.setIcon('edit')
-										.onClick(async () => {
-											await this.openEditPersonModal(file);
+										.onClick(() => {
+											this.openEditPersonModal(file);
 										});
 								});
 
@@ -1326,8 +1326,8 @@ export default class CanvasRootsPlugin extends Plugin {
 								item
 									.setTitle('Canvas Roots: Edit person')
 									.setIcon('edit')
-									.onClick(async () => {
-										await this.openEditPersonModal(file);
+									.onClick(() => {
+										this.openEditPersonModal(file);
 									});
 							});
 
@@ -1904,7 +1904,7 @@ export default class CanvasRootsPlugin extends Plugin {
 		this.registerEvent(
 			this.app.workspace.on('files-menu', (menu, files) => {
 				// Only show for multiple markdown files
-				const markdownFiles = files.filter(f => f instanceof TFile && f.extension === 'md') as TFile[];
+				const markdownFiles = files.filter((f): f is TFile => f instanceof TFile && f.extension === 'md');
 
 				if (markdownFiles.length === 0) return;
 
@@ -3029,7 +3029,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 			// 5. Build family tree using original parameters
 			const graphService = this.createFamilyGraphService();
-			const familyTree = await graphService.generateTree({
+			const familyTree = graphService.generateTree({
 				rootCrId,
 				treeType,
 				maxGenerations,
@@ -3243,7 +3243,7 @@ export default class CanvasRootsPlugin extends Plugin {
 			// Build family tree
 			const graphService = this.createFamilyGraphService();
 
-			const familyTree = await graphService.generateTree({
+			const familyTree = graphService.generateTree({
 				rootCrId,
 				treeType,
 				maxGenerations,
@@ -3257,10 +3257,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 			// Create a temporary container for the preview renderer
 			const tempContainer = document.createElement('div');
-			tempContainer.style.position = 'absolute';
-			tempContainer.style.left = '-9999px';
-			tempContainer.style.width = '2000px';
-			tempContainer.style.height = '2000px';
+			tempContainer.addClass('cr-offscreen-render');
 			document.body.appendChild(tempContainer);
 
 			try {
@@ -3534,18 +3531,18 @@ export default class CanvasRootsPlugin extends Plugin {
 								yamlLines.push(`${key}: []`);
 							} else {
 								yamlLines.push(`${key}:`);
-								value.forEach(item => yamlLines.push(`  - ${item}`));
+								value.forEach(item => yamlLines.push(`  - ${String(item)}`));
 							}
 						} else if (typeof value === 'object' && value !== null) {
 							// Handle nested objects like coordinates
 							yamlLines.push(`${key}:`);
 							for (const [subKey, subValue] of Object.entries(value)) {
-								yamlLines.push(`  ${subKey}: ${subValue}`);
+								yamlLines.push(`  ${subKey}: ${String(subValue)}`);
 							}
 						} else if (value === '') {
 							yamlLines.push(`${key}: ""`);
 						} else {
-							yamlLines.push(`${key}: ${value}`);
+							yamlLines.push(`${key}: ${String(value)}`);
 						}
 					}
 					yamlLines.push('---');
@@ -3705,18 +3702,18 @@ export default class CanvasRootsPlugin extends Plugin {
 								yamlLines.push(`${key}: []`);
 							} else {
 								yamlLines.push(`${key}:`);
-								value.forEach(item => yamlLines.push(`  - ${item}`));
+								value.forEach(item => yamlLines.push(`  - ${String(item)}`));
 							}
 						} else if (typeof value === 'object' && value !== null) {
 							// Handle nested objects like bounds
 							yamlLines.push(`${key}:`);
 							for (const [subKey, subValue] of Object.entries(value)) {
-								yamlLines.push(`  ${subKey}: ${subValue}`);
+								yamlLines.push(`  ${subKey}: ${String(subValue)}`);
 							}
 						} else if (value === '') {
 							yamlLines.push(`${key}: ""`);
 						} else {
-							yamlLines.push(`${key}: ${value}`);
+							yamlLines.push(`${key}: ${String(value)}`);
 						}
 					}
 					yamlLines.push('---');
@@ -3788,7 +3785,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 			// Generate tree with default settings
 			const graphService = this.createFamilyGraphService();
-			const familyTree = await graphService.generateTree({
+			const familyTree = graphService.generateTree({
 				rootCrId,
 				treeType: 'full',
 				maxGenerations: 5,

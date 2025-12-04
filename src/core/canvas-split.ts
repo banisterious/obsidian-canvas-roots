@@ -4057,7 +4057,6 @@ export class CanvasSplitService {
 			const y = row * (nodeHeight + verticalSpacing);
 
 			// Create a text node with link to the canvas
-			const _canvasName = canvas.path.replace(/\.canvas$/, '').split('/').pop() || canvas.label;
 			const infoLine = canvas.info ? `\n*${canvas.info}*` : '';
 
 			const node = {

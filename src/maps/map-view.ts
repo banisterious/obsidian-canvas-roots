@@ -220,8 +220,7 @@ export class MapView extends ItemView {
 		this.buildToolbar();
 
 		// Create time slider panel (hidden by default)
-		this.timeSliderContainerEl = container.createDiv({ cls: 'cr-map-time-slider-container' });
-		this.timeSliderContainerEl.style.display = 'none';
+		this.timeSliderContainerEl = container.createDiv({ cls: 'cr-map-time-slider-container cr-hidden' });
 		this.buildTimeSlider();
 
 		// Create map container
@@ -247,7 +246,7 @@ export class MapView extends ItemView {
 			cls: 'cr-map-select',
 			attr: { 'aria-label': 'Select map' }
 		});
-		this.mapSelectEl.createEl('option', { value: 'openstreetmap', text: 'Real World' });
+		this.mapSelectEl.createEl('option', { value: 'openstreetmap', text: 'Real world' });
 		// Custom maps will be populated after loading
 		this.mapSelectEl.addEventListener('change', () => {
 			const mapId = this.mapSelectEl?.value || 'openstreetmap';
@@ -347,9 +346,9 @@ export class MapView extends ItemView {
 		// Export dropdown
 		const exportBtn = rightSection.createEl('button', {
 			cls: 'cr-map-btn',
-			attr: { 'aria-label': 'Export Overlay' }
+			attr: { 'aria-label': 'Export overlay' }
 		});
-		exportBtn.createSpan({ text: 'Export Overlay' });
+		exportBtn.createSpan({ text: 'Export overlay' });
 		exportBtn.addEventListener('click', (e) => this.showExportMenu(e));
 	}
 
@@ -585,7 +584,7 @@ export class MapView extends ItemView {
 		const sliderRow = this.timeSliderContainerEl.createDiv({ cls: 'cr-map-time-slider-row' });
 
 		// Min year label
-		const _minLabel = sliderRow.createSpan({ cls: 'cr-map-time-label', text: '1800' });
+		sliderRow.createSpan({ cls: 'cr-map-time-label', text: '1800' });
 
 		// Slider input
 		const slider = sliderRow.createEl('input', {
@@ -600,7 +599,7 @@ export class MapView extends ItemView {
 		});
 
 		// Max year label
-		const _maxLabel = sliderRow.createSpan({ cls: 'cr-map-time-label', text: '2000' });
+		sliderRow.createSpan({ cls: 'cr-map-time-label', text: '2000' });
 
 		// Update slider on change
 		slider.addEventListener('input', () => {
@@ -621,7 +620,7 @@ export class MapView extends ItemView {
 		playBtn.addEventListener('click', () => this.toggleAnimation());
 
 		// Speed selector
-		const _speedLabel = controlsRow.createSpan({ cls: 'cr-map-time-speed-label', text: 'Speed:' });
+		controlsRow.createSpan({ cls: 'cr-map-time-speed-label', text: 'Speed:' });
 		const speedSelect = controlsRow.createEl('select', {
 			cls: 'cr-map-select cr-map-time-speed',
 			attr: { 'aria-label': 'Animation speed' }
@@ -641,7 +640,7 @@ export class MapView extends ItemView {
 		});
 
 		// Mode toggle (snapshot vs cumulative)
-		const _modeLabel = controlsRow.createSpan({ cls: 'cr-map-time-mode-label', text: 'Mode:' });
+		controlsRow.createSpan({ cls: 'cr-map-time-mode-label', text: 'Mode:' });
 		const modeSelect = controlsRow.createEl('select', {
 			cls: 'cr-map-select cr-map-time-mode',
 			attr: { 'aria-label': 'Display mode' }
@@ -665,7 +664,7 @@ export class MapView extends ItemView {
 		this.timeSlider.enabled = !this.timeSlider.enabled;
 
 		if (this.timeSliderContainerEl) {
-			this.timeSliderContainerEl.style.display = this.timeSlider.enabled ? 'flex' : 'none';
+			this.timeSliderContainerEl.toggleClass('cr-hidden', !this.timeSlider.enabled);
 		}
 
 		// Update button state
@@ -1066,11 +1065,11 @@ export class MapView extends ItemView {
 	/**
 	 * Load custom maps and populate the map selector dropdown
 	 */
-	private async loadCustomMaps(): Promise<void> {
+	private loadCustomMaps(): void {
 		if (!this.mapController || !this.mapSelectEl) return;
 
 		try {
-			this.customMaps = await this.mapController.getCustomMaps();
+			this.customMaps = this.mapController.getCustomMaps();
 
 			// Clear existing custom map options (keep OpenStreetMap)
 			while (this.mapSelectEl.options.length > 1) {
@@ -1313,7 +1312,8 @@ export class MapView extends ItemView {
 
 		// Banner text
 		const textEl = this.editBannerEl.createDiv({ cls: 'cr-map-edit-banner-text' });
-		textEl.innerHTML = '<strong>Edit mode:</strong> Drag corners to align the map image.';
+		textEl.createEl('strong', { text: 'Edit mode:' });
+		textEl.appendText(' Drag corners to align the map image.');
 
 		// Button container
 		const btnContainer = this.editBannerEl.createDiv({ cls: 'cr-map-edit-controls' });

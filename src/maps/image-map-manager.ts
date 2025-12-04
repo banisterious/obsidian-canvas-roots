@@ -15,9 +15,8 @@ import type { CustomMapConfig, ImageCorners } from './types/map-types';
 // Initialize logger early so it can be used by helper functions
 const logger = getLogger('ImageMapManager');
 
-// Track state for CSS injection and plugin initialization
+// Track state for plugin initialization
 let distortableImageLoaded = false;
-let distortableImageCSSInjected = false;
 
 /**
  * Initialize the distortable image plugins
@@ -33,9 +32,9 @@ function initDistortableImagePlugins(): void {
 	}
 
 	// Use require() to load the plugins after setting window.L
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	// eslint-disable-next-line @typescript-eslint/no-require-imports -- Leaflet plugins require synchronous loading via require() to attach to window.L
 	require('leaflet-toolbar');
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	// eslint-disable-next-line @typescript-eslint/no-require-imports -- Leaflet plugins require synchronous loading via require() to attach to window.L
 	require('leaflet-distortableimage');
 
 	distortableImageLoaded = true;
@@ -43,384 +42,13 @@ function initDistortableImagePlugins(): void {
 }
 
 /**
- * Inject the leaflet-toolbar and leaflet-distortableimage CSS into the document
- */
-function injectDistortableImageCSS(): void {
-	if (distortableImageCSSInjected) return;
-
-	// Combined CSS from leaflet-toolbar and leaflet-distortableimage
-	// Copied here since dynamic CSS imports aren't well-supported in Obsidian
-	const css = `
-/* ============================================================================
-   Leaflet Toolbar CSS (from leaflet-toolbar/dist/leaflet.toolbar.css)
-   ============================================================================ */
-.leaflet-toolbar-0 {
-  list-style: none;
-  padding-left: 0;
-  border: 2px solid rgba(0,0,0,.2);
-  border-radius: 4px;
-}
-.leaflet-toolbar-0 > li {
-  position: relative;
-}
-.leaflet-toolbar-0 > li > .leaflet-toolbar-icon {
-  display: block;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  margin-right: 0;
-  padding-right: 0;
-  border-right: 0;
-  text-align: center;
-  text-decoration: none;
-  background-color: #fff;
-}
-.leaflet-toolbar-0 > li > .leaflet-toolbar-icon:hover {
-  background-color: #f4f4f4;
-}
-.leaflet-toolbar-0 .leaflet-toolbar-1 {
-  display: none;
-  list-style: none;
-}
-.leaflet-toolbar-tip-container {
-  margin: -16px auto 0;
-  height: 16px;
-  position: relative;
-  overflow: hidden;
-}
-.leaflet-toolbar-tip {
-  width: 16px;
-  height: 16px;
-  margin: -8px auto 0;
-  background-color: #fff;
-  border: 2px solid rgba(0,0,0,.2);
-  background-clip: content-box;
-  transform: rotate(45deg);
-  border-radius: 4px;
-}
-.leaflet-control-toolbar .leaflet-toolbar-1 > li:last-child > .leaflet-toolbar-icon,
-.leaflet-popup-toolbar > li:last-child > .leaflet-toolbar-icon {
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-}
-.leaflet-control-toolbar > li > .leaflet-toolbar-icon {
-  border-bottom: 1px solid #ccc;
-}
-.leaflet-control-toolbar > li:first-child > .leaflet-toolbar-icon {
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-}
-.leaflet-control-toolbar > li:last-child > .leaflet-toolbar-icon {
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-bottom-width: 0;
-}
-.leaflet-control-toolbar .leaflet-toolbar-1 {
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  left: 30px;
-  top: 0;
-  white-space: nowrap;
-  height: 30px;
-}
-.leaflet-control-toolbar .leaflet-toolbar-1 > li {
-  display: inline-block;
-}
-.leaflet-control-toolbar .leaflet-toolbar-1 > li > .leaflet-toolbar-icon {
-  display: block;
-  background-color: #919187;
-  border-left: 1px solid #aaa;
-  color: #fff;
-  font: 11px/19px "Helvetica Neue", Arial, Helvetica, sans-serif;
-  line-height: 30px;
-  text-decoration: none;
-  padding-left: 10px;
-  padding-right: 10px;
-  height: 30px;
-}
-.leaflet-control-toolbar .leaflet-toolbar-1 > li > .leaflet-toolbar-icon:hover {
-  background-color: #a0a098;
-}
-.leaflet-popup-toolbar {
-  position: relative;
-  box-sizing: content-box;
-}
-.leaflet-popup-toolbar > li {
-  float: left;
-}
-.leaflet-popup-toolbar > li > .leaflet-toolbar-icon {
-  border-right: 1px solid #ccc;
-}
-.leaflet-popup-toolbar > li:first-child > .leaflet-toolbar-icon {
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-}
-.leaflet-popup-toolbar > li:last-child > .leaflet-toolbar-icon {
-  border-bottom-width: 0;
-  border-right: none;
-}
-.leaflet-popup-toolbar .leaflet-toolbar-1 {
-  position: absolute;
-  top: 30px;
-  left: 0;
-  padding-left: 0;
-}
-.leaflet-popup-toolbar .leaflet-toolbar-1 > li > .leaflet-toolbar-icon {
-  position: relative;
-  float: left;
-  width: 30px;
-  height: 30px;
-}
-
-/* ============================================================================
-   Leaflet DistortableImage CSS (from leaflet-distortableimage/dist/leaflet.distortableimage.css)
-   ============================================================================ */
-.ldi .leaflet-popup-toolbar {
-  width: max-content !important;
-}
-
-.ldi .leaflet-pane .leaflet-overlay-pane img {
-  pointer-events: all !important;
-}
-
-.ldi .leaflet-pane .leaflet-overlay-pane img.disabled {
-  cursor: default;
-}
-
-.ldi img.leaflet-image-layer.collected {
-  box-shadow: 0px 0px 0px 12px #ffea00;
-}
-
-.ldi-icon {
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-  fill: #0078a8;
-}
-
-.ldi-icon.ldi-delete_forever {
-  fill: #c10d0d;
-}
-
-.ldi-icon.ldi-keyboard_open {
-  fill: black;
-}
-
-input.ldi {
-  position: absolute;
-  top: -100px;
-}
-
-.ldi .leaflet-toolbar-icon {
-  box-sizing: initial;
-}
-
-.ldi .leaflet-toolbar-tip {
-  box-sizing: border-box;
-}
-
-.ldi-keymapper {
-  background-color: rgba(255, 255, 255, 1);
-  color: black;
-  padding: 8px;
-  font-size: 13px;
-  letter-spacing: 0.2px;
-  line-height: 1.3;
-  height: auto;
-  width: 235px;
-  border-radius: 21px;
-  overflow: hidden;
-}
-
-.ldi #keymapper-wrapper {
-  position: relative;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  max-height: 186px;
-  min-height: 186px;
-}
-
-.ldi .left {
-  width: 46%;
-}
-
-.ldi .left span {
-  overflow-wrap: break-word;
-}
-
-.ldi .right {
-  display: flex;
-  max-width: 40%;
-  flex-wrap: wrap;
-  margin-left: 20px;
-  align-items: flex-start;
-}
-
-.ldi #keymapper-hr {
-  transform: rotate(90deg);
-  position: relative;
-  transform-origin: 0px;
-  left: 50%;
-  margin: -2px;
-  width: 200%;
-}
-
-.ldi-keymapper tr {
-  display: block;
-}
-
-.ldi-keymapper td {
-  padding: 0.2rem;
-  display: flex;
-  width: 100%;
-}
-
-.ldi-keymapper kbd {
-  padding: 0.2rem 0.4rem;
-  color: black;
-  background-color: rgb(247, 247, 247);
-  border-radius: 3px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2),
-    0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
-  text-shadow: 0 0.5px 0 #fff;
-}
-
-#toggle-keymapper {
-  background-color: #fff;
-  padding: 0px;
-  width: 30px;
-  height: 30px;
-  border-radius: 4px;
-  right: 16px;
-  cursor: pointer;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  border: 2px solid rgba(184, 178, 173, 0.9);
-  line-height: 30px;
-}
-
-#toggle-keymapper:hover {
-  background-color: #f4f4f4;
-}
-
-.close-icon#toggle-keymapper {
-  text-transform: uppercase;
-  width: 254px;
-  font-size: 11px;
-  border: 1px solid lightgray;
-  margin: 0;
-  padding: 0;
-  background-color: whitesmoke;
-  border-radius: 0;
-  border-bottom-left-radius: 21px;
-  border-bottom-right-radius: 21px;
-  position: relative;
-  height: 21px;
-  line-height: 22px;
-  color: gray;
-  top: 10px;
-  left: -10px;
-}
-
-.close-icon#toggle-keymapper:hover {
-  background-color: #efefef;
-}
-
-a.leaflet-toolbar-icon.rotate.selected-mode,
-a.leaflet-toolbar-icon.freeRotate.selected-mode {
-  background-color: rgba(251, 18, 14, 0.75);
-  border: inset 0.5px lightgray;
-}
-
-a.leaflet-toolbar-icon.rotate.selected-mode .ldi-icon,
-a.leaflet-toolbar-icon.freeRotate.selected-mode .ldi-icon,
-a.leaflet-toolbar-icon.drag.selected-mode .ldi-icon {
-  fill: white;
-}
-
-a.leaflet-toolbar-icon.drag.selected-mode {
-  background-color: rgba(9, 155, 56, 0.75);
-  border: inset 0.5px lightgray;
-}
-
-a.leaflet-toolbar-icon.distort.selected-mode,
-a.leaflet-toolbar-icon.scale.selected-mode {
-  background-color: hsla(239, 97%, 55%, 0.75);
-  border: inset 0.5px lightgray;
-}
-
-a.leaflet-toolbar-icon.distort.selected-mode .ldi-icon,
-a.leaflet-toolbar-icon.scale.selected-mode .ldi-icon {
-  fill: white;
-}
-
-a.leaflet-toolbar-icon.lock.selected-mode {
-  background-color: hsla(0, 0%, 1%, 0.75);
-  border: inset 0.5px lightgray;
-}
-
-li.disabled {
-  cursor: auto;
-}
-
-a.leaflet-toolbar-icon.disabled {
-  filter: grayscale(1);
-  pointer-events: none;
-}
-
-a.leaflet-toolbar-icon.lock.selected-mode .ldi-icon {
-  fill: white;
-}
-
-a.leaflet-toolbar-icon[title='Loading...'] {
-  background-color: whitesmoke;
-  pointer-events: none;
-  cursor: default;
-}
-
-.ldi-icon.loader {
-  animation: ldi-spin 1.1s infinite;
-  fill: black;
-  width: 22px;
-  height: 22px;
-}
-
-#cancel {
-  fill: #c10d0d;
-}
-
-input[type="text"]::-webkit-input-placeholder {
-  color: #979797;
-}
-
-@keyframes ldi-spin {
-  0% { transform: rotate(0); }
-  100% { transform: rotate(360deg); }
-}
-`;
-
-	const styleEl = document.createElement('style');
-	styleEl.id = 'leaflet-distortableimage-css';
-	styleEl.textContent = css;
-	document.head.appendChild(styleEl);
-	distortableImageCSSInjected = true;
-}
-
-/**
- * Ensure the distortable image plugins are loaded and CSS is injected
+ * Ensure the distortable image plugins are loaded
  * This is called before creating a distortable overlay
+ * Note: CSS is now in styles/leaflet-distortable.css (bundled with plugin)
  */
 function ensureDistortableImageLoaded(): void {
 	// Initialize the plugins (sets window.L and requires the libraries)
 	initDistortableImagePlugins();
-
-	// Inject CSS
-	injectDistortableImageCSS();
 
 	// Verify the plugins loaded correctly
 	const globalWindow = window as unknown as { L: typeof L & { Toolbar2?: unknown; distortableImageOverlay?: unknown } };
@@ -994,14 +622,13 @@ export class ImageMapManager {
 			// Pass corners in options so _initImageDimensions uses them on image load
 			// The library checks this.options.corners before auto-calculating
 			if (hasSavedCorners && config.corners) {
-				// Use L.LatLng objects in options
+				// Use plain objects matching the local interface (library accepts { lat, lon })
 				options.corners = [
-					L.latLng(config.corners.nw.lat, config.corners.nw.lng),
-					L.latLng(config.corners.ne.lat, config.corners.ne.lng),
-					L.latLng(config.corners.sw.lat, config.corners.sw.lng),
-					L.latLng(config.corners.se.lat, config.corners.se.lng)
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				] as any;
+					{ lat: config.corners.nw.lat, lon: config.corners.nw.lng },
+					{ lat: config.corners.ne.lat, lon: config.corners.ne.lng },
+					{ lat: config.corners.sw.lat, lon: config.corners.sw.lng },
+					{ lat: config.corners.se.lat, lon: config.corners.se.lng }
+				];
 				logger.debug('create-distortable', `Using saved corners for ${config.name}`);
 			} else {
 				// No corners saved - library will auto-calculate from image dimensions
@@ -1022,8 +649,7 @@ export class ImageMapManager {
 			// but we need it set earlier to prevent errors when editing.enable() is called
 			if (config.corners) {
 				// Convert to L.LatLng objects and set directly on the overlay
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(distortableOverlay as any)._corners = [
+				distortableOverlay._corners = [
 					L.latLng(config.corners.nw.lat, config.corners.nw.lng),
 					L.latLng(config.corners.ne.lat, config.corners.ne.lng),
 					L.latLng(config.corners.sw.lat, config.corners.sw.lng),

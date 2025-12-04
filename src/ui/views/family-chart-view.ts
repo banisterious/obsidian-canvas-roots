@@ -5,7 +5,7 @@
  * exploration and editing of family trees.
  */
 
-import { ItemView, WorkspaceLeaf, Menu, TFile, Notice } from 'obsidian';
+import { ItemView, WorkspaceLeaf, Menu, TFile, Notice, setIcon, Modal, App } from 'obsidian';
 import f3 from 'family-chart';
 import { jsPDF } from 'jspdf';
 import type CanvasRootsPlugin from '../../../main';
@@ -116,6 +116,7 @@ export class FamilyChartView extends ItemView {
 		return 'git-fork';
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await -- Base class requires Promise<void> return type
 	async onOpen(): Promise<void> {
 		logger.debug('view-open', 'Opening FamilyChartView');
 
@@ -124,7 +125,7 @@ export class FamilyChartView extends ItemView {
 
 		// Initialize chart if we have state
 		if (this.rootPersonId) {
-			await this.initializeChart();
+			this.initializeChart();
 		} else {
 			this.showEmptyState();
 		}
@@ -199,7 +200,7 @@ export class FamilyChartView extends ItemView {
 			cls: 'cr-fcv-btn cr-fcv-zoom-btn clickable-icon',
 			attr: { 'aria-label': 'Zoom out' }
 		});
-		zoomOutBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>';
+		setIcon(zoomOutBtn, 'zoom-out');
 		zoomOutBtn.addEventListener('click', () => this.zoomOut());
 
 		// Zoom level indicator
@@ -210,7 +211,7 @@ export class FamilyChartView extends ItemView {
 			cls: 'cr-fcv-btn cr-fcv-zoom-btn clickable-icon',
 			attr: { 'aria-label': 'Zoom in' }
 		});
-		zoomInBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>';
+		setIcon(zoomInBtn, 'zoom-in');
 		zoomInBtn.addEventListener('click', () => this.zoomIn());
 
 		// Right side controls
@@ -221,8 +222,7 @@ export class FamilyChartView extends ItemView {
 			cls: 'cr-fcv-btn clickable-icon',
 			attr: { 'aria-label': 'Search for person' }
 		});
-		// Search icon
-		searchBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+		setIcon(searchBtn, 'search');
 		searchBtn.addEventListener('click', () => { void this.openPersonSearch(); });
 
 		// Edit mode toggle button
@@ -230,8 +230,7 @@ export class FamilyChartView extends ItemView {
 			cls: `cr-fcv-btn clickable-icon ${this.editMode ? 'is-active' : ''}`,
 			attr: { 'aria-label': 'Toggle edit mode' }
 		});
-		// Pencil/edit icon
-		this.editModeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+		setIcon(this.editModeBtn, 'edit');
 		this.editModeBtn.addEventListener('click', () => this.toggleEditMode());
 
 		// History buttons (undo/redo for edit mode)
@@ -239,16 +238,14 @@ export class FamilyChartView extends ItemView {
 			cls: 'cr-fcv-btn clickable-icon',
 			attr: { 'aria-label': 'Undo', disabled: 'true' }
 		});
-		// Undo/back icon
-		this.historyBackBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>';
+		setIcon(this.historyBackBtn, 'undo');
 		this.historyBackBtn.addEventListener('click', () => this.historyBack());
 
 		this.historyForwardBtn = rightControls.createEl('button', {
 			cls: 'cr-fcv-btn clickable-icon',
 			attr: { 'aria-label': 'Redo', disabled: 'true' }
 		});
-		// Redo/forward icon
-		this.historyForwardBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>';
+		setIcon(this.historyForwardBtn, 'redo');
 		this.historyForwardBtn.addEventListener('click', () => this.historyForward());
 
 		// Fit to view button
@@ -256,7 +253,7 @@ export class FamilyChartView extends ItemView {
 			cls: 'cr-fcv-btn clickable-icon',
 			attr: { 'aria-label': 'Fit to view' }
 		});
-		fitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>';
+		setIcon(fitBtn, 'maximize-2');
 		fitBtn.addEventListener('click', () => this.fitToView());
 
 		// Pop out to main workspace button (only show if in sidebar)
@@ -265,8 +262,7 @@ export class FamilyChartView extends ItemView {
 				cls: 'cr-fcv-btn clickable-icon',
 				attr: { 'aria-label': 'Open in main workspace' }
 			});
-			// External link / pop-out icon
-			popOutBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+			setIcon(popOutBtn, 'external-link');
 			popOutBtn.addEventListener('click', () => this.popOutToMainWorkspace());
 		}
 
@@ -275,8 +271,7 @@ export class FamilyChartView extends ItemView {
 			cls: 'cr-fcv-btn clickable-icon',
 			attr: { 'aria-label': 'Layout settings' }
 		});
-		// Sliders/settings icon
-		layoutBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>';
+		setIcon(layoutBtn, 'sliders');
 		layoutBtn.addEventListener('click', (e) => this.showLayoutMenu(e));
 
 		// Export button
@@ -284,8 +279,7 @@ export class FamilyChartView extends ItemView {
 			cls: 'cr-fcv-btn clickable-icon',
 			attr: { 'aria-label': 'Export chart' }
 		});
-		// Download icon
-		exportBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+		setIcon(exportBtn, 'download');
 		exportBtn.addEventListener('click', (e) => this.showExportMenu(e));
 
 		// Refresh button
@@ -293,7 +287,7 @@ export class FamilyChartView extends ItemView {
 			cls: 'cr-fcv-btn clickable-icon',
 			attr: { 'aria-label': 'Refresh chart' }
 		});
-		refreshBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>';
+		setIcon(refreshBtn, 'refresh-cw');
 		refreshBtn.addEventListener('click', () => { void this.refreshChart(); });
 	}
 
@@ -331,7 +325,7 @@ export class FamilyChartView extends ItemView {
 	/**
 	 * Initialize the family-chart instance
 	 */
-	private async initializeChart(): Promise<void> {
+	private initializeChart(): void {
 		if (!this.chartContainerEl) return;
 
 		logger.debug('chart-init', 'Initializing chart', { rootPersonId: this.rootPersonId });
@@ -340,7 +334,7 @@ export class FamilyChartView extends ItemView {
 		this.chartContainerEl.empty();
 
 		// Load family data
-		await this.loadChartData();
+		this.loadChartData();
 
 		if (this.chartData.length === 0) {
 			this.showEmptyState();
@@ -406,9 +400,9 @@ export class FamilyChartView extends ItemView {
 	/**
 	 * Load and transform data from person notes to family-chart format
 	 */
-	private async loadChartData(): Promise<void> {
+	private loadChartData(): void {
 		// Ensure cache is loaded first
-		await this.familyGraphService.ensureCacheLoaded();
+		this.familyGraphService.ensureCacheLoaded();
 
 		// Get all people from the vault
 		const people = this.familyGraphService.getAllPeople();
@@ -478,8 +472,8 @@ export class FamilyChartView extends ItemView {
 
 		// Call default card click behavior for navigation (centers on the person)
 		if (this.f3Card) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			this.f3Card.onCardClickDefault(e, d as any);
+			// Cast to unknown first, then to expected type - the f3 library expects its internal TreeDatum type
+			this.f3Card.onCardClickDefault(e, d as unknown as Parameters<typeof this.f3Card.onCardClickDefault>[1]);
 		}
 	}
 
@@ -506,12 +500,12 @@ export class FamilyChartView extends ItemView {
 	/**
 	 * Refresh the chart with current data
 	 */
-	async refreshChart(): Promise<void> {
+	refreshChart(): void {
 		// Force reload the cache to get fresh data
 		this.familyGraphService.reloadCache();
 
 		if (this.rootPersonId) {
-			await this.initializeChart();
+			this.initializeChart();
 		}
 	}
 
@@ -1386,15 +1380,18 @@ export class FamilyChartView extends ItemView {
 			})
 			// Custom delete handler
 			.setOnDelete((datum, deletePerson, postSubmit) => {
-				// Confirm deletion
-				if (confirm(`Delete ${datum.data['first name']} ${datum.data['last name']}?`)) {
-					// Delete in family-chart
-					deletePerson();
-					// Note: actual file deletion would be a separate concern
-					// For now, just remove from chart (file remains but relationships are cleaned)
-					logger.info('edit-delete', 'Person deleted from chart', { id: datum.id });
-					postSubmit({});
-				}
+				// Show confirmation modal
+				const personName = `${datum.data['first name']} ${datum.data['last name']}`;
+				new DeletePersonConfirmModal(this.app, personName, (confirmed) => {
+					if (confirmed) {
+						// Delete in family-chart
+						deletePerson();
+						// Note: actual file deletion would be a separate concern
+						// For now, just remove from chart (file remains but relationships are cleaned)
+						logger.info('edit-delete', 'Person deleted from chart', { id: datum.id });
+						postSubmit({});
+					}
+				}).open();
 			})
 			// Start in no-edit mode (toggle button enables it)
 			.setNoEdit();
@@ -1778,6 +1775,7 @@ export class FamilyChartView extends ItemView {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await -- Base class requires Promise<void> return type
 	async setState(state: Partial<FamilyChartViewState>): Promise<void> {
 		logger.debug('set-state', 'Restoring view state', state);
 
@@ -1808,7 +1806,7 @@ export class FamilyChartView extends ItemView {
 
 		// Re-initialize if we have a root person
 		if (this.rootPersonId && this.chartContainerEl) {
-			await this.initializeChart();
+			this.initializeChart();
 		}
 	}
 
@@ -1853,8 +1851,59 @@ export class FamilyChartView extends ItemView {
 	/**
 	 * Set the root person and refresh the chart
 	 */
-	async setRootPerson(crId: string): Promise<void> {
+	setRootPerson(crId: string): void {
 		this.rootPersonId = crId;
-		await this.initializeChart();
+		this.initializeChart();
+	}
+}
+
+/**
+ * Confirmation modal for deleting a person from the chart
+ */
+class DeletePersonConfirmModal extends Modal {
+	private personName: string;
+	private onResult: (confirmed: boolean) => void;
+
+	constructor(app: App, personName: string, onResult: (confirmed: boolean) => void) {
+		super(app);
+		this.personName = personName;
+		this.onResult = onResult;
+	}
+
+	onOpen(): void {
+		const { contentEl, titleEl } = this;
+		titleEl.setText('Delete person from chart?');
+
+		contentEl.createEl('p', {
+			text: `Are you sure you want to remove "${this.personName}" from the chart?`
+		});
+		contentEl.createEl('p', {
+			text: 'The person note file will not be deleted, only their entry in the chart.',
+			cls: 'mod-muted'
+		});
+
+		const buttonContainer = contentEl.createDiv({ cls: 'crc-confirmation-buttons' });
+
+		const cancelBtn = buttonContainer.createEl('button', {
+			text: 'Cancel',
+			cls: 'crc-btn-secondary'
+		});
+		cancelBtn.addEventListener('click', () => {
+			this.onResult(false);
+			this.close();
+		});
+
+		const confirmBtn = buttonContainer.createEl('button', {
+			text: 'Delete',
+			cls: 'mod-warning'
+		});
+		confirmBtn.addEventListener('click', () => {
+			this.onResult(true);
+			this.close();
+		});
+	}
+
+	onClose(): void {
+		this.contentEl.empty();
 	}
 }

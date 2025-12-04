@@ -72,7 +72,7 @@ export class LineageTrackingService {
 	 * matrilineal (mother's line), or all descendants.
 	 */
 	async assignLineage(definition: LineageDefinition): Promise<LineageStats> {
-		await this.graphService.ensureCacheLoaded();
+		this.graphService.ensureCacheLoaded();
 
 		const rootPerson = this.graphService.getPersonByCrId(definition.rootCrId);
 		if (!rootPerson) {
@@ -180,7 +180,7 @@ export class LineageTrackingService {
 	 * Remove a lineage from all people who have it
 	 */
 	async removeLineage(lineageName: string): Promise<number> {
-		await this.graphService.ensureCacheLoaded();
+		this.graphService.ensureCacheLoaded();
 
 		const allPeople = this.graphService.getAllPeople();
 		let removedCount = 0;
@@ -201,8 +201,8 @@ export class LineageTrackingService {
 	/**
 	 * Get all unique lineages currently assigned in the vault
 	 */
-	async getAllLineages(): Promise<string[]> {
-		await this.graphService.ensureCacheLoaded();
+	getAllLineages(): string[] {
+		this.graphService.ensureCacheLoaded();
 
 		const allPeople = this.graphService.getAllPeople();
 		const lineages = new Set<string>();
@@ -220,8 +220,8 @@ export class LineageTrackingService {
 	/**
 	 * Get people belonging to a specific lineage
 	 */
-	async getPeopleInLineage(lineageName: string): Promise<PersonNode[]> {
-		await this.graphService.ensureCacheLoaded();
+	getPeopleInLineage(lineageName: string): PersonNode[] {
+		this.graphService.ensureCacheLoaded();
 
 		const allPeople = this.graphService.getAllPeople();
 		const results: PersonNode[] = [];
@@ -239,8 +239,8 @@ export class LineageTrackingService {
 	/**
 	 * Find common lineages between two people
 	 */
-	async findCommonLineages(crId1: string, crId2: string): Promise<string[]> {
-		await this.graphService.ensureCacheLoaded();
+	findCommonLineages(crId1: string, crId2: string): string[] {
+		this.graphService.ensureCacheLoaded();
 
 		const person1 = this.graphService.getPersonByCrId(crId1);
 		const person2 = this.graphService.getPersonByCrId(crId2);

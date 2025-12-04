@@ -228,7 +228,7 @@ export class MergeService {
 			const relationshipsUpdated = await this.updateRelationships(stagingCrId, mainCrId);
 
 			// Delete the staging file
-			await this.app.vault.delete(stagingFile);
+			await this.app.fileManager.trashFile(stagingFile);
 
 			logger.info('merge', `Merged ${stagingFile.path} into ${mainFile.path}`, {
 				relationshipsUpdated

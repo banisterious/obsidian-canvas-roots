@@ -100,6 +100,10 @@ declare namespace L {
 		/** Whether the image has been edited */
 		edited: boolean;
 
+		// Internal properties (accessed for corner pre-setting)
+		/** Internal corner storage - set before image load for proper initialization */
+		_corners: LatLng[];
+
 		/**
 		 * Get all four corner positions
 		 * @returns Array of LatLng in order: NW, NE, SW, SE

@@ -610,7 +610,7 @@ export class BidirectionalLinker {
 	/**
 	 * Resolve a wikilink to a TFile
 	 */
-	private resolveLink(link: string | unknown, sourceFile: TFile): TFile | null {
+	private resolveLink(link: unknown, sourceFile: TFile): TFile | null {
 		// Extract string from potentially complex value
 		const stringLink = this.extractStringLink(link);
 		if (!stringLink) {
