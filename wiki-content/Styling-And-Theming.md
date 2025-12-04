@@ -73,9 +73,38 @@ For styling beyond the JSON Canvas spec, use the [Advanced Canvas](https://githu
 
 **Note:** Advanced Canvas features may not be portable to other Canvas viewers.
 
+## Style Settings Plugin (Planned)
+
+> **Status:** Planned for v0.8.0. See [Roadmap](Roadmap#style-settings-integration) for details.
+
+Canvas Roots will integrate with the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin to provide a user-friendly way to customize visual options without editing CSS.
+
+### Planned Options
+
+**Family Chart View:**
+- Female card color
+- Male card color
+- Unknown gender card color
+- Chart background color
+- Card text color
+
+**Canvas Nodes (future):**
+- Node width and height
+- Border radius
+- Connection line styling
+
+### How It Will Work
+
+1. Install the Style Settings plugin from Community Plugins
+2. Open Settings → Style Settings
+3. Find the "Canvas Roots" section
+4. Adjust colors and dimensions with visual pickers and sliders
+
+This is an optional enhancement - Canvas Roots works without Style Settings installed.
+
 ## CSS Customization
 
-Canvas Roots uses CSS classes that can be customized in your vault's CSS snippets.
+For advanced customization beyond Style Settings, Canvas Roots uses CSS classes that can be customized in your vault's CSS snippets.
 
 ### Canvas Node Classes
 
