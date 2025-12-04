@@ -18,6 +18,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [World-Building Suite](#world-building-suite)
   - [Research & Analysis Tools](#research--analysis-tools)
 - [Future Considerations](#future-considerations)
+  - [Style Settings Integration](#style-settings-integration)
 - [Known Limitations](#known-limitations)
 - [Contributing](#contributing)
 
@@ -39,6 +40,7 @@ The following priority order guides future development:
 | 8 | [Source Media Gallery](#source-media-gallery--document-viewer) | Planned |
 | 9 | [Canvas Media Nodes](#canvas-media-nodes) | Planned |
 | 10 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
+| 11 | [Style Settings Integration](#style-settings-integration) | Planned |
 
 ---
 
@@ -457,6 +459,40 @@ confidence: medium
 ---
 
 ## Future Considerations
+
+### Style Settings Integration
+
+**Summary:** Expose Canvas Roots styling options via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin, allowing users to customize colors and dimensions without editing CSS.
+
+**Phase 1: Family Chart Colors (v0.8.0)**
+- Female card color (default: `rgb(196, 138, 146)`)
+- Male card color (default: `rgb(120, 159, 172)`)
+- Unknown gender card color (default: `lightgray`)
+- Chart background color
+- Card text color
+
+**Phase 2: Canvas Node Styling (v0.9.0+)**
+- Node width and height
+- Border radius
+- Border width
+- Connection line width and color
+
+**Implementation Notes:**
+- Add `/* @settings */` block to `styles.css` with YAML configuration
+- Call `app.workspace.trigger("parse-style-settings")` on plugin load
+- Use `variable-color` type for colors, `variable-number-slider` for dimensions
+- Scope family-chart variables properly (currently `.cr-fcv-chart-container.f3`)
+
+**Dependencies:**
+- Style Settings plugin must be installed by user (optional dependency)
+- No changes to core functionality; styling-only enhancement
+
+**Not Planned:**
+- Spacing variables (internal layout; could break UI)
+- Transition timing (edge case)
+- Map view styling (Leaflet has its own theming)
+
+---
 
 ### Events System Foundation
 

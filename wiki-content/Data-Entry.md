@@ -128,8 +128,32 @@ father_id: xyz-789-uvw-012
 
 For entering many family members at once, consider using [Obsidian Bases](Bases-Integration) which provides a spreadsheet-like interface for editing frontmatter across multiple notes.
 
+## Other Data Types
+
+Canvas Roots also supports Places and Organizations, each with their own data entry workflows:
+
+### Place Notes
+
+Geographic locations for births, deaths, and other events. Place notes support:
+- Coordinates (latitude/longitude) for map visualization
+- Hierarchical relationships (parent places)
+- Categories and universes for fictional locations
+
+See [Geographic Features](Geographic-Features) for complete documentation.
+
+### Organization Notes
+
+Groups, institutions, and affiliations that people belong to. Organization notes support:
+- Organization types (guild, corporation, noble house, etc.)
+- Member relationships linking people to organizations
+- Universe support for fictional world-building
+
+See [Organization Notes](Organization-Notes) for complete documentation.
+
 ## Next Steps
 
 - [Bases Integration](Bases-Integration) - Spreadsheet-like bulk editing
 - [Frontmatter Reference](Frontmatter-Reference) - Complete property documentation
 - [Import & Export](Import-Export) - Import from GEDCOM or CSV
+- [Geographic Features](Geographic-Features) - Place notes and maps
+- [Organization Notes](Organization-Notes) - Organizations and memberships
