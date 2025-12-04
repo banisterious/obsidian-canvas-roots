@@ -84,13 +84,13 @@ export const EDUCATIONAL: OrganizationTypeDefinition = {
 };
 
 /**
- * Custom - User-defined organization type
+ * Custom - User-defined organization type (fallback)
  */
 export const CUSTOM: OrganizationTypeDefinition = {
 	id: 'custom',
-	name: 'Custom',
+	name: 'Other',
 	color: '#95a5a6', // Gray
-	icon: 'circle',
+	icon: 'folder',
 	builtIn: true
 };
 

@@ -3,112 +3,65 @@
  * Organization notes UI in Control Center
  */
 
-/* Organization sections grouped by type */
-.cr-org-section {
-  margin-bottom: 16px;
+/* Organizations table */
+.cr-org-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
 }
 
-.cr-org-section-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  padding: 4px 0;
-}
-
-.cr-org-section-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-}
-
-.cr-org-section-title {
-  font-size: 0.75em;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+.cr-org-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-size: 0.85em;
   color: var(--text-muted);
+  border-bottom: 1px solid var(--background-modifier-border);
 }
 
-/* Organization list */
-.cr-org-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* Individual organization item */
-.cr-org-item {
-  display: flex;
-  align-items: stretch;
+.cr-org-table td {
   padding: 10px 12px;
-  border-radius: var(--radius-s);
-  background-color: var(--background-secondary);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--background-modifier-border-hover);
+}
+
+.cr-org-row {
+  cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
-.cr-org-item:hover {
+.cr-org-row:hover {
   background-color: var(--background-modifier-hover);
 }
 
-.cr-org-item-color {
-  width: 4px;
-  border-radius: 2px;
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-
-.cr-org-item-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.cr-org-item-name-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.cr-org-item-name {
+.cr-org-cell-name {
   font-weight: 500;
   color: var(--text-normal);
-  text-decoration: none;
-  cursor: pointer;
+  width: 50%;
 }
 
-.cr-org-item-name:hover {
+.cr-org-row:hover .cr-org-cell-name {
   color: var(--text-accent);
-  text-decoration: underline;
 }
 
-.cr-org-item-motto {
-  font-style: italic;
-  font-size: 0.85em;
+.cr-org-cell-universe {
   color: var(--text-muted);
 }
 
-.cr-org-item-info {
-  display: flex;
-  gap: 12px;
-  margin-top: 4px;
-  font-size: 0.85em;
+.cr-org-cell-members {
+  text-align: center;
   color: var(--text-muted);
 }
 
-.cr-org-item-universe {
-  padding: 1px 6px;
-  border-radius: var(--radius-s);
-  background-color: var(--background-modifier-border);
-  font-size: 0.85em;
-}
-
-.cr-org-item-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: 12px;
+/* Type badge */
+.cr-org-type-badge {
+  font-size: 0.7em;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 /* Stats grid */

@@ -10,10 +10,7 @@ import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
 import { OrganizationService } from '../services/organization-service';
 import { MembershipService } from '../services/membership-service';
-import type {
-	OrganizationInfo,
-	OrganizationType
-} from '../types/organization-types';
+import type { OrganizationInfo } from '../types/organization-types';
 import { getOrganizationType, DEFAULT_ORGANIZATION_TYPES } from '../constants/organization-types';
 import { CreateOrganizationModal } from './create-organization-modal';
 
@@ -83,32 +80,30 @@ function renderOrganizationsListCard(
 			text: 'Create organization notes with type: organization in frontmatter, or use the button above.'
 		});
 	} else {
-		// Group by type
-		const byType = new Map<OrganizationType, OrganizationInfo[]>();
-		for (const org of orgs) {
-			const list = byType.get(org.orgType) || [];
-			list.push(org);
-			byType.set(org.orgType, list);
+		// Check if any org has members
+		const anyHasMembers = orgs.some(org =>
+			membershipService.getOrganizationMembers(org.crId).length > 0
+		);
+
+		// Render as table
+		const table = content.createEl('table', { cls: 'cr-org-table' });
+
+		// Header
+		const thead = table.createEl('thead');
+		const headerRow = thead.createEl('tr');
+		headerRow.createEl('th', { text: 'Name' });
+		headerRow.createEl('th', { text: 'Type' });
+		headerRow.createEl('th', { text: 'Universe' });
+		if (anyHasMembers) {
+			headerRow.createEl('th', { text: 'Members' });
 		}
 
-		// Render each group
-		for (const [orgType, typeOrgs] of byType) {
-			const typeDef = getOrganizationType(orgType);
-			const section = content.createDiv({ cls: 'cr-org-section' });
+		// Body
+		const tbody = table.createEl('tbody');
+		const sortedOrgs = orgs.sort((a, b) => a.name.localeCompare(b.name));
 
-			// Section header
-			const header = section.createDiv({ cls: 'cr-org-section-header' });
-			const headerIcon = header.createSpan({ cls: 'cr-org-section-icon' });
-			setIcon(headerIcon, typeDef.icon);
-			headerIcon.style.color = typeDef.color;
-			header.createSpan({ text: typeDef.name.toUpperCase(), cls: 'cr-org-section-title' });
-			header.createSpan({ text: `(${typeOrgs.length})`, cls: 'crc-text-muted' });
-
-			// Organization list
-			const list = section.createDiv({ cls: 'cr-org-list' });
-			for (const org of typeOrgs.sort((a, b) => a.name.localeCompare(b.name))) {
-				renderOrganizationItem(list, org, orgService, membershipService, plugin);
-			}
+		for (const org of sortedOrgs) {
+			renderOrganizationRow(tbody, org, membershipService, plugin, anyHasMembers);
 		}
 	}
 
@@ -116,69 +111,57 @@ function renderOrganizationsListCard(
 }
 
 /**
- * Render a single organization item
+ * Render a single organization as a table row
  */
-function renderOrganizationItem(
-	container: HTMLElement,
+function renderOrganizationRow(
+	tbody: HTMLTableSectionElement,
 	org: OrganizationInfo,
-	orgService: OrganizationService,
 	membershipService: MembershipService,
-	plugin: CanvasRootsPlugin
+	plugin: CanvasRootsPlugin,
+	showMembers: boolean
 ): void {
 	const typeDef = getOrganizationType(org.orgType);
 	const members = membershipService.getOrganizationMembers(org.crId);
-	const children = orgService.getChildOrganizations(org.crId);
 
-	const item = container.createDiv({ cls: 'cr-org-item' });
-
-	// Color indicator
-	const colorBar = item.createDiv({ cls: 'cr-org-item-color' });
-	colorBar.style.backgroundColor = typeDef.color;
-
-	// Main content
-	const main = item.createDiv({ cls: 'cr-org-item-main' });
-
-	// Name row
-	const nameRow = main.createDiv({ cls: 'cr-org-item-name-row' });
-	const nameLink = nameRow.createEl('a', { text: org.name, cls: 'cr-org-item-name' });
-	nameLink.addEventListener('click', (e) => {
-		e.preventDefault();
+	const row = tbody.createEl('tr', { cls: 'cr-org-row' });
+	row.addEventListener('click', () => {
 		void plugin.app.workspace.openLinkText(org.file.path, '');
 	});
 
-	if (org.motto) {
-		nameRow.createSpan({ text: `"${org.motto}"`, cls: 'cr-org-item-motto' });
+	// Name cell
+	const nameCell = row.createEl('td', { cls: 'cr-org-cell-name' });
+	nameCell.createSpan({ text: org.name });
+
+	// Type cell with badge
+	const typeCell = row.createEl('td', { cls: 'cr-org-cell-type' });
+	const typeBadge = typeCell.createSpan({ cls: 'cr-org-type-badge' });
+	typeBadge.style.backgroundColor = typeDef.color;
+	typeBadge.style.color = getContrastColor(typeDef.color);
+	typeBadge.textContent = typeDef.name;
+
+	// Universe cell
+	const universeCell = row.createEl('td', { cls: 'cr-org-cell-universe' });
+	universeCell.textContent = org.universe || '—';
+
+	// Members cell (only if any org has members)
+	if (showMembers) {
+		const membersCell = row.createEl('td', { cls: 'cr-org-cell-members' });
+		membersCell.textContent = members.length > 0 ? String(members.length) : '—';
 	}
+}
 
-	// Info row
-	const infoRow = main.createDiv({ cls: 'cr-org-item-info' });
-
-	if (members.length > 0) {
-		infoRow.createSpan({ text: `${members.length} member${members.length !== 1 ? 's' : ''}` });
-	}
-
-	if (children.length > 0) {
-		infoRow.createSpan({ text: `${children.length} sub-org${children.length !== 1 ? 's' : ''}` });
-	}
-
-	if (org.universe) {
-		infoRow.createSpan({ text: org.universe, cls: 'cr-org-item-universe' });
-	}
-
-	if (org.founded) {
-		infoRow.createSpan({ text: `Founded: ${org.founded}`, cls: 'crc-text-muted' });
-	}
-
-	// Actions
-	const actions = item.createDiv({ cls: 'cr-org-item-actions' });
-	const viewBtn = actions.createEl('button', {
-		cls: 'cr-btn-icon',
-		attr: { 'aria-label': 'Open note' }
-	});
-	setIcon(viewBtn, 'external-link');
-	viewBtn.addEventListener('click', () => {
-		void plugin.app.workspace.openLinkText(org.file.path, '');
-	});
+/**
+ * Get contrasting text color for a background
+ */
+function getContrastColor(hexColor: string): string {
+	// Remove # if present
+	const hex = hexColor.replace('#', '');
+	const r = parseInt(hex.substring(0, 2), 16);
+	const g = parseInt(hex.substring(2, 4), 16);
+	const b = parseInt(hex.substring(4, 6), 16);
+	// Calculate luminance
+	const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+	return luminance > 0.5 ? '#000000' : '#ffffff';
 }
 
 /**

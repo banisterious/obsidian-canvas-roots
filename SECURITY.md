@@ -6,7 +6,8 @@ Currently, security updates are provided for the latest release version only.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| 0.7.x   | :white_check_mark: |
+| < 0.7   | :x:                |
 
 ## Data Privacy and Personally Identifiable Information (PII)
 
@@ -16,8 +17,10 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
 
 - **Full names** of individuals and family members
 - **Birth and death dates**
-- **Family relationships** (parents, children, spouses)
-- **GEDCOM files** containing extensive genealogical data
+- **Family relationships** (parents, children, spouses, custom relationships)
+- **Organization memberships** (guilds, companies, political affiliations, etc.)
+- **Place associations** (birthplaces, residences, historical locations)
+- **GEDCOM/Gramps XML files** containing extensive genealogical data
 - **Custom notes** about individuals
 - **Potential additional PII** in linked Markdown files
 
@@ -34,12 +37,22 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
    - Format: Markdown with YAML frontmatter
    - Contains: Names, dates, relationships, cr_id values
 
-2. **Canvas Files** (`.canvas` files)
+2. **Place Notes** (`.md` files)
+   - Location: Anywhere in your vault (user-controlled)
+   - Format: Markdown with YAML frontmatter
+   - Contains: Location names, coordinates, historical associations
+
+3. **Organization Notes** (`.md` files)
+   - Location: Anywhere in your vault (user-controlled)
+   - Format: Markdown with YAML frontmatter
+   - Contains: Organization names, types, membership records
+
+4. **Canvas Files** (`.canvas` files)
    - Location: Anywhere in your vault (user-controlled)
    - Format: JSON
-   - Contains: Visual layout data, references to person notes
+   - Contains: Visual layout data, references to person/place/organization notes
 
-3. **Plugin Settings** (`data.json`)
+5. **Plugin Settings** (`data.json`)
    - Location: `.obsidian/plugins/canvas-roots/data.json`
    - Format: Plain text JSON (unencrypted)
    - Contains: Plugin configuration (node sizes, spacing, preferences)
@@ -140,8 +153,8 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
 1. **No Built-in Encryption**: The plugin does not encrypt data (relies on Obsidian/OS)
 2. **No Access Controls**: Anyone with vault access can view all data
 3. **No Audit Logging**: The plugin does not log data access
-4. **Obfuscation is Optional**: Users must manually enable obfuscation for exports/canvas
-5. **Obfuscation Mapping Files**: Mapping files contain PII and must be secured separately
+4. **Privacy Protection is Opt-in**: Users must manually enable privacy protection in settings
+5. **Canvas Display Not Protected**: Privacy settings apply to exports only; canvas displays full data
 
 ## Reporting a Vulnerability
 
@@ -204,40 +217,37 @@ If you suspect your vault containing family data has been compromised:
 
 Canvas Roots includes comprehensive data obfuscation capabilities designed to protect PII:
 
-### Export Obfuscation (Planned - Phase 3)
-- **Multiple obfuscation levels**: None, Minimal, Standard, Full
-- **Selective filters**: Choose to obfuscate all individuals, living only, minors only, or both
-  - **Living individuals**: Auto-detected based on dates or manually marked with `cr_living` property
-  - **Minors**: Configurable age threshold (default: under 18 years old)
-  - **Combined protection**: Apply filters together for maximum privacy
-- **Selective anonymization**: Names, dates, locations, notes, media
-- **Structure preservation**: Family relationships and graph structure maintained
-- **Reversible mapping**: Optional JSON mapping file for de-obfuscation
-- **GEDCOM compatible**: Obfuscated exports remain valid GEDCOM files
+### Living Person Protection (Implemented)
+- **Automatic detection**: Persons without death dates born within a configurable threshold (default: 100 years) are considered living
+- **Display formats**: Choose how protected persons appear: "Living", "Private", initials, or hidden
+- **Export protection**: Living persons can be automatically protected in GEDCOM, GEDCOM X, and Gramps XML exports
+- **Per-person override**: Mark individuals as living/deceased with the `cr_living` frontmatter property
 
-### Canvas Obfuscation (Planned - Phase 4)
+### Export Privacy (Implemented)
+- **Privacy-aware exports**: GEDCOM, GEDCOM X, Gramps XML, and CSV exports respect privacy settings
+- **Configurable threshold**: Set the age threshold for automatic living person detection
+- **Structure preservation**: Family relationships maintained even when names are protected
+- **Multiple formats**: Privacy protection works across all export formats
+
+### Canvas Obfuscation (Planned)
 - **Temporary display mode**: Toggle obfuscation for screenshots/presentations
 - **Visual indicators**: Clear indication when obfuscation is active
 - **Non-destructive**: Original notes remain unchanged
-- **Configurable levels**: Same obfuscation levels as export
+- **Configurable levels**: Match export privacy settings
 
 ### Use Cases
 - **GDPR Compliance**: Share historical research while protecting living EU residents' data
-- **Child Protection**: Export family trees with automatic protection for minors
 - **Public Genealogy**: Share complete historical trees while protecting recent generations
 - **Professional Demonstrations**: Show family tree structures without exposing client PII
 - **Educational Materials**: Create teaching examples protecting all living individuals
 - **Collaborative Research**: Share tree structure with researchers who need patterns, not names
 
-Data obfuscation features are planned for a future release. See [roadmap.md](docs/roadmap.md) for details.
-
 ## Future Security Enhancements
 
 Additional planned improvements:
 
+- Canvas obfuscation mode for screenshots/presentations
 - Optional encryption for cr_id values
-- Automatic living/deceased person detection
-- Enhanced obfuscation algorithms
 - Audit logging capabilities
 - Access control recommendations
 
