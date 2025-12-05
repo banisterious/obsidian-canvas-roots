@@ -116,7 +116,7 @@ See [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap
 | Feature | Description |
 |---------|-------------|
 | **Organization Chart Visualization** | D3-based interactive org chart visualization for organizations |
-| **Source Media Gallery** | Centralized evidence management with thumbnails and citation generation (source indicators available now) |
+| **Source Media Gallery** | Thumbnails, citation generation, and document viewer for source notes |
 | **Canvas Media Nodes** | Media files as first-class canvas entities with intelligent placement |
 | **Oral History Tools** | Timestamped transcript citations, interview subject graphs, chronological story mapping |
 
