@@ -429,7 +429,7 @@ mentions:
 
 ### Chronological Story Mapping
 
-> See [chronological-story-mapping.md](../docs/plans/chronological-story-mapping.md) for detailed implementation plan.
+> See [chronological-story-mapping.md](../docs/planning/chronological-story-mapping.md) for detailed implementation plan.
 
 **Summary:** Event-based timeline visualization supporting both genealogists (source-derived events) and worldbuilders (canonical events). Integrates with existing fictional date systems for cross-era sorting.
 

@@ -263,7 +263,7 @@ Canvas Roots plans to support integration with the popular [Calendarium](https:/
 
 If you use Calendarium for fantasy calendar management, this integration will allow you to leverage your existing calendar definitions while using Canvas Roots' genealogy and worldbuilding features.
 
-See the [Chronological Story Mapping plan](../docs/plans/chronological-story-mapping.md) for full details on this planned integration.
+See the [Chronological Story Mapping plan](../docs/planning/chronological-story-mapping.md) for full details on this planned integration.
 
 ---
 
