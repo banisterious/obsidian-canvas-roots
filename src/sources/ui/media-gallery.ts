@@ -328,7 +328,7 @@ function renderMediaThumbnail(
 		// Click to open file
 		if (item.file) {
 			thumbnail.addEventListener('click', () => {
-				plugin.app.workspace.openLinkText(item.file!.path, '');
+				void plugin.app.workspace.openLinkText(item.file!.path, '');
 			});
 		}
 	} else {
@@ -337,7 +337,7 @@ function renderMediaThumbnail(
 
 		if (item.file) {
 			thumbnail.addEventListener('click', () => {
-				plugin.app.workspace.openLinkText(item.file!.path, '');
+				void plugin.app.workspace.openLinkText(item.file!.path, '');
 			});
 		}
 	}
@@ -492,7 +492,7 @@ class MediaLightboxModal extends Modal {
 
 		// Load image
 		const imgUrl = this.app.vault.getResourcePath(item.file);
-		const img = this.imageContainer.createEl('img', {
+		this.imageContainer.createEl('img', {
 			cls: 'cr-media-lightbox-image',
 			attr: {
 				src: imgUrl,

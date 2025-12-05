@@ -5,7 +5,7 @@
  * sources list, statistics, and source types.
  */
 
-import { setIcon, ToggleComponent, TFile, Notice } from 'obsidian';
+import { setIcon, ToggleComponent, TFile, Notice, Modal, App } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
 import { SourceService } from '../services/source-service';
@@ -320,7 +320,7 @@ function renderSourceTypesCard(
 			section.createEl('h4', { text: categoryName, cls: 'cr-subsection-heading' });
 
 			const typeList = section.createDiv({ cls: 'cr-source-type-list' });
-			for (const typeDef of types as SourceTypeDefinition[]) {
+			for (const typeDef of types) {
 				renderSourceTypeItem(typeList, typeDef, plugin, showTab);
 			}
 		}
@@ -380,11 +380,10 @@ function renderSourceTypeItem(
 			attr: { 'aria-label': 'Delete' }
 		});
 		setIcon(deleteBtn, 'trash-2');
-		deleteBtn.addEventListener('click', async (e) => {
+		deleteBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
-			// Confirm deletion
-			const confirmed = confirm(`Delete source type "${typeDef.name}"? This cannot be undone.`);
-			if (confirmed) {
+			// Confirm deletion via modal
+			new DeleteSourceTypeModal(plugin.app, typeDef.name, async () => {
 				const index = plugin.settings.customSourceTypes.findIndex(t => t.id === typeDef.id);
 				if (index !== -1) {
 					plugin.settings.customSourceTypes.splice(index, 1);
@@ -392,10 +391,54 @@ function renderSourceTypeItem(
 					new Notice('Source type deleted');
 					showTab('sources');
 				}
-			}
+			}).open();
 		});
 
 		// Custom badge
 		item.createSpan({ text: 'custom', cls: 'crc-badge crc-badge--accent' });
+	}
+}
+
+/**
+ * Simple confirmation modal for deleting source types
+ */
+class DeleteSourceTypeModal extends Modal {
+	private typeName: string;
+	private onConfirm: () => void;
+
+	constructor(app: App, typeName: string, onConfirm: () => void) {
+		super(app);
+		this.typeName = typeName;
+		this.onConfirm = onConfirm;
+	}
+
+	onOpen(): void {
+		const { contentEl, titleEl } = this;
+		titleEl.setText('Delete source type');
+
+		contentEl.createEl('p', {
+			text: `Delete source type "${this.typeName}"? This cannot be undone.`
+		});
+
+		const buttonContainer = contentEl.createDiv({ cls: 'crc-confirmation-buttons' });
+
+		const cancelBtn = buttonContainer.createEl('button', {
+			text: 'Cancel',
+			cls: 'crc-btn-secondary'
+		});
+		cancelBtn.addEventListener('click', () => this.close());
+
+		const confirmBtn = buttonContainer.createEl('button', {
+			text: 'Delete',
+			cls: 'mod-warning'
+		});
+		confirmBtn.addEventListener('click', () => {
+			this.onConfirm();
+			this.close();
+		});
+	}
+
+	onClose(): void {
+		this.contentEl.empty();
 	}
 }

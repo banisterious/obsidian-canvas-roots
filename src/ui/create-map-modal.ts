@@ -7,6 +7,15 @@ import { App, Modal, Setting, TFile, Notice, normalizePath } from 'obsidian';
 import { createLucideIcon } from './lucide-icons';
 
 /**
+ * Safely convert frontmatter value to string
+ */
+function fmToString(value: unknown, fallback = ''): string {
+	if (value === undefined || value === null) return fallback;
+	if (typeof value === 'object') return JSON.stringify(value);
+	return String(value);
+}
+
+/**
  * Data structure for map note frontmatter
  */
 interface MapData {
@@ -67,10 +76,10 @@ function parseMapDataFromFrontmatter(frontmatter: Record<string, unknown>): MapD
 	}
 
 	return {
-		mapId: String(frontmatter.map_id || ''),
-		name: String(frontmatter.name || ''),
-		universe: String(frontmatter.universe || ''),
-		imagePath: String(frontmatter.image || ''),
+		mapId: fmToString(frontmatter.map_id, ''),
+		name: fmToString(frontmatter.name, ''),
+		universe: fmToString(frontmatter.universe, ''),
+		imagePath: fmToString(frontmatter.image, ''),
 		coordinateSystem,
 		boundsNorth,
 		boundsSouth,

@@ -12,8 +12,7 @@ import {
 	generateCitation,
 	generateAllCitations,
 	getCitationFormats,
-	copyCitationToClipboard,
-	type Citation
+	copyCitationToClipboard
 } from '../services/citation-service';
 
 /**
@@ -86,13 +85,13 @@ export class CitationGeneratorModal extends Modal {
 		const copyIcon = copyBtn.createSpan({ cls: 'crc-button-icon' });
 		setIcon(copyIcon, 'copy');
 		copyBtn.createSpan({ text: 'Copy to clipboard' });
-		copyBtn.addEventListener('click', () => this.copyCurrentCitation());
+		copyBtn.addEventListener('click', () => void this.copyCurrentCitation());
 
 		const copyAllBtn = actions.createEl('button');
 		const copyAllIcon = copyAllBtn.createSpan({ cls: 'crc-button-icon' });
 		setIcon(copyAllIcon, 'files');
 		copyAllBtn.createSpan({ text: 'Copy all formats' });
-		copyAllBtn.addEventListener('click', () => this.copyAllCitations());
+		copyAllBtn.addEventListener('click', () => void this.copyAllCitations());
 
 		const closeBtn = actions.createEl('button', { text: 'Close' });
 		closeBtn.addEventListener('click', () => this.close());
@@ -172,9 +171,9 @@ export function renderCitationWidget(
 		});
 		btn.createSpan({ text: format.name });
 
-		btn.addEventListener('click', async () => {
+		btn.addEventListener('click', () => {
 			const citation = generateCitation(source, format.id);
-			await copyCitationToClipboard(citation);
+			void copyCitationToClipboard(citation);
 			new Notice(`Copied ${format.name} citation`);
 		});
 	}

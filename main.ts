@@ -2765,7 +2765,7 @@ export default class CanvasRootsPlugin extends Plugin {
 	 * Add a source link to a person note
 	 * Opens source picker, then adds the selected source to the person's sources
 	 */
-	private async addSourceToPersonNote(file: TFile): Promise<void> {
+	private addSourceToPersonNote(file: TFile): void {
 		new SourcePickerModal(this.app, this, async (source) => {
 			// Get current sources from frontmatter
 			const cache = this.app.metadataCache.getFileCache(file);
@@ -3146,7 +3146,7 @@ export default class CanvasRootsPlugin extends Plugin {
 		void (async () => {
 			try {
 				const service = new LineageTrackingService(this.app);
-				const lineages = await service.getAllLineages();
+				const lineages = service.getAllLineages();
 
 				if (lineages.length === 0) {
 					new Notice('No lineages found in vault');
@@ -4930,7 +4930,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 			// If we have a root person, set it in the view
 			if (rootPersonId && leaf.view instanceof FamilyChartView) {
-				await leaf.view.setRootPerson(rootPersonId);
+				leaf.view.setRootPerson(rootPersonId);
 			}
 		}
 	}
@@ -5008,7 +5008,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 		// Restore the root person
 		if (rootPersonId && newLeaf.view instanceof FamilyChartView) {
-			await newLeaf.view.setRootPerson(rootPersonId);
+			newLeaf.view.setRootPerson(rootPersonId);
 		}
 	}
 }

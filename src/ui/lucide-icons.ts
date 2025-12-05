@@ -86,7 +86,6 @@ export type LucideIconName =
 	| 'graduation-cap' // Educational
 	| 'shield' // Military
 	// Source types
-	| 'file-text' // Vital records (already defined above)
 	| 'bookmark' // Obituary
 	| 'gavel' // Court records
 	| 'scroll' // Probate

@@ -18,6 +18,15 @@ import { getSourceTemplate, applyTemplatePlaceholders } from '../types/source-te
 import { generateCrId } from '../../core/uuid';
 
 /**
+ * Safely convert frontmatter value to string
+ */
+function fmToString(value: unknown): string {
+	if (value === undefined || value === null) return '';
+	if (typeof value === 'object') return JSON.stringify(value);
+	return String(value);
+}
+
+/**
  * Service for managing source notes
  */
 export class SourceService {
@@ -403,12 +412,12 @@ export class SourceService {
 		// Collect media fields (media, media_2, media_3, etc.)
 		const media: string[] = [];
 		if (frontmatter.media) {
-			media.push(String(frontmatter.media));
+			media.push(fmToString(frontmatter.media));
 		}
 		for (let i = 2; i <= 20; i++) {
 			const key = `media_${i}`;
 			if (frontmatter[key]) {
-				media.push(String(frontmatter[key]));
+				media.push(fmToString(frontmatter[key]));
 			} else {
 				break; // Stop at first missing number
 			}
@@ -417,7 +426,7 @@ export class SourceService {
 		// Parse confidence
 		let confidence: SourceConfidence = 'unknown';
 		if (frontmatter.confidence) {
-			const conf = String(frontmatter.confidence).toLowerCase();
+			const conf = fmToString(frontmatter.confidence).toLowerCase();
 			if (conf === 'high' || conf === 'medium' || conf === 'low' || conf === 'unknown') {
 				confidence = conf;
 			}
@@ -429,15 +438,15 @@ export class SourceService {
 			title,
 			sourceType,
 			// Support both new and legacy property names for backwards compatibility
-			date: (frontmatter.source_date || frontmatter.date) ? String(frontmatter.source_date || frontmatter.date) : undefined,
-			dateAccessed: (frontmatter.source_date_accessed || frontmatter.date_accessed) ? String(frontmatter.source_date_accessed || frontmatter.date_accessed) : undefined,
-			repository: (frontmatter.source_repository || frontmatter.repository) ? String(frontmatter.source_repository || frontmatter.repository) : undefined,
-			repositoryUrl: (frontmatter.source_repository_url || frontmatter.repository_url) ? String(frontmatter.source_repository_url || frontmatter.repository_url) : undefined,
-			collection: frontmatter.collection ? String(frontmatter.collection) : undefined,
-			location: frontmatter.location ? String(frontmatter.location) : undefined,
+			date: (frontmatter.source_date || frontmatter.date) ? fmToString(frontmatter.source_date || frontmatter.date) : undefined,
+			dateAccessed: (frontmatter.source_date_accessed || frontmatter.date_accessed) ? fmToString(frontmatter.source_date_accessed || frontmatter.date_accessed) : undefined,
+			repository: (frontmatter.source_repository || frontmatter.repository) ? fmToString(frontmatter.source_repository || frontmatter.repository) : undefined,
+			repositoryUrl: (frontmatter.source_repository_url || frontmatter.repository_url) ? fmToString(frontmatter.source_repository_url || frontmatter.repository_url) : undefined,
+			collection: frontmatter.collection ? fmToString(frontmatter.collection) : undefined,
+			location: frontmatter.location ? fmToString(frontmatter.location) : undefined,
 			media,
 			confidence,
-			citationOverride: frontmatter.citation_override ? String(frontmatter.citation_override) : undefined
+			citationOverride: frontmatter.citation_override ? fmToString(frontmatter.citation_override) : undefined
 		};
 	}
 

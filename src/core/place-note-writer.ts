@@ -372,6 +372,16 @@ function formatWikilink(value: string): string {
 }
 
 /**
+ * Safely convert a value to string for YAML output
+ */
+function toYamlValue(value: unknown): string {
+	if (typeof value === 'object' && value !== null) {
+		return JSON.stringify(value);
+	}
+	return String(value);
+}
+
+/**
  * Build YAML frontmatter string from an object
  */
 function buildYamlFrontmatter(frontmatter: Record<string, unknown>): string {
@@ -410,7 +420,7 @@ function buildYamlFrontmatter(frontmatter: Record<string, unknown>): string {
 				lines.push(`  ${line}`);
 			}
 		} else {
-			lines.push(`${key}: ${String(value)}`);
+			lines.push(`${key}: ${toYamlValue(value)}`);
 		}
 	}
 
@@ -431,9 +441,9 @@ function formatObjectForYaml(obj: Record<string, unknown>, indent: number = 0): 
 
 		if (i === 0 && indent > 0) {
 			// First property on same line as array dash
-			lines.push(`${key}: ${String(value)}`);
+			lines.push(`${key}: ${toYamlValue(value)}`);
 		} else {
-			lines.push(`${key}: ${String(value)}`);
+			lines.push(`${key}: ${toYamlValue(value)}`);
 		}
 	}
 

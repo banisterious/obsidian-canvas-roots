@@ -46,6 +46,15 @@ import { renderSourcesTab } from '../sources';
 const logger = getLogger('ControlCenter');
 
 /**
+ * Safely convert frontmatter/data value to string
+ */
+function toSafeString(value: unknown): string {
+	if (value === undefined || value === null) return '';
+	if (typeof value === 'object') return JSON.stringify(value);
+	return String(value);
+}
+
+/**
  * Relationship field data
  */
 interface RelationshipField {
@@ -4899,7 +4908,6 @@ export class ControlCenterModal extends Modal {
 		let suffix = 1;
 		const parentPath = file.parent?.path || '';
 
-		// eslint-disable-next-line no-constant-condition -- Intentional infinite loop with break condition inside
 		while (true) {
 			const testPath = parentPath
 				? `${parentPath}/${finalName}.md`
@@ -5116,49 +5124,49 @@ export class ControlCenterModal extends Modal {
 				];
 
 				if (data.universe) {
-					frontmatterLines.push(`universe: ${String(data.universe)}`);
+					frontmatterLines.push(`universe: ${toSafeString(data.universe)}`);
 				}
 				if (data.image) {
-					frontmatterLines.push(`image: ${String(data.image)}`);
+					frontmatterLines.push(`image: ${toSafeString(data.image)}`);
 				}
 				if (data.coordinate_system) {
-					frontmatterLines.push(`coordinate_system: ${String(data.coordinate_system)}`);
+					frontmatterLines.push(`coordinate_system: ${toSafeString(data.coordinate_system)}`);
 				}
 
 				// Handle bounds (geographic) or dimensions (pixel)
 				if (data.coordinate_system === 'pixel') {
 					if (data.width !== undefined) {
-						frontmatterLines.push(`width: ${String(data.width)}`);
+						frontmatterLines.push(`width: ${toSafeString(data.width)}`);
 					}
 					if (data.height !== undefined) {
-						frontmatterLines.push(`height: ${String(data.height)}`);
+						frontmatterLines.push(`height: ${toSafeString(data.height)}`);
 					}
 				} else {
 					// Geographic bounds
 					if (data.bounds && typeof data.bounds === 'object') {
 						const bounds = data.bounds as Record<string, number>;
-						if (bounds.north !== undefined) frontmatterLines.push(`north: ${String(bounds.north)}`);
-						if (bounds.south !== undefined) frontmatterLines.push(`south: ${String(bounds.south)}`);
-						if (bounds.east !== undefined) frontmatterLines.push(`east: ${String(bounds.east)}`);
-						if (bounds.west !== undefined) frontmatterLines.push(`west: ${String(bounds.west)}`);
+						if (bounds.north !== undefined) frontmatterLines.push(`north: ${toSafeString(bounds.north)}`);
+						if (bounds.south !== undefined) frontmatterLines.push(`south: ${toSafeString(bounds.south)}`);
+						if (bounds.east !== undefined) frontmatterLines.push(`east: ${toSafeString(bounds.east)}`);
+						if (bounds.west !== undefined) frontmatterLines.push(`west: ${toSafeString(bounds.west)}`);
 					}
 				}
 
 				// Optional fields
 				if (data.default_zoom !== undefined) {
-					frontmatterLines.push(`default_zoom: ${String(data.default_zoom)}`);
+					frontmatterLines.push(`default_zoom: ${toSafeString(data.default_zoom)}`);
 				}
 				if (data.min_zoom !== undefined) {
-					frontmatterLines.push(`min_zoom: ${String(data.min_zoom)}`);
+					frontmatterLines.push(`min_zoom: ${toSafeString(data.min_zoom)}`);
 				}
 				if (data.max_zoom !== undefined) {
-					frontmatterLines.push(`max_zoom: ${String(data.max_zoom)}`);
+					frontmatterLines.push(`max_zoom: ${toSafeString(data.max_zoom)}`);
 				}
 				if (data.center && typeof data.center === 'object') {
 					const center = data.center as Record<string, number>;
 					frontmatterLines.push(`center:`);
-					if (center.lat !== undefined) frontmatterLines.push(`  lat: ${String(center.lat)}`);
-					if (center.lng !== undefined) frontmatterLines.push(`  lng: ${String(center.lng)}`);
+					if (center.lat !== undefined) frontmatterLines.push(`  lat: ${toSafeString(center.lat)}`);
+					if (center.lng !== undefined) frontmatterLines.push(`  lng: ${toSafeString(center.lng)}`);
 				}
 
 				frontmatterLines.push('---');
@@ -6418,7 +6426,7 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Render Custom Relationships card with table of all custom relationships
 	 */
-	private async renderRelationshipsOverviewCard(container: HTMLElement, service: RelationshipService): Promise<void> {
+	private renderRelationshipsOverviewCard(container: HTMLElement, service: RelationshipService): void {
 		const card = this.createCard({
 			title: 'Custom relationships',
 			icon: 'users'
@@ -6547,7 +6555,7 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Render Relationship Statistics card
 	 */
-	private async renderRelationshipStatsCard(container: HTMLElement, service: RelationshipService): Promise<void> {
+	private renderRelationshipStatsCard(container: HTMLElement, service: RelationshipService): void {
 		const card = this.createCard({
 			title: 'Statistics',
 			icon: 'bar-chart'
@@ -7232,7 +7240,6 @@ export class ControlCenterModal extends Modal {
 		let privacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
 
 		// Define updatePrivacyPreview before the settings that use it
-		// eslint-disable-next-line prefer-const -- Must be declared before assignment due to hoisting; used in callbacks before initialization
 		let updatePrivacyPreview: () => Promise<void>;
 
 		new Setting(content)
@@ -7686,7 +7693,6 @@ export class ControlCenterModal extends Modal {
 		let gxPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
 
 		// Define updateGxPrivacyPreview before the settings that use it
-		// eslint-disable-next-line prefer-const -- Must be declared before assignment due to hoisting; used in callbacks before initialization
 		let updateGxPrivacyPreview: () => Promise<void>;
 
 		new Setting(content)
@@ -8214,7 +8220,6 @@ export class ControlCenterModal extends Modal {
 		let grampsPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
 
 		// Define updateGrampsPrivacyPreview before the settings that use it
-		// eslint-disable-next-line prefer-const -- Must be declared before assignment due to hoisting; used in callbacks before initialization
 		let updateGrampsPrivacyPreview: () => Promise<void>;
 
 		new Setting(content)
@@ -8610,7 +8615,6 @@ export class ControlCenterModal extends Modal {
 		let csvPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
 
 		// Define updateCsvPrivacyPreview before the settings that use it
-		// eslint-disable-next-line prefer-const -- Must be declared before assignment due to hoisting; used in callbacks before initialization
 		let updateCsvPrivacyPreview: () => Promise<void>;
 
 		new Setting(content)
@@ -9477,7 +9481,7 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Create root person card for tree generation with inline person browser
 	 */
-	private async createRootPersonCard(container: HTMLElement, rootPersonField: RelationshipField): Promise<void> {
+	private createRootPersonCard(container: HTMLElement, rootPersonField: RelationshipField): void {
 		const card = container.createDiv({ cls: 'crc-card' });
 		const header = card.createDiv({ cls: 'crc-card__header' });
 		const title = header.createEl('h3', {

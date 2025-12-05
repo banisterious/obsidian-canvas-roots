@@ -694,7 +694,8 @@ export class PlaceGraphService {
 	private extractYear(dateValue: unknown): number | undefined {
 		if (!dateValue) return undefined;
 
-		const str = String(dateValue);
+		// If dateValue is an object, try to extract a string representation
+		const str = typeof dateValue === 'object' ? JSON.stringify(dateValue) : String(dateValue);
 
 		// Try ISO format (YYYY-MM-DD or YYYY)
 		const isoMatch = str.match(/^(\d{4})/);

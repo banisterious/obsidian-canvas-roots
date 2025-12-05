@@ -25,6 +25,15 @@ import type {
 const logger = getLogger('MapDataService');
 
 /**
+ * Safely convert frontmatter value to string
+ */
+function fmToString(value: unknown, fallback = ''): string {
+	if (value === undefined || value === null) return fallback;
+	if (typeof value === 'object') return JSON.stringify(value);
+	return String(value);
+}
+
+/**
  * Place note data extracted from frontmatter
  */
 interface PlaceData {
@@ -196,14 +205,14 @@ export class MapDataService {
 			const pixelY = this.parseCoordinate(fm.pixel_y) ?? this.parsePixelCoordinates(fm.pixel_coordinates).y;
 
 			const placeData: PlaceData = {
-				crId: String(fm.cr_id || ''),
-				name: String(fm.name || file.basename),
+				crId: fmToString(fm.cr_id, ''),
+				name: fmToString(fm.name, file.basename),
 				lat: coords.lat,
 				lng: coords.lng,
 				pixelX,
 				pixelY,
-				category: fm.place_category ? String(fm.place_category) : undefined,
-				universe: fm.universe ? String(fm.universe) : undefined,
+				category: fm.place_category ? fmToString(fm.place_category) : undefined,
+				universe: fm.universe ? fmToString(fm.universe) : undefined,
 				parentPlace: this.extractLinkTarget(fm.parent_place) || undefined
 			};
 

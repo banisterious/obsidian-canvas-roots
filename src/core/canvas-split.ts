@@ -360,37 +360,6 @@ export interface CollectionExtractionResult {
 	allBridgePeople: Map<string, string[]>; // crId -> collection names
 }
 
-interface InternalCanvasNode {
-	id: string;
-	type: 'file' | 'text' | 'link' | 'group';
-	file?: string;
-	text?: string;
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-	color?: string;
-}
-
-interface InternalCanvasEdge {
-	id: string;
-	fromNode: string;
-	toNode: string;
-	fromSide?: 'top' | 'right' | 'bottom' | 'left';
-	toSide?: 'top' | 'right' | 'bottom' | 'left';
-	color?: string;
-	label?: string;
-}
-
-interface InternalCanvasGroup {
-	id: string;
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-	label?: string;
-}
-
 /**
  * Service for splitting family tree canvases
  */

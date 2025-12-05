@@ -158,7 +158,10 @@ export class MergeService {
 			return undefined;
 		}
 		if (Array.isArray(value)) {
-			return value.map(v => String(v)).filter(v => v !== '');
+			return value.map(v => typeof v === 'object' ? JSON.stringify(v) : String(v)).filter(v => v !== '');
+		}
+		if (typeof value === 'object') {
+			return JSON.stringify(value);
 		}
 		return String(value);
 	}
@@ -345,7 +348,10 @@ export class MergeService {
 			return [];
 		}
 		if (Array.isArray(value)) {
-			return value.map(v => String(v)).filter(v => v !== '');
+			return value.map(v => typeof v === 'object' ? JSON.stringify(v) : String(v)).filter(v => v !== '');
+		}
+		if (typeof value === 'object') {
+			return [JSON.stringify(value)];
 		}
 		return [String(value)];
 	}

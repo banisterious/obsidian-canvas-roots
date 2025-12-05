@@ -389,7 +389,8 @@ export class MembershipService {
 				.join('\n');
 		}
 
-		return String(value);
+		// At this point, value must be a string since all other types are handled above
+		return typeof value === 'string' ? value : String(value);
 	}
 }
 

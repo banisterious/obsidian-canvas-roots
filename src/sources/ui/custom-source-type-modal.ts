@@ -230,7 +230,7 @@ export class CustomSourceTypeModal extends Modal {
 		});
 
 		// Template editor
-		const templateSetting = new Setting(contentEl)
+		new Setting(contentEl)
 			.setName('Note template')
 			.setDesc('Markdown template for new source notes. Use {{title}} for the source title.');
 

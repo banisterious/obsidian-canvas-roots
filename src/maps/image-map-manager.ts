@@ -15,6 +15,15 @@ import type { CustomMapConfig, ImageCorners } from './types/map-types';
 // Initialize logger early so it can be used by helper functions
 const logger = getLogger('ImageMapManager');
 
+/**
+ * Safely convert frontmatter value to string
+ */
+function fmToString(value: unknown, fallback = ''): string {
+	if (value === undefined || value === null) return fallback;
+	if (typeof value === 'object') return JSON.stringify(value);
+	return String(value);
+}
+
 // Track state for plugin initialization
 let distortableImageLoaded = false;
 
@@ -351,10 +360,10 @@ export class ImageMapManager {
 		}
 
 		return {
-			id: String(fm.map_id),
-			name: String(fm.name),
-			universe: String(fm.universe),
-			imagePath: String(fm.image),
+			id: fmToString(fm.map_id),
+			name: fmToString(fm.name),
+			universe: fmToString(fm.universe),
+			imagePath: fmToString(fm.image),
 			coordinateSystem,
 			bounds,
 			imageDimensions,

@@ -5,11 +5,11 @@
  * Similar pattern to PersonPickerModal.
  */
 
-import { App, Modal, TFile, Notice } from 'obsidian';
+import { App, Modal, TFile } from 'obsidian';
 import { createLucideIcon } from '../../ui/lucide-icons';
 import { SourceService } from '../services/source-service';
 import { CreateSourceModal } from './create-source-modal';
-import type { SourceNote, SourceTypeDefinition } from '../types/source-types';
+import type { SourceNote } from '../types/source-types';
 import { getSourceType } from '../types/source-types';
 import type CanvasRootsPlugin from '../../../main';
 
