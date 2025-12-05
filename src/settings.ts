@@ -4,6 +4,7 @@ import type { LogLevel } from './core/logging';
 import type { RelationshipTypeDefinition } from './relationships';
 import type { FictionalDateSystem } from './dates';
 import type { OrganizationTypeDefinition } from './organizations';
+import type { SourceTypeDefinition, CitationFormat } from './sources/types/source-types';
 
 export interface RecentTreeInfo {
 	canvasPath: string;
@@ -139,6 +140,13 @@ export interface CanvasRootsSettings {
 	organizationsFolder: string;
 	customOrganizationTypes: OrganizationTypeDefinition[];
 	showBuiltInOrganizationTypes: boolean;
+	// Source management settings
+	sourcesFolder: string;
+	defaultCitationFormat: CitationFormat;
+	showSourceThumbnails: boolean;
+	thumbnailSize: 'small' | 'medium' | 'large';
+	customSourceTypes: SourceTypeDefinition[];
+	showBuiltInSourceTypes: boolean;
 }
 
 /**
@@ -254,7 +262,14 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	// Organization settings
 	organizationsFolder: 'Canvas Roots/Organizations',  // Default folder for organization notes
 	customOrganizationTypes: [],   // User-defined organization types (built-ins are always available)
-	showBuiltInOrganizationTypes: true  // Whether to show built-in organization types in UI
+	showBuiltInOrganizationTypes: true,  // Whether to show built-in organization types in UI
+	// Source management settings
+	sourcesFolder: 'Canvas Roots/Sources',  // Default folder for source notes
+	defaultCitationFormat: 'evidence_explained',  // Evidence Explained is the genealogy standard
+	showSourceThumbnails: true,   // Show media previews in gallery
+	thumbnailSize: 'medium',      // Thumbnail size (small/medium/large)
+	customSourceTypes: [],        // User-defined source types (built-ins are always available)
+	showBuiltInSourceTypes: true  // Whether to show built-in source types in UI
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {

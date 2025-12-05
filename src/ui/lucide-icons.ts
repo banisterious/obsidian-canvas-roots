@@ -84,7 +84,18 @@ export type LucideIconName =
 	| 'church' // Religious
 	| 'landmark' // Political
 	| 'graduation-cap' // Educational
-	| 'shield'; // Military
+	| 'shield' // Military
+	// Source types
+	| 'file-text' // Vital records (already defined above)
+	| 'bookmark' // Obituary
+	| 'gavel' // Court records
+	| 'scroll' // Probate
+	| 'ship' // Immigration
+	| 'image' // Photos
+	| 'mail' // Correspondence
+	| 'newspaper' // Newspaper articles
+	| 'mic' // Oral history
+	| 'archive'; // Sources tab
 
 /**
  * Tab configuration for Control Center navigation
@@ -135,6 +146,12 @@ export const TAB_CONFIGS: TabConfig[] = [
 		name: 'Maps',
 		icon: 'map',
 		description: 'Map visualizations and custom maps'
+	},
+	{
+		id: 'sources',
+		name: 'Sources',
+		icon: 'archive',
+		description: 'Evidence and source documentation'
 	},
 	{
 		id: 'schemas',
