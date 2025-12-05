@@ -72,6 +72,10 @@ docs/developer/leaflet-zoomify/
 docs/developer/leaflet-distortable-image/
 docs/developer/leaflet-iiif/
 
+# Other cloned reference repos
+docs/developer/obsidian-style-settings/
+docs/developer/pr-reviews/
+
 # Claude Code working files
 CLAUDE.md
 .session-restore.md
