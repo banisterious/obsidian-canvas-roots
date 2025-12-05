@@ -10,6 +10,7 @@ import {
 	SourceNote,
 	SourceStats,
 	SourceConfidence,
+	SourceQuality,
 	SourceTypeDefinition,
 	getAllSourceTypes,
 	getSourceType
@@ -211,6 +212,7 @@ export class SourceService {
 		location?: string;
 		media?: string[];
 		confidence?: SourceConfidence;
+		sourceQuality?: SourceQuality;
 		transcription?: string;
 	}): Promise<TFile> {
 		// Generate cr_id
@@ -251,6 +253,9 @@ export class SourceService {
 		}
 		if (data.confidence) {
 			frontmatterLines.push(`confidence: ${data.confidence}`);
+		}
+		if (data.sourceQuality) {
+			frontmatterLines.push(`source_quality: ${data.sourceQuality}`);
 		}
 
 		frontmatterLines.push('---');
@@ -316,6 +321,7 @@ export class SourceService {
 		collection?: string;
 		location?: string;
 		confidence?: SourceConfidence;
+		sourceQuality?: SourceQuality;
 		media?: string[];
 	}): Promise<void> {
 		await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
@@ -369,6 +375,12 @@ export class SourceService {
 				frontmatter.confidence = data.confidence;
 			} else {
 				delete frontmatter.confidence;
+			}
+
+			if (data.sourceQuality) {
+				frontmatter.source_quality = data.sourceQuality;
+			} else {
+				delete frontmatter.source_quality;
 			}
 
 			// Handle media fields - clear existing and set new
@@ -432,6 +444,15 @@ export class SourceService {
 			}
 		}
 
+		// Parse source quality (GPS methodology)
+		let sourceQuality: SourceQuality | undefined;
+		if (frontmatter.source_quality) {
+			const quality = fmToString(frontmatter.source_quality).toLowerCase();
+			if (quality === 'primary' || quality === 'secondary' || quality === 'derivative') {
+				sourceQuality = quality;
+			}
+		}
+
 		return {
 			filePath: file.path,
 			crId,
@@ -446,7 +467,8 @@ export class SourceService {
 			location: frontmatter.location ? fmToString(frontmatter.location) : undefined,
 			media,
 			confidence,
-			citationOverride: frontmatter.citation_override ? fmToString(frontmatter.citation_override) : undefined
+			citationOverride: frontmatter.citation_override ? fmToString(frontmatter.citation_override) : undefined,
+			sourceQuality
 		};
 	}
 

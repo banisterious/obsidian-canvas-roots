@@ -933,9 +933,11 @@ export class FamilyGraphService {
 	/**
 	 * Safely extracts a string value from frontmatter (handles array case)
 	 */
-	private getStringValue(value: string | string[] | undefined): string | undefined {
+	private getStringValue(value: unknown): string | undefined {
 		if (!value) return undefined;
-		return Array.isArray(value) ? value[0] : value;
+		if (typeof value === 'string') return value;
+		if (Array.isArray(value) && typeof value[0] === 'string') return value[0];
+		return undefined;
 	}
 
 	/**

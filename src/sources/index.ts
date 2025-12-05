@@ -7,15 +7,28 @@
 // Types
 export type {
 	SourceConfidence,
+	SourceQuality,
 	CitationFormat,
 	SourceTypeDefinition,
 	SourceNote,
-	SourceStats
+	SourceStats,
+	FactKey,
+	FactSourceEntry,
+	SourcedFacts,
+	FactCoverageStatus,
+	FactCoverage,
+	PersonResearchCoverage
 } from './types/source-types';
 
 export {
 	BUILT_IN_SOURCE_TYPES,
+	FACT_KEYS,
+	FACT_KEY_LABELS,
+	DEFAULT_SOURCE_QUALITY,
+	SOURCE_QUALITY_LABELS,
 	getSourceType,
+	getSourceQuality,
+	getDefaultSourceQuality,
 	getAllSourceTypes,
 	getSourceTypesByCategory,
 	SOURCE_CATEGORY_NAMES
@@ -30,6 +43,7 @@ export {
 
 // Services
 export { SourceService } from './services/source-service';
+export { EvidenceService, type ResearchGapsSummary } from './services/evidence-service';
 export {
 	generateCitation,
 	generateAllCitations,
