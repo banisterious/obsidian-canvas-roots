@@ -36,7 +36,7 @@ import { CreatePersonModal } from './src/ui/create-person-modal';
 import { PlaceGraphService } from './src/core/place-graph';
 import { SchemaService, ValidationService } from './src/schemas';
 import { AddRelationshipModal } from './src/ui/add-relationship-modal';
-import { SourcePickerModal, SourceService, CreateSourceModal, CitationGeneratorModal } from './src/sources';
+import { SourcePickerModal, SourceService, CreateSourceModal, CitationGeneratorModal, EvidenceService, ProofSummaryService } from './src/sources';
 
 const logger = getLogger('CanvasRootsPlugin');
 
@@ -56,13 +56,63 @@ export default class CanvasRootsPlugin extends Plugin {
 
 	/**
 	 * Create a FamilyGraphService configured with the folder filter
+	 * and optionally populated with research coverage and conflict data when fact tracking is enabled
 	 */
 	createFamilyGraphService(): FamilyGraphService {
 		const graphService = new FamilyGraphService(this.app);
 		if (this.folderFilter) {
 			graphService.setFolderFilter(this.folderFilter);
 		}
+
+		// Populate research coverage and conflict counts when fact-level tracking is enabled
+		if (this.settings.trackFactSourcing) {
+			this.populateResearchCoverage(graphService);
+			this.populateConflictCounts(graphService);
+		}
+
 		return graphService;
+	}
+
+	/**
+	 * Populate research coverage percentages for all people in the graph
+	 */
+	private populateResearchCoverage(graphService: FamilyGraphService): void {
+		const evidenceService = new EvidenceService(this.app, this.settings);
+		const people = graphService.getAllPeople();
+
+		for (const person of people) {
+			const coverage = evidenceService.getFactCoverageForFile(person.file);
+			if (coverage) {
+				graphService.setResearchCoverage(person.crId, coverage.coveragePercent);
+			}
+		}
+	}
+
+	/**
+	 * Populate conflict counts for all people in the graph
+	 * Counts proof summaries with status 'conflicted' or evidence with 'conflicts' support
+	 */
+	private populateConflictCounts(graphService: FamilyGraphService): void {
+		const proofService = new ProofSummaryService(this.app, this.settings);
+		const people = graphService.getAllPeople();
+
+		for (const person of people) {
+			const proofs = proofService.getProofsForPerson(person.crId);
+
+			// Count conflicts: proofs with status 'conflicted' OR proofs with any conflicting evidence
+			let conflictCount = 0;
+			for (const proof of proofs) {
+				if (proof.status === 'conflicted') {
+					conflictCount++;
+				} else if (proof.evidence.some(e => e.supports === 'conflicts')) {
+					conflictCount++;
+				}
+			}
+
+			if (conflictCount > 0) {
+				graphService.setConflictCount(person.crId, conflictCount);
+			}
+		}
 	}
 
 	async onload() {
@@ -1375,8 +1425,8 @@ export default class CanvasRootsPlugin extends Plugin {
 									subItem
 										.setTitle('Add source...')
 										.setIcon('archive')
-										.onClick(async () => {
-											await this.addSourceToPersonNote(file);
+										.onClick(() => {
+											this.addSourceToPersonNote(file);
 										});
 								});
 
@@ -1672,8 +1722,8 @@ export default class CanvasRootsPlugin extends Plugin {
 								item
 									.setTitle('Canvas Roots: Add source...')
 									.setIcon('archive')
-									.onClick(async () => {
-										await this.addSourceToPersonNote(file);
+									.onClick(() => {
+										this.addSourceToPersonNote(file);
 									});
 							});
 
@@ -3143,40 +3193,38 @@ export default class CanvasRootsPlugin extends Plugin {
 	 * Prompt user to select and remove a lineage
 	 */
 	private promptRemoveLineage(): void {
-		void (async () => {
-			try {
-				const service = new LineageTrackingService(this.app);
-				const lineages = service.getAllLineages();
+		try {
+			const service = new LineageTrackingService(this.app);
+			const lineages = service.getAllLineages();
 
-				if (lineages.length === 0) {
-					new Notice('No lineages found in vault');
-					return;
-				}
-
-				const menu = new Menu();
-				for (const lineage of lineages) {
-					menu.addItem((item) => {
-						item
-							.setTitle(`Remove "${lineage}"`)
-							.setIcon('trash-2')
-							.onClick(async () => {
-								try {
-									new Notice(`Removing "${lineage}" lineage...`);
-									const count = await service.removeLineage(lineage);
-									new Notice(`Removed "${lineage}" from ${count} people`);
-								} catch (error) {
-									logger.error('lineage-tracking', 'Failed to remove lineage', error);
-									new Notice(`Failed to remove lineage: ${getErrorMessage(error)}`);
-								}
-							});
-					});
-				}
-				menu.showAtMouseEvent(new MouseEvent('click'));
-			} catch (error) {
-				logger.error('lineage-tracking', 'Failed to get lineages', error);
-				new Notice(`Failed to get lineages: ${getErrorMessage(error)}`);
+			if (lineages.length === 0) {
+				new Notice('No lineages found in vault');
+				return;
 			}
-		})();
+
+			const menu = new Menu();
+			for (const lineage of lineages) {
+				menu.addItem((item) => {
+					item
+						.setTitle(`Remove "${lineage}"`)
+						.setIcon('trash-2')
+						.onClick(async () => {
+							try {
+								new Notice(`Removing "${lineage}" lineage...`);
+								const count = await service.removeLineage(lineage);
+								new Notice(`Removed "${lineage}" from ${count} people`);
+							} catch (error) {
+								logger.error('lineage-tracking', 'Failed to remove lineage', error);
+								new Notice(`Failed to remove lineage: ${getErrorMessage(error)}`);
+							}
+						});
+				});
+			}
+			menu.showAtMouseEvent(new MouseEvent('click'));
+		} catch (error) {
+			logger.error('lineage-tracking', 'Failed to get lineages', error);
+			new Notice(`Failed to get lineages: ${getErrorMessage(error)}`);
+		}
 	}
 
 	/**
@@ -3558,6 +3606,7 @@ export default class CanvasRootsPlugin extends Plugin {
 				showSpouseEdges: this.settings.showSpouseEdges,
 				spouseEdgeLabelFormat: this.settings.spouseEdgeLabelFormat,
 				showSourceIndicators: this.settings.showSourceIndicators,
+				showResearchCoverage: this.settings.trackFactSourcing,
 				canvasRootsMetadata: {
 					plugin: 'canvas-roots',
 					generation: {
@@ -4477,7 +4526,8 @@ export default class CanvasRootsPlugin extends Plugin {
 				spouseEdgeColor: this.settings.spouseEdgeColor,
 				showSpouseEdges: this.settings.showSpouseEdges,
 				spouseEdgeLabelFormat: this.settings.spouseEdgeLabelFormat,
-				showSourceIndicators: this.settings.showSourceIndicators
+				showSourceIndicators: this.settings.showSourceIndicators,
+				showResearchCoverage: this.settings.trackFactSourcing
 			});
 
 			// Create temporary canvas file

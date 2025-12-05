@@ -155,6 +155,9 @@ export interface CanvasGenerationOptions extends LayoutOptions {
 
 	/** Show source count indicators on person nodes */
 	showSourceIndicators?: boolean;
+
+	/** Show research coverage percentage in source indicators (requires fact-level tracking) */
+	showResearchCoverage?: boolean;
 }
 
 /**
@@ -225,7 +228,8 @@ export class CanvasGenerator {
 			spouseEdgeColor: effectiveStyles.spouseEdgeColor,
 			showSpouseEdges: effectiveStyles.showSpouseEdges,
 			spouseEdgeLabelFormat: effectiveStyles.spouseEdgeLabelFormat,
-			showSourceIndicators: options.showSourceIndicators ?? false
+			showSourceIndicators: options.showSourceIndicators ?? false,
+			showResearchCoverage: options.showResearchCoverage ?? false
 		};
 
 		logger.debug('canvas-generation', 'Canvas generation options', {
@@ -414,6 +418,11 @@ export class CanvasGenerator {
 			this.addSourceIndicatorNodes(canvasNodes, familyTree, nodeMap, opts);
 		}
 
+		// Add conflict indicator nodes when research coverage is enabled
+		if (opts.showSourceIndicators && opts.showResearchCoverage) {
+			this.addConflictIndicatorNodes(canvasNodes, familyTree, nodeMap, opts);
+		}
+
 		return {
 			nodes: canvasNodes,
 			edges: canvasEdges,
@@ -426,16 +435,17 @@ export class CanvasGenerator {
 
 	/**
 	 * Adds small text nodes as source indicators near person nodes
-	 * Shows the number of source notes linking to each person
+	 * Shows the number of source notes linking to each person, and optionally research coverage
 	 */
 	private addSourceIndicatorNodes(
 		canvasNodes: CanvasNode[],
 		familyTree: FamilyTree,
 		nodeMap: Map<string, { x: number; y: number }>,
-		opts: { nodeWidth: number; nodeHeight: number }
+		opts: { nodeWidth: number; nodeHeight: number; showResearchCoverage?: boolean }
 	): void {
-		// Indicator node dimensions
-		const indicatorWidth = 40;
+		// Indicator node dimensions - wider if showing coverage percentage
+		const showCoverage = opts.showResearchCoverage ?? false;
+		const indicatorWidth = showCoverage ? 70 : 40;
 		const indicatorHeight = 24;
 		const offsetX = opts.nodeWidth - indicatorWidth - 4; // Position at top-right
 		const offsetY = -indicatorHeight - 2; // Position above the node
@@ -444,20 +454,86 @@ export class CanvasGenerator {
 			const pos = nodeMap.get(crId);
 			if (!pos) continue;
 
-			// Only show indicator if person has sources
 			const sourceCount = person.sourceCount ?? 0;
-			if (sourceCount === 0) continue;
+			const coveragePercent = person.researchCoveragePercent;
+
+			// Show indicator if person has sources OR has research coverage data
+			if (sourceCount === 0 && coveragePercent === undefined) continue;
+
+			// Build indicator text
+			let indicatorText: string;
+			if (showCoverage && coveragePercent !== undefined) {
+				// Show both source count and coverage percentage
+				indicatorText = sourceCount > 0 ? `📎 ${sourceCount} · ${coveragePercent}%` : `${coveragePercent}%`;
+			} else {
+				// Original behavior: just source count
+				if (sourceCount === 0) continue;
+				indicatorText = `📎 ${sourceCount}`;
+			}
+
+			// Determine color based on coverage (if available) or source count
+			let color: string | undefined;
+			if (showCoverage && coveragePercent !== undefined) {
+				// Color by research coverage percentage
+				if (coveragePercent >= 75) {
+					color = '4'; // Green - well researched
+				} else if (coveragePercent >= 50) {
+					color = '3'; // Yellow - moderate coverage
+				} else {
+					color = '1'; // Red - needs research
+				}
+			} else {
+				// Original behavior: color by source count
+				color = sourceCount >= 3 ? '4' : sourceCount >= 1 ? '3' : undefined;
+			}
 
 			// Create source indicator text node
 			canvasNodes.push({
 				id: this.generateId(),
 				type: 'text',
-				text: `📎 ${sourceCount}`,
+				text: indicatorText,
 				x: pos.x + offsetX,
 				y: pos.y + offsetY,
 				width: indicatorWidth,
 				height: indicatorHeight,
-				color: sourceCount >= 3 ? '4' : sourceCount >= 1 ? '3' : undefined // Green for well-sourced, yellow for some sources
+				color
+			});
+		}
+	}
+
+	/**
+	 * Adds small text nodes as conflict indicators near person nodes
+	 * Shows when a person has unresolved source conflicts (only when fact-level tracking is enabled)
+	 */
+	private addConflictIndicatorNodes(
+		canvasNodes: CanvasNode[],
+		familyTree: FamilyTree,
+		nodeMap: Map<string, { x: number; y: number }>,
+		opts: { nodeWidth: number; nodeHeight: number }
+	): void {
+		const indicatorWidth = 36;
+		const indicatorHeight = 24;
+		// Position at top-left (source indicator is at top-right)
+		const offsetX = 4;
+		const offsetY = -indicatorHeight - 2;
+
+		for (const [crId, person] of familyTree.nodes) {
+			const pos = nodeMap.get(crId);
+			if (!pos) continue;
+
+			const conflictCount = person.conflictCount ?? 0;
+			if (conflictCount === 0) continue;
+
+			// Create conflict indicator text node
+			canvasNodes.push({
+				id: this.generateId(),
+				type: 'text',
+				text: `⚠️ ${conflictCount}`,
+				x: pos.x + offsetX,
+				y: pos.y + offsetY,
+				width: indicatorWidth,
+				height: indicatorHeight,
+				color: '1' // Red - conflicts need attention
 			});
 		}
 	}

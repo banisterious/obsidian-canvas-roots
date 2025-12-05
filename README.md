@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.8.0-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.9.0-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, and world-builders.
 
@@ -90,9 +90,14 @@
 | Feature | Description |
 |---------|-------------|
 | **Source Notes** | Dedicated notes for genealogical sources with structured metadata |
+| **Source Quality Classification** | Rate sources as Primary, Secondary, or Derivative per GPS methodology |
+| **Fact-Level Source Tracking** | Track which specific facts (birth, death, marriage) have source citations |
+| **Proof Summary Notes** | Document reasoning chains for genealogical conclusions with evidence linking |
+| **Research Gaps Report** | Identify under-researched facts across your tree with priority ranking |
+| **Source Conflict Detection** | Detect and track conflicting evidence requiring resolution |
 | **Source Media Gallery** | Thumbnail grid of source media with search, filtering, and lightbox viewer |
 | **Citation Generator** | Generate citations in Chicago, Evidence Explained, MLA, and Turabian formats |
-| **Source Indicators** | Visual badges on canvas nodes showing research quality (📎 3 = 3 linked sources) |
+| **Canvas Research Indicators** | Visual badges showing source count, coverage %, and conflict warnings |
 
 ### Canvas Features
 

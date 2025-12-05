@@ -404,9 +404,9 @@ function renderSourceTypeItem(
  */
 class DeleteSourceTypeModal extends Modal {
 	private typeName: string;
-	private onConfirm: () => void;
+	private onConfirm: () => void | Promise<void>;
 
-	constructor(app: App, typeName: string, onConfirm: () => void) {
+	constructor(app: App, typeName: string, onConfirm: () => void | Promise<void>) {
 		super(app);
 		this.typeName = typeName;
 		this.onConfirm = onConfirm;

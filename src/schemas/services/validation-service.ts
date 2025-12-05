@@ -8,6 +8,7 @@ import { TFile } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import { getLogger } from '../../core/logging';
 import { SchemaService } from './schema-service';
+import { FACT_KEYS } from '../../sources';
 import type {
 	SchemaNote,
 	PropertyDefinition,
@@ -281,10 +282,12 @@ export class ValidationService {
 				: `"${condition.property}" is not set`;
 		}
 		if (condition.equals !== undefined) {
-			return `"${condition.property}" equals "${String(condition.equals)}"`;
+			const eqStr = typeof condition.equals === 'object' ? JSON.stringify(condition.equals) : String(condition.equals);
+			return `"${condition.property}" equals "${eqStr}"`;
 		}
 		if (condition.notEquals !== undefined) {
-			return `"${condition.property}" is not "${String(condition.notEquals)}"`;
+			const neqStr = typeof condition.notEquals === 'object' ? JSON.stringify(condition.notEquals) : String(condition.notEquals);
+			return `"${condition.property}" is not "${neqStr}"`;
 		}
 		return 'condition is met';
 	}
@@ -376,6 +379,98 @@ export class ValidationService {
 					};
 				}
 				break;
+
+			case 'sourced_facts':
+				// Validate sourced_facts structure
+				const sourcedFactsError = this.validateSourcedFacts(propName, value);
+				if (sourcedFactsError) {
+					return sourcedFactsError;
+				}
+				break;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Validate the sourced_facts property structure
+	 * Expected format:
+	 * {
+	 *   birth_date: { sources: ["[[Source1]]", "[[Source2]]"] },
+	 *   death_date: { sources: ["[[Source1]]"] }
+	 * }
+	 */
+	private validateSourcedFacts(
+		propName: string,
+		value: unknown
+	): ValidationError | null {
+		// Must be an object
+		if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+			return {
+				type: 'invalid_type',
+				property: propName,
+				message: `Expected object for "${propName}", got ${Array.isArray(value) ? 'array' : typeof value}`,
+				expectedType: 'sourced_facts'
+			};
+		}
+
+		const obj = value as Record<string, unknown>;
+
+		// Validate each fact key entry
+		for (const [factKey, factEntry] of Object.entries(obj)) {
+			// Check if factKey is valid
+			if (!FACT_KEYS.includes(factKey as typeof FACT_KEYS[number])) {
+				return {
+					type: 'invalid_type',
+					property: propName,
+					message: `Invalid fact key "${factKey}" in "${propName}". Valid keys: ${FACT_KEYS.join(', ')}`,
+					expectedType: 'sourced_facts'
+				};
+			}
+
+			// Check fact entry structure
+			if (typeof factEntry !== 'object' || factEntry === null) {
+				return {
+					type: 'invalid_type',
+					property: propName,
+					message: `Expected object for "${propName}.${factKey}", got ${typeof factEntry}`,
+					expectedType: 'sourced_facts'
+				};
+			}
+
+			const entry = factEntry as Record<string, unknown>;
+
+			// Check sources array
+			if (!('sources' in entry)) {
+				return {
+					type: 'invalid_type',
+					property: propName,
+					message: `Missing "sources" array in "${propName}.${factKey}"`,
+					expectedType: 'sourced_facts'
+				};
+			}
+
+			if (!Array.isArray(entry.sources)) {
+				return {
+					type: 'invalid_type',
+					property: propName,
+					message: `Expected array for "${propName}.${factKey}.sources", got ${typeof entry.sources}`,
+					expectedType: 'sourced_facts'
+				};
+			}
+
+			// Validate each source is a wikilink
+			for (let i = 0; i < entry.sources.length; i++) {
+				const source = entry.sources[i];
+				if (typeof source !== 'string' || !WIKILINK_REGEX.test(source)) {
+					return {
+						type: 'invalid_type',
+						property: propName,
+						message: `Invalid source at "${propName}.${factKey}.sources[${i}]": expected wikilink format [[Source]]`,
+						expectedType: 'sourced_facts'
+					};
+				}
+			}
 		}
 
 		return null;

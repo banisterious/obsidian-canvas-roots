@@ -681,6 +681,12 @@
   background-color: var(--background-modifier-success);
 }
 
+.crc-input--readonly {
+  background-color: var(--background-modifier-border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
 .crc-help-badge {
   display: inline-block;
   padding: 2px 6px;

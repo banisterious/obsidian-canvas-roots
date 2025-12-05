@@ -956,3 +956,625 @@
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   Research Coverage Styles (Person Detail View)
+   ========================================================================== */
+
+/* Person list badge for research coverage */
+.crc-person-list-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2-2);
+  padding: var(--size-2-1) var(--size-2-3);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-smaller);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.crc-person-list-badge--coverage-high {
+  background-color: var(--background-modifier-success);
+  color: var(--text-success);
+}
+
+.crc-person-list-badge--coverage-medium {
+  background-color: var(--background-modifier-warning);
+  color: var(--text-warning);
+}
+
+.crc-person-list-badge--coverage-low {
+  background-color: var(--background-modifier-error);
+  color: var(--text-error);
+}
+
+.crc-person-list-badge:hover {
+  filter: brightness(0.95);
+}
+
+/* Coverage details section (expandable) */
+.crc-person-list-details {
+  margin-top: var(--size-4-2);
+  padding: var(--size-4-3);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-m);
+}
+
+/* Coverage header */
+.crc-coverage-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-3);
+  margin-bottom: var(--size-4-3);
+}
+
+.crc-coverage-title {
+  font-weight: 500;
+  font-size: var(--font-ui-small);
+}
+
+/* Inline progress bar variant */
+.crc-progress-bar--inline {
+  flex: 1;
+  max-width: 100px;
+}
+
+/* Fact coverage list */
+.crc-coverage-fact-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-2);
+}
+
+.crc-coverage-fact-row {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-2-2) var(--size-2-3);
+  border-radius: var(--radius-s);
+  transition: background-color 0.15s ease;
+}
+
+.crc-coverage-fact-row:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+/* Coverage status icons */
+.crc-coverage-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.crc-coverage-status--well-sourced {
+  color: var(--color-green);
+}
+
+.crc-coverage-status--sourced {
+  color: var(--color-green);
+}
+
+.crc-coverage-status--weakly-sourced {
+  color: var(--color-orange);
+}
+
+.crc-coverage-status--unsourced {
+  color: var(--text-faint);
+}
+
+/* Fact label */
+.crc-coverage-fact-label {
+  flex: 1;
+  font-size: var(--font-ui-small);
+}
+
+/* Source info */
+.crc-coverage-source-info {
+  font-size: var(--font-ui-smaller);
+  white-space: nowrap;
+}
+
+/* Add source button */
+.crc-coverage-add-btn {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  margin-left: auto;
+}
+
+.crc-coverage-fact-row:hover .crc-coverage-add-btn {
+  opacity: 1;
+}
+
+/* Small icon button variant */
+.crc-icon-button--small {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+}
+
+.crc-icon-button--small svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ==========================================================================
+   Source Quality Badges (Phase 2)
+   ========================================================================== */
+
+/* Quality badge base style */
+.crc-quality-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--size-2-1) var(--size-2-2);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-smaller);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: help;
+}
+
+/* Primary quality - green (best evidence) */
+.crc-quality-badge--primary {
+  background-color: rgba(var(--color-green-rgb), 0.15);
+  color: var(--color-green);
+  border: 1px solid rgba(var(--color-green-rgb), 0.3);
+}
+
+/* Secondary quality - yellow/amber (acceptable but not ideal) */
+.crc-quality-badge--secondary {
+  background-color: rgba(var(--color-orange-rgb), 0.15);
+  color: var(--color-orange);
+  border: 1px solid rgba(var(--color-orange-rgb), 0.3);
+}
+
+/* Derivative quality - red/coral (needs better sources) */
+.crc-quality-badge--derivative {
+  background-color: rgba(var(--color-red-rgb), 0.15);
+  color: var(--color-red);
+  border: 1px solid rgba(var(--color-red-rgb), 0.3);
+}
+
+/* Quality summary section */
+.crc-quality-summary {
+  display: flex;
+  gap: var(--size-4-2);
+  flex-wrap: wrap;
+  margin-top: var(--size-4-2);
+  padding: var(--size-4-2);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-s);
+}
+
+.crc-quality-summary-item {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2-2);
+  font-size: var(--font-ui-smaller);
+}
+
+.crc-quality-summary-count {
+  font-weight: 600;
+}
+
+/* Quality indicator dot (for compact displays) */
+.crc-quality-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.crc-quality-dot--primary {
+  background-color: var(--color-green);
+}
+
+.crc-quality-dot--secondary {
+  background-color: var(--color-orange);
+}
+
+.crc-quality-dot--derivative {
+  background-color: var(--color-red);
+}
+
+/* ==========================================================================
+   Proof Summary Styles
+   ========================================================================== */
+
+/* Create proof modal */
+.cr-create-proof-modal .modal-content {
+  max-width: 600px;
+}
+
+/* Evidence section */
+.crc-proof-evidence-section {
+  margin-top: var(--size-4-4);
+  padding-top: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.crc-proof-evidence-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--size-4-3);
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.crc-proof-evidence-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-3);
+}
+
+.crc-proof-evidence-empty {
+  padding: var(--size-4-4);
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+}
+
+.crc-proof-evidence-item {
+  padding: var(--size-4-3);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-proof-evidence-source {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  font-weight: 500;
+  color: var(--text-accent);
+  margin-bottom: var(--size-4-2);
+}
+
+.crc-proof-evidence-source svg {
+  color: var(--text-muted);
+}
+
+.crc-proof-evidence-source .crc-btn--icon {
+  margin-left: auto;
+}
+
+.crc-proof-evidence-info,
+.crc-proof-evidence-supports,
+.crc-proof-evidence-notes {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-2);
+}
+
+.crc-proof-evidence-label {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 90px;
+}
+
+.crc-proof-evidence-info .crc-form-input,
+.crc-proof-evidence-notes .crc-form-input {
+  flex: 1;
+}
+
+.crc-proof-evidence-supports .crc-form-select {
+  flex: 1;
+}
+
+/* Proof card (for viewing in Control Center) */
+.crc-proof-card {
+  padding: var(--size-4-3);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+  border-left: 3px solid var(--text-muted);
+}
+
+.crc-proof-card--proven {
+  border-left-color: var(--color-green);
+}
+
+.crc-proof-card--probable {
+  border-left-color: var(--color-cyan);
+}
+
+.crc-proof-card--possible {
+  border-left-color: var(--color-orange);
+}
+
+.crc-proof-card--disproven {
+  border-left-color: var(--color-red);
+}
+
+.crc-proof-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-4-2);
+  flex-wrap: wrap;
+}
+
+.crc-proof-card-title {
+  font-weight: 500;
+  color: var(--text-accent);
+  cursor: pointer;
+  flex: 1;
+  min-width: 100px;
+}
+
+.crc-proof-card-title:hover {
+  text-decoration: underline;
+}
+
+.crc-proof-card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-1);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.crc-proof-card:hover .crc-proof-card-actions {
+  opacity: 1;
+}
+
+.crc-proof-card-actions .crc-btn--icon {
+  padding: var(--size-2-1);
+  min-width: unset;
+}
+
+.crc-proof-card-badges {
+  display: flex;
+  gap: var(--size-4-1);
+}
+
+.crc-proof-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--size-2-1) var(--size-2-2);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-smaller);
+  font-weight: 500;
+}
+
+.crc-proof-badge--status {
+  background-color: var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.crc-proof-badge--status.crc-proof-badge--complete {
+  background-color: rgba(var(--color-green-rgb), 0.15);
+  color: var(--color-green);
+}
+
+.crc-proof-badge--status.crc-proof-badge--draft {
+  background-color: rgba(var(--color-blue-rgb), 0.15);
+  color: var(--color-blue);
+}
+
+.crc-proof-badge--status.crc-proof-badge--needs_review {
+  background-color: rgba(var(--color-orange-rgb), 0.15);
+  color: var(--color-orange);
+}
+
+.crc-proof-badge--status.crc-proof-badge--conflicted {
+  background-color: rgba(var(--color-red-rgb), 0.15);
+  color: var(--color-red);
+}
+
+.crc-proof-badge--confidence {
+  background-color: var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.crc-proof-card-conclusion {
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+  margin-bottom: var(--size-4-2);
+}
+
+.crc-proof-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-3);
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.crc-proof-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2-1);
+}
+
+/* Proof list */
+.crc-proof-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+}
+
+.crc-proof-list-empty {
+  padding: var(--size-4-4);
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Conflict indicator */
+.crc-conflict-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-4-2) var(--size-4-3);
+  background: rgba(var(--color-red-rgb), 0.1);
+  border: 1px solid rgba(var(--color-red-rgb), 0.3);
+  border-radius: var(--radius-s);
+  color: var(--color-red);
+  font-size: var(--font-ui-small);
+}
+
+.crc-conflict-indicator svg {
+  flex-shrink: 0;
+}
+
+/* Proof section in person details */
+.crc-proof-section {
+  margin-top: var(--size-4-4);
+  padding-top: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.crc-proof-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--size-4-3);
+}
+
+.crc-proof-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.crc-proof-section-title svg {
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Source Conflicts Section (Data Quality tab)
+   ========================================================================== */
+
+.crc-conflicts-section {
+  margin-top: var(--size-4-4);
+}
+
+.crc-conflicts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-3);
+  margin-top: var(--size-4-3);
+}
+
+.crc-conflict-item {
+  padding: var(--size-4-3);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+  border-left: 3px solid var(--color-red);
+}
+
+.crc-conflict-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-4-2);
+}
+
+.crc-conflict-icon {
+  color: var(--color-red);
+  flex-shrink: 0;
+}
+
+.crc-conflict-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.crc-conflict-title {
+  font-weight: 500;
+  color: var(--text-accent);
+  cursor: pointer;
+  flex: 1;
+}
+
+.crc-conflict-title:hover {
+  text-decoration: underline;
+}
+
+.crc-conflict-person {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  margin-bottom: var(--size-4-2);
+}
+
+.crc-conflict-person svg {
+  width: 14px;
+  height: 14px;
+}
+
+.crc-conflict-evidence {
+  margin-top: var(--size-4-2);
+}
+
+.crc-conflict-evidence-label {
+  display: block;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  margin-bottom: var(--size-4-1);
+}
+
+.crc-conflict-evidence-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-2);
+}
+
+.crc-conflict-evidence-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--size-4-2);
+  padding: var(--size-2-2) var(--size-4-2);
+  background: var(--background-primary);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-small);
+}
+
+.crc-conflict-evidence-item--conflicts {
+  background: rgba(var(--color-red-rgb), 0.1);
+}
+
+.crc-conflict-support-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.crc-conflict-support-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.crc-conflict-evidence-item:not(.crc-conflict-evidence-item--conflicts) .crc-conflict-support-icon {
+  color: var(--color-green);
+}
+
+.crc-conflict-evidence-item--conflicts .crc-conflict-support-icon {
+  color: var(--color-red);
+}
+
+.crc-conflict-source {
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.crc-conflict-claim {
+  color: var(--text-muted);
+}
+
+.crc-conflict-actions {
+  margin-top: var(--size-4-3);
+  display: flex;
+  justify-content: flex-end;
+}

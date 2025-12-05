@@ -230,6 +230,54 @@ events:
     description: "BA in History"
 ```
 
+### Fact-Level Source Tracking (Research Tools)
+
+When the "Enable fact-level source tracking" setting is enabled, person notes can include detailed source citations for specific facts. This aligns with the Genealogical Proof Standard (GPS) methodology.
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `sourced_facts` | `object` | Maps fact types to their source citations | See below |
+
+**Structure:**
+
+```yaml
+sourced_facts:
+  birth_date:
+    sources:
+      - "[[1900 Census - Smith Family]]"
+      - "[[Birth Certificate - John Smith]]"
+  birth_place:
+    sources:
+      - "[[Birth Certificate - John Smith]]"
+  death_date:
+    sources:
+      - "[[Obituary - John Smith 1952]]"
+  parents:
+    sources:
+      - "[[1900 Census - Smith Family]]"
+```
+
+**Supported Fact Keys:**
+
+| Fact Key | Description |
+|----------|-------------|
+| `birth_date` | Date of birth |
+| `birth_place` | Location of birth |
+| `death_date` | Date of death |
+| `death_place` | Location of death |
+| `parents` | Parent relationships |
+| `marriage_date` | Date of marriage |
+| `marriage_place` | Location of marriage |
+| `spouse` | Spouse relationships |
+| `occupation` | Occupation |
+| `residence` | Residence locations |
+
+**Notes:**
+- Each fact key maps to an object containing a `sources` array of wikilinks
+- Missing keys are treated as "not yet tracked" (different from "unsourced")
+- An empty `sources` array means the fact is explicitly marked as unsourced
+- The Control Center's Data Quality tab shows research coverage statistics when this feature is enabled
+
 ### Reference Numbering Systems
 
 Canvas Roots can generate genealogical reference numbers:
@@ -389,6 +437,33 @@ Canvas Roots includes built-in source types organized by category. Custom types 
 | `low` | Unverified or questionable source |
 | `unknown` | Not yet assessed |
 
+### Source Quality (GPS Methodology)
+
+For users following the Genealogical Proof Standard, sources can be classified by their quality per Elizabeth Shown Mills' methodology:
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `source_quality` | `string` | GPS quality classification | `"primary"`, `"secondary"`, `"derivative"` |
+
+**Source Quality Classifications:**
+
+| Quality | Description | Examples |
+|---------|-------------|----------|
+| `primary` | Created at or near the time of the event by a participant or witness | Original vital records, census enumeration, contemporary letters |
+| `secondary` | Created later from memory or hearsay | Family bibles with later entries, obituaries, oral histories |
+| `derivative` | Copies, transcriptions, or abstracts of other sources | Database transcriptions, published abstracts, photocopies |
+
+**Default Quality by Source Type:**
+
+If `source_quality` is not explicitly set, Canvas Roots infers quality from the source type:
+
+| Source Type | Default Quality |
+|-------------|-----------------|
+| `census`, `vital_record`, `church_record`, `military`, `court_record`, `land_deed`, `probate`, `photo`, `correspondence`, `immigration` | `primary` |
+| `newspaper`, `obituary`, `oral_history`, `custom` | `secondary` |
+
+**Note:** Users should override the default when appropriate. For example, a census transcription from Ancestry.com should be marked as `derivative` rather than accepting the default `primary` quality.
+
 ### Media Files
 
 Sources can link to media files (images, scans, documents) in the vault:
@@ -433,6 +508,7 @@ source_repository: "Ancestry.com"
 collection: "1900 United States Federal Census"
 location: "New York, Kings County, Brooklyn"
 confidence: high
+source_quality: derivative
 media: "[[census-1900-smith.jpg]]"
 ---
 
@@ -642,12 +718,33 @@ The validation rules are defined in a `json schema` code block in the note body:
 
 | Option | Description | Applies To |
 |--------|-------------|------------|
-| `type` | Property type: `string`, `number`, `date`, `boolean`, `enum`, `wikilink`, `array` | All |
+| `type` | Property type: `string`, `number`, `date`, `boolean`, `enum`, `wikilink`, `array`, `sourced_facts` | All |
 | `values` | Allowed values | `enum` |
 | `min`, `max` | Value range | `number` |
 | `targetType` | Required note type for link target | `wikilink` |
 | `requiredIf` | Conditional requirement | All |
 | `default` | Default value if missing | All |
+
+**Property Types:**
+
+| Type | Description |
+|------|-------------|
+| `string` | Plain text value |
+| `number` | Numeric value |
+| `date` | Date string (various formats supported) |
+| `boolean` | true/false value |
+| `enum` | One of a predefined set of values (use `values` to define) |
+| `wikilink` | Link to another note `[[Target]]` or `[[Target\|Display]]` |
+| `array` | Array of values |
+| `sourced_facts` | Fact-level source tracking structure (validates GPS research citations) |
+
+**The `sourced_facts` Type:**
+
+When validating `sourced_facts`, the schema system checks that:
+- The value is an object (not array or primitive)
+- Each key is a valid fact key (`birth_date`, `birth_place`, `death_date`, etc.)
+- Each fact entry has a `sources` array
+- Each source in the array is a valid wikilink format (`[[Source Name]]`)
 
 ---
 
@@ -712,6 +809,16 @@ children_id:
 cr_root: true
 collection: "Smith Family"
 ahnentafel: 1
+sourced_facts:
+  birth_date:
+    sources:
+      - "[[Birth Certificate - John Robert Smith]]"
+  birth_place:
+    sources:
+      - "[[Birth Certificate - John Robert Smith]]"
+  parents:
+    sources:
+      - "[[1900 US Census - Smith Family]]"
 ---
 
 # John Robert Smith

@@ -45,6 +45,12 @@ export interface PersonNode {
 
 	// Source count (number of source notes linking to this person)
 	sourceCount?: number;
+
+	// Research coverage percentage (0-100, only when fact-level tracking enabled)
+	researchCoveragePercent?: number;
+
+	// Conflict count (number of unresolved source conflicts for this person)
+	conflictCount?: number;
 }
 
 /**
@@ -805,6 +811,28 @@ export class FamilyGraphService {
 	}
 
 	/**
+	 * Set research coverage percentage for a person
+	 * Called externally after building the cache when fact-level tracking is enabled
+	 */
+	setResearchCoverage(crId: string, coveragePercent: number): void {
+		const person = this.personCache.get(crId);
+		if (person) {
+			person.researchCoveragePercent = coveragePercent;
+		}
+	}
+
+	/**
+	 * Set conflict count for a person
+	 * Called externally after building the cache when fact-level tracking is enabled
+	 */
+	setConflictCount(crId: string, conflictCount: number): void {
+		const person = this.personCache.get(crId);
+		if (person) {
+			person.conflictCount = conflictCount;
+		}
+	}
+
+	/**
 	 * Extracts person node data from a file
 	 */
 	private extractPersonNode(file: TFile): PersonNode | null {
@@ -933,9 +961,11 @@ export class FamilyGraphService {
 	/**
 	 * Safely extracts a string value from frontmatter (handles array case)
 	 */
-	private getStringValue(value: string | string[] | undefined): string | undefined {
+	private getStringValue(value: unknown): string | undefined {
 		if (!value) return undefined;
-		return Array.isArray(value) ? value[0] : value;
+		if (typeof value === 'string') return value;
+		if (Array.isArray(value) && typeof value[0] === 'string') return value[0];
+		return undefined;
 	}
 
 	/**

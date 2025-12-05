@@ -7,6 +7,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.0] - 2025-12-05
+
+Evidence Visualization release: GPS-aligned fact tracking, proof summaries, and canvas conflict markers.
+
+### Added
+
+- **Fact-Level Source Tracking**: Track which specific facts have source citations
+  - New `sourced_facts` property on person notes for GPS-aligned research
+  - Per-fact source arrays: `birth_date`, `birth_place`, `death_date`, `death_place`, `marriage_date`, `occupation`
+  - Research coverage percentage calculated from sourced vs total facts
+  - Configurable fact coverage threshold in settings
+
+- **Source Quality Classification**: Rate sources by genealogical standards
+  - Three quality levels: Primary, Secondary, Derivative (per Evidence Explained methodology)
+  - `source_quality` property on source notes
+  - Color-coded quality badges throughout the UI
+
+- **Research Gaps Report**: Identify under-researched areas
+  - Data Quality tab shows unsourced facts across the tree
+  - Filter by fact type or person
+  - Priority ranking by number of missing sources
+  - Quick actions to add source citations
+
+- **Proof Summary Notes**: Document reasoning for genealogical conclusions
+  - New note type `type: proof_summary` with structured frontmatter
+  - Track subject person, fact type, conclusion, status, and confidence
+  - Evidence array linking sources with support levels (strongly/moderately/weakly/conflicts)
+  - Status workflow: draft → complete → needs_review → conflicted
+  - Confidence levels: proven, probable, possible, disproven
+
+- **Proof Summary Management**: Full CRUD operations for proof notes
+  - Create Proof modal accessible from person detail view
+  - Edit existing proof summaries
+  - Delete with confirmation (moves to trash)
+  - Proof cards displayed in Research Coverage section
+
+- **Source Conflict Detection**: Identify conflicting evidence
+  - Source Conflicts section in Data Quality tab
+  - Detects proof summaries with `status: conflicted` or conflicting evidence items
+  - Shows conflict count per person
+
+- **Canvas Conflict Markers**: Visual indicators for unresolved conflicts
+  - `⚠️ N` indicator at top-left of person nodes with conflicts
+  - Only visible when `trackFactSourcing` is enabled
+  - Red color (canvas color '1') draws attention to research issues
+  - Complements existing source indicator (`📎 N · %`) at top-right
+
+- **Enhanced Source Indicators**: Research progress overlay
+  - Shows source count and research coverage percentage: `📎 3 · 75%`
+  - Color-coded by coverage: green (≥75%), yellow (≥50%), red (<50%)
+  - Gated behind `trackFactSourcing` setting for casual users
+
+### Changed
+
+- Control Center person detail view now includes Research Coverage section with fact-level breakdown
+- Data Quality tab reorganized with Source Conflicts section
+- Source indicators on canvas now optionally show coverage percentage
+
+### Settings Added
+
+- `trackFactSourcing`: Enable fact-level source tracking (default: false)
+- `factCoverageThreshold`: Number of facts for 100% coverage (default: 6)
+- `showResearchGapsInStatus`: Show research gaps in Status tab (default: true)
+
+---
+
 ## [0.8.0] - 2025-12-04
 
 Evidence & Source Management release: Complete source management with media gallery, citation generator, and tree indicators.
@@ -857,6 +923,9 @@ Initial alpha release with core genealogical features.
 
 ### Version Status
 
+- **Stable (v0.9.x)**: Evidence Visualization with GPS-aligned fact tracking, proof summaries, and canvas conflict markers.
+- **Stable (v0.8.x)**: Evidence & Source Management with media gallery, citation generator, and source indicators.
+- **Stable (v0.7.x)**: World-Building Suite with custom relationships, fictional date systems, and organization notes.
 - **Stable (v0.6.x)**: Interactive Map View with Leaflet.js, custom image maps for fictional worlds, time slider animation, journey paths, and map exports.
 - **Stable (v0.5.x)**: Geographic features with place notes, statistics, and visualizations. Import cleanup and merge tools.
 - **Stable (v0.4.x)**: Feature-complete for core genealogical workflows with import cleanup and merge tools.

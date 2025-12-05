@@ -5,6 +5,8 @@
  * in person notes managed by Canvas Roots.
  */
 
+import type { SourcedFacts } from '../sources/types/source-types';
+
 /**
  * Basic frontmatter fields for a person note.
  * Uses index signature to allow dynamic spouse properties (spouse1, spouse2, etc.)
@@ -25,8 +27,13 @@ export interface PersonFrontmatter {
 	birth_place?: string;
 	death_place?: string;
 	group_name?: string;
+	/**
+	 * Fact-level source tracking for GPS-aligned research
+	 * Maps fact keys (birth_date, death_date, etc.) to source citations
+	 */
+	sourced_facts?: SourcedFacts;
 	// Index signature for dynamic properties (spouse1, spouse1_id, spouse2, etc.)
-	[key: string]: string | string[] | undefined;
+	[key: string]: string | string[] | SourcedFacts | undefined;
 }
 
 /**

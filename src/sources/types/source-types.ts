@@ -1,7 +1,8 @@
 /**
  * Source Types for Evidence & Source Management
  *
- * Defines the built-in source types and interfaces for source notes.
+ * Defines the built-in source types and interfaces for source notes,
+ * including evidence visualization types for GPS-aligned research.
  */
 
 import { LucideIconName } from '../../ui/lucide-icons';
@@ -10,6 +11,117 @@ import { LucideIconName } from '../../ui/lucide-icons';
  * Confidence level for source reliability
  */
 export type SourceConfidence = 'high' | 'medium' | 'low' | 'unknown';
+
+/**
+ * Source quality classification per Elizabeth Shown Mills / GPS methodology
+ *
+ * - primary: Created at or near the time of the event by a participant or witness
+ *   (e.g., original vital records, census enumeration, contemporary letters)
+ * - secondary: Created later from memory or hearsay
+ *   (e.g., family bibles with later entries, obituaries, oral histories)
+ * - derivative: Copies, transcriptions, or abstracts of other sources
+ *   (e.g., database transcriptions, published abstracts, photocopies)
+ */
+export type SourceQuality = 'primary' | 'secondary' | 'derivative';
+
+/**
+ * Fact keys that can be tracked for source coverage
+ */
+export type FactKey =
+	| 'birth_date'
+	| 'birth_place'
+	| 'death_date'
+	| 'death_place'
+	| 'parents'
+	| 'marriage_date'
+	| 'marriage_place'
+	| 'spouse'
+	| 'occupation'
+	| 'residence';
+
+/**
+ * All trackable fact keys
+ */
+export const FACT_KEYS: FactKey[] = [
+	'birth_date',
+	'birth_place',
+	'death_date',
+	'death_place',
+	'parents',
+	'marriage_date',
+	'marriage_place',
+	'spouse',
+	'occupation',
+	'residence'
+];
+
+/**
+ * Human-readable labels for fact keys
+ */
+export const FACT_KEY_LABELS: Record<FactKey, string> = {
+	birth_date: 'Birth date',
+	birth_place: 'Birth place',
+	death_date: 'Death date',
+	death_place: 'Death place',
+	parents: 'Parents',
+	marriage_date: 'Marriage date',
+	marriage_place: 'Marriage place',
+	spouse: 'Spouse',
+	occupation: 'Occupation',
+	residence: 'Residence'
+};
+
+/**
+ * Source citation for a specific fact
+ */
+export interface FactSourceEntry {
+	/** Array of wikilinks to source notes */
+	sources: string[];
+}
+
+/**
+ * Fact-level source tracking for a person note
+ *
+ * Maps fact keys to their supporting sources.
+ * Missing keys are considered unsourced.
+ * Empty sources array means explicitly tracked as unsourced.
+ */
+export type SourcedFacts = Partial<Record<FactKey, FactSourceEntry>>;
+
+/**
+ * Coverage status for a single fact
+ */
+export type FactCoverageStatus = 'well-sourced' | 'sourced' | 'weakly-sourced' | 'unsourced';
+
+/**
+ * Coverage information for a single fact
+ */
+export interface FactCoverage {
+	factKey: FactKey;
+	status: FactCoverageStatus;
+	sourceCount: number;
+	/** Best quality among sources (if any) */
+	bestQuality?: SourceQuality;
+	/** Links to source notes */
+	sources: string[];
+}
+
+/**
+ * Overall research coverage for a person
+ */
+export interface PersonResearchCoverage {
+	personCrId: string;
+	personName: string;
+	filePath: string;
+	/** Percentage of tracked facts that have sources (0-100) */
+	coveragePercent: number;
+	/** Number of facts with at least one source */
+	sourcedFactCount: number;
+	/** Total number of trackable facts */
+	totalFactCount: number;
+	/** Coverage breakdown by fact */
+	facts: FactCoverage[];
+}
 
 /**
  * Citation format options
@@ -61,6 +173,11 @@ export interface SourceNote {
 	confidence: SourceConfidence;
 	/** Manual citation override */
 	citationOverride?: string;
+	/**
+	 * Source quality classification (GPS methodology)
+	 * If not explicitly set, inferred from sourceType via getDefaultSourceQuality()
+	 */
+	sourceQuality?: SourceQuality;
 }
 
 /**
@@ -291,4 +408,68 @@ export const SOURCE_CATEGORY_NAMES: Record<string, string> = {
 	military: 'Military',
 	media: 'Media & correspondence',
 	other: 'Other'
+};
+
+/**
+ * Default source quality by source type
+ *
+ * These defaults assume the user has the original or authoritative version.
+ * Users can override with explicit source_quality in frontmatter.
+ */
+export const DEFAULT_SOURCE_QUALITY: Record<string, SourceQuality> = {
+	// Primary sources - created at/near the event
+	census: 'primary',
+	vital_record: 'primary',
+	church_record: 'primary',
+	military: 'primary',
+	court_record: 'primary',
+	land_deed: 'primary',
+	probate: 'primary',
+	photo: 'primary',
+	correspondence: 'primary',
+	immigration: 'primary',
+
+	// Secondary sources - created later from memory/hearsay
+	newspaper: 'secondary',
+	obituary: 'secondary',
+	oral_history: 'secondary',
+	custom: 'secondary'
+};
+
+/**
+ * Get the quality for a source, using explicit value or inferring from type
+ */
+export function getSourceQuality(source: SourceNote): SourceQuality {
+	// Use explicit quality if set
+	if (source.sourceQuality) {
+		return source.sourceQuality;
+	}
+
+	// Infer from source type
+	return DEFAULT_SOURCE_QUALITY[source.sourceType] || 'secondary';
+}
+
+/**
+ * Get the default quality for a source type
+ */
+export function getDefaultSourceQuality(sourceType: string): SourceQuality {
+	return DEFAULT_SOURCE_QUALITY[sourceType] || 'secondary';
+}
+
+/**
+ * User-friendly labels for source quality (for casual users)
+ */
+export const SOURCE_QUALITY_LABELS: Record<SourceQuality, { label: string; description: string }> = {
+	primary: {
+		label: 'Original record',
+		description: 'Created at the time of the event by a participant or witness'
+	},
+	secondary: {
+		label: 'Later account',
+		description: 'Created later from memory or hearsay'
+	},
+	derivative: {
+		label: 'Copy/transcription',
+		description: 'Copies, transcriptions, or abstracts of other sources'
+	}
 };

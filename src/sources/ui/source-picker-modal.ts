@@ -35,7 +35,7 @@ export class SourcePickerModal extends Modal {
 	private searchQuery: string = '';
 	private allSources: SourceNote[] = [];
 	private filteredSources: SourceNote[] = [];
-	private onSelect: (source: SourceNote) => void;
+	private onSelect: (source: SourceNote) => void | Promise<void>;
 	private searchInput!: HTMLInputElement;
 	private resultsContainer!: HTMLElement;
 	private sortOption: SortOption = 'title-asc';
@@ -44,7 +44,7 @@ export class SourcePickerModal extends Modal {
 		confidence: 'all'
 	};
 
-	constructor(app: App, plugin: CanvasRootsPlugin, onSelect: (source: SourceNote) => void) {
+	constructor(app: App, plugin: CanvasRootsPlugin, onSelect: (source: SourceNote) => void | Promise<void>) {
 		super(app);
 		this.plugin = plugin;
 		this.onSelect = onSelect;

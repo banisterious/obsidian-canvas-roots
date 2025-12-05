@@ -449,6 +449,7 @@ export class CreateSchemaModal extends Modal {
 					.addOption('wikilink', 'Wikilink')
 					.addOption('array', 'Array')
 					.addOption('enum', 'Enum')
+					.addOption('sourced_facts', 'Sourced facts')
 					.setValue(propDef.type)
 					.onChange(value => {
 						propDef.type = value as PropertyType;
@@ -501,6 +502,13 @@ export class CreateSchemaModal extends Modal {
 						.onChange(value => {
 							propDef.targetType = value || undefined;
 						}));
+			}
+
+			if (propDef.type === 'sourced_facts') {
+				settings.createEl('p', {
+					text: 'Validates fact-level source tracking structure. Expected format: { birth_date: { sources: ["[[Source]]"] }, ... }',
+					cls: 'crc-text--muted crc-text--small crc-mt-1'
+				});
 			}
 
 			// Description

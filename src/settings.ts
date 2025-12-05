@@ -149,6 +149,10 @@ export interface CanvasRootsSettings {
 	showBuiltInSourceTypes: boolean;
 	// Source indicators on tree nodes
 	showSourceIndicators: boolean;
+	// Evidence visualization settings (Research tools - opt-in)
+	trackFactSourcing: boolean;
+	factCoverageThreshold: number;
+	showResearchGapsInStatus: boolean;
 }
 
 /**
@@ -273,7 +277,11 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	customSourceTypes: [],        // User-defined source types (built-ins are always available)
 	showBuiltInSourceTypes: true, // Whether to show built-in source types in UI
 	// Source indicators on tree nodes
-	showSourceIndicators: false   // Default OFF - users opt-in to this feature
+	showSourceIndicators: false,   // Default OFF - users opt-in to this feature
+	// Evidence visualization settings (Research tools - opt-in for advanced users)
+	trackFactSourcing: false,      // Default OFF - opt-in feature for researchers
+	factCoverageThreshold: 6,      // Number of facts for 100% coverage calculation
+	showResearchGapsInStatus: true // Show research gap summary when tracking is enabled
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {
@@ -720,6 +728,54 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					this.plugin.settings.hideDetailsForLiving = value;
 					await this.plugin.saveSettings();
 				}));
+
+		// Research Tools (optional - for advanced users)
+		new Setting(containerEl)
+			.setName('Research tools (optional)')
+			.setHeading();
+
+		const researchInfo = containerEl.createDiv({ cls: 'setting-item-description cr-info-box' });
+		researchInfo.createEl('strong', { text: '🔬 For researchers:' });
+		researchInfo.appendText(' These optional tools help track which facts have documentary evidence, aligned with the Genealogical Proof Standard. Leave disabled for casual use.');
+
+		new Setting(containerEl)
+			.setName('Enable fact-level source tracking')
+			.setDesc('Track which specific facts (birth, death, marriage, etc.) have source citations. Enables the Research Gaps Report in Data Quality tab.')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.trackFactSourcing)
+				.onChange(async (value) => {
+					this.plugin.settings.trackFactSourcing = value;
+					await this.plugin.saveSettings();
+					// Refresh to show/hide dependent settings
+					this.display();
+				}));
+
+		// Only show dependent settings if tracking is enabled
+		if (this.plugin.settings.trackFactSourcing) {
+			new Setting(containerEl)
+				.setName('Fact coverage threshold')
+				.setDesc('Number of key facts (birth, death, parents, etc.) for calculating 100% research coverage.')
+				.addText(text => text
+					.setPlaceholder('6')
+					.setValue(String(this.plugin.settings.factCoverageThreshold))
+					.onChange(async (value) => {
+						const numValue = parseInt(value);
+						if (!isNaN(numValue) && numValue > 0 && numValue <= 10) {
+							this.plugin.settings.factCoverageThreshold = numValue;
+							await this.plugin.saveSettings();
+						}
+					}));
+
+			new Setting(containerEl)
+				.setName('Show research gaps in Status tab')
+				.setDesc('Display a summary of unsourced facts in the Control Center Status tab.')
+				.addToggle(toggle => toggle
+					.setValue(this.plugin.settings.showResearchGapsInStatus)
+					.onChange(async (value) => {
+						this.plugin.settings.showResearchGapsInStatus = value;
+						await this.plugin.saveSettings();
+					}));
+		}
 
 		// Export
 		new Setting(containerEl)

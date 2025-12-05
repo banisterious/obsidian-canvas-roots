@@ -46,8 +46,17 @@ export interface SchemaDefinition {
 
 /**
  * Property type for validation
+ *
+ * - string: Plain text value
+ * - number: Numeric value
+ * - date: Date string (various formats supported)
+ * - wikilink: Link to another note [[Target]] or [[Target|Display]]
+ * - array: Array of values
+ * - enum: One of a predefined set of values
+ * - boolean: true/false value
+ * - sourced_facts: Special type for fact-level source tracking (validates SourcedFacts structure)
  */
-export type PropertyType = 'string' | 'number' | 'date' | 'wikilink' | 'array' | 'enum' | 'boolean';
+export type PropertyType = 'string' | 'number' | 'date' | 'wikilink' | 'array' | 'enum' | 'boolean' | 'sourced_facts';
 
 /**
  * Definition for a single property validation rule

@@ -382,3 +382,100 @@
   font-size: var(--font-ui-smaller);
   background: var(--background-secondary);
 }
+
+/* Research Gaps Section */
+.crc-research-gaps-section {
+  margin-top: var(--size-4-4);
+}
+
+.crc-research-gaps-breakdown {
+  margin-top: var(--size-4-3);
+}
+
+.crc-research-gaps-lowest {
+  margin-top: var(--size-4-4);
+}
+
+.crc-research-gaps-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+}
+
+.crc-research-gaps-person {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-3);
+  padding: var(--size-4-2) var(--size-4-3);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+}
+
+.crc-research-gaps-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-1);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Progress bar for research coverage */
+.crc-progress-bar {
+  width: 80px;
+  height: 8px;
+  background: var(--background-modifier-border);
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.crc-progress-bar--small {
+  width: 60px;
+  height: 6px;
+}
+
+.crc-progress-bar__fill {
+  height: 100%;
+  background: var(--color-green);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.crc-progress-bar__fill--warning {
+  background: var(--color-orange);
+}
+
+.crc-progress-bar__fill--danger {
+  background: var(--color-red);
+}
+
+/* Schema stat warning/info modifiers */
+.crc-schema-stat-warning .crc-schema-stat-icon {
+  color: var(--color-orange);
+}
+
+.crc-schema-stat-info .crc-schema-stat-icon {
+  color: var(--color-blue);
+}
+
+/* Filter row styles */
+.crc-filter-row {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-3);
+  padding: var(--size-4-2) var(--size-4-3);
+  background: var(--background-secondary);
+  border-radius: var(--radius-s);
+}
+
+.crc-filter-label {
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.crc-filter-select {
+  flex: 1;
+  max-width: 200px;
+}

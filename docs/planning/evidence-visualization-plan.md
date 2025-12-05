@@ -355,16 +355,16 @@ On canvas, hovering over the source badge (e.g., "📎 3") shows:
 
 ### 1. Schema & Types
 
-- [ ] Define `SourcedFacts` TypeScript interface
-- [ ] Define `SourceQuality` type (`'primary' | 'secondary' | 'derivative'`)
-- [ ] Add `sourced_facts` to person note parsing
-- [ ] Add `source_quality` to source note parsing
-- [ ] Add schema validation rules for `sourced_facts`
-- [ ] Add default quality inference for source types
+- [x] Define `SourcedFacts` TypeScript interface
+- [x] Define `SourceQuality` type (`'primary' | 'secondary' | 'derivative'`)
+- [x] Add `sourced_facts` to person note parsing
+- [x] Add `source_quality` to source note parsing
+- [x] Add schema validation rules for `sourced_facts`
+- [x] Add default quality inference for source types
 
 ### 2. Services
 
-- [ ] Create `EvidenceService` class
+- [x] Create `EvidenceService` class
   - `getFactCoverage(personCrId)` - returns sourced/unsourced facts for a person
   - `getResearchGaps()` - returns summary of unsourced facts across all people
   - `getSourceQuality(sourceCrId)` - returns quality (explicit or inferred)
@@ -372,30 +372,31 @@ On canvas, hovering over the source badge (e.g., "📎 3") shows:
 
 ### 3. Data Quality Tab
 
-- [ ] Add "Research Gaps" card to Data Quality tab
-- [ ] Implement summary counts by fact type
-- [ ] Add filtering by fact type
-- [ ] Add person list with click-to-open
-- [ ] Add export functionality
+- [x] Add "Research Gaps" card to Data Quality tab
+- [x] Implement summary counts by fact type
+- [x] Add filtering by fact type
+- [x] Add person list with click-to-open
+- [x] Add export functionality (CSV to clipboard)
 
 ### 4. Person Detail View
 
-- [ ] Add "Research Coverage" section to person detail
-- [ ] Show fact-by-fact breakdown with status icons
-- [ ] Show source quality indicators
-- [ ] Add "Add Source Citation" action
+- [x] Add "Research Coverage" section to person detail
+- [x] Show fact-by-fact breakdown with status icons
+- [x] Show source quality indicators
+- [x] Add "Add Source Citation" action (per-fact + button with source picker)
 
 ### 5. Canvas Integration
 
-- [ ] Extend existing source indicator with hover tooltip
-- [ ] Show fact coverage breakdown on hover
-- [ ] Include source quality in tooltip
+- [x] Extend existing source indicator with coverage display
+- [x] Show coverage percentage in indicator node
+- [x] Color-code indicator by coverage level
+- [ ] ~~Show fact coverage breakdown on hover~~ (Not possible - canvas text nodes don't support custom tooltips)
 
 ### 6. Settings
 
-- [ ] Add `trackFactSourcing` setting (default: false - opt-in)
-- [ ] Add `factCoverageThreshold` setting (facts required for "complete")
-- [ ] Group settings under collapsible "Research tools" section
+- [x] Add `trackFactSourcing` setting (default: false - opt-in)
+- [x] Add `factCoverageThreshold` setting (facts required for "complete")
+- [x] Group settings under collapsible "Research tools" section
 
 ---
 
@@ -431,25 +432,94 @@ Users with existing person notes will have no `sourced_facts` property. The syst
 
 ## Future Phases
 
-### Phase 2: Source Quality Visualization
+### Phase 2: Source Quality Visualization ✅ COMPLETE
 
-- Color-coded indicators based on source quality
-- Quality summary in person views
-- Filter research gaps by quality
+- [x] Color-coded indicators based on source quality (quality badges with primary/secondary/derivative colors)
+- [x] Quality summary in person views (shows count of facts by quality level)
+- [x] Filter research gaps by quality (dropdown: all, unsourced, weakly sourced, needs primary)
 
-### Phase 3: Proof Summary Nodes
+**Status: Phase 2 COMPLETE** (as of session on 2025-12-05)
 
-- New `type: proof_summary` note type
-- Document reasoning chains
-- Link multiple sources to conclusions
-- Conflict detection when sources disagree
+### Phase 3: Proof Summary Nodes ✅ COMPLETE
 
-### Phase 4: Canvas Evidence Visualization
+- [x] New `type: proof_summary` note type with full schema (ProofSummaryFrontmatter, ProofSummaryNote)
+- [x] ProofSummaryService for managing proof notes (create, update, query, delete)
+- [x] CreateProofModal for creating new proof summaries with evidence linking
+- [x] Proof summary cards in person detail view (Research Coverage section)
+- [x] Conflict detection when sources disagree (Source Conflicts section in Data Quality tab)
+- [x] CSS styling for proof cards, evidence items, and conflict indicators
 
-- Evidence clusters grouped by research question
-- Color-coded source quality borders on media nodes
-- Conflict markers with linked analysis notes
-- Research progress overlay (% of facts sourced)
+**Status: Phase 3 COMPLETE** (as of session on 2025-12-05)
+
+#### Phase 3 Polish (added post-completion)
+
+- [x] Edit proof summary modal (CreateProofModal supports edit mode)
+- [x] Delete proof summary with confirmation (trashFile)
+- [x] Edit/delete action buttons on proof cards (hover to reveal)
+
+### Phase 4: Canvas Evidence Visualization ✅ COMPLETE
+
+- [x] Research progress overlay (% of facts sourced) - extends existing source indicator
+- [x] Conflict markers on canvas (subtle indicator near person nodes)
+- [ ] ~~Color-coded source quality borders on media nodes~~ → Deferred to Style Settings Integration
+- [ ] ~~Evidence clusters grouped by research question~~ → Dropped (industry research shows this isn't needed)
+
+**Status: Phase 4 COMPLETE** - Scope reduced for v0.9.0 (as of 2025-12-05)
+
+**Scope Decisions (2025-12-05):**
+
+| Item | Decision | Rationale |
+|------|----------|-----------|
+| Research progress overlay | ✅ Complete | Already implemented in `addSourceIndicatorNodes()` - shows `📎 3 · 75%` with color coding |
+| Conflict markers | ✅ Complete | Subtle indicator at top-left of person nodes, gated behind `trackFactSourcing` |
+| Source quality borders on media | ⏸️ Deferred | Media nodes rendered by Obsidian (limited customization). Better fit for Style Settings Integration feature which will add comprehensive canvas node styling. |
+| Evidence clusters | ⏸️ On Hold | Original spec ambiguous (Canvas vs Family Chart View). See options below. |
+
+**Evidence Clusters - On Hold Pending Clarification (2025-12-05):**
+
+Research into how other tools handle evidence organization revealed a consistent pattern:
+
+- **RootsMagic**: Evidence stays attached to facts, analyzed in detail views and reports
+- **Gramps**: Event-centric model with task management, evidence accessed through person/event views
+- **World Anvil / Kanka**: Relationships tracked but not visually clustered on family trees
+
+**Industry pattern**: No genealogy or worldbuilding software clusters evidence visually on the tree itself. Instead:
+1. Evidence attaches to facts/events (we do this via `sourced_facts`)
+2. Detail views show evidence when needed (Control Center does this)
+3. Separate reports handle complex analysis (Research Gaps Report, Source Conflicts)
+4. Tree visualization stays focused on relationships with lightweight indicators
+
+**Original spec ambiguity**: The phrase "evidence clusters on canvas" could refer to:
+- Obsidian Canvas (limited - we can only add text/file nodes)
+- Family Chart View (full D3 control - much more feasible)
+
+**Options to Consider:**
+
+1. **Transform to Family Chart View feature**: Add evidence visualization to the D3-based Family Chart View instead of Obsidian Canvas. Could include:
+   - Source quality badges on person cards
+   - Research status indicators (color-coded borders)
+   - Expandable evidence panels on person cards
+   - Research question grouping within the chart
+
+2. **Keep dropped for tree views**: The industry research still applies - other tools show evidence in detail views, not on tree visualizations. Family Chart View is still a tree visualization, so the same UX concerns apply.
+
+3. **New "Research View"**: Create a separate evidence-centric D3 visualization (not relationship-centric). A dedicated view focused on:
+   - Evidence chains and reasoning
+   - Source relationships
+   - Conflict visualization
+   - Research question progress
+
+**Open question**: Do genealogists want to see evidence details directly on family chart cards, or is the current approach (click person → see evidence in Control Center) the right UX?
+
+**Current decision**: On hold pending user feedback on Phases 1-3. Add to feedback questions in community outreach.
+
+**Conflict Marker Implementation:**
+- Small text node (`⚠️ N`) positioned at top-left of person node
+- Source indicator (`📎 N · %`) positioned at top-right
+- Only visible when `trackFactSourcing` is enabled
+- Counts proof summaries with `status: conflicted` OR evidence with `supports: conflicts`
+- Uses red color (canvas color '1') to draw attention
+- Keeps casual users unaffected - they never see this indicator
 
 ---
 
@@ -457,12 +527,18 @@ Users with existing person notes will have no `sourced_facts` property. The syst
 
 Phase 1 is complete when:
 
-1. Users can add `sourced_facts` to person notes and see coverage in Control Center
-2. Research Gaps Report shows unsourced facts across the tree
-3. Source quality can be specified and is displayed appropriately
-4. Canvas source indicators show fact-level breakdown on hover
-5. Schema validation catches malformed `sourced_facts`
-6. Documentation covers the new workflow
+1. ✅ Users can add `sourced_facts` to person notes and see coverage in Control Center
+2. ✅ Research Gaps Report shows unsourced facts across the tree
+3. ✅ Source quality can be specified and is displayed appropriately
+4. ✅ Canvas source indicators show coverage percentage (hover tooltip not possible via API)
+5. ✅ Schema validation catches malformed `sourced_facts`
+6. ✅ Documentation covers the new workflow (Frontmatter-Reference.md updated)
+
+**Status: Phase 1 COMPLETE** (as of session on 2025-12-05)
+
+All Phase 1 tasks completed including polish items:
+- [x] Add export functionality for Research Gaps list (CSV to clipboard)
+- [x] Add "Add Source Citation" action in person detail view (per-fact buttons)
 
 ---
 

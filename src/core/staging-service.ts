@@ -270,8 +270,8 @@ export class StagingService {
 				await this.app.fileManager.trashFile(file);
 			}
 
-			// Delete the folder itself (folders use vault.delete, not trashFile)
-			await this.app.vault.delete(folder);
+			// Delete the folder itself using trashFile to respect user's trash preference
+			await this.app.fileManager.trashFile(folder);
 
 			return { success: true, filesDeleted: fileCount };
 		} catch (error) {

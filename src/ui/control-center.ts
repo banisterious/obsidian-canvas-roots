@@ -41,7 +41,27 @@ import { RelationshipService, RELATIONSHIP_CATEGORY_NAMES } from '../relationshi
 import type { RelationshipCategory } from '../relationships';
 import { createDateSystemsCard } from '../dates';
 import { renderOrganizationsTab } from '../organizations';
-import { renderSourcesTab } from '../sources';
+import {
+	renderSourcesTab,
+	EvidenceService,
+	FACT_KEY_LABELS,
+	FACT_KEYS,
+	SourcePickerModal,
+	SOURCE_QUALITY_LABELS,
+	ProofSummaryService,
+	CreateProofModal,
+	PROOF_STATUS_LABELS,
+	PROOF_CONFIDENCE_LABELS
+} from '../sources';
+import type {
+	FactKey,
+	ResearchGapsSummary,
+	PersonResearchCoverage,
+	FactCoverageStatus,
+	SourcedFacts,
+	SourceQuality,
+	ProofSummaryNote
+} from '../sources';
 
 const logger = getLogger('ControlCenter');
 
@@ -428,6 +448,7 @@ export class ControlCenterModal extends Modal {
 						showSpouseEdges: this.plugin.settings.showSpouseEdges,
 						spouseEdgeLabelFormat: this.plugin.settings.spouseEdgeLabelFormat,
 						showSourceIndicators: this.plugin.settings.showSourceIndicators,
+						showResearchCoverage: this.plugin.settings.trackFactSourcing,
 						canvasRootsMetadata: {
 							plugin: 'canvas-roots' as const,
 							generation: {
@@ -1788,6 +1809,7 @@ export class ControlCenterModal extends Modal {
 		container.empty();
 
 		const familyGraph = this.plugin.createFamilyGraphService();
+		familyGraph.ensureCacheLoaded();
 		const people = familyGraph.getAllPeople();
 
 		if (people.length === 0) {
@@ -1979,8 +2001,455 @@ export class ControlCenterModal extends Modal {
 						});
 					}
 				}
+
+				// Research coverage badge (only when fact tracking is enabled)
+				if (this.plugin.settings.trackFactSourcing) {
+					this.renderPersonResearchCoverageBadge(item, mainRow, person.file);
+				}
 			}
 		}
+	}
+
+	/**
+	 * Render a research coverage badge for a person list item
+	 */
+	private renderPersonResearchCoverageBadge(
+		item: HTMLElement,
+		mainRow: HTMLElement,
+		file: TFile
+	): void {
+		const evidenceService = new EvidenceService(this.app, this.plugin.settings);
+		const coverage = evidenceService.getFactCoverageForFile(file);
+
+		if (!coverage) return;
+
+		// Determine badge color based on coverage percent
+		let badgeClass = 'crc-person-list-badge--coverage';
+		if (coverage.coveragePercent >= 75) {
+			badgeClass += ' crc-person-list-badge--coverage-good';
+		} else if (coverage.coveragePercent >= 50) {
+			badgeClass += ' crc-person-list-badge--coverage-warning';
+		} else {
+			badgeClass += ' crc-person-list-badge--coverage-poor';
+		}
+
+		const badge = mainRow.createEl('span', {
+			cls: `crc-person-list-badge ${badgeClass}`,
+			attr: {
+				title: `Research coverage: ${coverage.coveragePercent}% (${coverage.sourcedFactCount}/${coverage.totalFactCount} facts sourced)`
+			}
+		});
+		const bookIcon = createLucideIcon('book-open', 12);
+		badge.appendChild(bookIcon);
+		badge.appendText(`${coverage.coveragePercent}%`);
+
+		// Create expandable details section
+		const detailsSection = item.createDiv({ cls: 'crc-person-list-details crc-person-list-details--hidden crc-research-coverage-details' });
+
+		// Toggle on badge click
+		badge.addEventListener('click', (e) => {
+			e.stopPropagation();
+			detailsSection.toggleClass('crc-person-list-details--hidden', !detailsSection.hasClass('crc-person-list-details--hidden'));
+			badge.toggleClass('crc-person-list-badge--active', !badge.hasClass('crc-person-list-badge--active'));
+		});
+
+		// Render fact coverage details
+		this.renderFactCoverageDetails(detailsSection, coverage);
+	}
+
+	/**
+	 * Render fact coverage details in an expandable section
+	 */
+	private renderFactCoverageDetails(container: HTMLElement, coverage: PersonResearchCoverage): void {
+		// Summary header
+		const header = container.createDiv({ cls: 'crc-coverage-header' });
+		header.createSpan({
+			text: `Research coverage: ${coverage.coveragePercent}%`,
+			cls: 'crc-coverage-title'
+		});
+
+		// Progress bar
+		const progressContainer = header.createDiv({ cls: 'crc-progress-bar crc-progress-bar--inline' });
+		const progressFill = progressContainer.createDiv({ cls: 'crc-progress-bar__fill' });
+		progressFill.style.width = `${coverage.coveragePercent}%`;
+		if (coverage.coveragePercent < 50) {
+			progressFill.addClass('crc-progress-bar__fill--danger');
+		} else if (coverage.coveragePercent < 75) {
+			progressFill.addClass('crc-progress-bar__fill--warning');
+		}
+
+		// Quality summary (count facts by quality level)
+		const qualityCounts = this.calculateQualityCounts(coverage);
+		if (qualityCounts.total > 0) {
+			const qualitySummary = container.createDiv({ cls: 'crc-quality-summary' });
+
+			if (qualityCounts.primary > 0) {
+				const item = qualitySummary.createDiv({ cls: 'crc-quality-summary-item' });
+				item.createSpan({ cls: 'crc-quality-dot crc-quality-dot--primary' });
+				item.createSpan({ cls: 'crc-quality-summary-count', text: String(qualityCounts.primary) });
+				item.createSpan({ text: 'primary', cls: 'crc-text--muted' });
+			}
+
+			if (qualityCounts.secondary > 0) {
+				const item = qualitySummary.createDiv({ cls: 'crc-quality-summary-item' });
+				item.createSpan({ cls: 'crc-quality-dot crc-quality-dot--secondary' });
+				item.createSpan({ cls: 'crc-quality-summary-count', text: String(qualityCounts.secondary) });
+				item.createSpan({ text: 'secondary', cls: 'crc-text--muted' });
+			}
+
+			if (qualityCounts.derivative > 0) {
+				const item = qualitySummary.createDiv({ cls: 'crc-quality-summary-item' });
+				item.createSpan({ cls: 'crc-quality-dot crc-quality-dot--derivative' });
+				item.createSpan({ cls: 'crc-quality-summary-count', text: String(qualityCounts.derivative) });
+				item.createSpan({ text: 'derivative', cls: 'crc-text--muted' });
+			}
+
+			if (qualityCounts.unsourced > 0) {
+				const item = qualitySummary.createDiv({ cls: 'crc-quality-summary-item' });
+				item.createSpan({ cls: 'crc-quality-dot', attr: { style: 'background: var(--text-faint)' } });
+				item.createSpan({ cls: 'crc-quality-summary-count', text: String(qualityCounts.unsourced) });
+				item.createSpan({ text: 'unsourced', cls: 'crc-text--muted' });
+			}
+		}
+
+		// Fact list
+		const factList = container.createDiv({ cls: 'crc-coverage-fact-list' });
+
+		for (const fact of coverage.facts) {
+			const factRow = factList.createDiv({ cls: 'crc-coverage-fact-row' });
+
+			// Status icon
+			const statusIcon = factRow.createSpan({ cls: `crc-coverage-status crc-coverage-status--${fact.status}` });
+			const iconName = this.getFactStatusIcon(fact.status);
+			setIcon(statusIcon, iconName);
+
+			// Fact label
+			factRow.createSpan({
+				text: FACT_KEY_LABELS[fact.factKey],
+				cls: 'crc-coverage-fact-label'
+			});
+
+			// Source count and quality badge
+			if (fact.sourceCount > 0) {
+				const sourceInfo = factRow.createSpan({ cls: 'crc-coverage-source-info' });
+				sourceInfo.textContent = `${fact.sourceCount} source${fact.sourceCount !== 1 ? 's' : ''}`;
+
+				// Quality badge (color-coded)
+				if (fact.bestQuality) {
+					const qualityBadge = factRow.createSpan({
+						cls: `crc-quality-badge crc-quality-badge--${fact.bestQuality}`,
+						attr: { 'aria-label': SOURCE_QUALITY_LABELS[fact.bestQuality].description }
+					});
+					qualityBadge.textContent = SOURCE_QUALITY_LABELS[fact.bestQuality].label;
+				}
+			}
+
+			// Add source button for each fact
+			const addBtn = factRow.createEl('button', {
+				cls: 'crc-icon-button crc-icon-button--small crc-coverage-add-btn',
+				attr: { 'aria-label': `Add source for ${FACT_KEY_LABELS[fact.factKey]}` }
+			});
+			setIcon(addBtn, 'plus');
+			addBtn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				this.addSourceCitationForFact(coverage.filePath, fact.factKey);
+			});
+		}
+
+		// Proof Summaries section
+		this.renderProofSummariesSection(container, coverage);
+	}
+
+	/**
+	 * Render proof summaries section for a person
+	 */
+	private renderProofSummariesSection(container: HTMLElement, coverage: PersonResearchCoverage): void {
+		const proofService = new ProofSummaryService(this.app, this.plugin.settings);
+		const proofs = proofService.getProofsForPerson(coverage.personCrId);
+
+		// Section container
+		const section = container.createDiv({ cls: 'crc-proof-section' });
+
+		// Header with "Create proof" button
+		const sectionHeader = section.createDiv({ cls: 'crc-proof-section-header' });
+		const headerTitle = sectionHeader.createSpan({ cls: 'crc-proof-section-title' });
+		const scaleIcon = createLucideIcon('scale', 14);
+		headerTitle.appendChild(scaleIcon);
+		headerTitle.appendText(`Proof summaries (${proofs.length})`);
+
+		const createBtn = sectionHeader.createEl('button', {
+			cls: 'crc-btn crc-btn--small',
+			text: 'New proof'
+		});
+		createBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			new CreateProofModal(this.app, this.plugin, {
+				subjectPerson: `[[${coverage.personName}]]`,
+				onSuccess: () => {
+					// Refresh the view
+					this.showPeopleTab();
+				}
+			}).open();
+		});
+
+		// Proof list
+		if (proofs.length === 0) {
+			section.createDiv({
+				cls: 'crc-proof-list-empty',
+				text: 'No proof summaries yet. Create one to document your research reasoning.'
+			});
+		} else {
+			const proofList = section.createDiv({ cls: 'crc-proof-list' });
+
+			for (const proof of proofs) {
+				this.renderProofCard(proofList, proof, () => this.showPeopleTab());
+			}
+		}
+	}
+
+	/**
+	 * Render a single proof summary card
+	 */
+	private renderProofCard(container: HTMLElement, proof: ProofSummaryNote, onRefresh?: () => void): void {
+		const card = container.createDiv({ cls: `crc-proof-card crc-proof-card--${proof.confidence}` });
+
+		// Header row
+		const header = card.createDiv({ cls: 'crc-proof-card-header' });
+
+		const title = header.createSpan({ cls: 'crc-proof-card-title', text: proof.title });
+		title.addEventListener('click', () => {
+			void this.app.workspace.openLinkText(proof.filePath, '', true);
+		});
+
+		// Actions (edit/delete)
+		const actions = header.createDiv({ cls: 'crc-proof-card-actions' });
+
+		// Edit button
+		const editBtn = actions.createEl('button', {
+			cls: 'crc-btn crc-btn--icon',
+			attr: { 'aria-label': 'Edit proof summary' }
+		});
+		const editIcon = createLucideIcon('edit', 14);
+		editBtn.appendChild(editIcon);
+		editBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const file = this.app.vault.getAbstractFileByPath(proof.filePath);
+			if (file instanceof TFile) {
+				new CreateProofModal(this.app, this.plugin, {
+					editProof: proof,
+					editFile: file,
+					onUpdated: () => {
+						if (onRefresh) onRefresh();
+					}
+				}).open();
+			}
+		});
+
+		// Delete button
+		const deleteBtn = actions.createEl('button', {
+			cls: 'crc-btn crc-btn--icon crc-btn--danger',
+			attr: { 'aria-label': 'Delete proof summary' }
+		});
+		const deleteIcon = createLucideIcon('trash', 14);
+		deleteBtn.appendChild(deleteIcon);
+		deleteBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			void this.deleteProofSummary(proof, onRefresh);
+		});
+
+		// Badges
+		const badges = header.createDiv({ cls: 'crc-proof-card-badges' });
+
+		// Status badge
+		const statusBadge = badges.createSpan({
+			cls: `crc-proof-badge crc-proof-badge--status crc-proof-badge--${proof.status}`,
+			text: PROOF_STATUS_LABELS[proof.status].label
+		});
+		statusBadge.setAttribute('title', PROOF_STATUS_LABELS[proof.status].description);
+
+		// Confidence badge
+		const confidenceBadge = badges.createSpan({
+			cls: 'crc-proof-badge crc-proof-badge--confidence',
+			text: PROOF_CONFIDENCE_LABELS[proof.confidence].label
+		});
+		confidenceBadge.setAttribute('title', PROOF_CONFIDENCE_LABELS[proof.confidence].description);
+
+		// Conclusion (truncated)
+		if (proof.conclusion) {
+			const maxLen = 100;
+			const conclusionText = proof.conclusion.length > maxLen
+				? proof.conclusion.substring(0, maxLen) + '...'
+				: proof.conclusion;
+
+			card.createDiv({ cls: 'crc-proof-card-conclusion', text: conclusionText });
+		}
+
+		// Meta info
+		const meta = card.createDiv({ cls: 'crc-proof-card-meta' });
+
+		// Fact type
+		const factItem = meta.createSpan({ cls: 'crc-proof-card-meta-item' });
+		const tagIcon = createLucideIcon('hash', 12);
+		factItem.appendChild(tagIcon);
+		factItem.appendText(FACT_KEY_LABELS[proof.factType]);
+
+		// Evidence count
+		const evidenceItem = meta.createSpan({ cls: 'crc-proof-card-meta-item' });
+		const archiveIcon = createLucideIcon('archive', 12);
+		evidenceItem.appendChild(archiveIcon);
+		evidenceItem.appendText(`${proof.evidence.length} source${proof.evidence.length !== 1 ? 's' : ''}`);
+
+		// Date if available
+		if (proof.dateWritten) {
+			const dateItem = meta.createSpan({ cls: 'crc-proof-card-meta-item' });
+			const calendarIcon = createLucideIcon('calendar', 12);
+			dateItem.appendChild(calendarIcon);
+			dateItem.appendText(proof.dateWritten);
+		}
+	}
+
+	/**
+	 * Delete a proof summary with confirmation
+	 */
+	private async deleteProofSummary(proof: ProofSummaryNote, onRefresh?: () => void): Promise<void> {
+		const file = this.app.vault.getAbstractFileByPath(proof.filePath);
+		if (!(file instanceof TFile)) {
+			new Notice('Proof summary file not found.');
+			return;
+		}
+
+		// Confirmation modal
+		const confirmModal = new Modal(this.app);
+		confirmModal.titleEl.setText('Delete proof summary');
+
+		const content = confirmModal.contentEl;
+		content.createEl('p', {
+			text: `Are you sure you want to delete "${proof.title}"?`
+		});
+		content.createEl('p', {
+			text: 'The file will be moved to trash.',
+			cls: 'mod-warning'
+		});
+
+		const buttonContainer = content.createDiv({ cls: 'crc-modal-buttons' });
+
+		const cancelBtn = buttonContainer.createEl('button', {
+			text: 'Cancel',
+			cls: 'crc-btn'
+		});
+		cancelBtn.addEventListener('click', () => confirmModal.close());
+
+		const deleteBtn = buttonContainer.createEl('button', {
+			text: 'Delete',
+			cls: 'crc-btn crc-btn--danger'
+		});
+		deleteBtn.addEventListener('click', async () => {
+			try {
+				await this.app.fileManager.trashFile(file);
+				new Notice(`Deleted proof summary: ${proof.title}`);
+				confirmModal.close();
+				if (onRefresh) onRefresh();
+			} catch (error) {
+				console.error('Failed to delete proof summary:', error);
+				new Notice('Failed to delete proof summary.');
+			}
+		});
+
+		confirmModal.open();
+	}
+
+	/**
+	 * Get the icon name for a fact coverage status
+	 */
+	private getFactStatusIcon(status: FactCoverageStatus): string {
+		switch (status) {
+			case 'well-sourced':
+				return 'check-circle-2';
+			case 'sourced':
+				return 'check-circle';
+			case 'weakly-sourced':
+				return 'alert-circle';
+			case 'unsourced':
+				return 'circle';
+			default:
+				return 'circle';
+		}
+	}
+
+	/**
+	 * Calculate counts of facts by source quality level
+	 */
+	private calculateQualityCounts(coverage: PersonResearchCoverage): {
+		primary: number;
+		secondary: number;
+		derivative: number;
+		unsourced: number;
+		total: number;
+	} {
+		const counts = { primary: 0, secondary: 0, derivative: 0, unsourced: 0, total: 0 };
+
+		for (const fact of coverage.facts) {
+			if (fact.status === 'unsourced') {
+				counts.unsourced++;
+			} else if (fact.bestQuality === 'primary') {
+				counts.primary++;
+			} else if (fact.bestQuality === 'secondary') {
+				counts.secondary++;
+			} else if (fact.bestQuality === 'derivative') {
+				counts.derivative++;
+			} else {
+				// Has sources but no quality determined - count as secondary
+				counts.secondary++;
+			}
+			counts.total++;
+		}
+
+		return counts;
+	}
+
+	/**
+	 * Add a source citation to a specific fact on a person note
+	 */
+	private addSourceCitationForFact(personFilePath: string, factKey: FactKey): void {
+		const file = this.app.vault.getAbstractFileByPath(personFilePath);
+		if (!(file instanceof TFile)) {
+			new Notice('Could not find person file');
+			return;
+		}
+
+		// Open source picker modal
+		new SourcePickerModal(this.app, this.plugin, async (source) => {
+			// Create wikilink from source file path
+			const sourceFileName = source.filePath.split('/').pop()?.replace('.md', '') || source.title;
+			const wikilink = `[[${sourceFileName}]]`;
+
+			// Update the person's sourced_facts frontmatter
+			await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+				// Initialize sourced_facts if it doesn't exist
+				if (!frontmatter.sourced_facts) {
+					frontmatter.sourced_facts = {};
+				}
+
+				const sourcedFacts = frontmatter.sourced_facts as SourcedFacts;
+
+				// Initialize the fact entry if it doesn't exist
+				if (!sourcedFacts[factKey]) {
+					sourcedFacts[factKey] = { sources: [] };
+				}
+
+				// Add the source if not already present
+				const sources = sourcedFacts[factKey]!.sources;
+				if (!sources.includes(wikilink)) {
+					sources.push(wikilink);
+					new Notice(`Added "${source.title}" as source for ${FACT_KEY_LABELS[factKey]}`);
+				} else {
+					new Notice(`"${source.title}" is already linked to ${FACT_KEY_LABELS[factKey]}`);
+				}
+			});
+
+			// Refresh the people tab to show updated coverage
+			this.showPeopleTab();
+		}).open();
 	}
 
 	/**
@@ -2086,7 +2555,7 @@ export class ControlCenterModal extends Modal {
 			this.pendingRootPerson = undefined;
 		}
 
-		await this.createRootPersonCard(container, rootPersonField);
+		this.createRootPersonCard(container, rootPersonField);
 
 		// Configuration Card
 		const configCard = container.createDiv({ cls: 'crc-card' });
@@ -2874,6 +3343,7 @@ export class ControlCenterModal extends Modal {
 				showSpouseEdges: this.plugin.settings.showSpouseEdges,
 				spouseEdgeLabelFormat: this.plugin.settings.spouseEdgeLabelFormat,
 				showSourceIndicators: this.plugin.settings.showSourceIndicators,
+				showResearchCoverage: this.plugin.settings.trackFactSourcing,
 				canvasRootsMetadata: {
 					plugin: 'canvas-roots',
 					generation: {
@@ -6202,6 +6672,477 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
+	 * Render research gaps section in Data Quality tab
+	 * Shows summary of unsourced facts aligned with GPS methodology
+	 */
+	private renderResearchGapsSection(container: HTMLElement): void {
+		const section = container.createDiv({ cls: 'crc-section crc-research-gaps-section' });
+
+		// Header with link to Sources tab
+		const header = section.createDiv({ cls: 'crc-section-header' });
+		header.createEl('h3', { text: 'Research gaps' });
+
+		const headerActions = header.createDiv({ cls: 'crc-section-header-actions' });
+
+		// Export button
+		const exportBtn = headerActions.createEl('button', {
+			cls: 'crc-icon-button',
+			attr: { 'aria-label': 'Export research gaps to CSV' }
+		});
+		setIcon(exportBtn, 'download');
+		exportBtn.addEventListener('click', () => {
+			this.exportResearchGapsToCSV();
+		});
+
+		const sourcesLink = headerActions.createEl('button', {
+			cls: 'crc-link-button',
+			text: 'Open sources tab'
+		});
+		setIcon(sourcesLink.createSpan({ cls: 'crc-button-icon-right' }), 'external-link');
+		sourcesLink.addEventListener('click', () => {
+			this.showTab('sources');
+		});
+
+		// Get research gaps data
+		const evidenceService = new EvidenceService(this.app, this.plugin.settings);
+		const gaps = evidenceService.getResearchGaps(10);
+
+		// Summary stats
+		const statsRow = section.createDiv({ cls: 'crc-schema-summary-row' });
+
+		// People tracked
+		const trackedStat = statsRow.createDiv({ cls: 'crc-schema-stat' });
+		setIcon(trackedStat.createSpan({ cls: 'crc-schema-stat-icon' }), 'users');
+		trackedStat.createSpan({
+			text: `${gaps.totalPeopleTracked} tracked`,
+			cls: 'crc-schema-stat-text'
+		});
+
+		// Count total unsourced
+		const totalUnsourced = Object.values(gaps.unsourcedByFact).reduce((a, b) => a + b, 0);
+		const unsourcedStat = statsRow.createDiv({ cls: 'crc-schema-stat crc-schema-stat-warning' });
+		setIcon(unsourcedStat.createSpan({ cls: 'crc-schema-stat-icon' }), 'alert-triangle');
+		unsourcedStat.createSpan({
+			text: `${totalUnsourced} unsourced facts`,
+			cls: 'crc-schema-stat-text'
+		});
+
+		// Count weakly sourced
+		const totalWeakly = Object.values(gaps.weaklySourcedByFact).reduce((a, b) => a + b, 0);
+		const weaklyStat = statsRow.createDiv({ cls: 'crc-schema-stat crc-schema-stat-info' });
+		setIcon(weaklyStat.createSpan({ cls: 'crc-schema-stat-icon' }), 'info');
+		weaklyStat.createSpan({
+			text: `${totalWeakly} weakly sourced`,
+			cls: 'crc-schema-stat-text'
+		});
+
+		// Quality filter dropdown
+		const filterRow = section.createDiv({ cls: 'crc-filter-row' });
+		filterRow.createSpan({ text: 'Filter by:', cls: 'crc-filter-label' });
+		const qualityFilter = filterRow.createEl('select', { cls: 'dropdown crc-filter-select' });
+		qualityFilter.createEl('option', { value: 'all', text: 'All research gaps' });
+		qualityFilter.createEl('option', { value: 'unsourced', text: 'Unsourced only' });
+		qualityFilter.createEl('option', { value: 'weakly-sourced', text: 'Weakly sourced only' });
+		qualityFilter.createEl('option', { value: 'needs-primary', text: 'Needs primary source' });
+
+		// Store current filter state
+		let currentQualityFilter = 'all';
+
+		// Re-render function for when filter changes
+		const rerenderBreakdown = (): void => {
+			// Remove existing breakdown and people sections
+			section.querySelectorAll('.crc-research-gaps-breakdown, .crc-research-gaps-lowest').forEach(el => el.remove());
+
+			// Filter data based on selection
+			const filteredGaps = this.filterResearchGapsByQuality(gaps, currentQualityFilter);
+
+			// Render breakdown
+			this.renderResearchGapsBreakdown(section, filteredGaps, currentQualityFilter);
+
+			// Render lowest coverage people
+			this.renderLowestCoveragePeople(section, filteredGaps.lowestCoverage, evidenceService, currentQualityFilter);
+		};
+
+		qualityFilter.addEventListener('change', () => {
+			currentQualityFilter = qualityFilter.value;
+			rerenderBreakdown();
+		});
+
+		// If no tracking data, show empty state
+		if (gaps.totalPeopleTracked === 0 && gaps.totalPeopleUntracked > 0) {
+			const emptyState = section.createDiv({ cls: 'crc-empty-state crc-compact' });
+			setIcon(emptyState.createSpan({ cls: 'crc-empty-icon' }), 'file-search');
+			emptyState.createEl('p', {
+				text: `No fact-level source tracking data found. Add sourced_facts to your person notes to track research coverage.`
+			});
+			return;
+		}
+
+		// Render initial breakdown and people list
+		this.renderResearchGapsBreakdown(section, gaps, 'all');
+		this.renderLowestCoveragePeople(section, gaps.lowestCoverage, evidenceService, 'all');
+	}
+
+	/**
+	 * Render source conflicts section
+	 * Shows proofs with conflicting evidence that need resolution
+	 */
+	private renderSourceConflictsSection(container: HTMLElement): void {
+		const proofService = new ProofSummaryService(this.app, this.plugin.settings);
+		const conflictedProofs = proofService.getProofsByStatus('conflicted');
+
+		const section = container.createDiv({ cls: 'crc-section crc-conflicts-section' });
+
+		// Header
+		const header = section.createDiv({ cls: 'crc-section-header' });
+		header.createEl('h3', { text: 'Source conflicts' });
+
+		// Summary stats
+		const statsRow = section.createDiv({ cls: 'crc-schema-summary-row' });
+
+		// Count of conflicted proofs
+		const conflictStat = statsRow.createDiv({
+			cls: `crc-schema-stat ${conflictedProofs.length > 0 ? 'crc-schema-stat-warning' : ''}`
+		});
+		const conflictIcon = conflictStat.createSpan({ cls: 'crc-schema-stat-icon' });
+		setIcon(conflictIcon, conflictedProofs.length > 0 ? 'alert-triangle' : 'check');
+		conflictStat.createSpan({
+			text: `${conflictedProofs.length} unresolved conflict${conflictedProofs.length !== 1 ? 's' : ''}`,
+			cls: 'crc-schema-stat-text'
+		});
+
+		// Total proofs
+		const allProofs = proofService.getAllProofs();
+		const proofStat = statsRow.createDiv({ cls: 'crc-schema-stat' });
+		const proofIcon = proofStat.createSpan({ cls: 'crc-schema-stat-icon' });
+		setIcon(proofIcon, 'scale');
+		proofStat.createSpan({
+			text: `${allProofs.length} proof summar${allProofs.length !== 1 ? 'ies' : 'y'}`,
+			cls: 'crc-schema-stat-text'
+		});
+
+		// Empty state if no proofs
+		if (allProofs.length === 0) {
+			const emptyState = section.createDiv({ cls: 'crc-empty-state crc-compact' });
+			const emptyIcon = emptyState.createSpan({ cls: 'crc-empty-icon' });
+			setIcon(emptyIcon, 'scale');
+			emptyState.createEl('p', {
+				text: 'No proof summaries created yet. Use proof summaries to document your research reasoning and resolve conflicting evidence.'
+			});
+
+			// Create proof button
+			const createBtn = emptyState.createEl('button', {
+				cls: 'crc-btn crc-btn--primary',
+				text: 'Create proof summary'
+			});
+			createBtn.addEventListener('click', () => {
+				new CreateProofModal(this.app, this.plugin, {
+					onSuccess: () => {
+						this.showDataQualityTab();
+					}
+				}).open();
+			});
+
+			return;
+		}
+
+		// If no conflicts, show success state
+		if (conflictedProofs.length === 0) {
+			const successState = section.createDiv({ cls: 'crc-dq-no-issues' });
+			const successIcon = successState.createDiv({ cls: 'crc-dq-no-issues-icon' });
+			setIcon(successIcon, 'check');
+			successState.createSpan({ text: 'No unresolved source conflicts' });
+			return;
+		}
+
+		// Show conflicted proofs
+		const conflictList = section.createDiv({ cls: 'crc-conflicts-list' });
+
+		for (const proof of conflictedProofs) {
+			this.renderConflictItem(conflictList, proof);
+		}
+	}
+
+	/**
+	 * Render a single conflict item
+	 */
+	private renderConflictItem(container: HTMLElement, proof: ProofSummaryNote): void {
+		const item = container.createDiv({ cls: 'crc-conflict-item' });
+
+		// Header with alert icon
+		const header = item.createDiv({ cls: 'crc-conflict-item-header' });
+		const alertIcon = header.createSpan({ cls: 'crc-conflict-icon' });
+		setIcon(alertIcon, 'alert-triangle');
+
+		// Title (clickable)
+		const title = header.createSpan({ cls: 'crc-conflict-title', text: proof.title });
+		title.addEventListener('click', () => {
+			void this.app.workspace.openLinkText(proof.filePath, '', true);
+		});
+
+		// Fact type badge
+		const factBadge = header.createSpan({
+			cls: 'crc-proof-badge',
+			text: FACT_KEY_LABELS[proof.factType]
+		});
+
+		// Subject person
+		const personRow = item.createDiv({ cls: 'crc-conflict-person' });
+		const personIcon = personRow.createSpan();
+		setIcon(personIcon, 'user');
+		personRow.createSpan({ text: proof.subjectPerson.replace(/\[\[|\]\]/g, '') });
+
+		// Conflicting evidence
+		const evidenceSection = item.createDiv({ cls: 'crc-conflict-evidence' });
+		evidenceSection.createSpan({ cls: 'crc-conflict-evidence-label', text: 'Conflicting evidence:' });
+
+		const evidenceList = evidenceSection.createDiv({ cls: 'crc-conflict-evidence-list' });
+
+		for (const ev of proof.evidence) {
+			const evItem = evidenceList.createDiv({
+				cls: `crc-conflict-evidence-item ${ev.supports === 'conflicts' ? 'crc-conflict-evidence-item--conflicts' : ''}`
+			});
+
+			// Support indicator
+			const supportIcon = evItem.createSpan({ cls: 'crc-conflict-support-icon' });
+			if (ev.supports === 'conflicts') {
+				setIcon(supportIcon, 'x');
+			} else {
+				setIcon(supportIcon, 'check');
+			}
+
+			// Source name
+			evItem.createSpan({
+				cls: 'crc-conflict-source',
+				text: ev.source.replace(/\[\[|\]\]/g, '')
+			});
+
+			// Information (claim)
+			if (ev.information) {
+				evItem.createSpan({
+					cls: 'crc-conflict-claim',
+					text: `: "${ev.information}"`
+				});
+			}
+		}
+
+		// Resolve button
+		const actions = item.createDiv({ cls: 'crc-conflict-actions' });
+		const resolveBtn = actions.createEl('button', {
+			cls: 'crc-btn crc-btn--small',
+			text: 'Open to resolve'
+		});
+		resolveBtn.addEventListener('click', () => {
+			void this.app.workspace.openLinkText(proof.filePath, '', true);
+		});
+	}
+
+	/**
+	 * Filter research gaps data by quality level
+	 */
+	private filterResearchGapsByQuality(
+		gaps: ResearchGapsSummary,
+		filter: string
+	): ResearchGapsSummary {
+		if (filter === 'all') {
+			return gaps;
+		}
+
+		// Create filtered copy
+		const filtered: ResearchGapsSummary = {
+			totalPeopleTracked: gaps.totalPeopleTracked,
+			totalPeopleUntracked: gaps.totalPeopleUntracked,
+			unsourcedByFact: { ...gaps.unsourcedByFact },
+			weaklySourcedByFact: { ...gaps.weaklySourcedByFact },
+			lowestCoverage: []
+		};
+
+		// Filter the people list based on selected criteria
+		for (const person of gaps.lowestCoverage) {
+			const hasMatchingGap = person.facts.some(fact => {
+				switch (filter) {
+					case 'unsourced':
+						return fact.status === 'unsourced';
+					case 'weakly-sourced':
+						return fact.status === 'weakly-sourced';
+					case 'needs-primary':
+						// Any fact that doesn't have a primary source
+						return fact.bestQuality !== 'primary';
+					default:
+						return true;
+				}
+			});
+
+			if (hasMatchingGap) {
+				filtered.lowestCoverage.push(person);
+			}
+		}
+
+		return filtered;
+	}
+
+	/**
+	 * Render research gaps breakdown by fact type
+	 */
+	private renderResearchGapsBreakdown(
+		container: HTMLElement,
+		gaps: ResearchGapsSummary,
+		filter: string
+	): void {
+		// Determine which counts to show based on filter
+		let factCounts: Record<FactKey, number>;
+		let title: string;
+
+		switch (filter) {
+			case 'unsourced':
+				factCounts = gaps.unsourcedByFact;
+				title = 'Unsourced facts by type';
+				break;
+			case 'weakly-sourced':
+				factCounts = gaps.weaklySourcedByFact;
+				title = 'Weakly sourced facts by type';
+				break;
+			case 'needs-primary':
+				// Combine unsourced + weakly sourced for "needs primary"
+				factCounts = {} as Record<FactKey, number>;
+				for (const key of FACT_KEYS) {
+					factCounts[key] = (gaps.unsourcedByFact[key] || 0) + (gaps.weaklySourcedByFact[key] || 0);
+				}
+				title = 'Facts needing primary sources';
+				break;
+			default: // 'all'
+				factCounts = gaps.unsourcedByFact;
+				title = 'Unsourced facts by type';
+		}
+
+		const totalCount = Object.values(factCounts).reduce((a, b) => a + b, 0);
+		if (totalCount === 0) return;
+
+		const breakdownSection = container.createDiv({ cls: 'crc-research-gaps-breakdown' });
+		breakdownSection.createEl('h4', { text: title, cls: 'crc-section-subtitle' });
+
+		const grid = breakdownSection.createDiv({ cls: 'crc-schema-error-grid' });
+
+		// Sort by count descending
+		const sortedFacts = (Object.entries(factCounts) as [FactKey, number][])
+			.filter(([, count]) => count > 0)
+			.sort((a, b) => b[1] - a[1]);
+
+		for (const [factKey, count] of sortedFacts) {
+			const item = grid.createDiv({ cls: 'crc-schema-error-item' });
+			item.createSpan({ text: FACT_KEY_LABELS[factKey], cls: 'crc-schema-error-label' });
+			item.createSpan({ text: String(count), cls: 'crc-schema-error-count' });
+		}
+	}
+
+	/**
+	 * Render lowest coverage people list
+	 */
+	private renderLowestCoveragePeople(
+		container: HTMLElement,
+		people: PersonResearchCoverage[],
+		_evidenceService: EvidenceService,
+		filter: string
+	): void {
+		if (people.length === 0) {
+			const emptySection = container.createDiv({ cls: 'crc-research-gaps-lowest' });
+			emptySection.createEl('p', {
+				text: `No people match the "${filter}" filter.`,
+				cls: 'crc-text--muted'
+			});
+			return;
+		}
+
+		const lowestSection = container.createDiv({ cls: 'crc-research-gaps-lowest' });
+		lowestSection.createEl('h4', { text: 'Lowest research coverage', cls: 'crc-section-subtitle' });
+
+		const list = lowestSection.createDiv({ cls: 'crc-research-gaps-list' });
+
+		for (const person of people.slice(0, 5)) {
+			const item = list.createDiv({ cls: 'crc-research-gaps-person' });
+
+			// Progress bar
+			const progressBar = item.createDiv({ cls: 'crc-progress-bar crc-progress-bar--small' });
+			const progressFill = progressBar.createDiv({ cls: 'crc-progress-bar__fill' });
+			progressFill.style.width = `${person.coveragePercent}%`;
+
+			// Adjust color based on coverage
+			if (person.coveragePercent < 25) {
+				progressFill.addClass('crc-progress-bar__fill--danger');
+			} else if (person.coveragePercent < 50) {
+				progressFill.addClass('crc-progress-bar__fill--warning');
+			}
+
+			// Name and stats
+			const info = item.createDiv({ cls: 'crc-research-gaps-info' });
+			const nameLink = info.createEl('a', {
+				text: person.personName,
+				cls: 'crc-link',
+				href: '#'
+			});
+			nameLink.addEventListener('click', (e) => {
+				e.preventDefault();
+				const file = this.app.vault.getAbstractFileByPath(person.filePath);
+				if (file instanceof TFile) {
+					void this.app.workspace.openLinkText(file.path, '', false);
+				}
+			});
+
+			info.createSpan({
+				text: `${person.coveragePercent}% (${person.sourcedFactCount}/${person.totalFactCount} facts)`,
+				cls: 'crc-text-muted crc-text-small'
+			});
+		}
+	}
+
+	/**
+	 * Export research gaps data to CSV and copy to clipboard
+	 */
+	private exportResearchGapsToCSV(): void {
+		const evidenceService = new EvidenceService(this.app, this.plugin.settings);
+		const gaps = evidenceService.getResearchGaps(1000); // Get all, not just top 10
+
+		if (gaps.lowestCoverage.length === 0) {
+			new Notice('No research coverage data to export');
+			return;
+		}
+
+		// Build CSV with headers
+		const headers = ['Name', 'File Path', 'Coverage %', 'Sourced Facts', 'Total Facts', ...FACT_KEYS.map(k => FACT_KEY_LABELS[k])];
+		const rows: string[][] = [];
+
+		for (const person of gaps.lowestCoverage) {
+			const row: string[] = [
+				`"${person.personName.replace(/"/g, '""')}"`,
+				`"${person.filePath.replace(/"/g, '""')}"`,
+				String(person.coveragePercent),
+				String(person.sourcedFactCount),
+				String(person.totalFactCount)
+			];
+
+			// Add status for each fact type
+			for (const factKey of FACT_KEYS) {
+				const fact = person.facts.find(f => f.factKey === factKey);
+				if (fact) {
+					row.push(fact.status);
+				} else {
+					row.push('unsourced');
+				}
+			}
+
+			rows.push(row);
+		}
+
+		const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+
+		void navigator.clipboard.writeText(csv).then(() => {
+			new Notice(`Research gaps exported: ${gaps.lowestCoverage.length} people copied to clipboard as CSV`);
+		}).catch(() => {
+			new Notice('Failed to copy to clipboard');
+		});
+	}
+
+	/**
 	 * Run schema validation from Data Quality tab and update section
 	 */
 	private async runSchemaValidationFromDataQuality(sectionToReplace: HTMLElement): Promise<void> {
@@ -6266,10 +7207,10 @@ export class ControlCenterModal extends Modal {
 		this.renderRelationshipTypesCard(container, relationshipService);
 
 		// Relationships Overview card
-		await this.renderRelationshipsOverviewCard(container, relationshipService);
+		this.renderRelationshipsOverviewCard(container, relationshipService);
 
 		// Statistics card
-		await this.renderRelationshipStatsCard(container, relationshipService);
+		this.renderRelationshipStatsCard(container, relationshipService);
 	}
 
 	/**
@@ -10182,6 +11123,14 @@ export class ControlCenterModal extends Modal {
 
 		// Schema Violations Section (at the top for visibility)
 		this.renderSchemaViolationsSection(container);
+
+		// Research Gaps Section (only when fact-level tracking is enabled)
+		if (this.plugin.settings.trackFactSourcing) {
+			this.renderResearchGapsSection(container);
+
+			// Source Conflicts Section
+			this.renderSourceConflictsSection(container);
+		}
 
 		// Analysis scope selector
 		const scopeSection = container.createDiv({ cls: 'crc-section' });

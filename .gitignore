@@ -80,6 +80,9 @@ docs/developer/pr-reviews/
 CLAUDE.md
 .session-restore.md
 
+# Internal planning documents (not for publication)
+docs/planning/community-outreach-strategy.md
+
 # Personal deployment scripts
 deploy.sh
 dev-deploy.sh

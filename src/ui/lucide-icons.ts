@@ -94,7 +94,8 @@ export type LucideIconName =
 	| 'mail' // Correspondence
 	| 'newspaper' // Newspaper articles
 	| 'mic' // Oral history
-	| 'archive'; // Sources tab
+	| 'archive' // Sources tab
+	| 'scale'; // Proof summaries (weighing evidence)
 
 /**
  * Tab configuration for Control Center navigation
