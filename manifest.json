@@ -1,9 +1,9 @@
 {
 	"id": "canvas-roots",
 	"name": "Canvas Roots",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"minAppVersion": "1.7.2",
-	"description": "Generate genealogical family trees on Canvas with automated layout, GEDCOM import/export, and comprehensive styling options.",
+	"description": "Family tree visualization for genealogists and worldbuilders. Interactive charts, geographic maps, evidence tracking, GEDCOM support, and fictional calendars.",
 	"author": "banisterious",
 	"authorUrl": "https://github.com/banisterious",
 	"isDesktopOnly": false
