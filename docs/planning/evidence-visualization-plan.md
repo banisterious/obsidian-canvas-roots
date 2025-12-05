@@ -113,6 +113,85 @@ source_quality: primary  # NEW: primary | secondary | derivative
 
 ---
 
+## Casual User Safeguards
+
+Evidence Visualization targets serious researchers, but Canvas Roots serves a broad audience. These safeguards ensure the feature enhances the plugin for power users without overwhelming casual users.
+
+### Opt-In by Default
+
+**Decision: `trackFactSourcing` defaults to `false`.**
+
+- New users see the familiar, simple interface
+- Research features only appear when explicitly enabled
+- Prevents "feature overload" on first use
+- Settings description explains who benefits: *"Enable detailed fact-level source tracking for genealogical research. Recommended for users following the Genealogical Proof Standard."*
+
+### Feature Gating
+
+When `trackFactSourcing` is disabled:
+
+| Component | Behavior |
+|-----------|----------|
+| Research Gaps Report | Hidden from Data Quality tab |
+| Person fact coverage | Not shown in person details |
+| Enhanced tooltips | Show simple source count only (existing behavior) |
+| `sourced_facts` property | Ignored in frontmatter (no errors) |
+| `source_quality` field | Still parsed but not prominently displayed |
+
+When enabled, all features become visible with a subtle "Research Mode" indicator.
+
+### Progressive Disclosure
+
+Rather than exposing all research terminology immediately:
+
+1. **Level 1 (Default)**: Simple source counts ("3 sources attached")
+2. **Level 2 (Enabled)**: Fact coverage percentages ("75% documented")
+3. **Level 3 (Detailed view)**: Full GPS terminology (primary/secondary/derivative)
+
+Users drill down to complexity only when they want it.
+
+### User-Friendly Terminology
+
+In UI, prefer accessible language with technical terms as secondary:
+
+| Technical Term | User-Friendly Alternative |
+|---------------|---------------------------|
+| Primary source | Original record |
+| Secondary source | Later account |
+| Derivative source | Copy/transcription |
+| Evidence | Supporting sources |
+| GPS | Research standards |
+
+Tooltips can explain: *"Original record (primary source) - created at the time of the event"*
+
+### Separate Documentation
+
+- **Main docs**: Focus on basic source linking (existing behavior)
+- **Research Guide**: Dedicated section for GPS-aligned workflow
+- **In-app help**: Context-sensitive tips only when research features are enabled
+
+### Settings Organization
+
+Group research settings under a collapsible "Research tools" section in plugin settings, clearly labeled as optional/advanced:
+
+```
+▼ Research tools (optional)
+  □ Enable fact-level source tracking
+  □ Show research coverage percentages
+  Fact coverage threshold: [6]
+```
+
+### Graceful Degradation
+
+If a user disables `trackFactSourcing` after using it:
+
+- `sourced_facts` data preserved in frontmatter (not deleted)
+- UI simply hides research features
+- Re-enabling restores full functionality
+- No data loss, no warnings
+
+---
+
 ## Phase 1 Scope (v0.9.0)
 
 ### Included
@@ -314,8 +393,9 @@ On canvas, hovering over the source badge (e.g., "📎 3") shows:
 
 ### 6. Settings
 
-- [ ] Add `trackFactSourcing` setting (default: true)
+- [ ] Add `trackFactSourcing` setting (default: false - opt-in)
 - [ ] Add `factCoverageThreshold` setting (facts required for "complete")
+- [ ] Group settings under collapsible "Research tools" section
 
 ---
 
@@ -325,9 +405,9 @@ New settings in plugin configuration:
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `trackFactSourcing` | boolean | `true` | Enable fact-level source tracking |
+| `trackFactSourcing` | boolean | `false` | Enable fact-level source tracking (opt-in for research users) |
 | `factCoverageThreshold` | number | `6` | Number of facts for 100% coverage |
-| `showResearchGapsInStatus` | boolean | `true` | Show research gap summary in Status tab |
+| `showResearchGapsInStatus` | boolean | `true` | Show research gap summary in Status tab (when tracking enabled) |
 
 ---
 
