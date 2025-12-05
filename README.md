@@ -114,6 +114,7 @@
 | Feature | Description |
 |---------|-------------|
 | **Obsidian Bases** | Ready-to-use Base templates: People (22 views), Places (14 views), Organizations (17 views) |
+| **Style Settings** | Customize colors via [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin |
 | **Context Menu Actions** | Right-click person notes, folders, and canvases for quick actions |
 | **YAML-First Data** | Compatible with Dataview, Bases, and other Obsidian tools |
 | **Privacy Protection** | Optional anonymization of living persons in exports |
