@@ -17,9 +17,9 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Evidence & Source Management](#evidence--source-management) ✅
   - [World-Building Suite](#world-building-suite) ✅
   - [Research & Analysis Tools](#research--analysis-tools)
+  - [Print & PDF Export](#print--pdf-export)
 - [Future Considerations](#future-considerations)
   - [Person Note Templates](#person-note-templates)
-  - [Print & PDF Export](#print--pdf-export)
   - [Accessibility](#accessibility)
   - [Obsidian Publish Support](#obsidian-publish-support)
   - [Style Settings Integration](#style-settings-integration)
@@ -44,7 +44,8 @@ The following priority order guides future development:
 | 8 | [Source Media Gallery](#source-media-gallery--document-viewer) | ✅ Complete (v0.8.0) |
 | 9 | [Canvas Media Nodes](#canvas-media-nodes) | Planned |
 | 10 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
-| 11 | [Style Settings Integration](#style-settings-integration) | Planned |
+| 11 | [Print & PDF Export](#print--pdf-export) | Planned |
+| 12 | [Style Settings Integration](#style-settings-integration) | Planned |
 
 ---
 
@@ -477,31 +478,6 @@ confidence: medium
 
 ---
 
-## Future Considerations
-
-### Person Note Templates
-
-**Summary:** Pre-configured note templates for different use cases and user types.
-
-**Template Types:**
-- **Researcher Template**: Full fields including sources, confidence, research notes, citation placeholders
-- **Casual User Template**: Minimal fields (name, dates, parents, spouse, children)
-- **World-Builder Template**: Includes universe, fictional dates, organization memberships
-- **Quick Add Template**: Bare minimum for fast data entry
-
-**Features:**
-- Template picker when creating new person notes
-- Default template setting in preferences
-- Custom template creation and editing
-- Templater plugin compatibility
-
-**Integration Points:**
-- Context menu "Create person note" actions
-- Control Center quick-add buttons
-- GEDCOM/CSV import (choose template for imported notes)
-
----
-
 ### Print & PDF Export
 
 **Summary:** Generate print-ready and PDF outputs of family trees and reports.
@@ -524,6 +500,31 @@ confidence: medium
 - Leverage browser print APIs
 - SVG-based rendering for scalability
 - Optional integration with PDF libraries (jsPDF or similar)
+
+---
+
+## Future Considerations
+
+### Person Note Templates
+
+**Summary:** Pre-configured note templates for different use cases and user types.
+
+**Template Types:**
+- **Researcher Template**: Full fields including sources, confidence, research notes, citation placeholders
+- **Casual User Template**: Minimal fields (name, dates, parents, spouse, children)
+- **World-Builder Template**: Includes universe, fictional dates, organization memberships
+- **Quick Add Template**: Bare minimum for fast data entry
+
+**Features:**
+- Template picker when creating new person notes
+- Default template setting in preferences
+- Custom template creation and editing
+- Templater plugin compatibility
+
+**Integration Points:**
+- Context menu "Create person note" actions
+- Control Center quick-add buttons
+- GEDCOM/CSV import (choose template for imported notes)
 
 ---
 
