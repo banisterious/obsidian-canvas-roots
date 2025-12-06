@@ -21,7 +21,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Print & PDF Export](#print--pdf-export)
 - [Future Considerations](#future-considerations)
   - [Events Tab (Control Center)](#events-tab-control-center) ✅ v0.9.2
-  - [Property Aliases](#property-aliases) ✅ v0.9.3
+  - [Property Aliases](#property-aliases-) ✅ v0.9.3
   - [Value Aliases](#value-aliases) ✅ v0.9.4
   - [Person Note Templates](#person-note-templates)
   - [Accessibility](#accessibility)
