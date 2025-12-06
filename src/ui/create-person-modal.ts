@@ -366,16 +366,15 @@ export class CreatePersonModal extends Modal {
 		setting.addButton(btn => {
 			const updateButton = (isLinked: boolean) => {
 				btn.buttonEl.empty();
+				btn.buttonEl.addClass('crc-btn', 'crc-btn--secondary');
 				if (isLinked) {
 					const unlinkIcon = createLucideIcon('unlink', 16);
 					btn.buttonEl.appendChild(unlinkIcon);
 					btn.buttonEl.appendText(' Unlink');
-					btn.setClass('crc-btn crc-btn--secondary');
 				} else {
 					const linkIcon = createLucideIcon('link', 16);
 					btn.buttonEl.appendChild(linkIcon);
 					btn.buttonEl.appendText(' Link');
-					btn.setClass('crc-btn crc-btn--secondary');
 				}
 			};
 

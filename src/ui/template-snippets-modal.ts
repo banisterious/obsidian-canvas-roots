@@ -6,7 +6,7 @@
 import { App, Modal, Notice } from 'obsidian';
 import { createLucideIcon } from './lucide-icons';
 
-export type TemplateType = 'person' | 'place' | 'source' | 'organization' | 'proof';
+export type TemplateType = 'person' | 'place' | 'source' | 'organization' | 'proof' | 'event';
 
 interface TemplateSnippet {
 	name: string;
@@ -57,7 +57,8 @@ export class TemplateSnippetsModal extends Modal {
 			{ type: 'place', label: 'Place' },
 			{ type: 'source', label: 'Source' },
 			{ type: 'organization', label: 'Organization' },
-			{ type: 'proof', label: 'Proof summary' }
+			{ type: 'proof', label: 'Proof summary' },
+			{ type: 'event', label: 'Event' }
 		];
 
 		for (const tab of tabs) {
@@ -140,6 +141,9 @@ export class TemplateSnippetsModal extends Modal {
 				break;
 			case 'proof':
 				templates = this.getProofTemplates();
+				break;
+			case 'event':
+				templates = this.getEventTemplates();
 				break;
 		}
 
@@ -791,6 +795,191 @@ Explain how you resolved the conflict and why you chose one conclusion over anot
 ## Confidence assessment
 
 `
+			}
+		];
+	}
+
+	/**
+	 * Get event note templates
+	 */
+	private getEventTemplates(): TemplateSnippet[] {
+		return [
+			{
+				name: 'Basic event note',
+				description: 'Minimal template for recording life events',
+				template: `---
+type: event
+cr_id: <% tp.date.now("YYYYMMDDHHmmss") %>
+title: "<% tp.file.title %>"
+event_type: <% tp.system.suggester(["Birth", "Death", "Marriage", "Divorce", "Residence", "Occupation", "Military", "Immigration", "Education", "Burial", "Baptism", "Custom"], ["birth", "death", "marriage", "divorce", "residence", "occupation", "military", "immigration", "education", "burial", "baptism", "custom"]) %>
+date:
+date_precision: <% tp.system.suggester(["Exact date", "Month only", "Year only", "Decade", "Estimated", "Date range", "Unknown"], ["exact", "month", "year", "decade", "estimated", "range", "unknown"]) %>
+person:
+place:
+confidence: <% tp.system.suggester(["High", "Medium", "Low", "Unknown"], ["high", "medium", "low", "unknown"]) %>
+---
+
+# <% tp.file.title %>
+
+<% tp.file.cursor() %>`
+			},
+			{
+				name: 'Birth event',
+				description: 'Template for recording a birth event',
+				template: `---
+type: event
+cr_id: <% tp.date.now("YYYYMMDDHHmmss") %>
+title: "Birth of <% tp.system.prompt("Person name?", "", false) %>"
+event_type: birth
+date: <% tp.system.prompt("Birth date (YYYY-MM-DD)?", "", false) %>
+date_precision: exact
+person: "[[<% tp.system.prompt("Person note name?", "", false) %>]]"
+place: "[[<% tp.system.prompt("Birth place?", "", false) %>]]"
+sources:
+confidence: <% tp.system.suggester(["High", "Medium", "Low", "Unknown"], ["high", "medium", "low", "unknown"]) %>
+---
+
+# Birth of <% tp.file.title %>
+
+<% tp.file.cursor() %>`
+			},
+			{
+				name: 'Marriage event',
+				description: 'Template for recording a marriage event',
+				template: `---
+type: event
+cr_id: <% tp.date.now("YYYYMMDDHHmmss") %>
+title: "Marriage of <% tp.system.prompt("Names (e.g., John Smith and Jane Doe)?", "", false) %>"
+event_type: marriage
+date: <% tp.system.prompt("Marriage date (YYYY-MM-DD)?", "", false) %>
+date_precision: exact
+persons:
+  - "[[<% tp.system.prompt("First spouse note?", "", false) %>]]"
+  - "[[<% tp.system.prompt("Second spouse note?", "", false) %>]]"
+place: "[[<% tp.system.prompt("Marriage location?", "", false) %>]]"
+sources:
+confidence: <% tp.system.suggester(["High", "Medium", "Low", "Unknown"], ["high", "medium", "low", "unknown"]) %>
+---
+
+# Marriage
+
+<% tp.file.cursor() %>`
+			},
+			{
+				name: 'Death event',
+				description: 'Template for recording a death event',
+				template: `---
+type: event
+cr_id: <% tp.date.now("YYYYMMDDHHmmss") %>
+title: "Death of <% tp.system.prompt("Person name?", "", false) %>"
+event_type: death
+date: <% tp.system.prompt("Death date (YYYY-MM-DD)?", "", false) %>
+date_precision: exact
+person: "[[<% tp.system.prompt("Person note name?", "", false) %>]]"
+place: "[[<% tp.system.prompt("Death place?", "", false) %>]]"
+sources:
+confidence: <% tp.system.suggester(["High", "Medium", "Low", "Unknown"], ["high", "medium", "low", "unknown"]) %>
+---
+
+# Death of <% tp.file.title %>
+
+<% tp.file.cursor() %>`
+			},
+			{
+				name: 'Narrative event',
+				description: 'Template for worldbuilders and storytellers',
+				template: `---
+type: event
+cr_id: <% tp.date.now("YYYYMMDDHHmmss") %>
+title: "<% tp.file.title %>"
+event_type: <% tp.system.suggester(["Anecdote", "Lore event", "Plot point", "Flashback", "Foreshadowing", "Backstory", "Climax", "Resolution"], ["anecdote", "lore_event", "plot_point", "flashback", "foreshadowing", "backstory", "climax", "resolution"]) %>
+date:
+date_precision: <% tp.system.suggester(["Exact date", "Year only", "Estimated", "Unknown"], ["exact", "year", "estimated", "unknown"]) %>
+person:
+place:
+is_canonical: <% tp.system.suggester(["Yes", "No"], [true, false]) %>
+universe: "<% tp.system.prompt("Universe/World name?", "", false) %>"
+confidence: medium
+---
+
+# <% tp.file.title %>
+
+<% tp.file.cursor() %>`
+			},
+			{
+				name: 'Relative-ordered event',
+				description: 'Event without exact date, using relative ordering',
+				template: `---
+type: event
+cr_id: <% tp.date.now("YYYYMMDDHHmmss") %>
+title: "<% tp.file.title %>"
+event_type: <% tp.system.suggester(["Anecdote", "Lore event", "Plot point", "Custom"], ["anecdote", "lore_event", "plot_point", "custom"]) %>
+date_precision: unknown
+person:
+place:
+# Relative ordering - link to other event notes
+before:
+  - "[[Event that happens after this one]]"
+after:
+  - "[[Event that happens before this one]]"
+timeline: "[[Timeline Note]]"
+confidence: medium
+---
+
+# <% tp.file.title %>
+
+## Description
+
+<% tp.file.cursor() %>
+
+## Notes
+
+This event's position is determined by its relationships to other events, not by a specific date.`
+			},
+			{
+				name: 'Full event note',
+				description: 'Complete template with all event fields',
+				template: `---
+type: event
+cr_id: <% tp.date.now("YYYYMMDDHHmmss") %>
+title: "<% tp.file.title %>"
+event_type: <% tp.system.suggester(["Birth", "Death", "Marriage", "Divorce", "Residence", "Occupation", "Military", "Immigration", "Education", "Burial", "Baptism", "Confirmation", "Ordination", "Anecdote", "Lore event", "Plot point", "Custom"], ["birth", "death", "marriage", "divorce", "residence", "occupation", "military", "immigration", "education", "burial", "baptism", "confirmation", "ordination", "anecdote", "lore_event", "plot_point", "custom"]) %>
+
+# Date fields
+date:
+date_end:
+date_precision: <% tp.system.suggester(["Exact date", "Month only", "Year only", "Decade", "Estimated", "Date range", "Unknown"], ["exact", "month", "year", "decade", "estimated", "range", "unknown"]) %>
+date_system:
+
+# People involved
+person:
+persons:
+
+# Location
+place:
+
+# Sources
+sources:
+
+# Confidence
+confidence: <% tp.system.suggester(["High", "Medium", "Low", "Unknown"], ["high", "medium", "low", "unknown"]) %>
+
+# Description
+description:
+
+# Worldbuilding (for narrative events)
+is_canonical:
+universe:
+
+# Relative ordering
+before:
+after:
+timeline:
+---
+
+# <% tp.file.title %>
+
+<% tp.file.cursor() %>`
 			}
 		];
 	}

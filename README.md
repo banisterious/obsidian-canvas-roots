@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.9.4-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.10.0-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, and world-builders.
 
@@ -84,6 +84,7 @@
 | **Custom Relationships** | Extended relationships beyond family (godparent, guardian, mentor, apprentice) with colored canvas edges |
 | **Fictional Date Systems** | Custom calendars and eras for world-building (Middle-earth, Westeros, Star Wars, or custom) |
 | **Organization Notes** | Track non-genealogical hierarchies: noble houses, guilds, corporations, military units, religious orders |
+| **Events & Timelines** | Document life events with person/family/place timelines, visual exports, groups/factions filtering, and sort order computation |
 
 ### Evidence & Sources
 
@@ -131,7 +132,6 @@ See [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap
 
 | Feature | Description |
 |---------|-------------|
-| [**Chronological Story Mapping**](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap#chronological-story-mapping) | Event-based timeline visualization with fictional date system integration |
 | [**Print & PDF Export**](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap#print--pdf-export) | Generate print-ready pedigree charts, descendant charts, and family group sheets |
 | [**Transcript Nodes & Oral History**](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap#transcript-nodes--quotable-facts) | Timestamped transcript citations and interview subject graphs |
 
@@ -242,6 +242,7 @@ If you find this plugin useful, please consider supporting its development!
 - [Import & Export](https://github.com/banisterious/obsidian-canvas-roots/wiki/Import-Export) - GEDCOM and CSV support
 - [Geographic Features](https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features) - Maps and places
 - [Evidence & Sources](https://github.com/banisterious/obsidian-canvas-roots/wiki/Evidence-And-Sources) - Source management and indicators
+- [Events & Timelines](https://github.com/banisterious/obsidian-canvas-roots/wiki/Events-And-Timelines) - Life events and timeline visualization
 - [Settings & Configuration](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration) - All settings and property aliases
 - [FAQ](https://github.com/banisterious/obsidian-canvas-roots/wiki/FAQ) - Common questions
 - [Troubleshooting](https://github.com/banisterious/obsidian-canvas-roots/wiki/Troubleshooting) - Problem solving

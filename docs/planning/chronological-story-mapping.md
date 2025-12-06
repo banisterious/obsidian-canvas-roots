@@ -1,7 +1,7 @@
 # Chronological Story Mapping
 
-> **Status:** Planned
-> **Target Version:** TBD
+> **Status:** Complete (Phase 7 Complete)
+> **Target Version:** 0.9.5+
 > **Last Updated:** 2025-12-06
 
 ## Overview
@@ -109,6 +109,7 @@ description: "Born at 23 Grafton Street, Dublin"
 | `after` | wikilink[] | No | Events that happen before this one (for relative ordering) |
 | `timeline` | wikilink | No | Parent timeline note this event belongs to |
 | `sort_order` | number | No | Computed sort value for Bases (auto-generated from relationships) |
+| `groups` | string[] | No | Groups/factions involved (for filtering by nation, faction, etc.) |
 
 ### Fictional Date System Integration
 
@@ -624,30 +625,44 @@ universe: "My Fantasy World"
 ## Success Criteria
 
 Phase 1 is complete when:
-- [ ] Event notes can be created via modal
-- [ ] Event notes validate correctly
-- [ ] Event templates available in Template Snippets modal
+- [x] Event notes can be created via modal
+- [x] Event notes validate correctly
+- [x] Event templates available in Template Snippets modal
 
 Phase 2 is complete when:
-- [ ] Person detail view shows timeline
-- [ ] Timeline displays events chronologically
-- [ ] Events are clickable/navigable
+- [x] Person detail view shows timeline
+- [x] Timeline displays events chronologically
+- [x] Events are clickable/navigable
 
 Phase 3 is complete when:
-- [ ] "Extract events" action appears on source notes
-- [ ] Events created from sources have automatic source links
-- [ ] Multiple events can be extracted from one source
+- [x] "Extract events" action appears on source notes
+- [x] Events created from sources have automatic source links
+- [x] Multiple events can be extracted from one source
 
 Phase 4 is complete when:
-- [ ] Timeline tab appears in Control Center
-- [ ] Events can be filtered by type, person, date range
-- [ ] Statistics show event distribution
+- [x] Timeline tab appears in Control Center (as Timeline card in Events tab)
+- [x] Events can be filtered by type, person, date range
+- [x] Statistics show event distribution (gap analysis, unsourced/orphan detection)
+
+Phase 5 is complete when:
+- [x] Family timeline aggregates events from person + spouse + children
+- [x] Events color-coded by family member with legend
+- [x] Relationship context shown (self, spouse, child)
+- [x] Family timeline badge on person list items (users icon)
+
+Phase 6 is complete when:
+- [x] Place timeline card added to Maps tab
+- [x] Place selector dropdown with event counts
+- [x] Place timeline shows all events at selected location
+- [x] Family presence analysis with visual bars showing date ranges per person
+- [x] Timeline summary (event count, date range, people present)
+- [x] Events clickable to navigate to event notes
 
 Phase 7 is complete when:
-- [ ] "Export to Canvas" generates positioned event nodes
-- [ ] `before`/`after` relationships render as edges
-- [ ] Excalidraw export available (when plugin installed)
-- [ ] Color-coding by event type or period working
+- [x] "Export to Canvas" generates positioned event nodes
+- [x] `before`/`after` relationships render as edges
+- [x] Excalidraw export available (when plugin installed)
+- [x] Color-coding by event type or period working
 
 ---
 

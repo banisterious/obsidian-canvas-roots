@@ -9,6 +9,7 @@ import { Modal, Setting, Notice, App } from 'obsidian';
 import { setIcon } from 'obsidian';
 import type CanvasRootsPlugin from '../../main';
 import type { LucideIconName } from './lucide-icons';
+import type { ArrowStyle, ColorScheme, SpouseEdgeLabelFormat } from '../settings';
 import {
 	PropertyAliasService,
 	CANONICAL_PERSON_PROPERTIES,
@@ -47,6 +48,12 @@ export function renderPreferencesTab(
 
 	// Folder Locations card
 	renderFolderLocationsCard(container, plugin, createCard);
+
+	// Canvas Layout card
+	renderCanvasLayoutCard(container, plugin, createCard);
+
+	// Canvas Styling card
+	renderCanvasStylingCard(container, plugin, createCard);
 }
 
 /**
@@ -395,6 +402,30 @@ function renderFolderLocationsCard(
 				await plugin.saveSettings();
 			}));
 
+	// Events folder
+	new Setting(content)
+		.setName('Events folder')
+		.setDesc('Default folder for event notes')
+		.addText(text => text
+			.setPlaceholder('Canvas Roots/Events')
+			.setValue(plugin.settings.eventsFolder)
+			.onChange(async (value) => {
+				plugin.settings.eventsFolder = value;
+				await plugin.saveSettings();
+			}));
+
+	// Timelines folder
+	new Setting(content)
+		.setName('Timelines folder')
+		.setDesc('Default folder for timeline notes (grouping events)')
+		.addText(text => text
+			.setPlaceholder('Canvas Roots/Timelines')
+			.setValue(plugin.settings.timelinesFolder)
+			.onChange(async (value) => {
+				plugin.settings.timelinesFolder = value;
+				await plugin.saveSettings();
+			}));
+
 	// Bases folder
 	new Setting(content)
 		.setName('Bases folder')
@@ -441,6 +472,194 @@ function renderFolderLocationsCard(
 			.onChange(async (value) => {
 				plugin.settings.stagingFolder = value;
 				await plugin.saveSettings();
+			}));
+
+	container.appendChild(card);
+}
+
+/**
+ * Render the Canvas Layout card
+ */
+function renderCanvasLayoutCard(
+	container: HTMLElement,
+	plugin: CanvasRootsPlugin,
+	createCard: (options: { title: string; icon?: LucideIconName; subtitle?: string }) => HTMLElement
+): void {
+	const card = createCard({
+		title: 'Canvas layout',
+		icon: 'layout',
+		subtitle: 'Node dimensions and spacing for tree generation'
+	});
+	const content = card.querySelector('.crc-card__content') as HTMLElement;
+
+	// Info text
+	content.createEl('p', {
+		cls: 'crc-text-muted crc-mb-2',
+		text: 'Changes apply to new tree generations. To update existing canvases, right-click the canvas file and select "Re-layout family tree".'
+	});
+
+	// Horizontal Spacing
+	new Setting(content)
+		.setName('Horizontal spacing')
+		.setDesc('Space between nodes horizontally (pixels)')
+		.addText(text => text
+			.setPlaceholder('400')
+			.setValue(String(plugin.settings.horizontalSpacing))
+			.onChange(async (value) => {
+				const numValue = parseInt(value);
+				if (!isNaN(numValue) && numValue >= 100 && numValue <= 1000) {
+					plugin.settings.horizontalSpacing = numValue;
+					await plugin.saveSettings();
+				}
+			}));
+
+	// Vertical Spacing
+	new Setting(content)
+		.setName('Vertical spacing')
+		.setDesc('Space between generations vertically (pixels)')
+		.addText(text => text
+			.setPlaceholder('250')
+			.setValue(String(plugin.settings.verticalSpacing))
+			.onChange(async (value) => {
+				const numValue = parseInt(value);
+				if (!isNaN(numValue) && numValue >= 100 && numValue <= 1000) {
+					plugin.settings.verticalSpacing = numValue;
+					await plugin.saveSettings();
+				}
+			}));
+
+	// Node Width
+	new Setting(content)
+		.setName('Node width')
+		.setDesc('Width of person nodes (pixels)')
+		.addText(text => text
+			.setPlaceholder('200')
+			.setValue(String(plugin.settings.defaultNodeWidth))
+			.onChange(async (value) => {
+				const numValue = parseInt(value);
+				if (!isNaN(numValue) && numValue >= 100 && numValue <= 500) {
+					plugin.settings.defaultNodeWidth = numValue;
+					await plugin.saveSettings();
+				}
+			}));
+
+	// Node Height
+	new Setting(content)
+		.setName('Node height')
+		.setDesc('Height of person nodes (pixels)')
+		.addText(text => text
+			.setPlaceholder('100')
+			.setValue(String(plugin.settings.defaultNodeHeight))
+			.onChange(async (value) => {
+				const numValue = parseInt(value);
+				if (!isNaN(numValue) && numValue >= 50 && numValue <= 300) {
+					plugin.settings.defaultNodeHeight = numValue;
+					await plugin.saveSettings();
+				}
+			}));
+
+	container.appendChild(card);
+}
+
+/**
+ * Render the Canvas Styling card
+ */
+function renderCanvasStylingCard(
+	container: HTMLElement,
+	plugin: CanvasRootsPlugin,
+	createCard: (options: { title: string; icon?: LucideIconName; subtitle?: string }) => HTMLElement
+): void {
+	const card = createCard({
+		title: 'Canvas styling',
+		icon: 'settings',
+		subtitle: 'Arrow styles and node coloring options'
+	});
+	const content = card.querySelector('.crc-card__content') as HTMLElement;
+
+	// Node Color Scheme
+	new Setting(content)
+		.setName('Color scheme')
+		.setDesc('How to color person nodes in family trees')
+		.addDropdown(dropdown => dropdown
+			.addOption('gender', 'Gender - green for males, purple for females')
+			.addOption('generation', 'Generation - color by generation level')
+			.addOption('collection', 'Collection - different color per collection')
+			.addOption('monochrome', 'Monochrome - no coloring')
+			.setValue(plugin.settings.nodeColorScheme)
+			.onChange(async (value) => {
+				plugin.settings.nodeColorScheme = value as ColorScheme;
+				await plugin.saveSettings();
+				new Notice('Node color scheme updated');
+			}));
+
+	// Section: Arrow Styling
+	content.createEl('h4', {
+		text: 'Arrow styling',
+		cls: 'cr-aliases-section-title'
+	});
+
+	// Parent-Child Arrow Style
+	new Setting(content)
+		.setName('Parent → child arrows')
+		.setDesc('Arrow style for parent-child relationships')
+		.addDropdown(dropdown => dropdown
+			.addOption('directed', 'Directed (→) - single arrow pointing to child')
+			.addOption('bidirectional', 'Bidirectional (↔) - arrows on both ends')
+			.addOption('undirected', 'Undirected (—) - no arrows')
+			.setValue(plugin.settings.parentChildArrowStyle)
+			.onChange(async (value) => {
+				plugin.settings.parentChildArrowStyle = value as ArrowStyle;
+				await plugin.saveSettings();
+				new Notice('Parent-child arrow style updated');
+			}));
+
+	// Spouse Arrow Style
+	new Setting(content)
+		.setName('Spouse arrows')
+		.setDesc('Arrow style for spouse relationships')
+		.addDropdown(dropdown => dropdown
+			.addOption('directed', 'Directed (→) - single arrow')
+			.addOption('bidirectional', 'Bidirectional (↔) - arrows on both ends')
+			.addOption('undirected', 'Undirected (—) - no arrows')
+			.setValue(plugin.settings.spouseArrowStyle)
+			.onChange(async (value) => {
+				plugin.settings.spouseArrowStyle = value as ArrowStyle;
+				await plugin.saveSettings();
+				new Notice('Spouse arrow style updated');
+			}));
+
+	// Section: Spouse Edges
+	content.createEl('h4', {
+		text: 'Spouse edge display',
+		cls: 'cr-aliases-section-title'
+	});
+
+	// Show Spouse Edges Toggle
+	new Setting(content)
+		.setName('Show spouse edges')
+		.setDesc('Display edges between spouses with marriage metadata. When disabled (default), spouses are visually grouped by positioning only.')
+		.addToggle(toggle => toggle
+			.setValue(plugin.settings.showSpouseEdges)
+			.onChange(async (value) => {
+				plugin.settings.showSpouseEdges = value;
+				await plugin.saveSettings();
+				new Notice('Spouse edge display updated');
+			}));
+
+	// Spouse Edge Label Format
+	new Setting(content)
+		.setName('Spouse edge label format')
+		.setDesc('How to display marriage information on spouse edges (only applies when "Show spouse edges" is enabled)')
+		.addDropdown(dropdown => dropdown
+			.addOption('none', 'None - no labels')
+			.addOption('date-only', 'Date only - e.g., "m. 1985"')
+			.addOption('date-location', 'Date and location - e.g., "m. 1985 | Boston, MA"')
+			.addOption('full', 'Full details - e.g., "m. 1985 | Boston, MA | div. 1992"')
+			.setValue(plugin.settings.spouseEdgeLabelFormat)
+			.onChange(async (value) => {
+				plugin.settings.spouseEdgeLabelFormat = value as SpouseEdgeLabelFormat;
+				await plugin.saveSettings();
+				new Notice('Spouse edge label format updated');
 			}));
 
 	container.appendChild(card);

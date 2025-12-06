@@ -96,7 +96,13 @@ export type LucideIconName =
 	| 'mic' // Oral history
 	| 'archive' // Sources tab
 	| 'scale' // Proof summaries (weighing evidence)
-	| 'sliders'; // Preferences tab
+	| 'sliders' // Preferences tab
+	// Event types
+	| 'skull' // Death
+	| 'heart-off' // Divorce
+	| 'droplets' // Baptism
+	| 'calendar-plus' // Extract events
+	| 'calendar-check'; // Create events
 
 /**
  * Tab configuration for Control Center navigation
@@ -197,16 +203,10 @@ export const TAB_CONFIGS: TabConfig[] = [
 		description: 'Generate trees and export to various formats'
 	},
 	{
-		id: 'quick-settings',
-		name: 'Canvas settings',
-		icon: 'settings',
-		description: 'Canvas layout and arrow styling settings'
-	},
-	{
 		id: 'preferences',
 		name: 'Preferences',
 		icon: 'sliders',
-		description: 'Property aliases, folder locations, and user preferences'
+		description: 'Aliases, folder locations, and canvas settings'
 	}
 ];
 

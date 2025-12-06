@@ -16,7 +16,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Fictional Date Systems](#fictional-date-systems-) ✅
   - [Evidence & Source Management](#evidence--source-management) ✅
   - [World-Building Suite](#world-building-suite) ✅
-  - [Chronological Story Mapping](#chronological-story-mapping)
+  - [Chronological Story Mapping](#chronological-story-mapping) ✅
   - [Research & Analysis Tools](#research--analysis-tools)
   - [Print & PDF Export](#print--pdf-export)
 - [Future Considerations](#future-considerations)
@@ -53,7 +53,7 @@ The following priority order guides future development:
 | 11 | [Events Tab (Control Center)](#events-tab-control-center) | ✅ Complete (v0.9.2) |
 | 12 | [Property Aliases](#property-aliases-) | ✅ Complete (v0.9.3) |
 | 13 | [Value Aliases](#value-aliases) | ✅ Complete (v0.9.4) |
-| 14 | [Chronological Story Mapping](#chronological-story-mapping) | Planned |
+| 14 | [Chronological Story Mapping](#chronological-story-mapping) | ✅ Complete (v0.10.0) |
 | 15 | [Print & PDF Export](#print--pdf-export) | Planned |
 | 16 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
 
@@ -435,26 +435,28 @@ mentions:
 
 ---
 
-### Chronological Story Mapping
+### Chronological Story Mapping ✅
 
-> See [chronological-story-mapping.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/chronological-story-mapping.md) for detailed implementation plan.
+> **Complete in v0.10.0.** See [Events And Timelines](Events-And-Timelines) wiki page for full documentation.
 
 **Summary:** Event-based timeline visualization supporting genealogists (source-derived events), worldbuilders (canonical events), and writers/plotters (narrative timelines). Integrates with existing fictional date systems for cross-era sorting.
 
-**Key Features:**
-- Event notes (`type: event`) as first-class entities
-- Dual-path creation: extract events from sources OR create directly
-- **Relative ordering**: Express "A happened before B" without exact dates
-- Person Timeline, Family Timeline, Place Timeline views
+**Implemented Features:**
+- Event notes (`type: event`) as first-class entities with 22 built-in event types
+- Create Event Modal for manual event creation
+- Source event extraction ("Extract events" action with smart suggestions)
+- Person Timeline view (calendar badge on person list items)
+- Family Timeline view (aggregate events for person + spouses + children)
+- Place Timeline view (events at a location over time)
+- Global Timeline in Events tab with filtering and gap analysis
+- Relative ordering with `before`/`after` constraints
+- Compute sort order (topological sort from DAG relationships)
+- Groups/factions property for filtering by nation, faction, organization
+- Timeline Canvas/Excalidraw export with multiple layouts (horizontal, vertical, Gantt)
+- Color-coding by event type, category, confidence, or monochrome
+- Events Base template with 20 pre-configured views
 - Fictional date system integration (`date_system` field, era-based dates)
-- Timeline gap analysis in Data Quality tab
-- **Canvas/Excalidraw export**: Visualize timelines as node graphs
-
-**User Research Highlights (Dec 2025):**
-- Single source of truth: seamless promotion from `born: 1976` to `born: [[1976 Event]]`
-- Flexibility over structure: support incomplete/evolving data
-- Gantt-style visualization with color-coding by period/era
-- Graph-friendly structure that exports to Canvas/Excalidraw
+- Per-canvas style overrides preserved during regeneration
 
 **Event Schema:**
 ```yaml
@@ -469,6 +471,8 @@ place: "[[Dublin, Ireland]]"
 sources:
   - "[[1850 Birth Certificate]]"
 confidence: high
+groups:
+  - "Smith Family"
 ```
 
 **Relative Ordering (no exact date):**
@@ -484,43 +488,14 @@ before:
 person: "[[Person A]]"
 ```
 
-**For Writers/Plotters:**
-```yaml
-type: event
-title: "The Betrayal"
-event_type: plot_point
-date_precision: unknown
-after:
-  - "[[The Alliance]]"
-before:
-  - "[[The Battle]]"
-timeline: "[[Book 1 Timeline]]"
-```
-
 **Event Types:**
-- Core: birth, death, marriage, divorce
-- Extended: residence, occupation, military, immigration, education
-- Narrative: anecdote, lore_event, plot_point, flashback, backstory, climax, resolution
+- Core (4): birth, death, marriage, divorce
+- Extended (9): burial, residence, occupation, education, military, immigration, baptism, confirmation, ordination
+- Narrative (8): anecdote, lore_event, plot_point, flashback, foreshadowing, backstory, climax, resolution
 
-**Implementation Phases:**
-1. Event notes foundation (types, service, modal, validation)
-2. Person Timeline view
-3. Source event extraction ("Extract events" action)
-4. Timeline Tab in Control Center
-5. Family Timeline view
-6. Place Timeline view
-7. Canvas/Excalidraw export
-8. Leaflet Time Animation (advanced)
-
-**Integration Points:**
-- Fictional Date Systems (era-based dates, canonical year sorting)
-- [Calendarium](https://github.com/javalent/calendarium) plugin (optional; read calendars, sync events)
-- Source notes ("Extract events" action)
-- Proof summaries (events as evidence)
-- Maps tab (Place Timeline, animated markers)
-- Canvas/Excalidraw (export timeline as visual graph)
-- Bases (auto-computed `sort_order` for chronological sorting)
-- Value Aliases (map custom event types to canonical values)
+**Future Enhancements:**
+- Leaflet Time Animation (animated markers on map)
+- [Calendarium](https://github.com/javalent/calendarium) plugin integration (read calendars, sync events)
 
 ---
 

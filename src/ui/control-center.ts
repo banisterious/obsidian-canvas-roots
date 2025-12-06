@@ -1,4 +1,4 @@
-import { App, Menu, MenuItem, Modal, Notice, Setting, TFile, TFolder, setIcon, ToggleComponent } from 'obsidian';
+import { App, Menu, MenuItem, Modal, Notice, Platform, Setting, TFile, TFolder, setIcon, ToggleComponent } from 'obsidian';
 import CanvasRootsPlugin from '../../main';
 import { TAB_CONFIGS, createLucideIcon, setLucideIcon, LucideIconName } from './lucide-icons';
 import { createPersonNote, PersonData } from '../core/person-note-writer';
@@ -41,6 +41,10 @@ import { RelationshipService, RELATIONSHIP_CATEGORY_NAMES } from '../relationshi
 import type { RelationshipCategory } from '../relationships';
 import { renderEventsTab } from '../dates';
 import { renderOrganizationsTab } from '../organizations';
+import { renderPersonTimeline, createTimelineSummary } from '../events/ui/person-timeline';
+import { renderFamilyTimeline, getFamilyTimelineSummary } from '../events/ui/family-timeline';
+import { renderPlaceTimelineCard } from '../events/ui/place-timeline';
+import { EventService } from '../events/services/event-service';
 import { renderPreferencesTab } from './preferences-tab';
 import { PropertyAliasService } from '../core/property-alias-service';
 import {
@@ -265,9 +269,6 @@ export class ControlCenterModal extends Modal {
 				break;
 			case 'guide':
 				this.showGuideTab();
-				break;
-			case 'quick-settings':
-				this.showCanvasSettingsTab();
 				break;
 			case 'people':
 				void this.showPeopleTab();
@@ -1163,7 +1164,7 @@ export class ControlCenterModal extends Modal {
 		const propsCard = this.createCard({
 			title: 'Essential properties',
 			icon: 'file-text',
-			subtitle: 'YAML frontmatter fields for person, place, source, and map notes'
+			subtitle: 'YAML frontmatter fields for person, place, source, event, and map notes'
 		});
 		const propsContent = propsCard.querySelector('.crc-card__content') as HTMLElement;
 
@@ -1295,6 +1296,27 @@ export class ControlCenterModal extends Modal {
 			body.createEl('p', {
 				text: 'Schema definition goes in a json schema code block in the note body.',
 				cls: 'crc-text-muted crc-mt-2'
+			});
+		});
+
+		// Event properties collapsible
+		this.createCollapsible(propsContent, 'Event notes', 'calendar', (body) => {
+			const list = body.createEl('ul', { cls: 'crc-field-list' });
+			[
+				{ name: 'type', desc: 'Must be "event"', req: true },
+				{ name: 'cr_id', desc: 'Unique identifier', req: true },
+				{ name: 'title', desc: 'Event title', req: true },
+				{ name: 'event_type', desc: 'Type (birth, death, marriage, etc.)', req: true },
+				{ name: 'date', desc: 'Event date (ISO format)', req: false },
+				{ name: 'date_precision', desc: 'exact, month, year, decade, estimated, range', req: false },
+				{ name: 'person', desc: 'Primary person wikilink', req: false },
+				{ name: 'place', desc: 'Location wikilink', req: false },
+				{ name: 'confidence', desc: 'high, medium, low, or unknown', req: false }
+			].forEach(p => {
+				const li = list.createEl('li');
+				const code = li.createEl('code', { text: p.name });
+				if (p.req) code.addClass('crc-field--required');
+				li.appendText(` - ${p.desc}`);
 			});
 		});
 
@@ -1505,210 +1527,6 @@ export class ControlCenterModal extends Modal {
 		});
 
 		return wrapper;
-	}
-
-	/**
-	 * Show Canvas Settings tab
-	 */
-	private showCanvasSettingsTab(): void {
-		const container = this.contentContainer;
-
-		// Title
-		container.createEl('h2', { text: 'Canvas settings', cls: 'cr-card-title--no-margin' });
-
-		// Intro text with re-layout feature note
-		const intro = container.createEl('p', {
-			cls: 'crc-text-muted crc-mb-3'
-		});
-		intro.appendText('Adjust canvas layout and arrow styling. Changes apply immediately to new tree generations. ');
-		intro.createEl('strong', { text: 'To apply to existing canvases:' });
-		intro.appendText(' right-click the canvas file and select "Re-layout family tree".');
-
-		// Layout Settings Section
-		container.createEl('h3', { text: 'Layout settings', cls: 'crc-section-heading' });
-
-		// Horizontal Spacing
-		new Setting(container)
-			.setName('Horizontal spacing')
-			.setDesc('Space between nodes horizontally (pixels)')
-			.addText(text => text
-				.setPlaceholder('400')
-				.setValue(String(this.plugin.settings.horizontalSpacing))
-				.onChange(async (value) => {
-					const numValue = parseInt(value);
-					if (!isNaN(numValue) && numValue >= 100 && numValue <= 1000) {
-						this.plugin.settings.horizontalSpacing = numValue;
-						await this.plugin.saveSettings();
-					}
-				}));
-
-		// Vertical Spacing
-		new Setting(container)
-			.setName('Vertical spacing')
-			.setDesc('Space between generations vertically (pixels)')
-			.addText(text => text
-				.setPlaceholder('250')
-				.setValue(String(this.plugin.settings.verticalSpacing))
-				.onChange(async (value) => {
-					const numValue = parseInt(value);
-					if (!isNaN(numValue) && numValue >= 100 && numValue <= 1000) {
-						this.plugin.settings.verticalSpacing = numValue;
-						await this.plugin.saveSettings();
-					}
-				}));
-
-		// Node Width
-		new Setting(container)
-			.setName('Node width')
-			.setDesc('Width of person nodes (pixels)')
-			.addText(text => text
-				.setPlaceholder('200')
-				.setValue(String(this.plugin.settings.defaultNodeWidth))
-				.onChange(async (value) => {
-					const numValue = parseInt(value);
-					if (!isNaN(numValue) && numValue >= 100 && numValue <= 500) {
-						this.plugin.settings.defaultNodeWidth = numValue;
-						await this.plugin.saveSettings();
-					}
-				}));
-
-		// Node Height
-		new Setting(container)
-			.setName('Node height')
-			.setDesc('Height of person nodes (pixels)')
-			.addText(text => text
-				.setPlaceholder('100')
-				.setValue(String(this.plugin.settings.defaultNodeHeight))
-				.onChange(async (value) => {
-					const numValue = parseInt(value);
-					if (!isNaN(numValue) && numValue >= 50 && numValue <= 300) {
-						this.plugin.settings.defaultNodeHeight = numValue;
-						await this.plugin.saveSettings();
-					}
-				}));
-
-		// Arrow Styling Card
-		const arrowCard = this.createCard({
-			title: 'Arrow styling',
-			icon: 'link'
-		});
-
-		const arrowContent = arrowCard.querySelector('.crc-card__content') as HTMLElement;
-
-		// Parent-Child Arrow Style
-		new Setting(arrowContent)
-			.setName('Parent → child arrows')
-			.setDesc('Arrow style for parent-child relationships')
-			.addDropdown(dropdown => dropdown
-				.addOption('directed', 'Directed (→) - single arrow pointing to child')
-				.addOption('bidirectional', 'Bidirectional (↔) - arrows on both ends')
-				.addOption('undirected', 'Undirected (—) - no arrows')
-				.setValue(this.plugin.settings.parentChildArrowStyle)
-				.onChange(async (value) => {
-					this.plugin.settings.parentChildArrowStyle = value as ArrowStyle;
-					await this.plugin.saveSettings();
-					new Notice('Parent-child arrow style updated');
-				}));
-
-		// Spouse Arrow Style
-		new Setting(arrowContent)
-			.setName('Spouse arrows')
-			.setDesc('Arrow style for spouse relationships')
-			.addDropdown(dropdown => dropdown
-				.addOption('directed', 'Directed (→) - single arrow')
-				.addOption('bidirectional', 'Bidirectional (↔) - arrows on both ends')
-				.addOption('undirected', 'Undirected (—) - no arrows')
-				.setValue(this.plugin.settings.spouseArrowStyle)
-				.onChange(async (value) => {
-					this.plugin.settings.spouseArrowStyle = value as ArrowStyle;
-					await this.plugin.saveSettings();
-					new Notice('Spouse arrow style updated');
-				}));
-
-		container.appendChild(arrowCard);
-
-		// Node Color Scheme Card
-		const colorCard = this.createCard({
-			title: 'Node coloring',
-			icon: 'layout'
-		});
-
-		const colorContent = colorCard.querySelector('.crc-card__content') as HTMLElement;
-
-		// Color Scheme Dropdown
-		new Setting(colorContent)
-			.setName('Color scheme')
-			.setDesc('How to color person nodes in family trees')
-			.addDropdown(dropdown => dropdown
-				.addOption('gender', 'Gender - green for males, purple for females')
-				.addOption('generation', 'Generation - color by generation level')
-				.addOption('collection', 'Collection - different color per collection')
-				.addOption('monochrome', 'Monochrome - no coloring')
-				.setValue(this.plugin.settings.nodeColorScheme)
-				.onChange(async (value) => {
-					this.plugin.settings.nodeColorScheme = value as ColorScheme;
-					await this.plugin.saveSettings();
-					new Notice('Node color scheme updated');
-				}));
-
-		container.appendChild(colorCard);
-
-		// Spouse Edge Display Card
-		const spouseEdgeCard = this.createCard({
-			title: 'Spouse edge display',
-			icon: 'link'
-		});
-
-		const spouseEdgeContent = spouseEdgeCard.querySelector('.crc-card__content') as HTMLElement;
-
-		// Show Spouse Edges Toggle
-		new Setting(spouseEdgeContent)
-			.setName('Show spouse edges')
-			.setDesc('Display edges between spouses with marriage metadata. When disabled (default), spouses are visually grouped by positioning only.')
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.showSpouseEdges)
-				.onChange(async (value) => {
-					this.plugin.settings.showSpouseEdges = value;
-					await this.plugin.saveSettings();
-					new Notice('Spouse edge display updated');
-				}));
-
-		// Spouse Edge Label Format
-		new Setting(spouseEdgeContent)
-			.setName('Spouse edge label format')
-			.setDesc('How to display marriage information on spouse edges (only applies when "Show spouse edges" is enabled)')
-			.addDropdown(dropdown => dropdown
-				.addOption('none', 'None - no labels')
-				.addOption('date-only', 'Date only - e.g., "m. 1985"')
-				.addOption('date-location', 'Date and location - e.g., "m. 1985 | Boston, MA"')
-				.addOption('full', 'Full details - e.g., "m. 1985 | Boston, MA | div. 1992"')
-				.setValue(this.plugin.settings.spouseEdgeLabelFormat)
-				.onChange(async (value) => {
-					this.plugin.settings.spouseEdgeLabelFormat = value as SpouseEdgeLabelFormat;
-					await this.plugin.saveSettings();
-					new Notice('Spouse edge label format updated');
-				}));
-
-		container.appendChild(spouseEdgeCard);
-
-		// Link to full settings
-		const fullSettingsBtn = container.createEl('button', {
-			cls: 'crc-btn crc-btn--secondary crc-btn--block crc-mt-3',
-			text: 'Open full settings'
-		});
-		fullSettingsBtn.addEventListener('click', () => {
-			// Close modal and open settings
-			this.close();
-			// @ts-ignore - Obsidian internal API
-			this.app.setting.open();
-			// @ts-ignore - Obsidian internal API
-			this.app.setting.openTabById('canvas-roots');
-		});
-
-		container.createEl('p', {
-			cls: 'crc-form-help crc-text-center',
-			text: 'Access all plugin settings including data management and logging'
-		});
 	}
 
 	/**
@@ -2078,8 +1896,375 @@ export class ControlCenterModal extends Modal {
 				if (this.plugin.settings.trackFactSourcing) {
 					this.renderPersonResearchCoverageBadge(item, mainRow, person.file);
 				}
+
+				// Timeline badge (shows event count if any events exist)
+				this.renderPersonTimelineBadge(item, mainRow, person.file, person.name);
+
+				// Family timeline badge (shows family event count if person has spouse/children with events)
+				this.renderFamilyTimelineBadge(item, mainRow, person.file);
+
+				// Context menu for person list items
+				item.addEventListener('contextmenu', (e) => {
+					e.preventDefault();
+					this.showPersonContextMenu(person, e);
+				});
 			}
 		}
+	}
+
+	/**
+	 * Show context menu for a person list item
+	 */
+	private showPersonContextMenu(
+		person: {
+			crId: string;
+			name: string;
+			birthDate?: string;
+			deathDate?: string;
+			birthPlace?: PlaceInfo;
+			deathPlace?: PlaceInfo;
+			burialPlace?: PlaceInfo;
+			file: TFile;
+		},
+		event: MouseEvent
+	): void {
+		const menu = new Menu();
+		const useSubmenu = Platform.isDesktop && !Platform.isMobile;
+
+		// Open actions
+		menu.addItem((item) => {
+			item
+				.setTitle('Open note')
+				.setIcon('file')
+				.onClick(() => {
+					void this.app.workspace.getLeaf(false).openFile(person.file);
+				});
+		});
+
+		menu.addItem((item) => {
+			item
+				.setTitle('Open in new tab')
+				.setIcon('file-plus')
+				.onClick(() => {
+					void this.app.workspace.getLeaf('tab').openFile(person.file);
+				});
+		});
+
+		menu.addSeparator();
+
+		// Events actions - submenu on desktop, flat on mobile
+		if (useSubmenu) {
+			menu.addItem((item) => {
+				item
+					.setTitle('Events')
+					.setIcon('calendar');
+				const submenu = item.setSubmenu();
+
+				submenu.addItem((subitem) => {
+					subitem
+						.setTitle('Create event for this person')
+						.setIcon('calendar-plus')
+						.onClick(() => {
+							const eventService = this.plugin.getEventService();
+							if (eventService) {
+								const { CreateEventModal } = require('../events/ui/create-event-modal');
+								new CreateEventModal(
+									this.app,
+									eventService,
+									this.plugin.settings,
+									{
+										initialPerson: { name: person.name, crId: person.crId }
+									}
+								).open();
+							}
+						});
+				});
+
+				submenu.addItem((subitem) => {
+					subitem
+						.setTitle('Export timeline to Canvas')
+						.setIcon('layout')
+						.onClick(() => {
+							void this.exportPersonTimeline(person, 'canvas');
+						});
+				});
+
+				submenu.addItem((subitem) => {
+					subitem
+						.setTitle('Export timeline to Excalidraw')
+						.setIcon('edit')
+						.onClick(() => {
+							void this.exportPersonTimeline(person, 'excalidraw');
+						});
+				});
+			});
+		} else {
+			// Mobile: flat menu with descriptive titles
+			menu.addItem((item) => {
+				item
+					.setTitle('Create event for this person')
+					.setIcon('calendar-plus')
+					.onClick(() => {
+						const eventService = this.plugin.getEventService();
+						if (eventService) {
+							const { CreateEventModal } = require('../events/ui/create-event-modal');
+							new CreateEventModal(
+								this.app,
+								eventService,
+								this.plugin.settings,
+								{
+									initialPerson: { name: person.name, crId: person.crId }
+								}
+							).open();
+						}
+					});
+			});
+
+			menu.addItem((item) => {
+				item
+					.setTitle('Export timeline to Canvas')
+					.setIcon('layout')
+					.onClick(() => {
+						void this.exportPersonTimeline(person, 'canvas');
+					});
+			});
+
+			menu.addItem((item) => {
+				item
+					.setTitle('Export timeline to Excalidraw')
+					.setIcon('edit')
+					.onClick(() => {
+						void this.exportPersonTimeline(person, 'excalidraw');
+					});
+			});
+		}
+
+		menu.showAtMouseEvent(event);
+	}
+
+	/**
+	 * Export a person's timeline to Canvas or Excalidraw
+	 */
+	private async exportPersonTimeline(
+		person: {
+			crId: string;
+			name: string;
+			file: TFile;
+		},
+		format: 'canvas' | 'excalidraw' = 'canvas'
+	): Promise<void> {
+		const eventService = this.plugin.getEventService();
+		if (!eventService) {
+			new Notice('Event service not available');
+			return;
+		}
+
+		const allEvents = eventService.getAllEvents();
+		const personLink = `[[${person.name}]]`;
+
+		// Filter events for this person
+		const personEvents = allEvents.filter(e => {
+			if (e.person) {
+				const normalizedPerson = e.person.replace(/^\[\[/, '').replace(/\]\]$/, '').toLowerCase();
+				return normalizedPerson === person.name.toLowerCase();
+			}
+			return false;
+		});
+
+		if (personEvents.length === 0) {
+			new Notice(`No events found for ${person.name}`);
+			return;
+		}
+
+		try {
+			const { TimelineCanvasExporter } = await import('../events/services/timeline-canvas-exporter');
+			const exporter = new TimelineCanvasExporter(this.app, this.plugin.settings);
+
+			const result = await exporter.exportToCanvas(allEvents, {
+				title: `${person.name} Timeline`,
+				filterPerson: personLink,
+				layoutStyle: 'horizontal',
+				colorScheme: 'event_type',
+				includeOrderingEdges: true
+			});
+
+			if (result.success && result.path) {
+				if (format === 'excalidraw') {
+					// Convert to Excalidraw
+					const { ExcalidrawExporter } = await import('../excalidraw/excalidraw-exporter');
+					const excalidrawExporter = new ExcalidrawExporter(this.app);
+
+					const canvasFile = this.app.vault.getAbstractFileByPath(result.path);
+					if (!(canvasFile instanceof TFile)) {
+						throw new Error('Canvas file not found after export');
+					}
+
+					const excalidrawResult = await excalidrawExporter.exportToExcalidraw({
+						canvasFile,
+						fileName: result.path.replace('.canvas', '').split('/').pop(),
+						preserveColors: true
+					});
+
+					if (excalidrawResult.success && excalidrawResult.excalidrawContent) {
+						const excalidrawPath = result.path.replace('.canvas', '.excalidraw.md');
+						await this.app.vault.create(excalidrawPath, excalidrawResult.excalidrawContent);
+						new Notice(`Timeline exported to ${excalidrawPath}`);
+						const file = this.app.vault.getAbstractFileByPath(excalidrawPath);
+						if (file) {
+							void this.app.workspace.getLeaf(false).openFile(file as TFile);
+						}
+					} else {
+						new Notice(`Excalidraw export failed: ${excalidrawResult.errors?.join(', ') || 'Unknown error'}`);
+					}
+				} else {
+					new Notice(`Timeline exported to ${result.path}`);
+					const file = this.app.vault.getAbstractFileByPath(result.path);
+					if (file) {
+						void this.app.workspace.getLeaf(false).openFile(file as TFile);
+					}
+				}
+			} else {
+				new Notice(`Export failed: ${result.error || 'Unknown error'}`);
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			new Notice(`Export failed: ${message}`);
+		}
+	}
+
+	/**
+	 * Render a timeline badge for a person list item
+	 */
+	private renderPersonTimelineBadge(
+		item: HTMLElement,
+		mainRow: HTMLElement,
+		file: TFile,
+		personName: string
+	): void {
+		const eventService = this.plugin.getEventService();
+		if (!eventService) return;
+
+		// Get events for this person
+		const personLink = `[[${file.basename}]]`;
+		const events = eventService.getEventsForPerson(personLink);
+
+		// Don't show badge if no events
+		if (events.length === 0) return;
+
+		// Get summary info
+		const summary = createTimelineSummary(events);
+
+		// Create badge
+		const badge = mainRow.createEl('span', {
+			cls: 'crc-person-list-badge crc-person-list-badge--timeline',
+			attr: {
+				title: summary.dateRange
+					? `${summary.count} events (${summary.dateRange})`
+					: `${summary.count} events`
+			}
+		});
+		const calendarIcon = createLucideIcon('calendar', 12);
+		badge.appendChild(calendarIcon);
+		badge.appendText(summary.count.toString());
+
+		// Create expandable timeline section
+		const timelineSection = item.createDiv({
+			cls: 'crc-person-list-details crc-person-list-details--hidden crc-person-timeline-section'
+		});
+
+		// Toggle on badge click
+		badge.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const isHidden = timelineSection.hasClass('crc-person-list-details--hidden');
+			timelineSection.toggleClass('crc-person-list-details--hidden', !isHidden);
+			badge.toggleClass('crc-person-list-badge--active', isHidden);
+
+			// Render timeline on first expand (lazy loading)
+			if (isHidden && timelineSection.childElementCount === 0) {
+				renderPersonTimeline(
+					timelineSection,
+					file,
+					personName,
+					this.app,
+					this.plugin.settings,
+					eventService,
+					{
+						maxEvents: 10,
+						showEmptyState: false,
+						onEventClick: (event) => {
+							void this.app.workspace.getLeaf(false).openFile(event.file);
+						}
+					}
+				);
+			}
+		});
+	}
+
+	/**
+	 * Render a family timeline badge for a person list item
+	 */
+	private renderFamilyTimelineBadge(
+		item: HTMLElement,
+		mainRow: HTMLElement,
+		file: TFile
+	): void {
+		const eventService = this.plugin.getEventService();
+		if (!eventService) return;
+
+		const familyGraph = this.plugin.createFamilyGraphService();
+		familyGraph.ensureCacheLoaded();
+
+		// Get family timeline summary
+		const summary = getFamilyTimelineSummary(file, eventService, familyGraph);
+
+		// Only show badge if there are family members with events beyond just the person
+		// (memberCount > 1 means there are spouses/children)
+		if (summary.memberCount <= 1 || summary.totalEvents === 0) return;
+
+		// Create badge
+		const badge = mainRow.createEl('span', {
+			cls: 'crc-person-list-badge crc-person-list-badge--family-timeline',
+			attr: {
+				title: summary.dateRange
+					? `Family: ${summary.totalEvents} events, ${summary.memberCount} members (${summary.dateRange})`
+					: `Family: ${summary.totalEvents} events, ${summary.memberCount} members`
+			}
+		});
+		const usersIcon = createLucideIcon('users', 12);
+		badge.appendChild(usersIcon);
+		badge.appendText(summary.totalEvents.toString());
+
+		// Create expandable family timeline section
+		const familySection = item.createDiv({
+			cls: 'crc-person-list-details crc-person-list-details--hidden crc-family-timeline-section'
+		});
+
+		// Toggle on badge click
+		badge.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const isHidden = familySection.hasClass('crc-person-list-details--hidden');
+			familySection.toggleClass('crc-person-list-details--hidden', !isHidden);
+			badge.toggleClass('crc-person-list-badge--active', isHidden);
+
+			// Render family timeline on first expand (lazy loading)
+			if (isHidden && familySection.childElementCount === 0) {
+				renderFamilyTimeline(
+					familySection,
+					file,
+					this.app,
+					this.plugin.settings,
+					eventService,
+					familyGraph,
+					{
+						maxEvents: 20,
+						showEmptyState: false,
+						onEventClick: (event) => {
+							void this.app.workspace.getLeaf(false).openFile(event.file);
+						}
+					}
+				);
+			}
+		});
 	}
 
 	/**
@@ -5178,7 +5363,38 @@ export class ControlCenterModal extends Modal {
 
 		container.appendChild(vizCard);
 
-		// Card 4: Map Statistics
+		// Card 4: Place Timeline
+		const placeTimelineCard = this.createCard({
+			title: 'Place timeline',
+			icon: 'map-pin',
+			subtitle: 'Events at a location over time'
+		});
+
+		const placeTimelineContent = placeTimelineCard.querySelector('.crc-card__content') as HTMLElement;
+
+		const eventService = this.plugin.getEventService();
+		if (eventService) {
+			renderPlaceTimelineCard(
+				placeTimelineContent,
+				this.app,
+				this.plugin.settings,
+				eventService,
+				{
+					onPlaceSelect: (placeName) => {
+						// Could navigate to place on map in future
+					}
+				}
+			);
+		} else {
+			placeTimelineContent.createEl('p', {
+				text: 'Event service not available.',
+				cls: 'crc-text--muted'
+			});
+		}
+
+		container.appendChild(placeTimelineCard);
+
+		// Card 5: Map Statistics
 		const statsCard = this.createCard({
 			title: 'Map statistics',
 			icon: 'bar-chart',

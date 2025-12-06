@@ -19,6 +19,7 @@ import { BASE_TEMPLATE, generatePeopleBaseTemplate } from './src/constants/base-
 import { PLACES_BASE_TEMPLATE } from './src/constants/places-base-template';
 import { ORGANIZATIONS_BASE_TEMPLATE } from './src/constants/organizations-base-template';
 import { SOURCES_BASE_TEMPLATE } from './src/constants/sources-base-template';
+import { EVENTS_BASE_TEMPLATE } from './src/constants/events-base-template';
 import { ExcalidrawExporter } from './src/excalidraw/excalidraw-exporter';
 import { BidirectionalLinker } from './src/core/bidirectional-linker';
 import { generateCrId } from './src/core/uuid';
@@ -37,6 +38,8 @@ import { PlaceGraphService } from './src/core/place-graph';
 import { SchemaService, ValidationService } from './src/schemas';
 import { AddRelationshipModal } from './src/ui/add-relationship-modal';
 import { SourcePickerModal, SourceService, CreateSourceModal, CitationGeneratorModal, EvidenceService, ProofSummaryService } from './src/sources';
+import { EventService } from './src/events/services/event-service';
+import { CreateEventModal } from './src/events/ui/create-event-modal';
 
 const logger = getLogger('CanvasRootsPlugin');
 
@@ -46,12 +49,20 @@ export default class CanvasRootsPlugin extends Plugin {
 	private bidirectionalLinker: BidirectionalLinker | null = null;
 	private relationshipHistory: RelationshipHistoryService | null = null;
 	private folderFilter: FolderFilterService | null = null;
+	private eventService: EventService | null = null;
 
 	/**
 	 * Get the folder filter service for filtering person notes by folder
 	 */
 	getFolderFilter(): FolderFilterService | null {
 		return this.folderFilter;
+	}
+
+	/**
+	 * Get the event service for managing event notes
+	 */
+	getEventService(): EventService | null {
+		return this.eventService;
 	}
 
 	/**
@@ -126,6 +137,9 @@ export default class CanvasRootsPlugin extends Plugin {
 		// Initialize folder filter service
 		this.folderFilter = new FolderFilterService(this.settings);
 
+		// Initialize event service
+		this.eventService = new EventService(this.app, this.settings);
+
 		// Run migration for property rename (collection_name -> group_name)
 		await this.migrateCollectionNameToGroupName();
 
@@ -193,6 +207,17 @@ export default class CanvasRootsPlugin extends Plugin {
 			name: 'Create person note',
 			callback: () => {
 				this.createPersonNote();
+			}
+		});
+
+		// Add command: Create Event Note
+		this.addCommand({
+			id: 'create-event-note',
+			name: 'Create event note',
+			callback: () => {
+				if (this.eventService) {
+					new CreateEventModal(this.app, this.eventService, this.settings).open();
+				}
 			}
 		});
 
@@ -546,6 +571,17 @@ export default class CanvasRootsPlugin extends Plugin {
 				if (file instanceof TFile && file.extension === 'canvas') {
 					menu.addSeparator();
 
+					// Check if this is a timeline canvas (async check for context menu)
+					const checkTimelineCanvas = async (): Promise<boolean> => {
+						try {
+							const content = await this.app.vault.read(file);
+							const data = JSON.parse(content);
+							return data.metadata?.frontmatter?.['canvas-roots']?.type === 'timeline-export';
+						} catch {
+							return false;
+						}
+					};
+
 					if (useSubmenu) {
 						menu.addItem((item) => {
 							const submenu: Menu = item
@@ -558,15 +594,22 @@ export default class CanvasRootsPlugin extends Plugin {
 									.setTitle('Regenerate canvas')
 									.setIcon('refresh-cw')
 									.onClick(async () => {
-										// Open the canvas file first
-										const leaf = this.app.workspace.getLeaf(false);
-										await leaf.openFile(file);
+										// Check if timeline or tree canvas
+										const isTimeline = await checkTimelineCanvas();
+										if (isTimeline) {
+											// Regenerate timeline
+											await this.regenerateTimelineCanvas(file);
+										} else {
+											// Open the canvas file first
+											const leaf = this.app.workspace.getLeaf(false);
+											await leaf.openFile(file);
 
-										// Give canvas a moment to load
-										await new Promise(resolve => setTimeout(resolve, 100));
+											// Give canvas a moment to load
+											await new Promise(resolve => setTimeout(resolve, 100));
 
-										// Show options modal
-										new RegenerateOptionsModal(this.app, this, file).open();
+											// Show options modal
+											new RegenerateOptionsModal(this.app, this, file).open();
+										}
 									});
 							});
 
@@ -584,8 +627,15 @@ export default class CanvasRootsPlugin extends Plugin {
 									.setTitle('Customize canvas styles')
 									.setIcon('layout')
 									.onClick(async () => {
-										const { CanvasStyleModal } = await import('./src/ui/canvas-style-modal');
-										new CanvasStyleModal(this.app, this, file).open();
+										// Check if timeline or tree canvas
+										const isTimeline = await checkTimelineCanvas();
+										if (isTimeline) {
+											const { TimelineStyleModal } = await import('./src/events/ui/timeline-style-modal');
+											new TimelineStyleModal(this.app, this, file).open();
+										} else {
+											const { CanvasStyleModal } = await import('./src/ui/canvas-style-modal');
+											new CanvasStyleModal(this.app, this, file).open();
+										}
 									});
 							});
 
@@ -672,10 +722,16 @@ export default class CanvasRootsPlugin extends Plugin {
 								.setTitle('Canvas Roots: Regenerate canvas')
 								.setIcon('refresh-cw')
 								.onClick(async () => {
-									const leaf = this.app.workspace.getLeaf(false);
-									await leaf.openFile(file);
-									await new Promise(resolve => setTimeout(resolve, 100));
-									new RegenerateOptionsModal(this.app, this, file).open();
+									// Check if timeline or tree canvas
+									const isTimeline = await checkTimelineCanvas();
+									if (isTimeline) {
+										await this.regenerateTimelineCanvas(file);
+									} else {
+										const leaf = this.app.workspace.getLeaf(false);
+										await leaf.openFile(file);
+										await new Promise(resolve => setTimeout(resolve, 100));
+										new RegenerateOptionsModal(this.app, this, file).open();
+									}
 								});
 						});
 
@@ -693,8 +749,15 @@ export default class CanvasRootsPlugin extends Plugin {
 								.setTitle('Canvas Roots: Customize canvas styles')
 								.setIcon('layout')
 								.onClick(async () => {
-									const { CanvasStyleModal } = await import('./src/ui/canvas-style-modal');
-									new CanvasStyleModal(this.app, this, file).open();
+									// Check if timeline or tree canvas
+									const isTimeline = await checkTimelineCanvas();
+									if (isTimeline) {
+										const { TimelineStyleModal } = await import('./src/events/ui/timeline-style-modal');
+										new TimelineStyleModal(this.app, this, file).open();
+									} else {
+										const { CanvasStyleModal } = await import('./src/ui/canvas-style-modal');
+										new CanvasStyleModal(this.app, this, file).open();
+									}
 								});
 						});
 
@@ -762,6 +825,7 @@ export default class CanvasRootsPlugin extends Plugin {
 					const isSourceNote = cache?.frontmatter?.type === 'source';
 					const isMapNote = cache?.frontmatter?.type === 'map';
 					const isSchemaNote = cache?.frontmatter?.type === 'schema';
+					const isEventNote = cache?.frontmatter?.type === 'event';
 
 					// Schema notes get schema-specific options
 					if (isSchemaNote) {
@@ -1166,7 +1230,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						}
 					}
 					// Person notes with cr_id get full person options
-					else if (hasCrId && !isPlaceNote && !isSourceNote) {
+					else if (hasCrId && !isPlaceNote && !isSourceNote && !isEventNote) {
 						menu.addSeparator();
 
 						if (useSubmenu) {
@@ -1431,6 +1495,55 @@ export default class CanvasRootsPlugin extends Plugin {
 										.onClick(() => {
 											this.addSourceToPersonNote(file);
 										});
+								});
+
+								// Events submenu
+								submenu.addItem((subItem) => {
+									const eventsSubmenu: Menu = subItem
+										.setTitle('Events')
+										.setIcon('calendar')
+										.setSubmenu();
+
+									eventsSubmenu.addItem((evItem) => {
+										evItem
+											.setTitle('Create event for this person')
+											.setIcon('calendar-plus')
+											.onClick(async () => {
+												const eventService = this.getEventService();
+												if (eventService) {
+													const cache = this.app.metadataCache.getFileCache(file);
+													const personName = cache?.frontmatter?.name || file.basename;
+													const crId = cache?.frontmatter?.cr_id;
+													const { CreateEventModal } = await import('./src/events/ui/create-event-modal');
+													new CreateEventModal(
+														this.app,
+														eventService,
+														this.settings,
+														{
+															initialPerson: { name: personName, crId: crId }
+														}
+													).open();
+												}
+											});
+									});
+
+									eventsSubmenu.addItem((evItem) => {
+										evItem
+											.setTitle('Export timeline to Canvas')
+											.setIcon('layout')
+											.onClick(async () => {
+												await this.exportPersonTimelineFromFile(file, 'canvas');
+											});
+									});
+
+									eventsSubmenu.addItem((evItem) => {
+										evItem
+											.setTitle('Export timeline to Excalidraw')
+											.setIcon('pencil')
+											.onClick(async () => {
+												await this.exportPersonTimelineFromFile(file, 'excalidraw');
+											});
+									});
 								});
 
 								// Mark as root person
@@ -1730,6 +1843,48 @@ export default class CanvasRootsPlugin extends Plugin {
 									});
 							});
 
+							// Events actions (mobile - flat menu)
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Create event')
+									.setIcon('calendar-plus')
+									.onClick(async () => {
+										const eventService = this.getEventService();
+										if (eventService) {
+											const cache = this.app.metadataCache.getFileCache(file);
+											const personName = cache?.frontmatter?.name || file.basename;
+											const crId = cache?.frontmatter?.cr_id;
+											const { CreateEventModal } = await import('./src/events/ui/create-event-modal');
+											new CreateEventModal(
+												this.app,
+												eventService,
+												this.settings,
+												{
+													initialPerson: { name: personName, crId: crId }
+												}
+											).open();
+										}
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Export timeline to Canvas')
+									.setIcon('layout')
+									.onClick(async () => {
+										await this.exportPersonTimelineFromFile(file, 'canvas');
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Export timeline to Excalidraw')
+									.setIcon('pencil')
+									.onClick(async () => {
+										await this.exportPersonTimelineFromFile(file, 'excalidraw');
+									});
+							});
+
 							menu.addItem((item) => {
 								const cache = this.app.metadataCache.getFileCache(file);
 								const isRootPerson = cache?.frontmatter?.root_person === true;
@@ -1843,6 +1998,110 @@ export default class CanvasRootsPlugin extends Plugin {
 							});
 						}
 					}
+					// Event notes with cr_id get event-specific options
+					else if (hasCrId && isEventNote) {
+						menu.addSeparator();
+
+						if (useSubmenu) {
+							menu.addItem((item) => {
+								const submenu: Menu = item
+									.setTitle('Canvas Roots')
+									.setIcon('calendar')
+									.setSubmenu();
+
+								// Open event
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Open event')
+										.setIcon('file')
+										.onClick(() => {
+											void this.app.workspace.getLeaf(false).openFile(file);
+										});
+								});
+
+								// Open in new tab
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Open in new tab')
+										.setIcon('file-plus')
+										.onClick(() => {
+											void this.app.workspace.getLeaf('tab').openFile(file);
+										});
+								});
+
+								submenu.addSeparator();
+
+								// Add essential event properties
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Add essential event properties')
+										.setIcon('file-plus')
+										.onClick(async () => {
+											await this.addEssentialEventProperties([file]);
+										});
+								});
+
+								submenu.addSeparator();
+
+								// Delete event
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Delete event')
+										.setIcon('trash')
+										.onClick(async () => {
+											const eventTitle = cache?.frontmatter?.title || file.basename;
+											const confirmed = await this.confirmDeleteEvent(eventTitle);
+											if (confirmed) {
+												await this.app.vault.delete(file);
+												new Notice(`Deleted event: ${eventTitle}`);
+											}
+										});
+								});
+							});
+						} else {
+							// Mobile: flat menu
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Open event')
+									.setIcon('file')
+									.onClick(() => {
+										void this.app.workspace.getLeaf(false).openFile(file);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Open in new tab')
+									.setIcon('file-plus')
+									.onClick(() => {
+										void this.app.workspace.getLeaf('tab').openFile(file);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential event properties')
+									.setIcon('file-plus')
+									.onClick(async () => {
+										await this.addEssentialEventProperties([file]);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Delete event')
+									.setIcon('trash')
+									.onClick(async () => {
+										const eventTitle = cache?.frontmatter?.title || file.basename;
+										const confirmed = await this.confirmDeleteEvent(eventTitle);
+										if (confirmed) {
+											await this.app.vault.delete(file);
+											new Notice(`Deleted event: ${eventTitle}`);
+										}
+									});
+							});
+						}
+					}
 					// Notes without cr_id still get "Add essential properties" option
 					else if (!hasCrId) {
 						menu.addSeparator();
@@ -1887,6 +2146,15 @@ export default class CanvasRootsPlugin extends Plugin {
 												await this.addEssentialSourceProperties([file]);
 											});
 									});
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential event properties')
+											.setIcon('calendar')
+											.onClick(async () => {
+												await this.addEssentialEventProperties([file]);
+											});
+									});
 								});
 							});
 						} else {
@@ -1915,6 +2183,15 @@ export default class CanvasRootsPlugin extends Plugin {
 									.setIcon('archive')
 									.onClick(async () => {
 										await this.addEssentialSourceProperties([file]);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Add essential event properties')
+									.setIcon('calendar')
+									.onClick(async () => {
+										await this.addEssentialEventProperties([file]);
 									});
 							});
 						}
@@ -2086,6 +2363,15 @@ export default class CanvasRootsPlugin extends Plugin {
 											await this.createSourcesBaseTemplate(file);
 										});
 								});
+
+								basesSubmenu.addItem((baseItem) => {
+									baseItem
+										.setTitle('New events base from template')
+										.setIcon('calendar')
+										.onClick(async () => {
+											await this.createEventsBaseTemplate(file);
+										});
+								});
 							});
 
 							submenu.addSeparator();
@@ -2255,6 +2541,15 @@ export default class CanvasRootsPlugin extends Plugin {
 								.setIcon('archive')
 								.onClick(async () => {
 									await this.createSourcesBaseTemplate(file);
+								});
+						});
+
+						menu.addItem((item) => {
+							item
+								.setTitle('Canvas Roots: New events base from template')
+								.setIcon('calendar')
+								.onClick(async () => {
+									await this.createEventsBaseTemplate(file);
 								});
 						});
 
@@ -2603,6 +2898,38 @@ export default class CanvasRootsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	/**
+	 * Confirm deletion of an event note
+	 */
+	private async confirmDeleteEvent(eventTitle: string): Promise<boolean> {
+		return new Promise((resolve) => {
+			const modal = new Modal(this.app);
+			modal.titleEl.setText('Delete event');
+			modal.contentEl.createEl('p', {
+				text: `Are you sure you want to delete "${eventTitle}"? This action cannot be undone.`
+			});
+
+			const buttonContainer = modal.contentEl.createDiv({ cls: 'modal-button-container' });
+
+			const cancelBtn = buttonContainer.createEl('button', { text: 'Cancel' });
+			cancelBtn.addEventListener('click', () => {
+				modal.close();
+				resolve(false);
+			});
+
+			const deleteBtn = buttonContainer.createEl('button', {
+				text: 'Delete',
+				cls: 'mod-warning'
+			});
+			deleteBtn.addEventListener('click', () => {
+				modal.close();
+				resolve(true);
+			});
+
+			modal.open();
+		});
 	}
 
 	/**
@@ -3652,6 +3979,45 @@ export default class CanvasRootsPlugin extends Plugin {
 	}
 
 	/**
+	 * Regenerate a timeline canvas using its stored metadata and style overrides.
+	 * Uses the EventService to get current events and re-exports with the stored options.
+	 */
+	async regenerateTimelineCanvas(canvasFile: TFile): Promise<void> {
+		try {
+			new Notice('Regenerating timeline...');
+
+			// Get event service
+			const eventService = this.getEventService();
+			if (!eventService) {
+				new Notice('Event service not available');
+				return;
+			}
+
+			// Get all events
+			const events = eventService.getAllEvents();
+			if (events.length === 0) {
+				new Notice('No events found');
+				return;
+			}
+
+			// Import and use TimelineCanvasExporter
+			const { TimelineCanvasExporter } = await import('./src/events/services/timeline-canvas-exporter');
+			const exporter = new TimelineCanvasExporter(this.app, this.settings);
+
+			const result = await exporter.regenerateCanvas(canvasFile, events);
+
+			if (result.success) {
+				new Notice(`Timeline regenerated successfully! (${events.length} events)`);
+			} else {
+				new Notice(`Failed to regenerate timeline: ${result.error}`);
+			}
+		} catch (error: unknown) {
+			console.error('Error regenerating timeline canvas:', error);
+			new Notice('Failed to regenerate timeline. Check console for details.');
+		}
+	}
+
+	/**
 	 * Format canvas JSON to match Obsidian's exact format
 	 * Uses tabs for structure and compact objects on single lines
 	 */
@@ -3825,6 +4191,94 @@ export default class CanvasRootsPlugin extends Plugin {
 		} catch (error: unknown) {
 			console.error(`Error exporting canvas as ${format}:`, error);
 			new Notice(`Failed to export as ${format.toUpperCase()}: ${getErrorMessage(error)}`);
+		}
+	}
+
+	/**
+	 * Export a person's timeline to Canvas or Excalidraw from their note file
+	 */
+	private async exportPersonTimelineFromFile(
+		personFile: TFile,
+		format: 'canvas' | 'excalidraw' = 'canvas'
+	): Promise<void> {
+		const eventService = this.getEventService();
+		if (!eventService) {
+			new Notice('Event service not available');
+			return;
+		}
+
+		const cache = this.app.metadataCache.getFileCache(personFile);
+		const personName = cache?.frontmatter?.name || personFile.basename;
+		const allEvents = eventService.getAllEvents();
+		const personLink = `[[${personName}]]`;
+
+		// Filter events for this person
+		const personEvents = allEvents.filter(e => {
+			if (e.person) {
+				const normalizedPerson = e.person.replace(/^\[\[/, '').replace(/\]\]$/, '').toLowerCase();
+				return normalizedPerson === personName.toLowerCase();
+			}
+			return false;
+		});
+
+		if (personEvents.length === 0) {
+			new Notice(`No events found for ${personName}`);
+			return;
+		}
+
+		try {
+			const { TimelineCanvasExporter } = await import('./src/events/services/timeline-canvas-exporter');
+			const exporter = new TimelineCanvasExporter(this.app, this.settings);
+
+			const result = await exporter.exportToCanvas(allEvents, {
+				title: `${personName} Timeline`,
+				filterPerson: personLink,
+				layoutStyle: 'horizontal',
+				colorScheme: 'event_type',
+				includeOrderingEdges: true
+			});
+
+			if (result.success && result.path) {
+				if (format === 'excalidraw') {
+					// Convert to Excalidraw
+					const { ExcalidrawExporter } = await import('./src/excalidraw/excalidraw-exporter');
+					const excalidrawExporter = new ExcalidrawExporter(this.app);
+
+					const canvasFile = this.app.vault.getAbstractFileByPath(result.path);
+					if (!(canvasFile instanceof TFile)) {
+						throw new Error('Canvas file not found after export');
+					}
+
+					const excalidrawResult = await excalidrawExporter.exportToExcalidraw({
+						canvasFile,
+						fileName: result.path.replace('.canvas', '').split('/').pop(),
+						preserveColors: true
+					});
+
+					if (excalidrawResult.success && excalidrawResult.excalidrawContent) {
+						const excalidrawPath = result.path.replace('.canvas', '.excalidraw.md');
+						await this.app.vault.create(excalidrawPath, excalidrawResult.excalidrawContent);
+						new Notice(`Timeline exported to ${excalidrawPath}`);
+						const file = this.app.vault.getAbstractFileByPath(excalidrawPath);
+						if (file) {
+							void this.app.workspace.getLeaf(false).openFile(file as TFile);
+						}
+					} else {
+						new Notice(`Excalidraw export failed: ${excalidrawResult.errors?.join(', ') || 'Unknown error'}`);
+					}
+				} else {
+					new Notice(`Timeline exported to ${result.path}`);
+					const file = this.app.vault.getAbstractFileByPath(result.path);
+					if (file) {
+						void this.app.workspace.getLeaf(false).openFile(file as TFile);
+					}
+				}
+			} else {
+				new Notice(`Export failed: ${result.error || 'Unknown error'}`);
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			new Notice(`Export failed: ${message}`);
 		}
 	}
 
@@ -4482,6 +4936,208 @@ export default class CanvasRootsPlugin extends Plugin {
 	}
 
 	/**
+	 * Add essential properties to event note(s)
+	 * Supports batch operations on multiple files
+	 */
+	private async addEssentialEventProperties(files: TFile[]) {
+		try {
+			let processedCount = 0;
+			let skippedCount = 0;
+			let errorCount = 0;
+
+			for (const file of files) {
+				try {
+					// Read current file content
+					const content = await this.app.vault.read(file);
+					const cache = this.app.metadataCache.getFileCache(file);
+
+					// Check if file already has frontmatter
+					const hasFrontmatter = content.startsWith('---');
+					const existingFrontmatter = cache?.frontmatter || {};
+
+					// Define essential event properties
+					const essentialProperties: Record<string, unknown> = {};
+
+					// type: Must be "event"
+					if (existingFrontmatter.type !== 'event') {
+						essentialProperties.type = 'event';
+					}
+
+					// cr_id: Generate if missing
+					if (!existingFrontmatter.cr_id) {
+						essentialProperties.cr_id = `event_${generateCrId()}`;
+					}
+
+					// title: Use filename if missing
+					if (!existingFrontmatter.title) {
+						essentialProperties.title = file.basename;
+					}
+
+					// event_type: Default to 'custom' if missing
+					if (!existingFrontmatter.event_type) {
+						essentialProperties.event_type = 'custom';
+					}
+
+					// date: Add empty if missing
+					if (!existingFrontmatter.date) {
+						essentialProperties.date = '';
+					}
+
+					// date_precision: Default to 'unknown' if missing
+					if (!existingFrontmatter.date_precision) {
+						essentialProperties.date_precision = 'unknown';
+					}
+
+					// person: Add empty if missing
+					if (!existingFrontmatter.person) {
+						essentialProperties.person = '';
+					}
+
+					// place: Add empty if missing
+					if (!existingFrontmatter.place) {
+						essentialProperties.place = '';
+					}
+
+					// confidence: Default to 'unknown' if missing
+					if (!existingFrontmatter.confidence) {
+						essentialProperties.confidence = 'unknown';
+					}
+
+					// Skip if no properties to add
+					if (Object.keys(essentialProperties).length === 0) {
+						skippedCount++;
+						continue;
+					}
+
+					// Build new frontmatter with proper ordering
+					const orderedFrontmatter: Record<string, unknown> = {};
+
+					// type first
+					if (essentialProperties.type || existingFrontmatter.type) {
+						orderedFrontmatter.type = essentialProperties.type || existingFrontmatter.type;
+					}
+
+					// Then cr_id
+					if (essentialProperties.cr_id || existingFrontmatter.cr_id) {
+						orderedFrontmatter.cr_id = essentialProperties.cr_id || existingFrontmatter.cr_id;
+					}
+
+					// Then title
+					if (essentialProperties.title || existingFrontmatter.title) {
+						orderedFrontmatter.title = essentialProperties.title || existingFrontmatter.title;
+					}
+
+					// Then event_type
+					if (essentialProperties.event_type || existingFrontmatter.event_type) {
+						orderedFrontmatter.event_type = essentialProperties.event_type || existingFrontmatter.event_type;
+					}
+
+					// Then date
+					if (essentialProperties.date !== undefined || existingFrontmatter.date !== undefined) {
+						orderedFrontmatter.date = essentialProperties.date ?? existingFrontmatter.date;
+					}
+
+					// Then date_precision
+					if (essentialProperties.date_precision || existingFrontmatter.date_precision) {
+						orderedFrontmatter.date_precision = essentialProperties.date_precision || existingFrontmatter.date_precision;
+					}
+
+					// Then person
+					if (essentialProperties.person !== undefined || existingFrontmatter.person !== undefined) {
+						orderedFrontmatter.person = essentialProperties.person ?? existingFrontmatter.person;
+					}
+
+					// Then place
+					if (essentialProperties.place !== undefined || existingFrontmatter.place !== undefined) {
+						orderedFrontmatter.place = essentialProperties.place ?? existingFrontmatter.place;
+					}
+
+					// Then confidence
+					if (essentialProperties.confidence || existingFrontmatter.confidence) {
+						orderedFrontmatter.confidence = essentialProperties.confidence || existingFrontmatter.confidence;
+					}
+
+					// Then remaining existing properties
+					for (const [key, value] of Object.entries(existingFrontmatter)) {
+						if (!(key in orderedFrontmatter)) {
+							orderedFrontmatter[key] = value;
+						}
+					}
+
+					// Convert frontmatter to YAML string
+					const yamlLines = ['---'];
+					for (const [key, value] of Object.entries(orderedFrontmatter)) {
+						if (Array.isArray(value)) {
+							if (value.length === 0) {
+								yamlLines.push(`${key}: []`);
+							} else {
+								yamlLines.push(`${key}:`);
+								value.forEach(item => yamlLines.push(`  - ${String(item)}`));
+							}
+						} else if (typeof value === 'object' && value !== null) {
+							// Handle nested objects
+							yamlLines.push(`${key}:`);
+							for (const [subKey, subValue] of Object.entries(value)) {
+								yamlLines.push(`  ${subKey}: ${String(subValue)}`);
+							}
+						} else if (value === '') {
+							yamlLines.push(`${key}: ""`);
+						} else if (typeof value === 'string' && (value.includes(':') || value.includes('"'))) {
+							yamlLines.push(`${key}: "${value.replace(/"/g, '\\"')}"`);
+						} else {
+							yamlLines.push(`${key}: ${String(value)}`);
+						}
+					}
+					yamlLines.push('---');
+
+					// Get body content (everything after frontmatter)
+					let bodyContent = '';
+					if (hasFrontmatter) {
+						const endOfFrontmatter = content.indexOf('---', 3);
+						if (endOfFrontmatter !== -1) {
+							bodyContent = content.substring(endOfFrontmatter + 3).trim();
+						}
+					} else {
+						bodyContent = content.trim();
+					}
+
+					// Construct new file content
+					const newContent = yamlLines.join('\n') + '\n\n' + bodyContent;
+
+					// Write back to file
+					await this.app.vault.modify(file, newContent);
+					processedCount++;
+
+				} catch (error: unknown) {
+					console.error(`Error processing ${file.path}:`, error);
+					errorCount++;
+				}
+			}
+
+			// Show summary
+			if (files.length === 1) {
+				if (processedCount === 1) {
+					new Notice('Added essential event properties');
+				} else if (skippedCount === 1) {
+					new Notice('File already has all essential event properties');
+				} else {
+					new Notice('Failed to add essential event properties');
+				}
+			} else {
+				const parts = [];
+				if (processedCount > 0) parts.push(`${processedCount} updated`);
+				if (skippedCount > 0) parts.push(`${skippedCount} already complete`);
+				if (errorCount > 0) parts.push(`${errorCount} errors`);
+				new Notice(`Essential event properties: ${parts.join(', ')}`);
+			}
+
+		} catch (error: unknown) {
+			console.error('Error adding essential event properties:', error);
+			new Notice('Failed to add essential event properties');
+		}
+	}
+
+	/**
 	 * Generate an Excalidraw tree directly from a person note
 	 * Uses default settings for quick generation
 	 */
@@ -4841,6 +5497,72 @@ export default class CanvasRootsPlugin extends Plugin {
 				new Notice('Disk full. Free up space and try again.');
 			} else {
 				new Notice(`Failed to create Sources base template: ${errorMsg}`);
+			}
+		}
+	}
+
+	/**
+	 * Create an events base template file in the specified folder
+	 */
+	private async createEventsBaseTemplate(folder?: TFolder) {
+		try {
+			// Validate: Check if Bases feature is available
+			// Bases is a core Obsidian feature (1.9.0+), not a community plugin
+			const baseFiles = this.app.vault.getFiles().filter(f => f.extension === 'base');
+			// @ts-expect-error - accessing internal plugins
+			const basesInternalPlugin = this.app.internalPlugins?.plugins?.['bases'];
+			const isBasesAvailable = baseFiles.length > 0 ||
+				(basesInternalPlugin?.enabled === true);
+
+			if (!isBasesAvailable) {
+				const proceed = await this.confirmBaseCreation();
+				if (!proceed) return;
+			}
+
+			// Determine the target path - use basesFolder if configured, otherwise use context folder
+			const targetFolder = this.settings.basesFolder || (folder ? folder.path : '');
+			const folderPath = targetFolder ? targetFolder + '/' : '';
+			const defaultPath = folderPath + 'events.base';
+
+			// Create the bases folder if it doesn't exist
+			if (this.settings.basesFolder && !this.app.vault.getAbstractFileByPath(this.settings.basesFolder)) {
+				await this.app.vault.createFolder(this.settings.basesFolder);
+			}
+
+			// Check if file already exists
+			const existingFile = this.app.vault.getAbstractFileByPath(defaultPath);
+			if (existingFile) {
+				new Notice(`Events base template already exists at ${defaultPath}`);
+				// Open the existing file
+				if (existingFile instanceof TFile) {
+					const leaf = this.app.workspace.getLeaf(false);
+					await leaf.openFile(existingFile);
+				}
+				return;
+			}
+
+			// Create the file with template content
+			const file = await this.app.vault.create(defaultPath, EVENTS_BASE_TEMPLATE);
+
+			new Notice('Events base template created with 20 pre-configured views!');
+			logger.info('events-base-template', `Created events base template at ${defaultPath}`);
+
+			// Open the newly created file
+			const leaf = this.app.workspace.getLeaf(false);
+			await leaf.openFile(file);
+		} catch (error: unknown) {
+			const errorMsg = getErrorMessage(error);
+			logger.error('events-base-template', 'Failed to create events base template', error);
+
+			// Provide specific error messages
+			if (errorMsg.includes('already exists')) {
+				new Notice('A file with this name already exists.');
+			} else if (errorMsg.includes('permission') || errorMsg.includes('EACCES')) {
+				new Notice('Permission denied. Check file system permissions.');
+			} else if (errorMsg.includes('ENOSPC')) {
+				new Notice('Disk full. Free up space and try again.');
+			} else {
+				new Notice(`Failed to create Events base template: ${errorMsg}`);
 			}
 		}
 	}

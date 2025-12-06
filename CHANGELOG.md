@@ -7,6 +7,148 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.10.0] - 2025-12-06
+
+Chronological Story Mapping release: Event notes, person timelines, family timelines, source event extraction, and global timeline view.
+
+### Added
+
+- **Timeline Export**: Export event timelines to Canvas or Excalidraw
+  - Export card in Events tab with layout and filtering options
+  - Three layout styles: horizontal, vertical, and Gantt (by date and person)
+  - Color-coding by event type, category, confidence, or monochrome
+  - Filter exports by person, event type, or group/faction
+  - Include before/after relationship edges as canvas connections
+  - Group events by person option
+  - Preview shows export statistics before export
+  - Export to Excalidraw (when plugin is installed)
+  - Events positioned chronologically with dated events arranged by date
+  - Per-canvas style overrides preserved during regeneration
+
+- **Groups/Factions Property**: Events can now be tagged with groups for filtering
+  - New `groups` property (string array) for categorizing events by nation, faction, organization
+  - Filter timeline exports by group
+  - "By Group" view in events base template
+  - Statistics track events by group
+
+- **Compute Sort Order**: Automatic topological ordering of events
+  - "Compute sort order" button in Events tab
+  - Calculates `sort_order` values from before/after DAG relationships
+  - Respects date-based ordering, then relative constraints
+  - Detects and reports cycles in event ordering
+  - Uses increments of 10 for manual adjustment flexibility
+
+- **Events Base Template**: Pre-configured Obsidian Base for event management
+  - "New events base from template" context menu on folders
+  - 20 pre-configured views: By Type, By Person, By Place, By Group, By Confidence, etc.
+  - Includes Vital Events, Life Events, Narrative Events filter views
+  - High/Low Confidence, With/Missing Sources views
+  - By Sort Order view for computed chronological ordering
+
+- **Place Timeline View**: Events at a specific location over time in the Maps tab
+  - Place selector dropdown with event counts per place
+  - Timeline displays all events at selected location chronologically
+  - Family presence analysis with visual bars showing date ranges per person
+  - Summary shows event count, date range, and people present
+  - Events clickable to navigate to event notes
+  - Integrated into Maps tab for geographic context
+
+- **Family Timeline View**: Aggregate timeline for family units in the People tab
+  - Users badge on person list items shows total family events count
+  - Click badge to expand family timeline showing events for person + spouses + children
+  - Color-coded by family member with legend (blue=self, pink=spouse, green/amber/etc=children)
+  - Relationship context shown for each event (e.g., "John Smith (child)")
+  - All events sorted chronologically across family members
+  - Lazy-loaded for performance
+
+- **Timeline Card in Events Tab**: Global timeline view with filtering and gap analysis
+  - View all events in chronological order
+  - Filter by event type, person, and search text
+  - Event table with Date, Event, Type, Person, Place columns
+  - Click rows to navigate to event notes
+  - Color-coded event type badges with icons
+  - Data quality insights: timeline gaps (5+ years), unsourced events, orphan events
+  - Right-click context menu on event rows (Open note, Open in new tab, Delete event)
+
+- **Person List Context Menus**: Right-click on person list items in People tab
+  - Events submenu with "Create event for this person" and timeline export options
+  - Export timeline to Canvas or Excalidraw formats
+  - Mobile-friendly: flat menu items on mobile devices, submenus on desktop
+
+- **Person Note File Context Menus**: Right-click on person note files in file explorer
+  - Events submenu with "Create event for this person" and timeline export options
+  - Export timeline to Canvas or Excalidraw formats
+  - Mobile-friendly with "Canvas Roots:" prefixes on flat menu items
+
+- **Source Event Extraction**: Extract events from source notes
+  - "Extract events" button in Sources tab action column
+  - Context menu with "Extract events" option on source rows
+  - ExtractEventsModal pre-populates fields from source metadata (date, place, confidence)
+  - Suggests event types based on source type (census→residence/occupation, vital_record→birth/death/marriage)
+  - Add/remove event suggestions before batch creation
+  - Created events automatically link to the source note
+
+- **Person Timeline View**: View chronological events for any person in the People tab
+  - Calendar badge on person list items shows event count
+  - Click badge to expand timeline showing all linked events
+  - Events display chronologically with date, type, place, and source info
+  - Color-coded icons match event type (birth=green, death=gray, marriage=pink, etc.)
+  - Click event to navigate to event note
+  - Confidence and source warnings for data quality awareness
+  - Lazy-loaded for performance with large vaults
+
+- **Event Notes**: New note type (`type: event`) for documenting life events
+  - 22 built-in event types across 4 categories: core, extended, narrative, custom
+  - Core events: birth, death, marriage, divorce
+  - Extended events: burial, residence, occupation, education, military, immigration, baptism, confirmation, ordination
+  - Narrative events: anecdote, lore_event, plot_point, flashback, foreshadowing, backstory, climax, resolution
+  - Date precision support: exact, month, year, decade, estimated, range, unknown
+  - Confidence levels: high, medium, low, unknown
+  - Person and place linking via wikilinks
+  - Timeline membership for grouping events
+  - Fictional date system integration for worldbuilders
+  - Canonical event marking for worldbuilding
+
+- **Create Event Modal**: Full-featured modal for creating event notes
+  - Event type dropdown grouped by category
+  - Date precision and date fields with end date for ranges
+  - Person picker integration for linking primary person
+  - Place and timeline linking fields
+  - Confidence level selection
+  - Worldbuilding options section for narrative event types
+
+- **Event Service**: Backend service for event note management
+  - CRUD operations with caching
+  - Query by person, place, or timeline
+  - Event statistics
+
+- **Event Templates**: Seven new templates in Template Snippets modal
+  - Basic event, Birth, Marriage, Death, Narrative, Relative-ordered, Full event
+
+- **Command**: "Create event note" command in command palette
+
+### Changed
+
+- **Control Center Consolidation**: Merged Canvas Settings tab into Preferences tab
+  - Canvas layout settings (horizontal/vertical spacing, node dimensions)
+  - Canvas styling settings (color scheme, arrow styles, spouse edge labels)
+  - Reduced tab count from 16 to 15 for cleaner navigation
+  - Preferences tab description updated to reflect added functionality
+
+### Fixed
+
+- **Create Event Modal**: Fixed person linking UI
+  - Link/Unlink button now properly updates icon and text when toggling state
+  - Button icons correctly switch between link and unlink states
+
+### Settings Added
+
+- `eventsFolder`: Default folder for event notes (default: `Canvas Roots/Events`)
+- `customEventTypes`: User-defined event types
+- `showBuiltInEventTypes`: Toggle visibility of built-in event types (default: true)
+
+---
+
 ## [0.9.4] - 2025-12-05
 
 Value Aliases release: Use custom property values without editing your notes.

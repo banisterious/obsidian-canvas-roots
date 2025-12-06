@@ -38,11 +38,15 @@ erDiagram
     }
 
     EVENT {
+        string cr_id PK
+        string title
         string event_type
+        string date
+        string date_end
+        string date_precision
+        string person FK
         string place FK
-        string date_from
-        string date_to
-        string description
+        string confidence
     }
 
     PLACE {
@@ -1096,6 +1100,170 @@ This schema validates that all person notes have logically consistent dates.
 
 ---
 
+## Event Note Properties
+
+Event notes document life events, story events, and timeline entries as standalone notes. See [Events And Timelines](Events-And-Timelines) for complete documentation.
+
+### Identity
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `type` | `string` | Must be `"event"` | `"event"` |
+| `cr_id` | `string` | Unique identifier | `"evt_birth_john_1850"` |
+
+### Basic Information
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `title` | `string` | Display title of the event | `"Birth of John Smith"` |
+| `event_type` | `string` | Type of event (see types below) | `"birth"` |
+| `description` | `string` | Additional details about the event | `"Born at the family homestead"` |
+
+### Event Types
+
+Canvas Roots includes built-in event types organized by category. Custom types can also be created in the Control Center.
+
+| Category | Event Types |
+|----------|-------------|
+| Core (vital) | `birth`, `death`, `marriage`, `divorce` |
+| Extended (life) | `residence`, `occupation`, `military`, `immigration`, `education`, `burial`, `baptism`, `confirmation`, `ordination` |
+| Narrative | `anecdote`, `lore_event`, `plot_point`, `flashback`, `foreshadowing`, `backstory`, `climax`, `resolution` |
+| Custom | `custom` (or user-defined types) |
+
+### Date Information
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `date` | `string` | Event date (ISO format or fictional calendar) | `"1850-03-15"` |
+| `date_end` | `string` | End date for range events | `"1855-06-20"` |
+| `date_precision` | `string` | How precise the date is | `"exact"`, `"month"`, `"year"`, `"decade"`, `"estimated"`, `"range"`, `"unknown"` |
+| `date_system` | `string` | Fictional date system ID | `"westeros"` |
+
+**Date Precision Values:**
+
+| Precision | Description | Example |
+|-----------|-------------|---------|
+| `exact` | Known to the day | `"1850-03-15"` |
+| `month` | Known to the month | `"1850-03"` |
+| `year` | Known to the year | `"1850"` |
+| `decade` | Known to the decade | `"1850s"` |
+| `estimated` | Approximate | `"circa 1850"` |
+| `range` | Between two dates | Use `date` + `date_end` |
+| `unknown` | Date unknown | Use relative ordering |
+
+### Person and Place Links
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `person` | `string` | Primary person involved (wikilink) | `"[[John Smith]]"` |
+| `persons` | `string[]` | Multiple people involved | `["[[John Smith]]", "[[Jane Doe]]"]` |
+| `place` | `string` | Where the event occurred (wikilink) | `"[[London]]"` |
+
+### Sources and Confidence
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `sources` | `string[]` | Sources documenting this event | `["[[1850 Census]]", "[[Family Bible]]"]` |
+| `confidence` | `string` | How reliable is this event | `"high"`, `"medium"`, `"low"`, `"unknown"` |
+
+**Confidence Levels:**
+
+| Level | Description |
+|-------|-------------|
+| `high` | Well-documented with primary sources |
+| `medium` | Some supporting evidence |
+| `low` | Unverified or questionable |
+| `unknown` | Not yet assessed |
+
+### Relative Ordering
+
+For events without precise dates, use relative ordering to establish sequence:
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `before` | `string[]` | Events that happen after this one | `["[[Marriage of John and Jane]]"]` |
+| `after` | `string[]` | Events that happen before this one | `["[[Birth of John Smith]]"]` |
+| `sort_order` | `number` | Computed sort value for ordering | `10`, `20`, `30` |
+
+> **Tip:** Use the "Compute sort order" button in the Events tab to automatically calculate `sort_order` values from your `before`/`after` relationships using topological sort. Values are assigned in increments of 10 to allow manual insertion between computed values.
+
+### Timeline and Worldbuilding
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `timeline` | `string` | Parent timeline note | `"[[Smith Family Timeline]]"` |
+| `is_canonical` | `boolean` | Authoritative truth for worldbuilders | `true` |
+| `universe` | `string` | Fictional universe | `"westeros"` |
+| `groups` | `string[]` | Groups/factions involved in this event | `["Rohan", "Isengard"]` |
+
+The `groups` property enables filtering in timeline exports by nation, faction, or organization. Useful for:
+- Worldbuilding: organize events by nation, guild, or power structure
+- Genealogy: tag events by family branch or immigrant group
+
+---
+
+## Example Event Note
+
+```yaml
+---
+type: event
+cr_id: evt_birth_john_1850
+title: Birth of John Smith
+event_type: birth
+date: "1850-03-15"
+date_precision: exact
+person: "[[John Smith]]"
+place: "[[London]]"
+sources:
+  - "[[Birth Certificate - John Smith]]"
+  - "[[Family Bible]]"
+confidence: high
+description: Born at the family homestead on Elm Street
+---
+
+# Birth of John Smith
+
+John Robert Smith was born on March 15, 1850 in London...
+```
+
+---
+
+## Example Narrative Event Note
+
+```yaml
+---
+type: event
+cr_id: evt_red_wedding
+title: The Red Wedding
+event_type: lore_event
+date: "299 AC"
+date_precision: exact
+date_system: westeros
+persons:
+  - "[[Robb Stark]]"
+  - "[[Catelyn Stark]]"
+place: "[[The Twins]]"
+is_canonical: true
+universe: westeros
+confidence: high
+after:
+  - "[[Battle of the Blackwater]]"
+before:
+  - "[[Purple Wedding]]"
+groups:
+  - "House Stark"
+  - "House Frey"
+  - "House Bolton"
+description: The massacre at the wedding feast
+---
+
+# The Red Wedding
+
+A pivotal event in the War of the Five Kings...
+```
+
+---
+
 ## Organization Note Properties
 
 Organization notes define non-genealogical hierarchies such as noble houses, guilds, and corporations. See [Organization Notes](Organization-Notes) for complete documentation.
@@ -1207,6 +1375,7 @@ The principal house of the North...
 
 ## See Also
 
+- [Events And Timelines](Events-And-Timelines) - Complete event documentation
 - [Evidence & Sources](Evidence-And-Sources) - Complete source documentation
 - [Organization Notes](Organization-Notes) - Complete organization documentation
 - [Schema Validation](Schema-Validation) - Creating and using validation schemas

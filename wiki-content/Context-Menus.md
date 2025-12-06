@@ -22,6 +22,11 @@ Right-click on any markdown file with a `cr_id` frontmatter property:
 | **Calculate relationship...** | Find how this person relates to another |
 | **Set group name** | Assign a custom name to this person's family group |
 | **Set collection** | Add this person to a collection |
+| **Add source...** | Add a source citation to this person |
+| **Events** | |
+| → Create event for this person | Open Create Event modal with person pre-filled |
+| → Export timeline to Canvas | Export all events for this person to a Canvas file |
+| → Export timeline to Excalidraw | Export all events for this person to an Excalidraw file |
 | **Mark as root person** | Designate as a tree root (toggles to "Unmark" if already set) |
 | **Assign reference numbers** | |
 | → Ahnentafel (ancestors) | Assign ancestor numbering from this person |
@@ -119,9 +124,47 @@ On **desktop**, context menu items are organized in nested submenus under a "Can
 
 On **mobile**, all items appear as a flat list with "Canvas Roots:" prefixes for clarity in the smaller interface.
 
+## Control Center Context Menus
+
+The Control Center includes context menus for quick actions within its various tabs and cards.
+
+### Person List (People Tab)
+
+Right-click on any person in the People tab list:
+
+| Action | Description |
+|--------|-------------|
+| **Open note** | Open the person's note in the current tab |
+| **Open in new tab** | Open the person's note in a new tab |
+| **Events** | |
+| → Create event for this person | Open Create Event modal with person pre-filled |
+| → Export timeline to Canvas | Export all events for this person to a Canvas file |
+| → Export timeline to Excalidraw | Export all events for this person to an Excalidraw file |
+
+### Event Timeline (Events Tab)
+
+Right-click on any event row in the Timeline card:
+
+| Action | Description |
+|--------|-------------|
+| **Open note** | Open the event note in the current tab |
+| **Open in new tab** | Open the event note in a new tab |
+| **Delete event** | Delete the event note (with confirmation dialog) |
+
+### Source List (Sources Tab)
+
+Right-click on any source row:
+
+| Action | Description |
+|--------|-------------|
+| **Edit source** | Open the source editing modal |
+| **Extract events** | Extract events from this source |
+| **Open note** | Open the source note |
+
 ## Tips
 
 - **Quick tree generation**: Right-click a person → Generate tree → Generate Canvas tree
 - **Bulk property addition**: Select multiple files → right-click → Add essential properties
 - **Fast relationship editing**: Right-click a person → Add relationship → choose type
 - **Canvas updates**: After editing notes, right-click canvas → Regenerate canvas
+- **Quick event creation**: In People tab, right-click a person → Events → Create event for this person

@@ -39,8 +39,10 @@ Configure where Canvas Roots stores and looks for different note types.
 | **Maps folder** | `Canvas Roots/Places/Maps` | Folder for custom map configuration notes |
 | **Organizations folder** | `Canvas Roots/Organizations` | Default folder for organization notes |
 | **Sources folder** | `Canvas Roots/Sources` | Default folder for source notes |
+| **Events folder** | `Canvas Roots/Events` | Default folder for event notes |
 | **Schemas folder** | `Canvas Roots/Schemas` | Default folder for validation schemas |
 | **Canvases folder** | `Canvas Roots/Canvases` | Default folder for generated canvas files |
+| **Bases folder** | `Canvas Roots/Bases` | Folder for Obsidian Bases templates |
 | **Staging folder** | *(empty)* | Folder for import staging (isolated from main operations) |
 
 ### Staging Folder
@@ -378,6 +380,33 @@ Built-in systems include:
 | **Show source thumbnails** | On | Show media previews in gallery |
 | **Thumbnail size** | `medium` | Size of thumbnails |
 | **Show built-in source types** | On | Show census, vital record, etc. |
+
+---
+
+## Event Settings
+
+Settings for the Events & Timelines feature.
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| **Events folder** | `Canvas Roots/Events` | Default folder for new event notes |
+| **Show built-in event types** | On | Include 22 built-in event types |
+| **Custom event types** | *(empty)* | User-defined event types |
+
+### Event Types
+
+Canvas Roots includes 22 built-in event types across four categories:
+
+- **Core** (4): birth, death, marriage, divorce
+- **Extended** (9): burial, residence, occupation, education, military, immigration, baptism, confirmation, ordination
+- **Narrative** (8): anecdote, lore_event, plot_point, flashback, foreshadowing, backstory, climax, resolution
+
+Custom event types can be added with:
+- **ID**: Unique identifier (lowercase, no spaces)
+- **Name**: Display name
+- **Color**: Hex color for timeline displays
+- **Icon**: Lucide icon name
+- **Category**: `custom` (automatically assigned)
 
 ---
 

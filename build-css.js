@@ -48,6 +48,7 @@ const CONFIG = {
     'map-view.css',      // Leaflet map view (includes bundled Leaflet CSS)
     'leaflet-distortable.css', // Leaflet toolbar/distortable image plugins (vendored)
     'date-systems.css',  // Date systems card
+    'events.css',        // Events and timeline components
     'organizations.css', // Organizations tab
     'sources.css',       // Sources tab
     'preferences.css',   // Preferences tab

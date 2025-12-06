@@ -5,9 +5,10 @@
  * sources list, statistics, and source types.
  */
 
-import { setIcon, ToggleComponent, TFile, Notice, Modal, App } from 'obsidian';
+import { setIcon, ToggleComponent, TFile, Notice, Modal, App, Menu } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
+import { createLucideIcon } from '../../ui/lucide-icons';
 import { SourceService } from '../services/source-service';
 import { CreateSourceModal } from './create-source-modal';
 import { CustomSourceTypeModal } from './custom-source-type-modal';
@@ -19,6 +20,7 @@ import {
 	SOURCE_CATEGORY_NAMES
 } from '../types/source-types';
 import { TemplateSnippetsModal } from '../../ui/template-snippets-modal';
+import { ExtractEventsModal } from '../../events/ui/extract-events-modal';
 
 /**
  * Render the Sources tab content
@@ -186,6 +188,7 @@ function renderSourcesListCard(
 		headerRow.createEl('th', { text: 'Date' });
 		headerRow.createEl('th', { text: 'Repository' });
 		headerRow.createEl('th', { text: 'Confidence' });
+		headerRow.createEl('th', { text: '', cls: 'cr-source-th-actions' }); // Actions column
 
 		// Body
 		const tbody = table.createEl('tbody');
@@ -227,6 +230,64 @@ function renderSourceRow(
 		}
 	});
 
+	// Context menu for additional actions
+	row.addEventListener('contextmenu', (e) => {
+		e.preventDefault();
+		const menu = new Menu();
+
+		menu.addItem((item) => {
+			item
+				.setTitle('Edit source')
+				.setIcon('edit')
+				.onClick(() => {
+					const file = plugin.app.vault.getAbstractFileByPath(source.filePath);
+					if (file instanceof TFile) {
+						new CreateSourceModal(plugin.app, plugin, {
+							editFile: file,
+							editSource: source,
+							onSuccess: () => showTab('sources')
+						}).open();
+					}
+				});
+		});
+
+		menu.addItem((item) => {
+			item
+				.setTitle('Extract events')
+				.setIcon('calendar-plus')
+				.onClick(() => {
+					const eventService = plugin.getEventService();
+					const file = plugin.app.vault.getAbstractFileByPath(source.filePath);
+					if (eventService && file instanceof TFile) {
+						new ExtractEventsModal(
+							plugin.app,
+							eventService,
+							plugin.settings,
+							source,
+							file,
+							{
+								onComplete: () => showTab('events')
+							}
+						).open();
+					}
+				});
+		});
+
+		menu.addItem((item) => {
+			item
+				.setTitle('Open note')
+				.setIcon('file')
+				.onClick(() => {
+					const file = plugin.app.vault.getAbstractFileByPath(source.filePath);
+					if (file instanceof TFile) {
+						void plugin.app.workspace.getLeaf(false).openFile(file);
+					}
+				});
+		});
+
+		menu.showAtMouseEvent(e);
+	});
+
 	// Title cell
 	const titleCell = row.createEl('td', { cls: 'cr-source-cell-title' });
 	titleCell.createSpan({ text: source.title });
@@ -254,6 +315,33 @@ function renderSourceRow(
 	const confCell = row.createEl('td', { cls: 'cr-source-cell-confidence' });
 	const confBadge = confCell.createSpan({ cls: `cr-confidence-badge cr-confidence-${source.confidence}` });
 	confBadge.textContent = source.confidence;
+
+	// Actions cell with Extract Events button
+	const actionsCell = row.createEl('td', { cls: 'cr-source-cell-actions' });
+	const extractBtn = actionsCell.createEl('button', {
+		cls: 'crc-btn crc-btn--small crc-btn--ghost',
+		attr: { title: 'Extract events from this source' }
+	});
+	const calIcon = createLucideIcon('calendar-plus', 14);
+	extractBtn.appendChild(calIcon);
+
+	extractBtn.addEventListener('click', (e) => {
+		e.stopPropagation(); // Don't trigger row click
+		const eventService = plugin.getEventService();
+		const file = plugin.app.vault.getAbstractFileByPath(source.filePath);
+		if (eventService && file instanceof TFile) {
+			new ExtractEventsModal(
+				plugin.app,
+				eventService,
+				plugin.settings,
+				source,
+				file,
+				{
+					onComplete: () => showTab('events')
+				}
+			).open();
+		}
+	});
 }
 
 /**

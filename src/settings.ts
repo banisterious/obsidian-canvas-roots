@@ -5,6 +5,7 @@ import type { RelationshipTypeDefinition } from './relationships';
 import type { FictionalDateSystem } from './dates';
 import type { OrganizationTypeDefinition } from './organizations';
 import type { SourceTypeDefinition, CitationFormat } from './sources/types/source-types';
+import type { EventTypeDefinition } from './events/types/event-types';
 
 export interface RecentTreeInfo {
 	canvasPath: string;
@@ -159,6 +160,11 @@ export interface CanvasRootsSettings {
 	propertyAliases: Record<string, string>;
 	// Value aliases for custom property values
 	valueAliases: ValueAliasSettings;
+	// Event management settings
+	eventsFolder: string;
+	timelinesFolder: string;
+	customEventTypes: EventTypeDefinition[];
+	showBuiltInEventTypes: boolean;
 }
 
 /**
@@ -307,7 +313,12 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 		eventType: {},             // Maps user event type → canonical event type
 		gender: {},                // Maps user gender value → canonical gender
 		placeCategory: {}          // Maps user place category → canonical place category
-	}
+	},
+	// Event management settings
+	eventsFolder: 'Canvas Roots/Events',      // Default folder for event notes
+	timelinesFolder: 'Canvas Roots/Timelines', // Default folder for timeline notes
+	customEventTypes: [],                      // User-defined event types (built-ins are always available)
+	showBuiltInEventTypes: true                // Whether to show built-in event types in UI
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {
