@@ -25,6 +25,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Events Tab (Control Center)](#events-tab-control-center) ✅ v0.9.2
   - [Property Aliases](#property-aliases-) ✅ v0.9.3
   - [Value Aliases](#value-aliases) ✅ v0.9.4
+  - [Flexible Note Type Detection](#flexible-note-type-detection)
   - [Flatten Nested Properties](#flatten-nested-properties)
   - [Note Creation from Images](#note-creation-from-images)
   - [Person Note Templates](#person-note-templates)
@@ -58,8 +59,9 @@ The following priority order guides future development:
 | 14 | [Chronological Story Mapping](#chronological-story-mapping) | ✅ Complete (v0.10.0) |
 | 15 | [GEDCOM Import v2](#gedcom-import-v2) | Planned |
 | 16 | [Data Enhancement Pass](#data-enhancement-pass) | Planned |
-| 17 | [Print & PDF Export](#print--pdf-export) | Planned |
-| 18 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
+| 17 | [Flexible Note Type Detection](#flexible-note-type-detection) | Planned |
+| 18 | [Print & PDF Export](#print--pdf-export) | Planned |
+| 19 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
 
 ---
 
@@ -760,6 +762,61 @@ GEDCOM File
 **Use Case:** Worldbuilders with elaborate taxonomies who don't want to retrofit existing notes to match Canvas Roots' expected values.
 
 **Status:** ✅ Complete in v0.9.4.
+
+---
+
+### Flexible Note Type Detection
+
+**Summary:** Support multiple methods for identifying Canvas Roots note types (person, place, event, source, etc.), avoiding conflicts with other plugins that use the `type` property and enabling tag-based workflows.
+
+**Problem:**
+- Canvas Roots uses `type: person` to identify note types
+- Other plugins (e.g., timeline plugins) use `type` for different purposes (e.g., rendering format)
+- Some users prefer tags (`#person`) over frontmatter properties for filtering
+
+**Planned Features:**
+
+**New Default Property:**
+- Change default from `type` to `cr_type` (namespaced to avoid conflicts)
+- Existing vaults using `type` continue to work (backwards compatibility)
+
+**Detection Priority:**
+1. `cr_type` property (new canonical)
+2. `type` property (legacy, for backwards compatibility)
+3. Tags (optional, user-configured)
+4. Property alias (if user configured a custom property name)
+
+**Tag-Based Detection:**
+- Option to detect note types from tags instead of properties
+- Configurable tag patterns: `#person`, `#cr/person`, or custom prefix
+- Works alongside property-based detection
+
+**Settings UI:**
+```
+Note Type Detection
+├── Type property name: [cr_type ▼]
+├── ☑ Also check legacy 'type' property
+├── ☐ Detect from tags
+│   └── Tag prefix: [cr/ ▼]
+└── Property aliases: [Configure...]
+```
+
+**Migration Path:**
+
+| User Scenario | Behavior |
+|---------------|----------|
+| New users | Notes created with `cr_type` |
+| Existing CR users | `type` still works, can optionally migrate |
+| Users with conflicts | Switch to `cr_type` or tags |
+| Tag-based workflows | Enable tag detection |
+
+**Integration Points:**
+- GEDCOM/CSV import uses configured property name
+- Note creation modals use configured property name
+- Bases templates reference configured property name
+- Schema validation supports all detection methods
+
+**Status:** Planned.
 
 ---
 
