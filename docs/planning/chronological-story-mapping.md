@@ -530,6 +530,70 @@ src/events/
 
 ---
 
+## Design Decisions
+
+### Sort Order Algorithm
+
+**Decision: Float-based interpolation with on-demand recomputation**
+
+The `sort_order` property uses floating-point numbers to enable flexible interpolation:
+
+```typescript
+// Dated events: year.mmdd format (or epoch for sub-day precision)
+sort_order: 1850.0315      // March 15, 1850
+
+// Undated events: interpolated between neighbors
+sort_order: 1851.5         // Midpoint between dated neighbors
+sort_order: 1851.25        // Can subdivide further without recomputing others
+```
+
+**Rationale:**
+- Floats allow inserting events between any two existing values without cascading updates
+- Simple to understand and debug
+- Internal implementation detail - can evolve without affecting user data
+
+**Recomputation:**
+- **On-demand only**: "Recompute sort order" command in Timeline tab
+- **Not auto on save**: Avoids unexpected changes, gives user control
+- **Cycle detection**: Warn user but don't block; exclude cyclic events from sort
+
+**Future flexibility:**
+- Algorithm is internal; interpretation can change
+- `sort_order` is just a number; meaning derived at runtime
+
+### Timeline Note Schema
+
+**Decision: Backlinks-first, explicit list deferred**
+
+Timeline notes use backlink discovery as the primary mechanism:
+
+```yaml
+type: timeline
+cr_id: "20251206123456"
+title: "Book 1 Timeline"
+description: "Main narrative arc"
+universe: "My Fantasy World"
+# Events discovered via backlinks (events have `timeline: [[This Note]]`)
+```
+
+**Rationale:**
+- Single source of truth (on event notes via `timeline` field)
+- Less maintenance burden for users
+- Matches Obsidian mental model (links create relationships)
+- Events work without timeline notes (optional grouping)
+
+**Deferred to future phase:**
+- Explicit `events` array for manual ordering (if users request)
+- Additional fields: `era`, `calendar`, `date_range`
+
+**Event membership:**
+| Method | Status |
+|--------|--------|
+| Backlinks (`timeline` field on events) | Phase 1 |
+| Explicit `events` array | Future (if needed) |
+
+---
+
 ## Open Questions
 
 1. **Event deduplication**: How to handle the same event documented by multiple sources? Should events merge or remain separate?
