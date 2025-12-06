@@ -20,7 +20,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Research & Analysis Tools](#research--analysis-tools)
   - [Print & PDF Export](#print--pdf-export)
 - [Future Considerations](#future-considerations)
-  - [Events Tab (Control Center)](#events-tab-control-center) ✅
+  - [Events Tab (Control Center)](#events-tab-control-center) ✅ v0.9.2
   - [Property Aliases](#property-aliases)
   - [Person Note Templates](#person-note-templates)
   - [Accessibility](#accessibility)
@@ -579,9 +579,9 @@ is_canonical: true
 
 ## Future Considerations
 
-### Events Tab (Control Center) ✅
+### Events Tab (Control Center)
 
-> **Complete in v0.9.2.** See [events-tab.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/events-tab.md) for implementation details.
+> **✅ Complete in v0.9.2.** See [events-tab.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/events-tab.md) for implementation details.
 
 **Summary:** Dedicated Events tab in the Control Center improves discoverability of Fictional Date Systems and provides foundation for future Chronological Story Mapping features.
 
