@@ -24,6 +24,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Property Aliases](#property-aliases-) ✅ v0.9.3
   - [Value Aliases](#value-aliases) ✅ v0.9.4
   - [Flatten Nested Properties](#flatten-nested-properties)
+  - [Note Creation from Images](#note-creation-from-images)
   - [Person Note Templates](#person-note-templates)
   - [Accessibility](#accessibility)
   - [Obsidian Publish Support](#obsidian-publish-support)
@@ -671,6 +672,29 @@ coordinates_long: -97.3327459
 ```
 
 **Use Case:** Users who imported data with nested YAML structures, or who have place notes with `coordinates: { lat, long }` format, can easily flatten them for better Obsidian compatibility.
+
+**Status:** Planned.
+
+---
+
+### Note Creation from Images
+
+**Summary:** Context menu actions to quickly create map or source notes from image files, pre-populating the note with a link to the image.
+
+**Context Menu Actions:**
+- **Add map note from map image** - Right-click an image file → Creates a new map note with the image embedded as the map background
+- **Add source note from source image** - Right-click an image file → Creates a new source note with the image linked as the source media
+
+**Workflow:**
+1. User right-clicks an image file (e.g., `old-map-1850.jpg` or `birth-certificate.png`)
+2. Selects the appropriate action from context menu
+3. Modal opens with name pre-filled from filename
+4. User completes remaining fields
+5. Note is created with proper frontmatter and image link
+
+**Use Case:** Researchers who have scanned documents or historical maps can quickly create properly structured notes without manually copying image paths.
+
+**Future Enhancement:** Smart filename parsing to extract metadata (year, location, document type) from structured filenames like `1930-US-Census-VT-Newport-Britch.jpg`.
 
 **Status:** Planned.
 
