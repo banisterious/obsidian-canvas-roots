@@ -23,7 +23,7 @@ Support value aliases for three field types:
 | Field Type | Canonical Values | Example User Values |
 |------------|------------------|---------------------|
 | **Event type** | `birth`, `death`, `marriage`, `burial`, `residence`, `occupation`, `education`, `military`, `immigration`, `baptism`, `confirmation`, `ordination`, `custom` | `nameday`, `coronation`, `exile`, `knighting` |
-| **Gender** | `male`, `female`, `M`, `F` (+ case variants) | `masc`, `fem`, `nonbinary`, `unknown` |
+| **Gender** | `male`, `female`, `nonbinary`, `unknown` | `masc`, `fem`, `m`, `f`, `nb`, `enby`, `other` |
 | **Place category** | `real`, `historical`, `disputed`, `legendary`, `mythological`, `fictional` | `canon`, `fanon`, `alternate`, `apocryphal` |
 
 ### Future Scope
@@ -72,7 +72,7 @@ export const CANONICAL_EVENT_TYPES = [
   'immigration', 'baptism', 'confirmation', 'ordination', 'custom'
 ] as const;
 
-export const CANONICAL_GENDERS = ['male', 'female'] as const;
+export const CANONICAL_GENDERS = ['male', 'female', 'nonbinary', 'unknown'] as const;
 
 export const CANONICAL_PLACE_CATEGORIES = [
   'real', 'historical', 'disputed', 'legendary', 'mythological', 'fictional'
