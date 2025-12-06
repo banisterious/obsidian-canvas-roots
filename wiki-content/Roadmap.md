@@ -22,7 +22,7 @@ This document outlines planned features for Canvas Roots. For release history an
 - [Future Considerations](#future-considerations)
   - [Events Tab (Control Center)](#events-tab-control-center) ✅ v0.9.2
   - [Property Aliases](#property-aliases) ✅ v0.9.3
-  - [Value Aliases](#value-aliases)
+  - [Value Aliases](#value-aliases) ✅ v0.9.4
   - [Person Note Templates](#person-note-templates)
   - [Accessibility](#accessibility)
   - [Obsidian Publish Support](#obsidian-publish-support)
@@ -50,7 +50,7 @@ The following priority order guides future development:
 | 10 | [Style Settings Integration](#style-settings-integration) | ✅ Complete (v0.9.1) |
 | 11 | [Events Tab (Control Center)](#events-tab-control-center) | ✅ Complete (v0.9.2) |
 | 12 | [Property Aliases](#property-aliases) | ✅ Complete (v0.9.3) |
-| 13 | [Value Aliases](#value-aliases) | Planned |
+| 13 | [Value Aliases](#value-aliases) | ✅ Complete (v0.9.4) |
 | 14 | [Chronological Story Mapping](#chronological-story-mapping) | Planned |
 | 15 | [Print & PDF Export](#print--pdf-export) | Planned |
 | 16 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
@@ -640,7 +640,7 @@ is_canonical: true
 
 **Use Case:** Worldbuilders with elaborate taxonomies who don't want to retrofit existing notes to match Canvas Roots' expected values.
 
-**Status:** Planning complete, awaiting user feedback on scope.
+**Status:** ✅ Complete in v0.9.4.
 
 ---
 

@@ -7,6 +7,7 @@
 import { TFile } from 'obsidian';
 import type CanvasRootsPlugin from '../../main';
 import { getLogger } from '../core/logging';
+import { ValueAliasService, CANONICAL_EVENT_TYPES } from '../core/value-alias-service';
 import type {
 	MapData,
 	MapMarker,
@@ -287,26 +288,30 @@ export class MapDataService {
 		if (!Array.isArray(events)) return undefined;
 
 		const parsed: LifeEvent[] = [];
+		const valueAliasService = new ValueAliasService(this.plugin);
 
 		for (const event of events) {
 			if (typeof event !== 'object' || event === null) continue;
 
 			const eventObj = event as Record<string, unknown>;
-			const eventType = eventObj.event_type as string;
+			const rawEventType = eventObj.event_type as string;
 			const place = eventObj.place as string;
 
 			// Must have event_type and place
-			if (!eventType || !place) continue;
+			if (!rawEventType || !place) continue;
 
-			// Validate event_type is a known type
+			// Resolve event type using value aliases (unknown types become 'custom')
+			const resolvedEventType = valueAliasService.resolve('eventType', rawEventType) as EventType;
+
+			// Valid types for the events array (excluding birth/death/marriage which have dedicated fields)
 			const validTypes: EventType[] = [
 				'residence', 'occupation', 'education', 'military',
 				'immigration', 'baptism', 'confirmation', 'ordination', 'custom'
 			];
-			if (!validTypes.includes(eventType as EventType)) continue;
+			if (!validTypes.includes(resolvedEventType)) continue;
 
 			parsed.push({
-				event_type: eventType as EventType,
+				event_type: resolvedEventType,
 				place: place,
 				date_from: eventObj.date_from as string | undefined,
 				date_to: eventObj.date_to as string | undefined,

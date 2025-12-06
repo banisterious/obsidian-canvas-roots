@@ -4524,6 +4524,7 @@ export class ControlCenterModal extends Modal {
 		container.empty();
 
 		const placeService = new PlaceGraphService(this.app);
+		placeService.setValueAliases(this.plugin.settings.valueAliases);
 		placeService.reloadCache();
 
 		const stats = placeService.calculateStatistics();
@@ -4649,6 +4650,7 @@ export class ControlCenterModal extends Modal {
 		container.empty();
 
 		const placeService = new PlaceGraphService(this.app);
+		placeService.setValueAliases(this.plugin.settings.valueAliases);
 		placeService.reloadCache();
 
 		const places = placeService.getAllPlaces();
@@ -4776,6 +4778,7 @@ export class ControlCenterModal extends Modal {
 		container.empty();
 
 		const placeService = new PlaceGraphService(this.app);
+		placeService.setValueAliases(this.plugin.settings.valueAliases);
 		placeService.reloadCache();
 
 		const references = placeService.getReferencedPlaces();
@@ -4966,6 +4969,7 @@ export class ControlCenterModal extends Modal {
 		container.empty();
 
 		const placeService = new PlaceGraphService(this.app);
+		placeService.setValueAliases(this.plugin.settings.valueAliases);
 		placeService.reloadCache();
 
 		const stats = placeService.calculateStatistics();
@@ -5035,6 +5039,7 @@ export class ControlCenterModal extends Modal {
 
 		// Quick stats
 		const placeService = new PlaceGraphService(this.app);
+		placeService.setValueAliases(this.plugin.settings.valueAliases);
 		placeService.reloadCache();
 		const stats = placeService.calculateStatistics();
 
@@ -5874,6 +5879,7 @@ export class ControlCenterModal extends Modal {
 	 */
 	private showCreateMissingPlacesModal(): void {
 		const placeService = new PlaceGraphService(this.app);
+		placeService.setValueAliases(this.plugin.settings.valueAliases);
 		placeService.reloadCache();
 
 		const references = placeService.getReferencedPlaces();
@@ -5932,6 +5938,7 @@ export class ControlCenterModal extends Modal {
 	 */
 	private showBuildHierarchyModal(): void {
 		const placeService = new PlaceGraphService(this.app);
+		placeService.setValueAliases(this.plugin.settings.valueAliases);
 		placeService.reloadCache();
 
 		const allPlaces = placeService.getAllPlaces();
@@ -8341,6 +8348,7 @@ export class ControlCenterModal extends Modal {
 			const graphService = new FamilyGraphService(this.app);
 			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
 			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
+			graphService.setValueAliases(this.plugin.settings.valueAliases);
 			graphService.reloadCache();
 			const allPeople = graphService.getAllPeople();
 
@@ -8794,6 +8802,7 @@ export class ControlCenterModal extends Modal {
 			const graphService = new FamilyGraphService(this.app);
 			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
 			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
+			graphService.setValueAliases(this.plugin.settings.valueAliases);
 			graphService.reloadCache();
 			const allPeople = graphService.getAllPeople();
 
@@ -9322,6 +9331,7 @@ export class ControlCenterModal extends Modal {
 			const graphService = new FamilyGraphService(this.app);
 			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
 			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
+			graphService.setValueAliases(this.plugin.settings.valueAliases);
 			graphService.reloadCache();
 			const allPeople = graphService.getAllPeople();
 
@@ -9719,6 +9729,7 @@ export class ControlCenterModal extends Modal {
 			const graphService = new FamilyGraphService(this.app);
 			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
 			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
+			graphService.setValueAliases(this.plugin.settings.valueAliases);
 			graphService.reloadCache();
 			const allPeople = graphService.getAllPeople();
 
@@ -11352,6 +11363,7 @@ export class ControlCenterModal extends Modal {
 		const folderFilter = new FolderFilterService(this.plugin.settings);
 		familyGraph.setFolderFilter(folderFilter);
 		familyGraph.setPropertyAliases(this.plugin.settings.propertyAliases);
+		familyGraph.setValueAliases(this.plugin.settings.valueAliases);
 
 		const dataQualityService = new DataQualityService(
 			this.app,
@@ -11627,6 +11639,7 @@ export class ControlCenterModal extends Modal {
 		const folderFilter = new FolderFilterService(this.plugin.settings);
 		familyGraph.setFolderFilter(folderFilter);
 		familyGraph.setPropertyAliases(this.plugin.settings.propertyAliases);
+		familyGraph.setValueAliases(this.plugin.settings.valueAliases);
 
 		const dataQualityService = new DataQualityService(
 			this.app,
@@ -11661,6 +11674,7 @@ export class ControlCenterModal extends Modal {
 		const folderFilter = new FolderFilterService(this.plugin.settings);
 		familyGraph.setFolderFilter(folderFilter);
 		familyGraph.setPropertyAliases(this.plugin.settings.propertyAliases);
+		familyGraph.setValueAliases(this.plugin.settings.valueAliases);
 
 		const dataQualityService = new DataQualityService(
 			this.app,

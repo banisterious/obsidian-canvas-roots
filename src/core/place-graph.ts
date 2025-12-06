@@ -21,6 +21,8 @@ import {
 	supportsRealCoordinates
 } from '../models/place';
 import { FolderFilterService } from './folder-filter';
+import type { ValueAliasSettings } from '../settings';
+import { CANONICAL_PLACE_CATEGORIES, type CanonicalPlaceCategory } from './value-alias-service';
 
 const logger = getLogger('PlaceGraph');
 
@@ -32,6 +34,7 @@ export class PlaceGraphService {
 	private placeCache: Map<string, PlaceNode>;
 	private placeReferenceCache: PlaceReference[];
 	private folderFilter: FolderFilterService | null = null;
+	private valueAliases: ValueAliasSettings = { eventType: {}, gender: {}, placeCategory: {} };
 
 	constructor(app: App) {
 		this.app = app;
@@ -44,6 +47,41 @@ export class PlaceGraphService {
 	 */
 	setFolderFilter(folderFilter: FolderFilterService): void {
 		this.folderFilter = folderFilter;
+	}
+
+	/**
+	 * Set value aliases for resolving custom property values to canonical values
+	 */
+	setValueAliases(aliases: ValueAliasSettings): void {
+		this.valueAliases = aliases;
+	}
+
+	/**
+	 * Resolve a place category value to canonical form using value aliases.
+	 * Resolution order:
+	 * 1. If value is already canonical, return it
+	 * 2. If value has an alias configured, return the canonical value
+	 * 3. Otherwise return the default place category ('real')
+	 */
+	private resolvePlaceCategory(userValue: string | undefined): PlaceCategory {
+		if (!userValue) return DEFAULT_PLACE_CATEGORY;
+
+		const normalized = userValue.toLowerCase().trim();
+
+		// Check if already canonical (case-insensitive)
+		const canonicalMatch = CANONICAL_PLACE_CATEGORIES.find(v => v.toLowerCase() === normalized);
+		if (canonicalMatch) {
+			return canonicalMatch as PlaceCategory;
+		}
+
+		// Check value aliases
+		const aliasedValue = this.valueAliases.placeCategory[normalized];
+		if (aliasedValue && CANONICAL_PLACE_CATEGORIES.includes(aliasedValue as CanonicalPlaceCategory)) {
+			return aliasedValue as PlaceCategory;
+		}
+
+		// Unknown category - return default
+		return DEFAULT_PLACE_CATEGORY;
 	}
 
 	/**
@@ -917,8 +955,8 @@ export class PlaceGraphService {
 		// Must have cr_id
 		if (!fm.cr_id) return null;
 
-		// Extract category (default to 'real')
-		const category: PlaceCategory = fm.place_category || DEFAULT_PLACE_CATEGORY;
+		// Extract category using value alias resolution (default to 'real')
+		const category: PlaceCategory = this.resolvePlaceCategory(fm.place_category);
 
 		// Extract name (from frontmatter or filename)
 		const name = fm.name || file.basename;

@@ -102,6 +102,80 @@ When you create a new People base template (Control Center → Advanced → Crea
 
 ---
 
+## Value Aliases
+
+In addition to property names, you can also create **value aliases** to map custom property values to Canvas Roots' canonical values. This is useful when your vault uses different terminology for enumerated fields.
+
+### Configuring Value Aliases
+
+Go to **Control Center → Preferences → Aliases → Property values** to add, edit, or remove value aliases.
+
+### How Value Aliases Work
+
+| Scenario | Behavior |
+|----------|----------|
+| **Reading notes** | Canvas Roots checks if the value is canonical first, then checks for an alias |
+| **Unknown event types** | Unrecognized event types are treated as `custom` |
+| **Unknown gender/place category** | Unrecognized values are passed through unchanged |
+
+### Supported Fields
+
+#### Event Types
+
+Map custom event type values to canonical types:
+
+| Canonical Value | Description | Example Aliases |
+|-----------------|-------------|-----------------|
+| `birth` | Birth of a person | `nameday`, `born` |
+| `death` | Death of a person | `passing`, `died` |
+| `marriage` | Marriage ceremony | `wedding`, `union` |
+| `burial` | Burial or interment | `interment`, `funeral` |
+| `residence` | Change of residence | `moved`, `relocation` |
+| `occupation` | Employment change | `job`, `career` |
+| `education` | Educational milestone | `school`, `graduated` |
+| `military` | Military service | `service`, `enlisted` |
+| `immigration` | Immigration or emigration | `moved_abroad`, `emigration` |
+| `baptism` | Baptism ceremony | `christening` |
+| `confirmation` | Religious confirmation | — |
+| `ordination` | Religious ordination | — |
+| `custom` | Custom/other event type | — |
+
+#### Gender
+
+Map custom gender values to canonical values:
+
+| Canonical Value | Description | Example Aliases |
+|-----------------|-------------|-----------------|
+| `male` | Male | `m`, `masc`, `man` |
+| `female` | Female | `f`, `fem`, `woman` |
+| `nonbinary` | Non-binary | `nb`, `enby`, `other` |
+| `unknown` | Unknown | `?`, `unspecified` |
+
+> **Note:** Canvas Roots also recognizes legacy values `M` and `F` for compatibility with existing vaults.
+
+#### Place Categories
+
+Map custom place category values to canonical categories:
+
+| Canonical Value | Description | Example Aliases |
+|-----------------|-------------|-----------------|
+| `real` | Real-world location | `actual`, `existing` |
+| `historical` | Historical (no longer exists) | `former`, `past` |
+| `disputed` | Disputed territory | `contested` |
+| `legendary` | Legendary location | `mythical` |
+| `mythological` | Mythological location | `myth` |
+| `fictional` | Fictional location | `made_up`, `fantasy`, `canon` |
+
+### Example
+
+If your vault uses `nameday` instead of `birth` for event types:
+
+1. Add a value alias: `nameday` → `birth` (Field: Event type)
+2. Canvas Roots will now treat `event_type: nameday` as a birth event
+3. Birth markers will appear on maps for events with `nameday` type
+
+---
+
 ## Layout Settings
 
 Control the dimensions and spacing of nodes in generated family tree canvases. These settings are also available in **Control Center → Canvas Settings** for quick access.

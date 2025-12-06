@@ -806,6 +806,52 @@ All person note properties can be aliased:
 
 ---
 
+## Value Aliases
+
+In addition to property name aliases, you can create **value aliases** to map custom property **values** to Canvas Roots' canonical values. This is useful when your vault uses different terminology for enumerated fields like event types, gender, or place categories.
+
+### Configuring Value Aliases
+
+Go to **Control Center → Preferences → Aliases** to add, edit, or remove value aliases. The Aliases card has two sections:
+- **Property names**: Maps your property names to Canvas Roots fields (e.g., `birthdate` → `born`)
+- **Property values**: Maps your values to canonical values (e.g., `nameday` → `birth`)
+
+### Supported Fields
+
+| Field | Canonical Values |
+|-------|------------------|
+| **Event type** | `birth`, `death`, `marriage`, `burial`, `residence`, `occupation`, `education`, `military`, `immigration`, `baptism`, `confirmation`, `ordination`, `custom` |
+| **Gender** | `male`, `female`, `nonbinary`, `unknown` |
+| **Place category** | `real`, `historical`, `disputed`, `legendary`, `mythological`, `fictional` |
+
+### How Value Aliases Work
+
+| Scenario | Behavior |
+|----------|----------|
+| **Reading notes** | Canvas Roots checks for canonical values first, then resolves aliases |
+| **Unknown event types** | Resolve to `custom` (graceful degradation) |
+| **Unknown gender/place category** | Pass through unchanged (may trigger validation warning) |
+| **Creating/importing notes** | Uses your aliased values when writing |
+
+### Example
+
+If your worldbuilding vault uses `nameday` instead of `birth` for event types:
+
+1. Add a value alias: `nameday` → `birth` (Event type)
+2. Canvas Roots will recognize `event_type: nameday` as a birth event
+3. Events with `nameday` will appear with the birth icon on maps and timelines
+4. When importing GEDCOM files, birth events will be written as `nameday`
+
+### Use Cases
+
+| Use Case | Example Aliases |
+|----------|-----------------|
+| **Worldbuilding** | `nameday` → `birth`, `coronation` → `custom` |
+| **Gender abbreviations** | `m` → `male`, `f` → `female`, `nb` → `nonbinary` |
+| **Fantasy settings** | `canon` → `fictional`, `apocryphal` → `disputed` |
+
+---
+
 ## Essential Properties
 
 When using "Add essential properties" in Data Quality tools, these properties are added if missing:

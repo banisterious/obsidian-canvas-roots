@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.9.3-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.9.4-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, and world-builders.
 
@@ -114,6 +114,7 @@
 | Feature | Description |
 |---------|-------------|
 | **Property Aliases** | Map custom property names to Canvas Roots fields without renaming frontmatter |
+| **Value Aliases** | Map custom property values (event types, gender, place categories) to Canvas Roots canonical values |
 | **Obsidian Bases** | Ready-to-use Base templates: People (22 views), Places (14 views), Organizations (17 views); respects property aliases |
 | **Style Settings** | Customize colors via [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin |
 | **Context Menu Actions** | Right-click person notes, folders, and canvases for quick actions |
@@ -130,7 +131,6 @@ See [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap
 
 | Feature | Description |
 |---------|-------------|
-| [**Value Aliases**](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap#value-aliases) | Map custom property values (event types, gender, place categories) to Canvas Roots fields |
 | [**Chronological Story Mapping**](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap#chronological-story-mapping) | Event-based timeline visualization with fictional date system integration |
 | [**Print & PDF Export**](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap#print--pdf-export) | Generate print-ready pedigree charts, descendant charts, and family group sheets |
 | [**Transcript Nodes & Oral History**](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap#transcript-nodes--quotable-facts) | Timestamped transcript citations and interview subject graphs |

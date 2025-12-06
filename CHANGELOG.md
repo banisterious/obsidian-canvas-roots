@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.4] - 2025-12-05
+
+Value Aliases release: Use custom property values without editing your notes.
+
+### Added
+
+- **Value Aliases**: Map custom property values to Canvas Roots canonical values
+  - Configure aliases in Control Center → Preferences → Aliases
+  - Supports three field types: event types, gender, and place categories
+  - Event types: `birth`, `death`, `marriage`, `burial`, `residence`, `occupation`, `education`, `military`, `immigration`, `baptism`, `confirmation`, `ordination`, `custom`
+  - Gender: `male`, `female`, `nonbinary`, `unknown`
+  - Place categories: `real`, `historical`, `disputed`, `legendary`, `mythological`, `fictional`
+  - Graceful fallback: unknown event types resolve to `custom`
+  - Read integration: canonical values take precedence, then aliases are checked
+  - Write integration: imports create notes with aliased values
+
+### Changed
+
+- Renamed "Property aliases" card to "Aliases" with two sections: property names and property values
+- Unified alias configuration in a single card for better discoverability
+
+### Documentation
+
+- Updated Settings and Configuration wiki page with Value Aliases section
+- Updated Frontmatter Reference wiki page with canonical values tables
+- Updated Roadmap to mark Value Aliases as complete
+
+---
+
 ## [0.9.3] - 2025-12-05
 
 Property Aliases release: Use custom property names without renaming your frontmatter.

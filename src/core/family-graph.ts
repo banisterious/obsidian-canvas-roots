@@ -11,7 +11,8 @@ import { SpouseRelationship } from '../models/person';
 import { PersonFrontmatter } from '../types/frontmatter';
 import { FolderFilterService } from './folder-filter';
 import { PropertyAliasService, CANONICAL_PERSON_PROPERTIES, CanonicalPersonProperty } from './property-alias-service';
-import type { CanvasRootsSettings } from '../settings';
+import type { CanvasRootsSettings, ValueAliasSettings } from '../settings';
+import { CANONICAL_GENDERS, type CanonicalGender } from './value-alias-service';
 
 const logger = getLogger('FamilyGraph');
 
@@ -159,6 +160,7 @@ export class FamilyGraphService {
 	private personCache: Map<string, PersonNode>;
 	private folderFilter: FolderFilterService | null = null;
 	private propertyAliases: Record<string, string> = {};
+	private valueAliases: ValueAliasSettings = { eventType: {}, gender: {}, placeCategory: {} };
 
 	constructor(app: App) {
 		this.app = app;
@@ -180,6 +182,13 @@ export class FamilyGraphService {
 	}
 
 	/**
+	 * Set value aliases for resolving custom property values to canonical values
+	 */
+	setValueAliases(aliases: ValueAliasSettings): void {
+		this.valueAliases = aliases;
+	}
+
+	/**
 	 * Resolve a frontmatter property value, checking aliases if canonical property not found
 	 * Canonical property takes precedence over aliased property
 	 */
@@ -197,6 +206,34 @@ export class FamilyGraphService {
 		}
 
 		return undefined;
+	}
+
+	/**
+	 * Resolve a gender value to canonical form using value aliases.
+	 * Resolution order:
+	 * 1. If value is already canonical, return it
+	 * 2. If value has an alias configured, return the canonical value
+	 * 3. Otherwise pass through unchanged
+	 */
+	private resolveGender(userValue: string | undefined): string | undefined {
+		if (!userValue) return undefined;
+
+		const normalized = userValue.toLowerCase().trim();
+
+		// Check if already canonical (case-insensitive)
+		const canonicalMatch = CANONICAL_GENDERS.find(v => v.toLowerCase() === normalized);
+		if (canonicalMatch) {
+			return canonicalMatch;
+		}
+
+		// Check value aliases
+		const aliasedValue = this.valueAliases.gender[normalized];
+		if (aliasedValue) {
+			return aliasedValue;
+		}
+
+		// Pass through unchanged (may be a legacy value like 'M' or 'F')
+		return userValue;
 	}
 
 	/**
@@ -958,7 +995,8 @@ export class FamilyGraphService {
 		const deathPlace = this.resolveProperty<string>(fm, 'death_place');
 		const burialPlace = this.resolveProperty<string>(fm, 'burial_place');
 		const occupation = this.resolveProperty<string>(fm, 'occupation');
-		const sex = this.resolveProperty<string>(fm, 'gender') || this.resolveProperty<string>(fm, 'sex');
+		const rawSex = this.resolveProperty<string>(fm, 'gender') || this.resolveProperty<string>(fm, 'sex');
+		const sex = this.resolveGender(rawSex);
 		const collectionName = this.resolveProperty<string>(fm, 'group_name');
 		const collection = this.resolveProperty<string>(fm, 'collection');
 

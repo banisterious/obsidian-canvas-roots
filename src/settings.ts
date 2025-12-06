@@ -155,6 +155,18 @@ export interface CanvasRootsSettings {
 	showResearchGapsInStatus: boolean;
 	// Property aliases for custom frontmatter names
 	propertyAliases: Record<string, string>;
+	// Value aliases for custom property values
+	valueAliases: ValueAliasSettings;
+}
+
+/**
+ * Value alias settings structure
+ * Maps user values to canonical values for each supported field type
+ */
+export interface ValueAliasSettings {
+	eventType: Record<string, string>;      // userValue → canonicalEventType
+	gender: Record<string, string>;         // userValue → canonicalGender
+	placeCategory: Record<string, string>;  // userValue → canonicalPlaceCategory
 }
 
 /**
@@ -285,7 +297,13 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	factCoverageThreshold: 6,      // Number of facts for 100% coverage calculation
 	showResearchGapsInStatus: true, // Show research gap summary when tracking is enabled
 	// Property aliases for custom frontmatter names
-	propertyAliases: {}            // Maps user property name → Canvas Roots canonical name
+	propertyAliases: {},           // Maps user property name → Canvas Roots canonical name
+	// Value aliases for custom property values
+	valueAliases: {
+		eventType: {},             // Maps user event type → canonical event type
+		gender: {},                // Maps user gender value → canonical gender
+		placeCategory: {}          // Maps user place category → canonical place category
+	}
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {

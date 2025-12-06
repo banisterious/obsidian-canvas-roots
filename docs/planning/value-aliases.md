@@ -392,4 +392,15 @@ Consolidate property and value aliases into one card with sections:
 
 ## Status
 
-**📋 Planning Complete - Ready for Implementation**
+**✅ Implementation Complete**
+
+Implemented in v0.9.4:
+- Created `ValueAliasService` in `src/core/value-alias-service.ts`
+- Added `valueAliases` settings schema to `src/settings.ts`
+- UI: Renamed "Property aliases" card to "Aliases" with two sections (property names + property values)
+- Created `ValueAliasModal` for adding/editing value aliases
+- Integrated value alias resolution for:
+  - Event types in `map-data-service.ts`
+  - Gender in `family-graph.ts`
+  - Place categories in `place-graph.ts`
+- Updated wiki documentation in `Settings-And-Configuration.md`
