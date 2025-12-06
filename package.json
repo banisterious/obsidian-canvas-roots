@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-canvas-roots",
-	"version": "0.9.3",
+	"version": "0.9.4",
 	"description": "Obsidian plugin for creating family trees in Canvas using specialized genealogical layout algorithms",
 	"main": "main.js",
 	"scripts": {
