@@ -23,10 +23,31 @@ Value Aliases release: Use custom property values without editing your notes.
   - Read integration: canonical values take precedence, then aliases are checked
   - Write integration: imports create notes with aliased values
 
+- **Bases Folder Setting**: Configure where Obsidian Bases files are created
+  - New setting in Plugin Settings → Folder Locations and Preferences → Folder Locations
+  - Default: `Canvas Roots/Bases`
+  - Leave empty to create bases in the context menu folder
+
+- **Nested Property Detection**: Data Quality now detects non-flat frontmatter structures
+  - Warns about nested YAML properties that may cause compatibility issues
+  - Shows nested keys for each detected property
+  - Prepares for future "Flatten" action
+
 ### Changed
 
 - Renamed "Property aliases" card to "Aliases" with two sections: property names and property values
 - Unified alias configuration in a single card for better discoverability
+- **Gender Standardization**: Person modal now uses "Gender" terminology
+  - Changed from "Sex" to "Gender" with updated description
+  - Added "Non-binary" option alongside Male, Female, and Unknown
+  - Non-binary displays as yellow in canvas and tree preview
+  - Updated data quality validation to accept all canonical gender values
+
+### Fixed
+
+- Fixed `addClass()` calls in create place modal (was passing incorrect arguments)
+- Place notes now write flat coordinate properties (`coordinates_lat`, `coordinates_long`) instead of nested objects
+- Place graph reads both flat and nested coordinate formats for backwards compatibility
 
 ### Documentation
 
