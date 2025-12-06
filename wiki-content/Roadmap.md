@@ -26,6 +26,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Property Aliases](#property-aliases-) ✅ v0.9.3
   - [Value Aliases](#value-aliases) ✅ v0.9.4
   - [Flexible Note Type Detection](#flexible-note-type-detection)
+  - [Sensitive Field Redaction](#sensitive-field-redaction)
   - [Flatten Nested Properties](#flatten-nested-properties)
   - [Note Creation from Images](#note-creation-from-images)
   - [Person Note Templates](#person-note-templates)
@@ -598,7 +599,7 @@ person: "[[Person A]]"
 
 **Person Attributes (stored as properties, not events):**
 - `DSCR` → `physicalDescription`
-- `IDNO` → `identityNumber`
+- `IDNO` → `identityNumber` ⚠️
 - `NATI` → `nationality`
 - `RELI` → `religion`
 - `TITL` → `title`
@@ -606,7 +607,9 @@ person: "[[Person A]]"
 - `CAST` → `caste`
 - `NCHI` → `childrenCount`
 - `NMR` → `marriageCount`
-- `SSN` → `ssn`
+- `SSN` → `ssn` ⚠️
+
+⚠️ **Privacy Note:** Fields marked with ⚠️ contain sensitive personal information. These are imported for genealogical completeness but are automatically redacted from exports. See [Sensitive Field Redaction](#sensitive-field-redaction) below.
 
 **Place Import:**
 - Extract unique places from all events
@@ -845,6 +848,60 @@ Note Type Detection
 - Schema validation supports all detection methods
 
 **Status:** Planned.
+
+---
+
+### Sensitive Field Redaction
+
+**Summary:** Automatically redact sensitive personal information (SSN, identity numbers) from exports, regardless of whether the person is living or deceased. Complements the existing Living Person Privacy feature.
+
+**Context:**
+- GEDCOM Import v2 adds support for sensitive fields: `ssn`, `identityNumber`
+- These fields are valuable for genealogical research (verifying identity, distinguishing people with same name)
+- However, they should never appear in shared exports (GEDCOM, CSV, Gramps)
+- Different from "living person" privacy: SSNs should be redacted even for deceased persons
+
+**Default Sensitive Fields:**
+- `ssn` (Social Security Number)
+- `identityNumber` (National ID, passport numbers, etc.)
+
+**Planned Features:**
+
+**Export Redaction:**
+- Sensitive fields excluded from all exports by default
+- Applies to: GEDCOM export, CSV export, Gramps XML export
+- No UI toggle needed - always redacted (secure by default)
+
+**Optional: Display Masking:**
+- Option to mask sensitive fields in Control Center views
+- Format: `***-**-1234` (show last 4 digits) or fully hidden
+- Setting: "Mask sensitive fields in views"
+
+**Settings UI:**
+```
+Privacy Settings
+├── Living Person Protection
+│   ├── Enable privacy protection: [✓]
+│   ├── Age threshold: [100] years
+│   └── Display format: [Living ▼]
+└── Sensitive Field Protection
+    ├── Redact from exports: [✓] (locked on)
+    └── ☐ Mask in Control Center views
+```
+
+**Technical Approach:**
+- Add `sensitiveFields` array to export services
+- Check field names against list during export serialization
+- Default list: `['ssn', 'identityNumber']`
+- Future: allow user-defined sensitive fields
+
+**Integration Points:**
+- GEDCOM exporter: skip sensitive fields
+- CSV exporter: exclude sensitive columns
+- Gramps exporter: skip sensitive attributes
+- Property aliases: respect aliases (e.g., if `ssn` aliased to `social_security`)
+
+**Status:** Planned (alongside GEDCOM Import v2).
 
 ---
 

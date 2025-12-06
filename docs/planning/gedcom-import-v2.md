@@ -103,7 +103,7 @@ These are stored as properties on the person note, not as separate event notes.
 | GEDCOM Tag | Canvas Roots Property | Notes |
 |------------|----------------------|-------|
 | `DSCR` | `physicalDescription` | Physical description |
-| `IDNO` | `identityNumber` | ID number |
+| `IDNO` | `identityNumber` | ID number ⚠️ Sensitive |
 | `NATI` | `nationality` | Nationality |
 | `RELI` | `religion` | Religious affiliation |
 | `TITL` | `title` | Nobility/professional title |
@@ -111,7 +111,9 @@ These are stored as properties on the person note, not as separate event notes.
 | `CAST` | `caste` | Social classification |
 | `NCHI` | `childrenCount` | Number of children |
 | `NMR` | `marriageCount` | Number of marriages |
-| `SSN` | `ssn` | Social security number |
+| `SSN` | `ssn` | Social security number ⚠️ Sensitive |
+
+⚠️ **Sensitive Fields:** Properties marked "Sensitive" contain personal identification information. These are imported for genealogical completeness but are automatically redacted from exports. See [Sensitive Field Redaction](../../wiki-content/Roadmap.md#sensitive-field-redaction) for details.
 
 **Date Precision Mapping:**
 
