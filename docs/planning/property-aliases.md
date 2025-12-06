@@ -17,6 +17,19 @@ Currently, Canvas Roots requires specific property names (`born`, `died`, `fathe
 
 Property Aliases solves this by allowing users to define mappings like `birthdate → born` without changing their actual frontmatter.
 
+## Scope
+
+### v0.9.3 Scope
+
+- **Person notes only** - This is the primary use case and covers the community request
+- Other note types (sources, places, organizations) may be added in future releases if there's demand
+
+### Future Scope
+
+- Source note aliases
+- Place note aliases
+- Organization note aliases
+
 ## Design
 
 ### Alias Configuration
@@ -44,21 +57,53 @@ interface PropertyAliases {
 
 ### Supported Properties
 
-Initial support for core genealogical fields:
+Full support for all person note properties:
 
+#### Core Identity
+| Canvas Roots Property | Common Alternatives |
+|-----------------------|---------------------|
+| `name` | full_name, display_name |
+| `cr_id` | id, person_id, uuid |
+| `gender` | sex |
+| `nickname` | alias, known_as |
+| `maiden_name` | birth_name, née |
+
+#### Dates
 | Canvas Roots Property | Common Alternatives |
 |-----------------------|---------------------|
 | `born` | birthdate, birth_date, dob, date_of_birth |
 | `died` | deathdate, death_date, dod, date_of_death |
+
+#### Places
+| Canvas Roots Property | Common Alternatives |
+|-----------------------|---------------------|
+| `birth_place` | birthplace, place_of_birth, born_in |
+| `death_place` | deathplace, place_of_death, died_in |
+
+#### Relationships
+| Canvas Roots Property | Common Alternatives |
+|-----------------------|---------------------|
 | `father` | father_name, dad, père |
+| `father_id` | father_cr_id |
 | `mother` | mother_name, mom, mère |
+| `mother_id` | mother_cr_id |
 | `spouse` | spouse_name, partner, husband, wife |
-| `birth_place` | birthplace, place_of_birth |
-| `death_place` | deathplace, place_of_death |
-| `gender` | sex |
-| `cr_id` | id, person_id, uuid |
+| `spouse_id` | spouse_cr_id |
+| `child` | children, kids |
+| `children_id` | child_cr_id |
+
+#### Other
+| Canvas Roots Property | Common Alternatives |
+|-----------------------|---------------------|
+| `occupation` | job, profession, career |
+| `universe` | world, setting |
+| `image` | photo, portrait, image_path |
+| `sourced_facts` | sources, citations |
+| `relationships` | custom_relationships |
 
 ### Resolution Logic
+
+#### Reading Properties
 
 When reading a person note:
 
@@ -84,6 +129,37 @@ function resolveProperty(frontmatter: any, property: string, aliases: PropertyAl
   return undefined;
 }
 ```
+
+#### Writing Properties
+
+When writing to a person note (imports, modals, etc.):
+
+1. Check if canonical property has a configured alias
+2. If alias exists, write to the aliased property name
+3. If no alias, write to canonical property name
+
+```typescript
+function getWriteProperty(canonical: string, aliases: PropertyAliases): string {
+  // Find if user has an alias for this canonical property
+  for (const [userProp, canonicalProp] of Object.entries(aliases)) {
+    if (canonicalProp === canonical) {
+      return userProp;
+    }
+  }
+  return canonical;
+}
+```
+
+### Essential Properties Integration
+
+When aliases are configured, all UI that displays or inserts property names must use the aliased names:
+
+1. **Essential Properties card** - Display aliased property names instead of canonical
+2. **Right-click "Insert essential properties"** - Insert aliased property names
+3. **Templates** - Generate with aliased property names
+4. **Bases templates** - Use aliased property names in generated templates
+
+This ensures a consistent experience where users see their preferred property names throughout the plugin.
 
 ### UI Design
 
@@ -136,9 +212,7 @@ Add "Property aliases" card to Preferences tab in Control Center.
 │ ┌─────────────────────────────────────────────┐ │
 │ │ born                                    [▼] │ │
 │ └─────────────────────────────────────────────┘ │
-│ (dropdown with: born, died, father, mother,     │
-│  spouse, birth_place, death_place, gender,      │
-│  cr_id, name, nickname, maiden_name, universe)  │
+│ (dropdown with all supported properties)        │
 │                                                 │
 │                    [Cancel]  [Add alias]        │
 └─────────────────────────────────────────────────┘
@@ -146,43 +220,40 @@ Add "Property aliases" card to Preferences tab in Control Center.
 
 ## Implementation Plan
 
-### Phase 1: Core Alias System
+### Phase 1: Core Infrastructure
 
 1. Add `propertyAliases` to plugin settings schema
-2. Create `PropertyAliasService` with resolution logic
-3. Update `PersonService.getPersonData()` to use alias resolution
-4. Add settings UI to Preferences tab
+2. Create `PropertyAliasService` with:
+   - `resolve(frontmatter, property)` - read value using alias
+   - `getWriteProperty(canonical)` - get property name for writing
+   - `getDisplayProperty(canonical)` - get property name for UI display
+3. Add settings UI to Preferences tab (card + modal)
 
-### Phase 2: Integration Points
+### Phase 2: Read Integration
 
-Update all code paths that read person properties:
-- Tree generation (canvas and Excalidraw)
-- Family Chart View
-- Control Center displays
-- Import/export (GEDCOM, CSV, etc.)
-- Bases templates
-- Schema validation
-- Data Quality checks
+Update property reading to use alias resolution:
+- `PersonService.getPersonData()` - central integration point
+- Events tab statistics
+- Any direct frontmatter reads for person properties
 
-### Phase 3: Advanced Features (Future)
+### Phase 3: Write Integration
 
-- Alias presets (e.g., "Gramps compatibility", "GEDCOM style")
-- Bidirectional aliases (write back to user's property name)
-- Collection-scoped aliases
-- Alias migration wizard ("Convert aliases to canonical")
+Update property writing to use aliased names:
+- Import (GEDCOM, GEDCOM X, Gramps, CSV)
+- Person creation modals
+- Relationship editing
+- Bidirectional linker
+
+### Phase 4: UI Integration
+
+Update UI to display aliased property names:
+- Essential Properties card
+- Right-click "Insert essential properties" command
+- Bases template generation
+- Schema validation messages
+- Data Quality reports
 
 ## Considerations
-
-### Write Behavior
-
-**Initial implementation**: Read-only aliases
-- Canvas Roots reads from aliased properties
-- Any writes (from modals, import, etc.) use canonical names
-- User's aliased properties remain unchanged
-
-**Future enhancement**: Bidirectional option
-- Setting to write back to user's property name
-- Useful for users who want to maintain their naming scheme
 
 ### Conflicts
 
@@ -204,11 +275,30 @@ Users with existing aliased vaults don't need to change anything - just configur
 - [Frontmatter Reference](https://github.com/banisterious/obsidian-canvas-roots/wiki/Frontmatter-Reference) - Canonical property names
 - [Getting Started](https://github.com/banisterious/obsidian-canvas-roots/wiki/Getting-Started) - Initial setup
 
+## Status
+
+**✅ Complete in v0.9.3**
+
 ## Success Criteria
 
-- [ ] Users can define custom property aliases in settings
-- [ ] All Canvas Roots features work correctly with aliased properties
-- [ ] Canonical properties take precedence over aliases
-- [ ] No changes required to user's existing frontmatter
-- [ ] Clear documentation of supported aliases
-- [ ] Import/export respects aliases appropriately
+- [x] Users can define custom property aliases in settings
+- [x] All Canvas Roots features work correctly with aliased properties
+- [x] Canonical properties take precedence over aliases
+- [x] No changes required to user's existing frontmatter
+- [x] Import writes to aliased property names
+- [x] Essential Properties displays and inserts aliased names
+- [x] Bases templates generated with aliased property names
+- [x] Clear documentation of supported aliases
+
+## Implementation Notes
+
+### Bases Template Generation
+
+The People base template is dynamically generated using `generatePeopleBaseTemplate()` which accepts property aliases. When creating a new base file, the template uses aliased property names throughout:
+
+- `visibleProperties` references (e.g., `note.birthdate` instead of `note.born`)
+- Filter expressions (e.g., `note.birthdate` in views)
+- Formula references (e.g., `if(birthdate && deathdate, ...)`)
+- Order and summary columns
+
+**Important:** Existing Bases files are not automatically updated when aliases change. Users must delete and recreate the base file to apply new alias configurations. A warning is displayed in the Preferences tab about this behavior.

@@ -21,7 +21,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Print & PDF Export](#print--pdf-export)
 - [Future Considerations](#future-considerations)
   - [Events Tab (Control Center)](#events-tab-control-center) ✅ v0.9.2
-  - [Property Aliases](#property-aliases)
+  - [Property Aliases](#property-aliases) ✅ v0.9.3
   - [Person Note Templates](#person-note-templates)
   - [Accessibility](#accessibility)
   - [Obsidian Publish Support](#obsidian-publish-support)
@@ -48,7 +48,7 @@ The following priority order guides future development:
 | 9 | [Evidence Visualization](#evidence-visualization) | ✅ Complete (v0.9.0) |
 | 10 | [Style Settings Integration](#style-settings-integration) | ✅ Complete (v0.9.1) |
 | 11 | [Events Tab (Control Center)](#events-tab-control-center) | ✅ Complete (v0.9.2) |
-| 12 | [Property Aliases](#property-aliases) | Planned |
+| 12 | [Property Aliases](#property-aliases) | ✅ Complete (v0.9.3) |
 | 13 | [Chronological Story Mapping](#chronological-story-mapping) | Planned |
 | 14 | [Print & PDF Export](#print--pdf-export) | Planned |
 | 15 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
@@ -592,27 +592,32 @@ is_canonical: true
 
 ---
 
-### Property Aliases
+### Property Aliases ✅
 
-> See [property-aliases.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/property-aliases.md) for detailed implementation plan.
+> **Complete in v0.9.3.** See [Settings & Configuration](Settings-And-Configuration) wiki page for configuration documentation.
 
 **Summary:** Map custom frontmatter property names to Canvas Roots fields, enabling compatibility with existing vaults and other plugins without requiring property renaming.
 
-**Use Case:**
-> "My vault uses 'birthdate' instead of 'born' - can Canvas Roots read that?"
+**Implemented Features:**
+- Configure aliases in Control Center → Preferences → Property Aliases
+- Read resolution: canonical property first, then falls back to aliases
+- Write integration: imports create notes with aliased property names
+- Essential Properties UI displays aliased property names when configured
+- Bases templates generated with aliased property names
+- Full support for all person note properties (identity, dates, places, relationships)
 
 **How It Works:**
 - Configure aliases in Preferences: `birthdate → born`
 - Canvas Roots reads your property, treats it as the mapped field
 - Your frontmatter stays unchanged
+- When importing GEDCOM/CSV, new notes use your aliased property names
 
 **Supported Properties:**
+- Identity fields: `name`, `cr_id`, `gender`, `nickname`, `maiden_name`
 - Date fields: `born`, `died`
-- Relationship fields: `father`, `mother`, `spouse`
 - Location fields: `birth_place`, `death_place`
-- Identity fields: `cr_id`, `gender`, `name`, `nickname`
-
-**Implementation Scope:** Medium - requires updates across all property-reading code paths
+- Relationship fields: `father`, `father_id`, `mother`, `mother_id`, `spouse`, `spouse_id`, `child`, `children_id`
+- Other fields: `occupation`, `universe`, `image`, `sourced_facts`, `relationships`
 
 ---
 

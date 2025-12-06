@@ -41,6 +41,8 @@ import { RelationshipService, RELATIONSHIP_CATEGORY_NAMES } from '../relationshi
 import type { RelationshipCategory } from '../relationships';
 import { renderEventsTab } from '../dates';
 import { renderOrganizationsTab } from '../organizations';
+import { renderPreferencesTab } from './preferences-tab';
+import { PropertyAliasService } from '../core/property-alias-service';
 import {
 	renderSourcesTab,
 	EvidenceService,
@@ -302,6 +304,9 @@ export class ControlCenterModal extends Modal {
 				break;
 			case 'sources':
 				void this.showSourcesTab();
+				break;
+			case 'preferences':
+				this.showPreferencesTab();
 				break;
 			default:
 				this.showPlaceholderTab(tabId);
@@ -1164,18 +1169,58 @@ export class ControlCenterModal extends Modal {
 
 		// Person properties collapsible
 		this.createCollapsible(propsContent, 'Person notes', 'user', (body) => {
+			const aliasService = new PropertyAliasService(this.plugin);
+
+			// Helper to get display name with alias indicator
+			const getDisplayName = (canonical: string): string => {
+				const alias = aliasService.getAlias(canonical);
+				return alias ? `${alias}` : canonical;
+			};
+
+			// Helper for combined properties like "father / mother"
+			const getCombinedDisplayName = (props: string[]): string => {
+				return props.map(p => getDisplayName(p)).join(' / ');
+			};
+
 			const list = body.createEl('ul', { cls: 'crc-field-list' });
-			[
-				{ name: 'cr_id', desc: 'Unique identifier', req: true },
-				{ name: 'name', desc: 'Full name', req: true },
-				{ name: 'father / mother', desc: 'Wikilinks to parents', req: false },
-				{ name: 'spouse', desc: 'Array of spouse wikilinks', req: false },
-				{ name: 'born / died', desc: 'Dates (YYYY-MM-DD)', req: false }
-			].forEach(p => {
+
+			// Properties with aliasing support
+			const personProps = [
+				{ canonical: 'cr_id', desc: 'Unique identifier', req: true },
+				{ canonical: 'name', desc: 'Full name', req: true },
+				{ combined: ['father', 'mother'], desc: 'Wikilinks to parents', req: false },
+				{ canonical: 'spouse', desc: 'Array of spouse wikilinks', req: false },
+				{ combined: ['born', 'died'], desc: 'Dates (YYYY-MM-DD)', req: false }
+			];
+
+			personProps.forEach(p => {
 				const li = list.createEl('li');
-				const code = li.createEl('code', { text: p.name });
+				let displayName: string;
+				let hasAlias: boolean;
+
+				if ('canonical' in p && p.canonical) {
+					displayName = getDisplayName(p.canonical);
+					hasAlias = aliasService.hasAlias(p.canonical);
+				} else if ('combined' in p && p.combined) {
+					displayName = getCombinedDisplayName(p.combined);
+					hasAlias = p.combined.some(prop => aliasService.hasAlias(prop));
+				} else {
+					displayName = '';
+					hasAlias = false;
+				}
+
+				const code = li.createEl('code', { text: displayName });
 				if (p.req) code.addClass('crc-field--required');
 				li.appendText(` - ${p.desc}`);
+
+				// Show alias indicator if any property is aliased
+				if (hasAlias) {
+					const indicator = li.createEl('span', {
+						text: ' (aliased)',
+						cls: 'crc-text-muted cr-alias-indicator'
+					});
+					indicator.setAttribute('title', 'This property uses a custom name configured in Preferences');
+				}
 			});
 		});
 
@@ -7275,6 +7320,19 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
+	 * Show Preferences tab with property aliases and folder locations
+	 */
+	private showPreferencesTab(): void {
+		const container = this.contentContainer;
+		renderPreferencesTab(
+			container,
+			this.plugin,
+			(options) => this.createCard(options),
+			(tabId) => this.showTab(tabId)
+		);
+	}
+
+	/**
 	 * Render Custom Relationship Types management card with table layout
 	 */
 	private renderRelationshipTypesCard(container: HTMLElement, service: RelationshipService): void {
@@ -8282,6 +8340,7 @@ export class ControlCenterModal extends Modal {
 
 			const graphService = new FamilyGraphService(this.app);
 			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
 			graphService.reloadCache();
 			const allPeople = graphService.getAllPeople();
 
@@ -8734,6 +8793,7 @@ export class ControlCenterModal extends Modal {
 
 			const graphService = new FamilyGraphService(this.app);
 			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
 			graphService.reloadCache();
 			const allPeople = graphService.getAllPeople();
 
@@ -9261,6 +9321,7 @@ export class ControlCenterModal extends Modal {
 
 			const graphService = new FamilyGraphService(this.app);
 			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
 			graphService.reloadCache();
 			const allPeople = graphService.getAllPeople();
 
@@ -9657,6 +9718,7 @@ export class ControlCenterModal extends Modal {
 
 			const graphService = new FamilyGraphService(this.app);
 			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
 			graphService.reloadCache();
 			const allPeople = graphService.getAllPeople();
 
@@ -11289,6 +11351,7 @@ export class ControlCenterModal extends Modal {
 		const familyGraph = new FamilyGraphService(this.app);
 		const folderFilter = new FolderFilterService(this.plugin.settings);
 		familyGraph.setFolderFilter(folderFilter);
+		familyGraph.setPropertyAliases(this.plugin.settings.propertyAliases);
 
 		const dataQualityService = new DataQualityService(
 			this.app,
@@ -11563,6 +11626,7 @@ export class ControlCenterModal extends Modal {
 		const familyGraph = new FamilyGraphService(this.app);
 		const folderFilter = new FolderFilterService(this.plugin.settings);
 		familyGraph.setFolderFilter(folderFilter);
+		familyGraph.setPropertyAliases(this.plugin.settings.propertyAliases);
 
 		const dataQualityService = new DataQualityService(
 			this.app,
@@ -11596,6 +11660,7 @@ export class ControlCenterModal extends Modal {
 		const familyGraph = new FamilyGraphService(this.app);
 		const folderFilter = new FolderFilterService(this.plugin.settings);
 		familyGraph.setFolderFilter(folderFilter);
+		familyGraph.setPropertyAliases(this.plugin.settings.propertyAliases);
 
 		const dataQualityService = new DataQualityService(
 			this.app,

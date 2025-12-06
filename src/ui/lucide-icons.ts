@@ -95,7 +95,8 @@ export type LucideIconName =
 	| 'newspaper' // Newspaper articles
 	| 'mic' // Oral history
 	| 'archive' // Sources tab
-	| 'scale'; // Proof summaries (weighing evidence)
+	| 'scale' // Proof summaries (weighing evidence)
+	| 'sliders'; // Preferences tab
 
 /**
  * Tab configuration for Control Center navigation
@@ -200,6 +201,12 @@ export const TAB_CONFIGS: TabConfig[] = [
 		name: 'Canvas settings',
 		icon: 'settings',
 		description: 'Canvas layout and arrow styling settings'
+	},
+	{
+		id: 'preferences',
+		name: 'Preferences',
+		icon: 'sliders',
+		description: 'Property aliases, folder locations, and user preferences'
 	}
 ];
 

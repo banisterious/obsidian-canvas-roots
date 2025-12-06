@@ -104,6 +104,9 @@ export interface CsvImportOptions {
 
 	/** CSV parse options */
 	parseOptions?: CsvParseOptions;
+
+	/** Property aliases for writing custom property names (user property → canonical) */
+	propertyAliases?: Record<string, string>;
 }
 
 /**
@@ -403,7 +406,8 @@ export class CsvImporter {
 		// Disable bidirectional linking during import - we'll fix relationships in pass 2
 		await createPersonNote(this.app, personData, {
 			directory: options.peopleFolder,
-			addBidirectionalLinks: false
+			addBidirectionalLinks: false,
+			propertyAliases: options.propertyAliases
 		});
 
 		return {

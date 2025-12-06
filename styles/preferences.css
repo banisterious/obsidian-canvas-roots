@@ -1,0 +1,93 @@
+/* ==========================================================================
+   Preferences Tab Styles
+   ========================================================================== */
+
+/* Property Aliases Table */
+.cr-aliases-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--cr-spacing-md);
+}
+
+.cr-aliases-table th,
+.cr-aliases-table td {
+  padding: var(--cr-spacing-sm) var(--cr-spacing-md);
+  text-align: left;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-aliases-table th {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cr-aliases-table tbody tr:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.cr-alias-user-prop {
+  font-family: var(--font-monospace);
+  font-weight: 500;
+  color: var(--text-accent);
+}
+
+.cr-aliases-table__actions {
+  width: 80px;
+  text-align: right;
+}
+
+.cr-aliases-table__actions .cr-btn-icon {
+  margin-left: var(--cr-spacing-xs);
+}
+
+/* Add button container */
+.cr-aliases-add {
+  margin-top: var(--cr-spacing-md);
+}
+
+.cr-aliases-add button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cr-spacing-sm);
+}
+
+/* Info box icon */
+.cr-info-box-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: var(--cr-spacing-sm);
+  color: var(--text-accent);
+  flex-shrink: 0;
+}
+
+/* Warning variant of info box */
+.cr-info-box--warning {
+  background: var(--background-modifier-error);
+  margin-top: var(--cr-spacing-md);
+}
+
+.cr-info-box--warning .cr-info-box-icon {
+  color: var(--color-orange);
+}
+
+/* Property Alias Modal */
+.cr-property-alias-modal {
+  min-width: 400px;
+}
+
+.cr-alias-form {
+  margin-bottom: var(--cr-spacing-md);
+}
+
+.cr-alias-form .setting-item {
+  border-top: none;
+  padding-top: var(--cr-spacing-sm);
+}
+
+/* Small muted text */
+.crc-text-small {
+  font-size: 0.85em;
+}

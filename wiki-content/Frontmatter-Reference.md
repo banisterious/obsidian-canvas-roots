@@ -762,6 +762,50 @@ Canvas Roots follows these conventions:
 
 ---
 
+## Property Aliases
+
+If your vault uses different property names than Canvas Roots defaults, you can create **property aliases** to map your custom names to the canonical Canvas Roots fields. This allows Canvas Roots to work with existing vaults without requiring you to rename your frontmatter properties.
+
+### Configuring Aliases
+
+Go to **Control Center → Preferences → Property Aliases** to add, edit, or remove aliases. You can also configure them in Obsidian's plugin settings.
+
+### How Aliases Work
+
+| Scenario | Behavior |
+|----------|----------|
+| **Reading notes** | Canvas Roots checks for the canonical property first, then falls back to your alias |
+| **Creating/importing notes** | New notes use your aliased property name instead of the canonical name |
+| **Both properties exist** | The canonical property takes precedence |
+
+### Example
+
+If your vault uses `birthdate` instead of `born`:
+
+1. Add an alias: `birthdate` → `born`
+2. Canvas Roots will now read `birthdate` as the birth date
+3. When importing GEDCOM files, notes will be created with `birthdate` instead of `born`
+
+### Supported Properties
+
+All person note properties can be aliased:
+
+| Category | Properties |
+|----------|------------|
+| Identity | `name`, `cr_id`, `gender`, `nickname`, `maiden_name` |
+| Dates | `born`, `died` |
+| Places | `birth_place`, `death_place` |
+| Relationships | `father`, `father_id`, `mother`, `mother_id`, `spouse`, `spouse_id`, `child`, `children_id` |
+| Other | `occupation`, `universe`, `image`, `sourced_facts`, `relationships` |
+
+### Tips
+
+- Aliases are case-sensitive: `Birthdate` and `birthdate` are different
+- Only one alias per canonical property is supported
+- The Essential Properties card in Getting Started shows your aliased names when configured
+
+---
+
 ## Essential Properties
 
 When using "Add essential properties" in Data Quality tools, these properties are added if missing:

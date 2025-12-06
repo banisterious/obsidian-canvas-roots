@@ -50,6 +50,7 @@ const CONFIG = {
     'date-systems.css',  // Date systems card
     'organizations.css', // Organizations tab
     'sources.css',       // Sources tab
+    'preferences.css',   // Preferences tab
     'animations.css',    // Keyframes and transitions
     'responsive.css',    // Responsive breakpoints
     'theme.css'          // Theme compatibility (last)

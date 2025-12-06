@@ -102,6 +102,7 @@ export class FamilyChartView extends ItemView {
 		if (folderFilter) {
 			this.familyGraphService.setFolderFilter(folderFilter);
 		}
+		this.familyGraphService.setPropertyAliases(plugin.settings.propertyAliases);
 	}
 
 	getViewType(): string {

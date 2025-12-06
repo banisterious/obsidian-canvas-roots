@@ -10,6 +10,19 @@ import { getLogger } from './logging';
 const logger = getLogger('PersonNoteWriter');
 
 /**
+ * Get the property name to write, respecting aliases
+ * If user has an alias for this canonical property, return the user's property name
+ */
+function getWriteProperty(canonical: string, aliases: Record<string, string>): string {
+	for (const [userProp, canonicalProp] of Object.entries(aliases)) {
+		if (canonicalProp === canonical) {
+			return userProp;
+		}
+	}
+	return canonical;
+}
+
+/**
  * Person data for note creation
  */
 export interface PersonData {
@@ -44,6 +57,8 @@ export interface CreatePersonNoteOptions {
 	openAfterCreate?: boolean;
 	/** Whether to add bidirectional spouse links (default: true) */
 	addBidirectionalLinks?: boolean;
+	/** Property aliases for writing custom property names (user property → canonical) */
+	propertyAliases?: Record<string, string>;
 }
 
 /**
@@ -69,66 +84,71 @@ export async function createPersonNote(
 	person: PersonData,
 	options: CreatePersonNoteOptions = {}
 ): Promise<TFile> {
-	const { directory = '', openAfterCreate = false, addBidirectionalLinks = true } = options;
+	const { directory = '', openAfterCreate = false, addBidirectionalLinks = true, propertyAliases = {} } = options;
+
+	// Helper to get aliased property name
+	const prop = (canonical: string) => getWriteProperty(canonical, propertyAliases);
 
 	// Generate cr_id if not provided
 	const crId = person.crId || generateCrId();
 
 	// Build frontmatter with essential properties
 	// Essential properties are always included (per Guide documentation)
+	// Property names respect user-configured aliases
 	const frontmatter: Record<string, string | string[]> = {
-		cr_id: crId,
-		name: person.name || '',
-		born: person.birthDate || '',
-		died: person.deathDate || ''
+		[prop('cr_id')]: crId,
+		[prop('name')]: person.name || '',
+		[prop('born')]: person.birthDate || '',
+		[prop('died')]: person.deathDate || ''
 	};
 
 	if (person.birthPlace) {
-		frontmatter.birth_place = person.birthPlace;
+		frontmatter[prop('birth_place')] = person.birthPlace;
 	}
 
 	if (person.deathPlace) {
-		frontmatter.death_place = person.deathPlace;
+		frontmatter[prop('death_place')] = person.deathPlace;
 	}
 
 	if (person.occupation) {
-		frontmatter.occupation = person.occupation;
+		frontmatter[prop('occupation')] = person.occupation;
 	}
 
 	if (person.gender) {
-		frontmatter.gender = person.gender;
+		frontmatter[prop('gender')] = person.gender;
 	}
 
 	// Handle relationships using dual storage: wikilinks for Obsidian + _id fields for reliability
+	// Property names respect user-configured aliases
 	logger.debug('relationships', `Processing - fatherCrId: ${person.fatherCrId}, motherCrId: ${person.motherCrId}, spouseCrId: ${person.spouseCrId?.join(', ') ?? 'none'}`);
 
 	// Father relationship (dual storage)
 	if (person.fatherCrId && person.fatherName) {
-		frontmatter.father = `"[[${person.fatherName}]]"`;
-		frontmatter.father_id = person.fatherCrId;
+		frontmatter[prop('father')] = `"[[${person.fatherName}]]"`;
+		frontmatter[prop('father_id')] = person.fatherCrId;
 		logger.debug('father', `Added (dual): wikilink=${person.fatherName}, id=${person.fatherCrId}`);
 	} else if (person.fatherCrId) {
 		// ID only (fallback for legacy data)
-		frontmatter.father_id = person.fatherCrId;
+		frontmatter[prop('father_id')] = person.fatherCrId;
 		logger.debug('father', `Added (id only): ${person.fatherCrId}`);
 	} else if (person.father) {
 		// Legacy: name-based relationship only
-		frontmatter.father = `"[[${person.father}]]"`;
+		frontmatter[prop('father')] = `"[[${person.father}]]"`;
 		logger.debug('father', `Added (legacy): ${person.father}`);
 	}
 
 	// Mother relationship (dual storage)
 	if (person.motherCrId && person.motherName) {
-		frontmatter.mother = `"[[${person.motherName}]]"`;
-		frontmatter.mother_id = person.motherCrId;
+		frontmatter[prop('mother')] = `"[[${person.motherName}]]"`;
+		frontmatter[prop('mother_id')] = person.motherCrId;
 		logger.debug('mother', `Added (dual): wikilink=${person.motherName}, id=${person.motherCrId}`);
 	} else if (person.motherCrId) {
 		// ID only (fallback for legacy data)
-		frontmatter.mother_id = person.motherCrId;
+		frontmatter[prop('mother_id')] = person.motherCrId;
 		logger.debug('mother', `Added (id only): ${person.motherCrId}`);
 	} else if (person.mother) {
 		// Legacy: name-based relationship only
-		frontmatter.mother = `"[[${person.mother}]]"`;
+		frontmatter[prop('mother')] = `"[[${person.mother}]]"`;
 		logger.debug('mother', `Added (legacy): ${person.mother}`);
 	}
 
@@ -137,28 +157,28 @@ export async function createPersonNote(
 		if (person.spouseName && person.spouseName.length === person.spouseCrId.length) {
 			// Dual storage with both names and IDs
 			if (person.spouseName.length === 1) {
-				frontmatter.spouse = `"[[${person.spouseName[0]}]]"`;
-				frontmatter.spouse_id = person.spouseCrId[0];
+				frontmatter[prop('spouse')] = `"[[${person.spouseName[0]}]]"`;
+				frontmatter[prop('spouse_id')] = person.spouseCrId[0];
 			} else {
-				frontmatter.spouse = person.spouseName.map(s => `"[[${s}]]"`);
-				frontmatter.spouse_id = person.spouseCrId;
+				frontmatter[prop('spouse')] = person.spouseName.map(s => `"[[${s}]]"`);
+				frontmatter[prop('spouse_id')] = person.spouseCrId;
 			}
 			logger.debug('spouse', `Added (dual): wikilinks=${JSON.stringify(person.spouseName)}, ids=${JSON.stringify(person.spouseCrId)}`);
 		} else {
 			// ID only (fallback for legacy data or missing names)
 			if (person.spouseCrId.length === 1) {
-				frontmatter.spouse_id = person.spouseCrId[0];
+				frontmatter[prop('spouse_id')] = person.spouseCrId[0];
 			} else {
-				frontmatter.spouse_id = person.spouseCrId;
+				frontmatter[prop('spouse_id')] = person.spouseCrId;
 			}
 			logger.debug('spouse', `Added (id only): ${JSON.stringify(person.spouseCrId)}`);
 		}
 	} else if (person.spouse && person.spouse.length > 0) {
 		// Legacy: name-based relationship only
 		if (person.spouse.length === 1) {
-			frontmatter.spouse = `"[[${person.spouse[0]}]]"`;
+			frontmatter[prop('spouse')] = `"[[${person.spouse[0]}]]"`;
 		} else {
-			frontmatter.spouse = person.spouse.map(s => `"[[${s}]]"`);
+			frontmatter[prop('spouse')] = person.spouse.map(s => `"[[${s}]]"`);
 		}
 		logger.debug('spouse', `Added (legacy): ${JSON.stringify(person.spouse)}`);
 	}
@@ -168,19 +188,19 @@ export async function createPersonNote(
 		if (person.childName && person.childName.length === person.childCrId.length) {
 			// Dual storage with both names and IDs
 			if (person.childName.length === 1) {
-				frontmatter.child = `"[[${person.childName[0]}]]"`;
-				frontmatter.children_id = person.childCrId[0];
+				frontmatter[prop('child')] = `"[[${person.childName[0]}]]"`;
+				frontmatter[prop('children_id')] = person.childCrId[0];
 			} else {
-				frontmatter.child = person.childName.map(c => `"[[${c}]]"`);
-				frontmatter.children_id = person.childCrId;
+				frontmatter[prop('child')] = person.childName.map(c => `"[[${c}]]"`);
+				frontmatter[prop('children_id')] = person.childCrId;
 			}
 			logger.debug('children', `Added (dual): wikilinks=${JSON.stringify(person.childName)}, ids=${JSON.stringify(person.childCrId)}`);
 		} else {
 			// ID only (fallback for legacy data or missing names)
 			if (person.childCrId.length === 1) {
-				frontmatter.children_id = person.childCrId[0];
+				frontmatter[prop('children_id')] = person.childCrId[0];
 			} else {
-				frontmatter.children_id = person.childCrId;
+				frontmatter[prop('children_id')] = person.childCrId;
 			}
 			logger.debug('children', `Added (id only): ${JSON.stringify(person.childCrId)}`);
 		}
@@ -188,20 +208,30 @@ export async function createPersonNote(
 
 	// Ensure all essential properties are present (even if empty)
 	// This matches the "Add essential properties" feature expectations
-	if (!('father' in frontmatter) && !('father_id' in frontmatter)) {
-		frontmatter.father = '';
+	// Property names respect user-configured aliases
+	const fatherProp = prop('father');
+	const fatherIdProp = prop('father_id');
+	if (!(fatherProp in frontmatter) && !(fatherIdProp in frontmatter)) {
+		frontmatter[fatherProp] = '';
 	}
-	if (!('mother' in frontmatter) && !('mother_id' in frontmatter)) {
-		frontmatter.mother = '';
+	const motherProp = prop('mother');
+	const motherIdProp = prop('mother_id');
+	if (!(motherProp in frontmatter) && !(motherIdProp in frontmatter)) {
+		frontmatter[motherProp] = '';
 	}
-	if (!('spouse' in frontmatter) && !('spouse_id' in frontmatter)) {
-		frontmatter.spouses = [];
+	const spouseProp = prop('spouse');
+	const spouseIdProp = prop('spouse_id');
+	if (!(spouseProp in frontmatter) && !(spouseIdProp in frontmatter)) {
+		frontmatter[spouseProp] = [];
 	}
-	if (!('children' in frontmatter) && !('children_id' in frontmatter)) {
-		frontmatter.children = [];
+	const childProp = prop('child');
+	const childrenIdProp = prop('children_id');
+	if (!(childProp in frontmatter) && !(childrenIdProp in frontmatter)) {
+		frontmatter[childProp] = [];
 	}
-	if (!('group_name' in frontmatter)) {
-		frontmatter.group_name = '';
+	const groupNameProp = prop('group_name');
+	if (!(groupNameProp in frontmatter)) {
+		frontmatter[groupNameProp] = '';
 	}
 
 	logger.debug('frontmatter', `Final: ${JSON.stringify(frontmatter)}`);

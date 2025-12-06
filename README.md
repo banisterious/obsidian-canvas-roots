@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.9.2-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.9.3-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, and world-builders.
 
@@ -113,7 +113,8 @@
 
 | Feature | Description |
 |---------|-------------|
-| **Obsidian Bases** | Ready-to-use Base templates: People (22 views), Places (14 views), Organizations (17 views) |
+| **Property Aliases** | Map custom property names to Canvas Roots fields without renaming frontmatter |
+| **Obsidian Bases** | Ready-to-use Base templates: People (22 views), Places (14 views), Organizations (17 views); respects property aliases |
 | **Style Settings** | Customize colors via [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin |
 | **Context Menu Actions** | Right-click person notes, folders, and canvases for quick actions |
 | **YAML-First Data** | Compatible with Dataview, Bases, and other Obsidian tools |
@@ -240,6 +241,7 @@ If you find this plugin useful, please consider supporting its development!
 - [Import & Export](https://github.com/banisterious/obsidian-canvas-roots/wiki/Import-Export) - GEDCOM and CSV support
 - [Geographic Features](https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features) - Maps and places
 - [Evidence & Sources](https://github.com/banisterious/obsidian-canvas-roots/wiki/Evidence-And-Sources) - Source management and indicators
+- [Settings & Configuration](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration) - All settings and property aliases
 - [FAQ](https://github.com/banisterious/obsidian-canvas-roots/wiki/FAQ) - Common questions
 - [Troubleshooting](https://github.com/banisterious/obsidian-canvas-roots/wiki/Troubleshooting) - Problem solving
 

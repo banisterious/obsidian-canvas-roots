@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.3] - 2025-12-05
+
+Property Aliases release: Use custom property names without renaming your frontmatter.
+
+### Added
+
+- **Property Aliases**: Map custom frontmatter property names to Canvas Roots fields
+  - Configure aliases in Control Center → Preferences → Property Aliases
+  - Supports all person note properties: identity, dates, places, relationships
+  - Read resolution: canonical property first, then falls back to aliases
+  - Write integration: imports create notes with aliased property names
+  - Essential Properties card displays aliased property names when configured
+  - Bases templates generated with aliased property names
+  - Add, edit, and delete aliases through intuitive modal interface
+
+- **Settings & Configuration Wiki Page**: New comprehensive documentation
+  - Control Center overview with all tabs documented
+  - Folder locations reference
+  - Property aliases configuration guide
+  - Layout and canvas styling settings
+  - Data, privacy, and research tool settings
+
+### Changed
+
+- Essential Properties card now shows aliased property names when aliases are configured
+- GEDCOM, GEDCOM X, Gramps, and CSV importers now write to aliased property names
+- Person note creation respects property aliases throughout
+
+---
+
 ## [0.9.2] - 2025-12-05
 
 Events Tab release: Improved discoverability for Fictional Date Systems.
@@ -971,7 +1001,7 @@ Initial alpha release with core genealogical features.
 
 ### Version Status
 
-- **Stable (v0.9.x)**: Evidence Visualization with GPS-aligned fact tracking, proof summaries, and canvas conflict markers.
+- **Stable (v0.9.x)**: Evidence Visualization with GPS-aligned fact tracking, proof summaries, canvas conflict markers, and property aliases.
 - **Stable (v0.8.x)**: Evidence & Source Management with media gallery, citation generator, and source indicators.
 - **Stable (v0.7.x)**: World-Building Suite with custom relationships, fictional date systems, and organization notes.
 - **Stable (v0.6.x)**: Interactive Map View with Leaflet.js, custom image maps for fictional worlds, time slider animation, journey paths, and map exports.

@@ -10,6 +10,8 @@ import { getLogger } from './logging';
 import { SpouseRelationship } from '../models/person';
 import { PersonFrontmatter } from '../types/frontmatter';
 import { FolderFilterService } from './folder-filter';
+import { PropertyAliasService, CANONICAL_PERSON_PROPERTIES, CanonicalPersonProperty } from './property-alias-service';
+import type { CanvasRootsSettings } from '../settings';
 
 const logger = getLogger('FamilyGraph');
 
@@ -156,6 +158,7 @@ export class FamilyGraphService {
 	private app: App;
 	private personCache: Map<string, PersonNode>;
 	private folderFilter: FolderFilterService | null = null;
+	private propertyAliases: Record<string, string> = {};
 
 	constructor(app: App) {
 		this.app = app;
@@ -167,6 +170,33 @@ export class FamilyGraphService {
 	 */
 	setFolderFilter(folderFilter: FolderFilterService): void {
 		this.folderFilter = folderFilter;
+	}
+
+	/**
+	 * Set property aliases for reading frontmatter with custom property names
+	 */
+	setPropertyAliases(aliases: Record<string, string>): void {
+		this.propertyAliases = aliases;
+	}
+
+	/**
+	 * Resolve a frontmatter property value, checking aliases if canonical property not found
+	 * Canonical property takes precedence over aliased property
+	 */
+	private resolveProperty<T>(fm: Record<string, unknown>, canonicalProperty: string): T | undefined {
+		// Canonical property takes precedence
+		if (fm[canonicalProperty] !== undefined) {
+			return fm[canonicalProperty] as T;
+		}
+
+		// Check aliases - find user property that maps to this canonical property
+		for (const [userProp, canonicalProp] of Object.entries(this.propertyAliases)) {
+			if (canonicalProp === canonicalProperty && fm[userProp] !== undefined) {
+				return fm[userProp] as T;
+			}
+		}
+
+		return undefined;
 	}
 
 	/**
@@ -841,35 +871,43 @@ export class FamilyGraphService {
 			return null;
 		}
 
-		const fm = cache.frontmatter;
+		const fm = cache.frontmatter as Record<string, unknown>;
 
-		// Must have cr_id
-		if (!fm.cr_id) {
+		// Must have cr_id (with alias support)
+		const crId = this.resolveProperty<string>(fm, 'cr_id');
+		if (!crId) {
 			return null;
 		}
 
-		// Extract name (from frontmatter or filename)
-		const name = fm.name || file.basename;
+		// Extract name (from frontmatter or filename) with alias support
+		const name = this.resolveProperty<string>(fm, 'name') || file.basename;
 
 		// Parse father relationship (prefer _id field, fallback to father field for legacy)
-		const fatherCrId = fm.father_id || this.extractCrIdFromWikilink(fm.father);
+		// Both father_id and father support aliases
+		const fatherIdValue = this.resolveProperty<string>(fm, 'father_id');
+		const fatherValue = this.resolveProperty<string>(fm, 'father');
+		const fatherCrId = fatherIdValue || this.extractCrIdFromWikilink(fatherValue);
 
 		// Parse mother relationship (prefer _id field, fallback to mother field for legacy)
-		const motherCrId = fm.mother_id || this.extractCrIdFromWikilink(fm.mother);
+		const motherIdValue = this.resolveProperty<string>(fm, 'mother_id');
+		const motherValue = this.resolveProperty<string>(fm, 'mother');
+		const motherCrId = motherIdValue || this.extractCrIdFromWikilink(motherValue);
 
 		// Parse spouse relationships
 		// Priority: 1) Enhanced flat indexed format (spouse1, spouse2...), 2) Legacy 'spouse_id' or 'spouse' fields
 		let spouseCrIds: string[] = [];
 		let spouses: SpouseRelationship[] | undefined;
 
+		// Note: indexed spouse format (spouse1, spouse1_id) doesn't support aliases currently
+		// as the indexed property names are dynamic
 		if (fm.spouse1 || fm.spouse1_id) {
-			// Enhanced flat indexed format with metadata
-			spouses = this.parseIndexedSpouseRelationships(fm);
+			// Enhanced flat indexed format with metadata - cast fm for parseIndexedSpouseRelationships
+			spouses = this.parseIndexedSpouseRelationships(fm as unknown as PersonFrontmatter);
 			spouseCrIds = spouses.map(s => s.personId).filter(id => id);
 		} else {
-			// Legacy format: simple array of cr_ids or wikilinks
-			const spouseIdField = fm.spouse_id;
-			const spouseField = fm.spouse;
+			// Legacy format: simple array of cr_ids or wikilinks (with alias support)
+			const spouseIdField = this.resolveProperty<string | string[]>(fm, 'spouse_id');
+			const spouseField = this.resolveProperty<string | string[]>(fm, 'spouse');
 
 			if (spouseIdField) {
 				// Use _id field (dual storage)
@@ -884,56 +922,64 @@ export class FamilyGraphService {
 		}
 
 		// Parse children arrays (prefer _id field, fallback to son/daughter/children fields for legacy)
+		// All child-related properties support aliases
 		let childrenCrIds: string[] = [];
 
-		const childrenIdField = fm.children_id;
+		const childrenIdField = this.resolveProperty<string | string[]>(fm, 'children_id');
 		if (childrenIdField) {
 			// Use _id field (dual storage)
 			childrenCrIds = Array.isArray(childrenIdField) ? childrenIdField : [childrenIdField];
 		} else {
-			// Fallback to legacy fields
-			// Check for 'son' field
-			if (fm.son) {
-				const sons = Array.isArray(fm.son) ? fm.son : [fm.son];
-				childrenCrIds.push(...sons.map(v => this.extractCrIdFromWikilink(v) || v));
+			// Fallback to legacy fields (with alias support)
+			// Check for 'child' field
+			const childField = this.resolveProperty<string | string[]>(fm, 'child');
+			if (childField) {
+				const children = Array.isArray(childField) ? childField : [childField];
+				childrenCrIds.push(...children.map(v => this.extractCrIdFromWikilink(v) || v).filter((v): v is string => !!v));
 			}
 
-			// Check for 'daughter' field
-			if (fm.daughter) {
-				const daughters = Array.isArray(fm.daughter) ? fm.daughter : [fm.daughter];
-				childrenCrIds.push(...daughters.map(v => this.extractCrIdFromWikilink(v) || v));
-			}
-
-			// Check for generic 'children' field
+			// Check for generic 'children' field (no alias - kept for backward compat)
 			if (fm.children) {
 				const children = Array.isArray(fm.children) ? fm.children : [fm.children];
-				childrenCrIds.push(...children.map(v => this.extractCrIdFromWikilink(v) || v));
+				childrenCrIds.push(...(children as string[]).map(v => this.extractCrIdFromWikilink(v) || v).filter((v): v is string => !!v));
 			}
 		}
 
 		// Note: Frontmatter uses 'born'/'died' properties, mapped to birthDate/deathDate internally
 		// Convert Date objects to ISO strings if necessary (Obsidian parses YAML dates as Date objects)
-		const birthDate = fm.born instanceof Date ? fm.born.toISOString().split('T')[0] : fm.born;
-		const deathDate = fm.died instanceof Date ? fm.died.toISOString().split('T')[0] : fm.died;
+		// All date properties support aliases
+		const bornValue = this.resolveProperty<string | Date>(fm, 'born');
+		const diedValue = this.resolveProperty<string | Date>(fm, 'died');
+		const birthDate = bornValue instanceof Date ? bornValue.toISOString().split('T')[0] : bornValue;
+		const deathDate = diedValue instanceof Date ? diedValue.toISOString().split('T')[0] : diedValue;
+
+		// Resolve other properties with alias support
+		const birthPlace = this.resolveProperty<string>(fm, 'birth_place');
+		const deathPlace = this.resolveProperty<string>(fm, 'death_place');
+		const burialPlace = this.resolveProperty<string>(fm, 'burial_place');
+		const occupation = this.resolveProperty<string>(fm, 'occupation');
+		const sex = this.resolveProperty<string>(fm, 'gender') || this.resolveProperty<string>(fm, 'sex');
+		const collectionName = this.resolveProperty<string>(fm, 'group_name');
+		const collection = this.resolveProperty<string>(fm, 'collection');
 
 		return {
-			crId: fm.cr_id,
+			crId,
 			name,
 			birthDate,
 			deathDate,
-			birthPlace: fm.birth_place,
-			deathPlace: fm.death_place,
-			burialPlace: fm.burial_place,
-			occupation: fm.occupation,
-			sex: fm.sex || fm.gender,
+			birthPlace,
+			deathPlace,
+			burialPlace,
+			occupation,
+			sex,
 			file,
-			fatherCrId,
-			motherCrId,
+			fatherCrId: fatherCrId || undefined,
+			motherCrId: motherCrId || undefined,
 			spouseCrIds,
 			spouses, // Enhanced spouse relationships with metadata (if present)
 			childrenCrIds, // Now populated from frontmatter
-			collectionName: fm.group_name, // Optional group name
-			collection: fm.collection // Optional user-defined collection
+			collectionName,
+			collection
 		};
 	}
 

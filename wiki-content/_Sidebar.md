@@ -31,6 +31,7 @@
 
 ### Reference
 - [Frontmatter Reference](Frontmatter-Reference)
+- [Settings & Configuration](Settings-And-Configuration)
 - [Privacy & Security](Privacy-And-Security)
 - [FAQ](FAQ)
 - [Troubleshooting](Troubleshooting)

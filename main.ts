@@ -15,7 +15,7 @@ import { LoggerFactory, getLogger } from './src/core/logging';
 import { getErrorMessage } from './src/core/error-utils';
 import { FamilyGraphService } from './src/core/family-graph';
 import { CanvasGenerator } from './src/core/canvas-generator';
-import { BASE_TEMPLATE } from './src/constants/base-template';
+import { BASE_TEMPLATE, generatePeopleBaseTemplate } from './src/constants/base-template';
 import { PLACES_BASE_TEMPLATE } from './src/constants/places-base-template';
 import { ORGANIZATIONS_BASE_TEMPLATE } from './src/constants/organizations-base-template';
 import { SOURCES_BASE_TEMPLATE } from './src/constants/sources-base-template';
@@ -4620,8 +4620,9 @@ export default class CanvasRootsPlugin extends Plugin {
 				return;
 			}
 
-			// Create the file with template content
-			const file = await this.app.vault.create(defaultPath, BASE_TEMPLATE);
+			// Create the file with template content (using aliased property names)
+			const templateContent = generatePeopleBaseTemplate(this.settings.propertyAliases);
+			const file = await this.app.vault.create(defaultPath, templateContent);
 
 			new Notice('Base template created with 22 pre-configured views!');
 			logger.info('base-template', `Created base template at ${defaultPath}`);

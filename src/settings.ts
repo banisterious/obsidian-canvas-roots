@@ -153,6 +153,8 @@ export interface CanvasRootsSettings {
 	trackFactSourcing: boolean;
 	factCoverageThreshold: number;
 	showResearchGapsInStatus: boolean;
+	// Property aliases for custom frontmatter names
+	propertyAliases: Record<string, string>;
 }
 
 /**
@@ -281,7 +283,9 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	// Evidence visualization settings (Research tools - opt-in for advanced users)
 	trackFactSourcing: false,      // Default OFF - opt-in feature for researchers
 	factCoverageThreshold: 6,      // Number of facts for 100% coverage calculation
-	showResearchGapsInStatus: true // Show research gap summary when tracking is enabled
+	showResearchGapsInStatus: true, // Show research gap summary when tracking is enabled
+	// Property aliases for custom frontmatter names
+	propertyAliases: {}            // Maps user property name → Canvas Roots canonical name
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {
