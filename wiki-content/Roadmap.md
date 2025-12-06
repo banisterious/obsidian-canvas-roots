@@ -22,6 +22,7 @@ This document outlines planned features for Canvas Roots. For release history an
 - [Future Considerations](#future-considerations)
   - [Events Tab (Control Center)](#events-tab-control-center) ✅ v0.9.2
   - [Property Aliases](#property-aliases) ✅ v0.9.3
+  - [Value Aliases](#value-aliases)
   - [Person Note Templates](#person-note-templates)
   - [Accessibility](#accessibility)
   - [Obsidian Publish Support](#obsidian-publish-support)
@@ -49,9 +50,10 @@ The following priority order guides future development:
 | 10 | [Style Settings Integration](#style-settings-integration) | ✅ Complete (v0.9.1) |
 | 11 | [Events Tab (Control Center)](#events-tab-control-center) | ✅ Complete (v0.9.2) |
 | 12 | [Property Aliases](#property-aliases) | ✅ Complete (v0.9.3) |
-| 13 | [Chronological Story Mapping](#chronological-story-mapping) | Planned |
-| 14 | [Print & PDF Export](#print--pdf-export) | Planned |
-| 15 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
+| 13 | [Value Aliases](#value-aliases) | Planned |
+| 14 | [Chronological Story Mapping](#chronological-story-mapping) | Planned |
+| 15 | [Print & PDF Export](#print--pdf-export) | Planned |
+| 16 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
 
 ---
 
@@ -618,6 +620,27 @@ is_canonical: true
 - Location fields: `birth_place`, `death_place`
 - Relationship fields: `father`, `father_id`, `mother`, `mother_id`, `spouse`, `spouse_id`, `child`, `children_id`
 - Other fields: `occupation`, `universe`, `image`, `sourced_facts`, `relationships`
+
+---
+
+### Value Aliases
+
+> See [value-aliases.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/value-aliases.md) for detailed implementation plan.
+
+**Summary:** Extend the Property Aliases feature to support custom property *values*, not just property names. This allows users with existing vaults to use custom terminology (e.g., `nameday` instead of `birth` for event types) without editing existing notes.
+
+**Planned Features:**
+- Map custom values to Canvas Roots canonical values
+- Initial support for three field types:
+  - **Event type**: `birth`, `death`, `marriage`, `burial`, `residence`, `occupation`, `education`, `military`, `immigration`, `baptism`, `confirmation`, `ordination`, `custom`
+  - **Gender**: `male`, `female` (+ case variants)
+  - **Place category**: `real`, `historical`, `disputed`, `legendary`, `mythological`, `fictional`
+- Graceful fallback: unknown event types treated as `custom`
+- Unified "Aliases" card in Preferences with property names and property values sections
+
+**Use Case:** Worldbuilders with elaborate taxonomies who don't want to retrofit existing notes to match Canvas Roots' expected values.
+
+**Status:** Planning complete, awaiting user feedback on scope.
 
 ---
 
