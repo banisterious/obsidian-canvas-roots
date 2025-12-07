@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.10.3] - 2025-12-06
+
+Type Customization: Full type manager for Events, Sources, Organizations, Relationships, and Places. Create, edit, hide, and customize types and categories with user-defined names.
+
+### Added
+
+- **Type Managers**: Full customization UI for all note type categories
+  - Events: Create custom event types, rename built-ins (e.g., "birth" → "nameday"), organize into categories
+  - Sources: Add custom source types for specialized research materials
+  - Organizations: Define organization types for noble houses, guilds, corporations, etc.
+  - Relationships: Customize relationship types with colors and line styles
+  - Places: Add custom place types with hierarchy levels, organize into categories
+
+- **Category Management**: Create, edit, and organize type categories
+  - Create custom categories to group related types
+  - Rename built-in categories to match your terminology
+  - Reorder categories with sort order field
+  - Hide unused categories (built-in or custom)
+
+- **Type Customization Features**
+  - Override built-in types: Change name, description, icon, color
+  - Hide types: Remove from dropdowns while preserving existing notes
+  - Reset to defaults: Restore customized built-in types
+  - Delete custom types: Remove user-created types entirely
+
+- **Place Type Hierarchy**: Place types support both category and hierarchy level
+  - Hierarchy levels (0-99) determine valid parent-child relationships
+  - Categories (geographic, political, settlement, subdivision, structure) organize the UI
+  - Users can assign place types to any category regardless of hierarchy
+
+---
+
 ## [0.10.1] - 2025-12-06
 
 GEDCOM Import v2: Full-featured import with event notes, source notes, hierarchical place notes, progress indicator, and filename format options.

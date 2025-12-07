@@ -26,9 +26,23 @@ export type DatePrecision =
 	| 'unknown';   // Date unknown, use relative ordering
 
 /**
- * Event type category for grouping
+ * Built-in event type categories
  */
-export type EventTypeCategory = 'core' | 'extended' | 'narrative' | 'custom';
+export type BuiltInEventTypeCategory = 'vital' | 'life' | 'narrative';
+
+/**
+ * Event type category for grouping (built-in or user-defined)
+ */
+export type EventTypeCategory = BuiltInEventTypeCategory | string;
+
+/**
+ * Definition of a user-created category
+ */
+export interface EventCategoryDefinition {
+	id: string;
+	name: string;
+	sortOrder: number;
+}
 
 /**
  * Core event types (vital events)
@@ -98,14 +112,14 @@ export interface EventTypeDefinition {
  * Built-in event type definitions
  */
 export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
-	// Core types (vital events)
+	// Vital events (birth, death, marriage, divorce)
 	{
 		id: 'birth',
 		name: 'Birth',
 		description: 'Birth of a person',
 		icon: 'baby',
 		color: '#4ade80',
-		category: 'core',
+		category: 'vital',
 		isBuiltIn: true
 	},
 	{
@@ -114,7 +128,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Death of a person',
 		icon: 'skull',
 		color: '#6b7280',
-		category: 'core',
+		category: 'vital',
 		isBuiltIn: true
 	},
 	{
@@ -123,7 +137,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Marriage ceremony',
 		icon: 'heart',
 		color: '#f472b6',
-		category: 'core',
+		category: 'vital',
 		isBuiltIn: true
 	},
 	{
@@ -132,18 +146,18 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Divorce or annulment',
 		icon: 'heart-off',
 		color: '#ef4444',
-		category: 'core',
+		category: 'vital',
 		isBuiltIn: true
 	},
 
-	// Extended types (common life events)
+	// Life events (common non-vital life events)
 	{
 		id: 'residence',
 		name: 'Residence',
 		description: 'Change of residence',
 		icon: 'home',
 		color: '#60a5fa',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 	{
@@ -152,7 +166,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Employment or career change',
 		icon: 'hammer',
 		color: '#a78bfa',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 	{
@@ -161,7 +175,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Military service event',
 		icon: 'shield',
 		color: '#2e8b57',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 	{
@@ -170,7 +184,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Immigration or emigration',
 		icon: 'ship',
 		color: '#4169e1',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 	{
@@ -179,7 +193,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Educational milestone',
 		icon: 'graduation-cap',
 		color: '#fbbf24',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 	{
@@ -188,7 +202,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Burial or interment',
 		icon: 'map-pin',
 		color: '#78716c',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 	{
@@ -197,7 +211,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Baptism or christening',
 		icon: 'droplets',
 		color: '#38bdf8',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 	{
@@ -206,7 +220,7 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Religious confirmation',
 		icon: 'church',
 		color: '#9b59b6',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 	{
@@ -215,11 +229,11 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		description: 'Religious ordination',
 		icon: 'book-open',
 		color: '#7c3aed',
-		category: 'extended',
+		category: 'life',
 		isBuiltIn: true
 	},
 
-	// Narrative types (for storytelling)
+	// Narrative events (for storytelling and worldbuilding)
 	{
 		id: 'anecdote',
 		name: 'Anecdote',
@@ -290,17 +304,6 @@ export const EVENT_TYPE_DEFINITIONS: EventTypeDefinition[] = [
 		icon: 'check',
 		color: '#22c55e',
 		category: 'narrative',
-		isBuiltIn: true
-	},
-
-	// Custom type
-	{
-		id: 'custom',
-		name: 'Custom',
-		description: 'User-defined event type',
-		icon: 'calendar',
-		color: '#808080',
-		category: 'custom',
 		isBuiltIn: true
 	}
 ];
@@ -431,12 +434,28 @@ export interface EventStats {
 }
 
 /**
+ * Options for retrieving event types
+ */
+export interface EventTypeOptions {
+	/** User-defined event types */
+	customTypes?: EventTypeDefinition[];
+	/** Whether to include built-in types */
+	showBuiltIn?: boolean;
+	/** Customizations for built-in types (overrides) */
+	customizations?: Record<string, Partial<EventTypeDefinition>>;
+	/** Hidden type IDs (excluded from getAllEventTypes but still resolved by getEventType) */
+	hiddenTypes?: string[];
+}
+
+/**
  * Get an event type definition by ID
+ * Always returns the type if it exists, even if hidden (for existing notes)
  */
 export function getEventType(
 	typeId: string,
 	customTypes: EventTypeDefinition[] = [],
-	showBuiltIn = true
+	showBuiltIn = true,
+	customizations?: Record<string, Partial<EventTypeDefinition>>
 ): EventTypeDefinition | undefined {
 	// Check custom types first
 	const customType = customTypes.find(t => t.id === typeId);
@@ -444,7 +463,19 @@ export function getEventType(
 
 	// Check built-in types
 	if (showBuiltIn) {
-		return EVENT_TYPE_DEFINITIONS.find(t => t.id === typeId);
+		const builtIn = EVENT_TYPE_DEFINITIONS.find(t => t.id === typeId);
+		if (builtIn) {
+			// Apply customizations if any
+			const overrides = customizations?.[typeId];
+			if (overrides) {
+				return {
+					...builtIn,
+					...overrides,
+					isBuiltIn: true // Always preserve this
+				};
+			}
+			return builtIn;
+		}
 	}
 
 	return undefined;
@@ -452,18 +483,42 @@ export function getEventType(
 
 /**
  * Get all available event types
+ * Respects customizations and hidden types
  */
 export function getAllEventTypes(
 	customTypes: EventTypeDefinition[] = [],
-	showBuiltIn = true
+	showBuiltIn = true,
+	customizations?: Record<string, Partial<EventTypeDefinition>>,
+	hiddenTypes?: string[]
 ): EventTypeDefinition[] {
 	const types: EventTypeDefinition[] = [];
+	const hidden = new Set(hiddenTypes ?? []);
 
 	if (showBuiltIn) {
-		types.push(...EVENT_TYPE_DEFINITIONS);
+		for (const builtIn of EVENT_TYPE_DEFINITIONS) {
+			// Skip hidden types
+			if (hidden.has(builtIn.id)) continue;
+
+			// Apply customizations if any
+			const overrides = customizations?.[builtIn.id];
+			if (overrides) {
+				types.push({
+					...builtIn,
+					...overrides,
+					isBuiltIn: true
+				});
+			} else {
+				types.push(builtIn);
+			}
+		}
 	}
 
-	types.push(...customTypes);
+	// Add user-defined types (excluding hidden ones)
+	for (const custom of customTypes) {
+		if (!hidden.has(custom.id)) {
+			types.push(custom);
+		}
+	}
 
 	return types;
 }
@@ -473,17 +528,27 @@ export function getAllEventTypes(
  */
 export function getEventTypesByCategory(
 	customTypes: EventTypeDefinition[] = [],
-	showBuiltIn = true
-): Record<EventTypeCategory, EventTypeDefinition[]> {
-	const types = getAllEventTypes(customTypes, showBuiltIn);
-	const grouped: Record<EventTypeCategory, EventTypeDefinition[]> = {
-		core: [],
-		extended: [],
-		narrative: [],
-		custom: []
-	};
+	showBuiltIn = true,
+	customizations?: Record<string, Partial<EventTypeDefinition>>,
+	hiddenTypes?: string[],
+	customCategories: EventCategoryDefinition[] = [],
+	categoryCustomizations?: Record<string, Partial<EventCategoryDefinition>>,
+	hiddenCategories?: string[]
+): Record<string, EventTypeDefinition[]> {
+	const types = getAllEventTypes(customTypes, showBuiltIn, customizations, hiddenTypes);
+	const allCategories = getAllCategories(customCategories, categoryCustomizations, hiddenCategories);
 
+	// Initialize grouped object with all categories
+	const grouped: Record<string, EventTypeDefinition[]> = {};
+	for (const cat of allCategories) {
+		grouped[cat.id] = [];
+	}
+
+	// Group types into their categories
 	for (const type of types) {
+		if (!grouped[type.category]) {
+			grouped[type.category] = [];
+		}
 		grouped[type.category].push(type);
 	}
 
@@ -491,14 +556,84 @@ export function getEventTypesByCategory(
 }
 
 /**
- * Category display names
+ * Built-in category definitions
  */
-export const EVENT_CATEGORY_NAMES: Record<EventTypeCategory, string> = {
-	core: 'Vital events',
-	extended: 'Life events',
-	narrative: 'Narrative events',
-	custom: 'Custom'
-};
+export const BUILT_IN_CATEGORIES: EventCategoryDefinition[] = [
+	{ id: 'vital', name: 'Vital events', sortOrder: 0 },
+	{ id: 'life', name: 'Life events', sortOrder: 1 },
+	{ id: 'narrative', name: 'Narrative events', sortOrder: 2 }
+];
+
+/**
+ * Options for getting categories
+ */
+export interface CategoryOptions {
+	customCategories?: EventCategoryDefinition[];
+	customizations?: Record<string, Partial<EventCategoryDefinition>>;
+	hiddenCategories?: string[];
+}
+
+/**
+ * Get all categories (built-in + custom)
+ * Supports customizations and hiding of built-in categories
+ */
+export function getAllCategories(
+	customCategories: EventCategoryDefinition[] = [],
+	customizations?: Record<string, Partial<EventCategoryDefinition>>,
+	hiddenCategories?: string[]
+): EventCategoryDefinition[] {
+	const hidden = new Set(hiddenCategories ?? []);
+	const categories: EventCategoryDefinition[] = [];
+
+	// Add built-in categories (with customizations, excluding hidden)
+	for (const builtIn of BUILT_IN_CATEGORIES) {
+		if (hidden.has(builtIn.id)) continue;
+
+		const overrides = customizations?.[builtIn.id];
+		if (overrides) {
+			categories.push({
+				...builtIn,
+				...overrides
+			});
+		} else {
+			categories.push(builtIn);
+		}
+	}
+
+	// Add custom categories, avoiding duplicate IDs
+	const existingIds = new Set(categories.map(c => c.id));
+	for (const custom of customCategories) {
+		if (!existingIds.has(custom.id)) {
+			categories.push(custom);
+		}
+	}
+
+	// Sort by sortOrder
+	return categories.sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+/**
+ * Get category display name
+ * Respects customizations for built-in categories
+ */
+export function getCategoryName(
+	categoryId: string,
+	customCategories: EventCategoryDefinition[] = [],
+	customizations?: Record<string, Partial<EventCategoryDefinition>>
+): string {
+	// Check customizations first for built-in categories
+	const customization = customizations?.[categoryId];
+	if (customization?.name) return customization.name;
+
+	const builtIn = BUILT_IN_CATEGORIES.find(c => c.id === categoryId);
+	if (builtIn) return builtIn.name;
+
+	const custom = customCategories.find(c => c.id === categoryId);
+	if (custom) return custom.name;
+
+	// Fallback: capitalize the ID
+	return categoryId.charAt(0).toUpperCase() + categoryId.slice(1);
+}
 
 /**
  * Check if a string is a valid built-in event type
@@ -508,11 +643,18 @@ export function isBuiltInEventType(type: string): type is BuiltInEventType {
 }
 
 /**
+ * Check if a category is built-in
+ */
+export function isBuiltInCategory(categoryId: string): boolean {
+	return BUILT_IN_CATEGORIES.some(c => c.id === categoryId);
+}
+
+/**
  * Get the category for an event type
  */
 export function getEventTypeCategory(typeId: string): EventTypeCategory {
-	if ((CORE_EVENT_TYPES as readonly string[]).includes(typeId)) return 'core';
-	if ((EXTENDED_EVENT_TYPES as readonly string[]).includes(typeId)) return 'extended';
+	if ((CORE_EVENT_TYPES as readonly string[]).includes(typeId)) return 'vital';
+	if ((EXTENDED_EVENT_TYPES as readonly string[]).includes(typeId)) return 'life';
 	if ((NARRATIVE_EVENT_TYPES as readonly string[]).includes(typeId)) return 'narrative';
-	return 'custom';
+	return 'life'; // Default to life events for unknown types
 }

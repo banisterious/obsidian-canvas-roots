@@ -4,8 +4,11 @@ import type { LogLevel } from './core/logging';
 import type { RelationshipTypeDefinition } from './relationships';
 import type { FictionalDateSystem } from './dates';
 import type { OrganizationTypeDefinition } from './organizations';
-import type { SourceTypeDefinition, CitationFormat } from './sources/types/source-types';
-import type { EventTypeDefinition } from './events/types/event-types';
+import type { SourceTypeDefinition, CitationFormat, SourceCategoryDefinition } from './sources/types/source-types';
+import type { EventTypeDefinition, EventCategoryDefinition } from './events/types/event-types';
+import type { OrganizationCategoryDefinition } from './organizations/types/organization-types';
+import type { RelationshipCategoryDefinition } from './relationships/types/relationship-types';
+import type { PlaceTypeDefinition, PlaceTypeCategoryDefinition } from './places/types/place-types';
 
 export interface RecentTreeInfo {
 	canvasPath: string;
@@ -130,9 +133,32 @@ export interface CanvasRootsSettings {
 	// Place category defaults
 	defaultPlaceCategory: PlaceCategory;
 	placeCategoryRules: PlaceCategoryRule[];
+	// Place type management
+	customPlaceTypes: PlaceTypeDefinition[];
+	showBuiltInPlaceTypes: boolean;
+	/** Customizations for built-in place types (overrides name, description) */
+	placeTypeCustomizations: Record<string, Partial<PlaceTypeDefinition>>;
+	/** Hidden place types (won't appear in dropdowns, but existing notes still work) */
+	hiddenPlaceTypes: string[];
+	/** User-defined place type categories */
+	customPlaceTypeCategories: PlaceTypeCategoryDefinition[];
+	/** Customizations for built-in place type categories (name overrides) */
+	placeTypeCategoryCustomizations: Record<string, Partial<PlaceTypeCategoryDefinition>>;
+	/** Hidden/deleted built-in place type category IDs */
+	hiddenPlaceTypeCategories: string[];
 	// Custom relationship types
 	customRelationshipTypes: RelationshipTypeDefinition[];
 	showBuiltInRelationshipTypes: boolean;
+	/** Customizations for built-in relationship types (overrides name, color, lineStyle) */
+	relationshipTypeCustomizations: Record<string, Partial<RelationshipTypeDefinition>>;
+	/** Hidden relationship types (won't appear in dropdowns, but existing notes still work) */
+	hiddenRelationshipTypes: string[];
+	/** User-defined relationship categories */
+	customRelationshipCategories: RelationshipCategoryDefinition[];
+	/** Customizations for built-in relationship categories (name overrides) */
+	relationshipCategoryCustomizations: Record<string, Partial<RelationshipCategoryDefinition>>;
+	/** Hidden/deleted built-in relationship category IDs */
+	hiddenRelationshipCategories: string[];
 	// Fictional date systems
 	enableFictionalDates: boolean;
 	fictionalDateSystems: FictionalDateSystem[];
@@ -141,6 +167,16 @@ export interface CanvasRootsSettings {
 	organizationsFolder: string;
 	customOrganizationTypes: OrganizationTypeDefinition[];
 	showBuiltInOrganizationTypes: boolean;
+	/** Customizations for built-in organization types (overrides name, icon, color) */
+	organizationTypeCustomizations: Record<string, Partial<OrganizationTypeDefinition>>;
+	/** Hidden organization types (won't appear in dropdowns, but existing notes still work) */
+	hiddenOrganizationTypes: string[];
+	/** User-defined organization categories */
+	customOrganizationCategories: OrganizationCategoryDefinition[];
+	/** Customizations for built-in organization categories (name overrides) */
+	organizationCategoryCustomizations: Record<string, Partial<OrganizationCategoryDefinition>>;
+	/** Hidden/deleted built-in organization category IDs */
+	hiddenOrganizationCategories: string[];
 	// Source management settings
 	sourcesFolder: string;
 	// Bases folder
@@ -150,6 +186,16 @@ export interface CanvasRootsSettings {
 	thumbnailSize: 'small' | 'medium' | 'large';
 	customSourceTypes: SourceTypeDefinition[];
 	showBuiltInSourceTypes: boolean;
+	/** Customizations for built-in source types (overrides name, icon, color) */
+	sourceTypeCustomizations: Record<string, Partial<SourceTypeDefinition>>;
+	/** Hidden source types (won't appear in dropdowns, but existing notes still work) */
+	hiddenSourceTypes: string[];
+	/** User-defined source categories */
+	customSourceCategories: SourceCategoryDefinition[];
+	/** Customizations for built-in source categories (name overrides) */
+	sourceCategoryCustomizations: Record<string, Partial<SourceCategoryDefinition>>;
+	/** Hidden/deleted built-in source category IDs */
+	hiddenSourceCategories: string[];
 	// Source indicators on tree nodes
 	showSourceIndicators: boolean;
 	// Evidence visualization settings (Research tools - opt-in)
@@ -165,6 +211,16 @@ export interface CanvasRootsSettings {
 	timelinesFolder: string;
 	customEventTypes: EventTypeDefinition[];
 	showBuiltInEventTypes: boolean;
+	/** Customizations for built-in event types (overrides name, icon, color) */
+	eventTypeCustomizations: Record<string, Partial<EventTypeDefinition>>;
+	/** Hidden event types (won't appear in dropdowns, but existing notes still work) */
+	hiddenEventTypes: string[];
+	/** User-defined event categories */
+	customEventCategories: EventCategoryDefinition[];
+	/** Customizations for built-in categories (name overrides) */
+	categoryCustomizations: Record<string, Partial<EventCategoryDefinition>>;
+	/** Hidden/deleted built-in category IDs */
+	hiddenCategories: string[];
 	// Note type detection settings
 	noteTypeDetection: NoteTypeDetectionSettings;
 }
@@ -301,9 +357,22 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	// Place category defaults
 	defaultPlaceCategory: 'real',  // Default place category when creating new places
 	placeCategoryRules: [],        // Folder/collection-based category rules
+	// Place type management
+	customPlaceTypes: [],                    // User-defined place types (built-ins are always available)
+	showBuiltInPlaceTypes: true,             // Whether to show built-in place types in UI
+	placeTypeCustomizations: {},             // Overrides for built-in place types
+	hiddenPlaceTypes: [],                    // Place types hidden from dropdowns
+	customPlaceTypeCategories: [],           // User-defined place type categories
+	placeTypeCategoryCustomizations: {},     // Overrides for built-in place type category names
+	hiddenPlaceTypeCategories: [],           // Hidden/deleted built-in place type categories
 	// Custom relationship types
 	customRelationshipTypes: [],   // User-defined relationship types (built-ins are always available)
 	showBuiltInRelationshipTypes: true,  // Whether to show built-in types in UI
+	relationshipTypeCustomizations: {},  // Overrides for built-in relationship types
+	hiddenRelationshipTypes: [],         // Relationship types hidden from dropdowns
+	customRelationshipCategories: [],    // User-defined relationship categories
+	relationshipCategoryCustomizations: {}, // Overrides for built-in relationship category names
+	hiddenRelationshipCategories: [],    // Hidden/deleted built-in relationship categories
 	// Fictional date systems
 	enableFictionalDates: true,    // Enable fictional date parsing and display
 	fictionalDateSystems: [],      // User-defined date systems (built-ins are always available)
@@ -312,6 +381,11 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	organizationsFolder: 'Canvas Roots/Organizations',  // Default folder for organization notes
 	customOrganizationTypes: [],   // User-defined organization types (built-ins are always available)
 	showBuiltInOrganizationTypes: true,  // Whether to show built-in organization types in UI
+	organizationTypeCustomizations: {},  // Overrides for built-in organization types
+	hiddenOrganizationTypes: [],         // Organization types hidden from dropdowns
+	customOrganizationCategories: [],    // User-defined organization categories
+	organizationCategoryCustomizations: {}, // Overrides for built-in organization category names
+	hiddenOrganizationCategories: [],    // Hidden/deleted built-in organization categories
 	// Source management settings
 	sourcesFolder: 'Canvas Roots/Sources',  // Default folder for source notes
 	// Bases folder
@@ -321,6 +395,11 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	thumbnailSize: 'medium',      // Thumbnail size (small/medium/large)
 	customSourceTypes: [],        // User-defined source types (built-ins are always available)
 	showBuiltInSourceTypes: true, // Whether to show built-in source types in UI
+	sourceTypeCustomizations: {}, // Overrides for built-in source types
+	hiddenSourceTypes: [],        // Source types hidden from dropdowns
+	customSourceCategories: [],   // User-defined source categories
+	sourceCategoryCustomizations: {}, // Overrides for built-in source category names
+	hiddenSourceCategories: [],   // Hidden/deleted built-in source categories
 	// Source indicators on tree nodes
 	showSourceIndicators: false,   // Default OFF - users opt-in to this feature
 	// Evidence visualization settings (Research tools - opt-in for advanced users)
@@ -340,6 +419,11 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	timelinesFolder: 'Canvas Roots/Timelines', // Default folder for timeline notes
 	customEventTypes: [],                      // User-defined event types (built-ins are always available)
 	showBuiltInEventTypes: true,               // Whether to show built-in event types in UI
+	eventTypeCustomizations: {},               // Overrides for built-in event types
+	hiddenEventTypes: [],                      // Event types hidden from dropdowns
+	customEventCategories: [],                 // User-defined event categories
+	categoryCustomizations: {},                // Overrides for built-in category names
+	hiddenCategories: [],                      // Hidden/deleted built-in categories
 	// Note type detection settings
 	noteTypeDetection: {
 		enableTagDetection: true,              // Allow #person, #place, etc. as fallback

@@ -137,7 +137,8 @@ export interface SourceTypeDefinition {
 	description: string;
 	icon: LucideIconName;
 	color: string;
-	category: 'vital' | 'census' | 'church' | 'legal' | 'military' | 'media' | 'other';
+	/** Category ID - can be built-in or custom */
+	category: string;
 	isBuiltIn: boolean;
 	/** Markdown template for the note body (without frontmatter) */
 	template?: string;
@@ -473,3 +474,174 @@ export const SOURCE_QUALITY_LABELS: Record<SourceQuality, { label: string; descr
 		description: 'Copies, transcriptions, or abstracts of other sources'
 	}
 };
+
+/**
+ * Source type category identifier
+ */
+export type SourceTypeCategory = 'vital' | 'census' | 'church' | 'legal' | 'military' | 'media' | 'other' | string;
+
+/**
+ * Definition of a source type category (built-in or custom)
+ */
+export interface SourceCategoryDefinition {
+	id: string;
+	name: string;
+	sortOrder: number;
+}
+
+/**
+ * Built-in source type categories
+ */
+export const BUILT_IN_SOURCE_CATEGORIES: SourceCategoryDefinition[] = [
+	{ id: 'vital', name: 'Vital records', sortOrder: 0 },
+	{ id: 'census', name: 'Census', sortOrder: 1 },
+	{ id: 'church', name: 'Church records', sortOrder: 2 },
+	{ id: 'legal', name: 'Legal & property', sortOrder: 3 },
+	{ id: 'military', name: 'Military', sortOrder: 4 },
+	{ id: 'media', name: 'Media & correspondence', sortOrder: 5 },
+	{ id: 'other', name: 'Other', sortOrder: 6 }
+];
+
+/**
+ * Check if a category ID is a built-in category
+ */
+export function isBuiltInSourceCategory(categoryId: string): boolean {
+	return BUILT_IN_SOURCE_CATEGORIES.some(c => c.id === categoryId);
+}
+
+/**
+ * Get all source type categories (built-in + custom)
+ * Supports customizations and hiding of built-in categories
+ */
+export function getAllSourceCategories(
+	customCategories: SourceCategoryDefinition[] = [],
+	customizations?: Record<string, Partial<SourceCategoryDefinition>>,
+	hiddenCategories?: string[]
+): SourceCategoryDefinition[] {
+	const hidden = new Set(hiddenCategories ?? []);
+	const categories: SourceCategoryDefinition[] = [];
+
+	// Add built-in categories (with customizations, excluding hidden)
+	for (const builtIn of BUILT_IN_SOURCE_CATEGORIES) {
+		if (hidden.has(builtIn.id)) continue;
+
+		const overrides = customizations?.[builtIn.id];
+		if (overrides) {
+			categories.push({
+				...builtIn,
+				...overrides
+			});
+		} else {
+			categories.push(builtIn);
+		}
+	}
+
+	// Add custom categories, avoiding duplicate IDs
+	const existingIds = new Set(categories.map(c => c.id));
+	for (const custom of customCategories) {
+		if (!existingIds.has(custom.id)) {
+			categories.push(custom);
+		}
+	}
+
+	// Sort by sortOrder
+	return categories.sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+/**
+ * Get source category display name
+ * Respects customizations for built-in categories
+ */
+export function getSourceCategoryName(
+	categoryId: string,
+	customCategories: SourceCategoryDefinition[] = [],
+	customizations?: Record<string, Partial<SourceCategoryDefinition>>
+): string {
+	// Check customizations first for built-in categories
+	const customization = customizations?.[categoryId];
+	if (customization?.name) return customization.name;
+
+	const builtIn = BUILT_IN_SOURCE_CATEGORIES.find(c => c.id === categoryId);
+	if (builtIn) return builtIn.name;
+
+	const custom = customCategories.find(c => c.id === categoryId);
+	if (custom) return custom.name;
+
+	// Fallback: use SOURCE_CATEGORY_NAMES or capitalize the ID
+	return SOURCE_CATEGORY_NAMES[categoryId] || categoryId.charAt(0).toUpperCase() + categoryId.slice(1);
+}
+
+/**
+ * Get all source types with customizations and filtering applied
+ */
+export function getAllSourceTypesWithCustomizations(
+	customTypes: SourceTypeDefinition[] = [],
+	showBuiltIn = true,
+	customizations?: Record<string, Partial<SourceTypeDefinition>>,
+	hiddenTypes?: string[]
+): SourceTypeDefinition[] {
+	const hidden = new Set(hiddenTypes ?? []);
+	const types: SourceTypeDefinition[] = [];
+
+	// Add built-in types with customizations
+	if (showBuiltIn) {
+		for (const builtIn of BUILT_IN_SOURCE_TYPES) {
+			if (hidden.has(builtIn.id)) continue;
+
+			const overrides = customizations?.[builtIn.id];
+			if (overrides) {
+				types.push({
+					...builtIn,
+					...overrides
+				});
+			} else {
+				types.push(builtIn);
+			}
+		}
+	}
+
+	// Add custom types (excluding hidden)
+	for (const custom of customTypes) {
+		if (!hidden.has(custom.id)) {
+			types.push(custom);
+		}
+	}
+
+	return types;
+}
+
+/**
+ * Group source types by category with full customization support
+ */
+export function getSourceTypesByCategoryWithCustomizations(
+	customTypes: SourceTypeDefinition[] = [],
+	showBuiltIn = true,
+	typeCustomizations?: Record<string, Partial<SourceTypeDefinition>>,
+	hiddenTypes?: string[],
+	customCategories: SourceCategoryDefinition[] = [],
+	categoryCustomizations?: Record<string, Partial<SourceCategoryDefinition>>,
+	hiddenCategories?: string[]
+): Record<string, SourceTypeDefinition[]> {
+	const types = getAllSourceTypesWithCustomizations(customTypes, showBuiltIn, typeCustomizations, hiddenTypes);
+	const allCategories = getAllSourceCategories(customCategories, categoryCustomizations, hiddenCategories);
+
+	// Initialize grouped object with all categories
+	const grouped: Record<string, SourceTypeDefinition[]> = {};
+	for (const cat of allCategories) {
+		grouped[cat.id] = [];
+	}
+
+	// Group types into their categories
+	for (const type of types) {
+		if (grouped[type.category]) {
+			grouped[type.category].push(type);
+		} else {
+			// Type's category not in list (possibly hidden), add to 'other'
+			if (grouped['other']) {
+				grouped['other'].push(type);
+			}
+		}
+	}
+
+	return grouped;
+}

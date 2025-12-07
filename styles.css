@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-07 01:38:41 UTC
+ * - Generated: 2025-12-07 04:32:32 UTC
  * - Components: 29 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -10291,7 +10291,7 @@ input[type="text"]::-webkit-input-placeholder {
    COMPONENT: EVENTS.CSS
    ========================================================================== */
 
-/* Component Size: 1044 lines, 21.33 KB */
+/* Component Size: 1306 lines, 26.07 KB */
 
 /**
  * Events Styles
@@ -11243,6 +11243,268 @@ input[type="text"]::-webkit-input-placeholder {
 .crc-place-timeline-event__details {
   font-size: var(--font-ui-smaller);
   margin-top: var(--size-2-1);
+}
+
+/* ==========================================================================
+   Event Type Manager
+   ========================================================================== */
+
+.crc-type-manager-header {
+  display: flex;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-4-3);
+  flex-wrap: wrap;
+}
+
+.crc-type-manager-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-3);
+}
+
+.crc-type-category {
+  margin-bottom: var(--size-4-3);
+}
+
+.crc-type-category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--size-4-2);
+}
+
+.crc-type-category-heading {
+  font-size: var(--font-ui-small);
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.crc-type-category-actions {
+  display: flex;
+  gap: var(--size-2-2);
+}
+
+.crc-type-category-actions .crc-btn--small {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.crc-type-category-actions .crc-btn--danger {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.crc-type-category-actions .crc-btn--danger:hover {
+  background: rgba(255, 100, 100, 0.1);
+  color: var(--text-error);
+}
+
+.crc-type-empty-category {
+  margin: 0;
+  padding: var(--size-4-2);
+  font-style: italic;
+}
+
+.crc-add-category-row {
+  margin-top: var(--size-4-3);
+  padding-top: var(--size-4-2);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Type table */
+.crc-type-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-ui-small);
+}
+
+.crc-type-row {
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.crc-type-row:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.crc-type-row.is-hidden {
+  opacity: 0.5;
+}
+
+.crc-type-row td {
+  padding: var(--size-2-2) var(--size-2-3);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.crc-type-row:last-child td {
+  border-bottom: none;
+}
+
+.crc-type-cell-icon {
+  width: 32px;
+  padding-left: 0 !important;
+}
+
+.crc-type-icon-swatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-s);
+}
+
+.crc-type-icon-swatch svg {
+  width: 14px;
+  height: 14px;
+}
+
+.crc-type-cell-name {
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.crc-type-cell-status {
+  width: 100px;
+}
+
+.crc-type-cell-actions {
+  width: auto;
+  text-align: right;
+  padding-right: 0 !important;
+}
+
+.crc-type-actions-wrapper {
+  display: flex;
+  gap: var(--size-2-2);
+  justify-content: flex-end;
+}
+
+.crc-type-cell-actions .crc-btn-icon {
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.crc-type-row:hover .crc-type-cell-actions .crc-btn-icon {
+  opacity: 1;
+}
+
+.crc-type-cell-actions .crc-btn--small {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.crc-type-cell-actions .crc-btn--danger {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.crc-type-cell-actions .crc-btn--danger:hover {
+  background: rgba(255, 100, 100, 0.1);
+  color: var(--text-error);
+}
+
+.crc-type-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: var(--radius-s);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.crc-type-badge--builtin {
+  background-color: var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.crc-type-badge--customized {
+  background-color: var(--color-blue-rgb, 66, 133, 244);
+  background-color: rgba(66, 133, 244, 0.2);
+  color: var(--color-blue, #4285f4);
+}
+
+.crc-type-badge--hidden {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: var(--text-warning);
+}
+
+.crc-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-s);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.crc-btn-icon:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.crc-btn-icon--danger:hover {
+  color: var(--text-error);
+}
+
+.crc-btn-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.crc-hidden-types-info {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-4-2);
+  font-size: var(--font-ui-small);
+}
+
+.crc-btn-link {
+  background: none;
+  border: none;
+  color: var(--text-accent);
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.crc-btn-link:hover {
+  text-decoration: underline;
+}
+
+/* Event Type Editor Modal */
+.cr-event-type-editor-modal {
+  max-width: 500px;
+  width: 500px;
+}
+
+.cr-event-type-editor-modal .modal-content {
+  padding: 24px;
+}
+
+.cr-modal-info {
+  padding: var(--size-4-2) var(--size-4-3);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-m);
+  margin-bottom: var(--size-4-3);
+}
+
+.cr-modal-info p {
+  margin: 0;
 }
 
 /* ==========================================================================
@@ -13318,10 +13580,10 @@ input[type="text"]::-webkit-input-placeholder {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-07 01:38:41 UTC
+ * Build completed: 2025-12-07 04:32:32 UTC
  * Components processed: 29
- * Total lines: 13034
- * Total size: 252.54 KB
+ * Total lines: 13296
+ * Total size: 257.29 KB
  * Build duration: 0.04 seconds
  *
  * Component breakdown:
@@ -13347,7 +13609,7 @@ input[type="text"]::-webkit-input-placeholder {
  * - map-view.css: 1787 lines, 36.51 KB
  * - leaflet-distortable.css: 368 lines, 7.73 KB
  * - date-systems.css: 287 lines, 5.31 KB
- * - events.css: 1044 lines, 21.33 KB
+ * - events.css: 1306 lines, 26.07 KB
  * - organizations.css: 208 lines, 3.59 KB
  * - sources.css: 1581 lines, 30.77 KB
  * - preferences.css: 94 lines, 1.84 KB

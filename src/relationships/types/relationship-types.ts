@@ -9,12 +9,24 @@
  * Category of relationship for grouping in UI
  */
 export type RelationshipCategory =
+	| 'family'       // Spouse, parent, child, sibling
 	| 'legal'        // Guardian, adoptive parent, foster parent
 	| 'religious'    // Godparent, mentor, disciple
 	| 'professional' // Master, apprentice, employer
 	| 'social'       // Witness, neighbor, companion, ally, rival
-	| 'feudal'       // Liege, vassal (world-building)
-	| 'custom';      // User-defined
+	| 'feudal';      // Liege, vassal (world-building)
+
+/**
+ * Definition of a relationship category for grouping types
+ */
+export interface RelationshipCategoryDefinition {
+	/** Unique identifier */
+	id: string;
+	/** Display name */
+	name: string;
+	/** Sort order for display (lower = first) */
+	sortOrder: number;
+}
 
 /**
  * Line style for relationship edges on canvas
@@ -29,8 +41,10 @@ export interface RelationshipTypeDefinition {
 	id: string;
 	/** Display name */
 	name: string;
+	/** Brief description of this relationship type */
+	description?: string;
 	/** Category for grouping in UI */
-	category: RelationshipCategory;
+	category: RelationshipCategory | string;
 	/** Edge color (hex format) */
 	color: string;
 	/** Line style for canvas edges */
@@ -117,12 +131,12 @@ export interface RelationshipValidationResult {
  * Human-readable category names for display
  */
 export const RELATIONSHIP_CATEGORY_NAMES: Record<RelationshipCategory, string> = {
+	family: 'Family',
 	legal: 'Legal/Guardianship',
 	religious: 'Religious/Spiritual',
 	professional: 'Professional',
 	social: 'Social',
-	feudal: 'Feudal/World-building',
-	custom: 'Custom'
+	feudal: 'Feudal/World-building'
 };
 
 /**

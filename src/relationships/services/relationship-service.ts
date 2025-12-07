@@ -234,17 +234,20 @@ export class RelationshipService {
 		// Count by type and category
 		const byType: Record<string, number> = {};
 		const byCategory: Record<RelationshipCategory, number> = {
+			family: 0,
 			legal: 0,
 			religious: 0,
 			professional: 0,
 			social: 0,
-			feudal: 0,
-			custom: 0
+			feudal: 0
 		};
 
 		for (const rel of definedRels) {
 			byType[rel.type.id] = (byType[rel.type.id] || 0) + 1;
-			byCategory[rel.type.category]++;
+			const cat = rel.type.category as RelationshipCategory;
+			if (cat in byCategory) {
+				byCategory[cat]++;
+			}
 		}
 
 		// Count people with relationships

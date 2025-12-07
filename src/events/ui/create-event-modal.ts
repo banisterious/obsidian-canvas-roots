@@ -15,7 +15,7 @@ import {
 	EventTypeDefinition,
 	DATE_PRECISION_LABELS,
 	CONFIDENCE_LABELS,
-	EVENT_CATEGORY_NAMES,
+	getCategoryName,
 	getEventTypesByCategory
 } from '../types/event-types';
 
@@ -298,7 +298,11 @@ export class CreateEventModal extends Modal {
 				for (const [category, types] of Object.entries(eventTypes)) {
 					if (types.length === 0) continue;
 
-					const categoryName = EVENT_CATEGORY_NAMES[category as keyof typeof EVENT_CATEGORY_NAMES];
+					const categoryName = getCategoryName(
+						category,
+						this.settings.customEventCategories || [],
+						this.settings.categoryCustomizations
+					);
 
 					// Add category header as disabled option
 					dropdown.addOption(`__category_${category}__`, `── ${categoryName} ──`);

@@ -12,9 +12,10 @@ import { createLucideIcon } from '../../ui/lucide-icons';
 import { createDateSystemsCard } from './date-systems-card';
 import { CreateEventModal } from '../../events/ui/create-event-modal';
 import type { EventNote } from '../../events/types/event-types';
-import { getEventType, getAllEventTypes, EVENT_CATEGORY_NAMES } from '../../events/types/event-types';
+import { getEventType, getAllEventTypes } from '../../events/types/event-types';
 import { TimelineCanvasExporter, TimelineColorScheme, TimelineLayoutStyle } from '../../events/services/timeline-canvas-exporter';
 import { computeSortOrder } from '../../events/services/sort-order-service';
+import { renderEventTypeManagerCard } from '../../events/ui/event-type-manager-card';
 
 /**
  * Render the Events tab content
@@ -33,6 +34,13 @@ export function renderEventsTab(
 
 	// Export card (export timeline to Canvas/Excalidraw)
 	renderExportCard(container, plugin, createCard);
+
+	// Event Type Manager card (customize, hide, create event types)
+	renderEventTypeManagerCard(container, plugin, createCard, () => {
+		// Refresh the tab content when types change
+		container.empty();
+		renderEventsTab(container, plugin, createCard, showTab);
+	});
 
 	// Date Systems card (moved from Canvas Settings)
 	const dateSystemsCard = createDateSystemsCard(
@@ -229,7 +237,9 @@ function renderTimelineCard(
 
 	const eventTypes = getAllEventTypes(
 		plugin.settings.customEventTypes || [],
-		plugin.settings.showBuiltInEventTypes !== false
+		plugin.settings.showBuiltInEventTypes !== false,
+		plugin.settings.eventTypeCustomizations,
+		plugin.settings.hiddenEventTypes
 	);
 	for (const type of eventTypes) {
 		typeFilter.createEl('option', { value: type.id, text: type.name });
@@ -432,7 +442,8 @@ function renderEventTable(
 		const typeDef = getEventType(
 			event.eventType,
 			plugin.settings.customEventTypes || [],
-			plugin.settings.showBuiltInEventTypes !== false
+			plugin.settings.showBuiltInEventTypes !== false,
+			plugin.settings.eventTypeCustomizations
 		);
 		if (typeDef) {
 			const badge = typeCell.createEl('span', { cls: 'crc-event-type-badge' });
@@ -660,11 +671,13 @@ function renderExportCard(
 	const typeSelect = typeRow.createEl('select', { cls: 'crc-form-select' });
 	typeSelect.createEl('option', { value: '', text: 'All types' });
 
-	const eventTypes = getAllEventTypes(
+	const exportEventTypes = getAllEventTypes(
 		plugin.settings.customEventTypes || [],
-		plugin.settings.showBuiltInEventTypes !== false
+		plugin.settings.showBuiltInEventTypes !== false,
+		plugin.settings.eventTypeCustomizations,
+		plugin.settings.hiddenEventTypes
 	);
-	for (const type of eventTypes) {
+	for (const type of exportEventTypes) {
 		typeSelect.createEl('option', { value: type.id, text: type.name });
 	}
 

@@ -5,20 +5,16 @@
  * sources list, statistics, and source types.
  */
 
-import { setIcon, ToggleComponent, TFile, Notice, Modal, App, Menu } from 'obsidian';
+import { setIcon, TFile, Menu } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
 import { createLucideIcon } from '../../ui/lucide-icons';
 import { SourceService } from '../services/source-service';
 import { CreateSourceModal } from './create-source-modal';
-import { CustomSourceTypeModal } from './custom-source-type-modal';
 import { renderMediaGallery } from './media-gallery';
-import type { SourceNote, SourceTypeDefinition } from '../types/source-types';
-import {
-	getSourceType,
-	getSourceTypesByCategory,
-	SOURCE_CATEGORY_NAMES
-} from '../types/source-types';
+import { renderSourceTypeManagerCard } from './source-type-manager-card';
+import type { SourceNote } from '../types/source-types';
+import { getSourceType } from '../types/source-types';
 import { TemplateSnippetsModal } from '../../ui/template-snippets-modal';
 import { ExtractEventsModal } from '../../events/ui/extract-events-modal';
 
@@ -42,8 +38,12 @@ export function renderSourcesTab(
 	// Sources Overview/Statistics card
 	renderSourcesOverviewCard(container, plugin, sourceService, createCard, showTab);
 
-	// Source Types card
-	renderSourceTypesCard(container, plugin, createCard, showTab);
+	// Source Type Manager card (customize, hide, create source types)
+	renderSourceTypeManagerCard(container, plugin, createCard, () => {
+		// Refresh the tab content when types change
+		container.empty();
+		renderSourcesTab(container, plugin, createCard, showTab);
+	});
 }
 
 /**
@@ -356,185 +356,3 @@ function getContrastColor(hexColor: string): string {
 	return luminance > 0.5 ? '#000000' : '#ffffff';
 }
 
-/**
- * Render the Source Types card
- */
-function renderSourceTypesCard(
-	container: HTMLElement,
-	plugin: CanvasRootsPlugin,
-	createCard: (options: { title: string; icon?: LucideIconName }) => HTMLElement,
-	showTab: (tabId: string) => void
-): void {
-	const card = createCard({
-		title: 'Source types',
-		icon: 'layers'
-	});
-	const content = card.querySelector('.crc-card__content') as HTMLElement;
-
-	// Toolbar with Create button and toggle
-	const toolbar = content.createDiv({ cls: 'crc-card-toolbar' });
-
-	// Create custom type button
-	const createBtn = toolbar.createEl('button', { cls: 'mod-cta' });
-	setIcon(createBtn.createSpan({ cls: 'crc-button-icon' }), 'plus');
-	createBtn.createSpan({ text: 'Create type' });
-	createBtn.addEventListener('click', () => {
-		new CustomSourceTypeModal(plugin.app, plugin, {
-			onSave: () => showTab('sources')
-		}).open();
-	});
-
-	// Toggle for built-in types
-	const toggleContainer = toolbar.createDiv({ cls: 'crc-toggle-inline' });
-	const toggleLabel = toggleContainer.createEl('label', { text: 'Show built-in types' });
-	const toggle = new ToggleComponent(toggleContainer);
-	toggle.setValue(plugin.settings.showBuiltInSourceTypes);
-	toggle.onChange(async (value) => {
-		plugin.settings.showBuiltInSourceTypes = value;
-		await plugin.saveSettings();
-		showTab('sources');
-	});
-	toggleLabel.htmlFor = toggle.toggleEl.id;
-
-	// Get types grouped by category
-	const groupedTypes = getSourceTypesByCategory(
-		plugin.settings.customSourceTypes,
-		plugin.settings.showBuiltInSourceTypes
-	);
-
-	if (Object.keys(groupedTypes).length === 0) {
-		content.createEl('p', {
-			cls: 'crc-text-muted',
-			text: 'No source types available. Toggle "Show built-in types" to see default types.'
-		});
-	} else {
-		// Render types grouped by category
-		for (const [categoryId, types] of Object.entries(groupedTypes)) {
-			const categoryName = SOURCE_CATEGORY_NAMES[categoryId] || categoryId;
-
-			const section = content.createDiv({ cls: 'cr-source-type-section' });
-			section.createEl('h4', { text: categoryName, cls: 'cr-subsection-heading' });
-
-			const typeList = section.createDiv({ cls: 'cr-source-type-list' });
-			for (const typeDef of types) {
-				renderSourceTypeItem(typeList, typeDef, plugin, showTab);
-			}
-		}
-	}
-
-	container.appendChild(card);
-}
-
-/**
- * Render a source type item
- */
-function renderSourceTypeItem(
-	container: HTMLElement,
-	typeDef: SourceTypeDefinition,
-	plugin: CanvasRootsPlugin,
-	showTab: (tabId: string) => void
-): void {
-	const item = container.createDiv({ cls: 'cr-source-type-item' });
-
-	// Color swatch
-	const swatch = item.createDiv({ cls: 'cr-type-swatch' });
-	swatch.style.backgroundColor = typeDef.color;
-
-	// Icon
-	const iconSpan = item.createSpan({ cls: 'cr-type-icon' });
-	setIcon(iconSpan, typeDef.icon);
-
-	// Name and description
-	const info = item.createDiv({ cls: 'cr-source-type-info' });
-	info.createSpan({ text: typeDef.name, cls: 'cr-source-type-name' });
-	info.createSpan({ text: typeDef.description, cls: 'cr-source-type-desc crc-text-muted' });
-
-	// Built-in badge or action buttons
-	if (typeDef.isBuiltIn) {
-		item.createSpan({ text: 'built-in', cls: 'crc-badge crc-badge--muted' });
-	} else {
-		// Custom type - show edit and delete buttons
-		const actions = item.createDiv({ cls: 'cr-source-type-actions' });
-
-		// Edit button
-		const editBtn = actions.createEl('button', {
-			cls: 'cr-source-type-action clickable-icon',
-			attr: { 'aria-label': 'Edit' }
-		});
-		setIcon(editBtn, 'pencil');
-		editBtn.addEventListener('click', (e) => {
-			e.stopPropagation();
-			new CustomSourceTypeModal(plugin.app, plugin, {
-				editType: typeDef,
-				onSave: () => showTab('sources')
-			}).open();
-		});
-
-		// Delete button
-		const deleteBtn = actions.createEl('button', {
-			cls: 'cr-source-type-action clickable-icon cr-source-type-action--delete',
-			attr: { 'aria-label': 'Delete' }
-		});
-		setIcon(deleteBtn, 'trash-2');
-		deleteBtn.addEventListener('click', (e) => {
-			e.stopPropagation();
-			// Confirm deletion via modal
-			new DeleteSourceTypeModal(plugin.app, typeDef.name, async () => {
-				const index = plugin.settings.customSourceTypes.findIndex(t => t.id === typeDef.id);
-				if (index !== -1) {
-					plugin.settings.customSourceTypes.splice(index, 1);
-					await plugin.saveSettings();
-					new Notice('Source type deleted');
-					showTab('sources');
-				}
-			}).open();
-		});
-
-		// Custom badge
-		item.createSpan({ text: 'custom', cls: 'crc-badge crc-badge--accent' });
-	}
-}
-
-/**
- * Simple confirmation modal for deleting source types
- */
-class DeleteSourceTypeModal extends Modal {
-	private typeName: string;
-	private onConfirm: () => void | Promise<void>;
-
-	constructor(app: App, typeName: string, onConfirm: () => void | Promise<void>) {
-		super(app);
-		this.typeName = typeName;
-		this.onConfirm = onConfirm;
-	}
-
-	onOpen(): void {
-		const { contentEl, titleEl } = this;
-		titleEl.setText('Delete source type');
-
-		contentEl.createEl('p', {
-			text: `Delete source type "${this.typeName}"? This cannot be undone.`
-		});
-
-		const buttonContainer = contentEl.createDiv({ cls: 'crc-confirmation-buttons' });
-
-		const cancelBtn = buttonContainer.createEl('button', {
-			text: 'Cancel',
-			cls: 'crc-btn-secondary'
-		});
-		cancelBtn.addEventListener('click', () => this.close());
-
-		const confirmBtn = buttonContainer.createEl('button', {
-			text: 'Delete',
-			cls: 'mod-warning'
-		});
-		confirmBtn.addEventListener('click', () => {
-			void this.onConfirm();
-			this.close();
-		});
-	}
-
-	onClose(): void {
-		this.contentEl.empty();
-	}
-}

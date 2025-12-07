@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.10.x](#v010x)
+  - [Type Customization](#type-customization-v0103)
   - [Flexible Note Type Detection](#flexible-note-type-detection-v0102)
   - [GEDCOM Import v2](#gedcom-import-v2-v0101)
   - [Chronological Story Mapping](#chronological-story-mapping-v0100)
@@ -33,6 +34,62 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.10.x
+
+### Type Customization (v0.10.3)
+
+Full type manager for each note category: events, sources, organizations, relationships, and places. Create, edit, hide, and customize types and categories with user-defined names.
+
+**Type Managers:**
+
+Each Control Center tab now includes a "Manage types" card:
+
+| Tab | Types | Features |
+|-----|-------|----------|
+| Events | 22 built-in event types | Custom types, categories (Core, Extended, Narrative), icon/color |
+| Sources | 6 built-in source types | Custom types, categories, description |
+| Organizations | 11 built-in org types | Custom types, categories |
+| Relationships | 17 built-in relationship types | Custom types, color, line style (solid, dashed, dotted) |
+| Places | 15 built-in place types | Custom types, categories, hierarchy level (0-99) |
+
+**Type Management Features:**
+- **Create custom types**: Add new types with full customization
+- **Override built-in types**: Change name, description, icon, color
+- **Hide types**: Remove from dropdowns while preserving existing notes
+- **Reset to defaults**: Restore customized built-in types
+- **Delete custom types**: Remove user-created types entirely
+
+**Category Management:**
+- Create custom categories to group related types
+- Rename built-in categories to match your terminology
+- Reorder categories with sort order field
+- Hide unused categories (built-in or custom)
+- "Show all" button to restore hidden categories
+
+**Place Type Specifics:**
+- Hierarchy levels (0-99) determine valid parent-child relationships
+- Categories (geographic, political, settlement, subdivision, structure) organize the UI
+- Users can assign place types to any category regardless of hierarchy
+- Quick level presets for common hierarchy positions
+
+**Settings Storage:**
+```typescript
+// Per-category settings (events shown as example)
+customEventTypes: EventTypeDefinition[];
+eventTypeCustomizations: Record<string, Partial<EventTypeDefinition>>;
+hiddenEventTypes: string[];
+customEventCategories: EventCategoryDefinition[];
+categoryCustomizations: Record<string, Partial<EventCategoryDefinition>>;
+hiddenCategories: string[];
+```
+
+**Use Cases:**
+- Rename "birth" to "nameday" for fantasy world-building
+- Add "coronation" and "succession" event types for dynasty tracking
+- Create "Land Records" source type for property research
+- Hide unused relationship types like "apprentice" or "mentor"
+- Add "Bodies of Water" category for place types
+
+---
 
 ### Flexible Note Type Detection (v0.10.2)
 

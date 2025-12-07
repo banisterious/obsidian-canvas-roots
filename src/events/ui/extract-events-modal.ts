@@ -18,7 +18,7 @@ import {
 	EventTypeDefinition,
 	getAllEventTypes,
 	getEventTypesByCategory,
-	EVENT_CATEGORY_NAMES
+	getCategoryName
 } from '../types/event-types';
 import type { SourceNote } from '../../sources/types/source-types';
 
@@ -246,7 +246,11 @@ export class ExtractEventsModal extends Modal {
 			.addDropdown(dropdown => {
 				for (const [category, types] of Object.entries(eventTypes)) {
 					if (types.length === 0) continue;
-					const categoryName = EVENT_CATEGORY_NAMES[category as keyof typeof EVENT_CATEGORY_NAMES];
+					const categoryName = getCategoryName(
+						category,
+						this.settings.customEventCategories || [],
+						this.settings.categoryCustomizations
+					);
 					dropdown.addOption(`__category_${category}__`, `── ${categoryName} ──`);
 					for (const type of types) {
 						dropdown.addOption(type.id, `  ${type.name}`);

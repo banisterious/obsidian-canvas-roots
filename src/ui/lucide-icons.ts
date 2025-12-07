@@ -102,7 +102,9 @@ export type LucideIconName =
 	| 'heart-off' // Divorce
 	| 'droplets' // Baptism
 	| 'calendar-plus' // Extract events
-	| 'calendar-check'; // Create events
+	| 'calendar-check' // Create events
+	| 'star' // Star marker
+	| 'flag'; // Flag marker
 
 /**
  * Tab configuration for Control Center navigation

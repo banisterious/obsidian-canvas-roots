@@ -9,6 +9,7 @@
 export type {
 	OrganizationType,
 	OrganizationTypeDefinition,
+	OrganizationCategoryDefinition,
 	OrganizationInfo,
 	OrganizationFrontmatter,
 	MembershipData,
@@ -20,17 +21,15 @@ export type {
 
 // Constants
 export {
-	NOBLE_HOUSE,
-	GUILD,
-	CORPORATION,
-	MILITARY,
-	RELIGIOUS,
-	POLITICAL,
-	EDUCATIONAL,
-	CUSTOM,
+	BUILT_IN_ORGANIZATION_TYPES,
+	BUILT_IN_ORGANIZATION_CATEGORIES,
 	DEFAULT_ORGANIZATION_TYPES,
 	getOrganizationType,
 	getAllOrganizationTypes,
+	getAllOrganizationTypesWithCustomizations,
+	getAllOrganizationCategories,
+	getOrganizationCategoryName,
+	isBuiltInOrganizationCategory,
 	isValidOrganizationType
 } from './constants/organization-types';
 

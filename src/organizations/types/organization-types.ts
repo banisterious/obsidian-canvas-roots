@@ -22,19 +22,32 @@ export type OrganizationType =
 	| 'custom';
 
 /**
- * Definition for an organization type (category)
+ * Definition for an organization type
  */
 export interface OrganizationTypeDefinition {
 	/** Type identifier (e.g., "noble_house") */
-	id: OrganizationType;
+	id: string;
 	/** Display name (e.g., "Noble House") */
 	name: string;
+	/** Brief description of this organization type */
+	description?: string;
 	/** Color for UI display (CSS color value) */
 	color: string;
 	/** Lucide icon name */
 	icon: LucideIconName;
+	/** Category ID - can be built-in or custom */
+	category: string;
 	/** Whether this is a built-in type */
-	builtIn: boolean;
+	isBuiltIn: boolean;
+}
+
+/**
+ * Definition of an organization type category (built-in or custom)
+ */
+export interface OrganizationCategoryDefinition {
+	id: string;
+	name: string;
+	sortOrder: number;
 }
 
 /**

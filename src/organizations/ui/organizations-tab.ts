@@ -5,7 +5,7 @@
  * organizations list, statistics, and hierarchy.
  */
 
-import { setIcon, ToggleComponent, Setting } from 'obsidian';
+import { setIcon, Setting } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
 import { OrganizationService } from '../services/organization-service';
@@ -14,6 +14,7 @@ import type { OrganizationInfo } from '../types/organization-types';
 import { getOrganizationType, DEFAULT_ORGANIZATION_TYPES } from '../constants/organization-types';
 import { CreateOrganizationModal } from './create-organization-modal';
 import { TemplateSnippetsModal } from '../../ui/template-snippets-modal';
+import { renderOrganizationTypeManagerCard } from './organization-type-manager-card';
 
 /**
  * Render the Organizations tab content
@@ -33,8 +34,10 @@ export function renderOrganizationsTab(
 	// Statistics card
 	renderOrganizationStatsCard(container, orgService, membershipService, createCard);
 
-	// Organization Types card
-	renderOrganizationTypesCard(container, plugin, createCard, showTab);
+	// Organization Type Manager card (replaces simple types card)
+	renderOrganizationTypeManagerCard(container, plugin, createCard, () => {
+		showTab('organizations');
+	});
 
 	// Data tools card
 	renderDataToolsCard(container, plugin, createCard);
@@ -210,7 +213,7 @@ function renderOrganizationStatsCard(
 
 		const typeList = breakdown.createDiv({ cls: 'cr-type-breakdown-list' });
 		for (const typeDef of DEFAULT_ORGANIZATION_TYPES) {
-			const count = stats.byType[typeDef.id] || 0;
+			const count = (stats.byType as Record<string, number>)[typeDef.id] || 0;
 			if (count === 0) continue;
 
 			const row = typeList.createDiv({ cls: 'cr-type-breakdown-row' });
@@ -218,82 +221,6 @@ function renderOrganizationStatsCard(
 			swatch.style.backgroundColor = typeDef.color;
 			row.createSpan({ text: typeDef.name });
 			row.createSpan({ text: String(count), cls: 'crc-text-muted' });
-		}
-	}
-
-	container.appendChild(card);
-}
-
-/**
- * Render the Organization Types card
- */
-function renderOrganizationTypesCard(
-	container: HTMLElement,
-	plugin: CanvasRootsPlugin,
-	createCard: (options: { title: string; icon?: LucideIconName }) => HTMLElement,
-	showTab: (tabId: string) => void
-): void {
-	const card = createCard({
-		title: 'Organization types',
-		icon: 'layers'
-	});
-	const content = card.querySelector('.crc-card__content') as HTMLElement;
-
-	// Toggle for built-in types
-	const toolbar = content.createDiv({ cls: 'crc-card-toolbar' });
-	const toggleContainer = toolbar.createDiv({ cls: 'crc-toggle-inline' });
-	const toggleLabel = toggleContainer.createEl('label', { text: 'Show built-in types' });
-	const toggle = new ToggleComponent(toggleContainer);
-	toggle.setValue(plugin.settings.showBuiltInOrganizationTypes);
-	toggle.onChange(async (value) => {
-		plugin.settings.showBuiltInOrganizationTypes = value;
-		await plugin.saveSettings();
-		showTab('organizations');
-	});
-	toggleLabel.htmlFor = toggle.toggleEl.id;
-
-	// Types table
-	const types = plugin.settings.showBuiltInOrganizationTypes
-		? DEFAULT_ORGANIZATION_TYPES
-		: plugin.settings.customOrganizationTypes;
-
-	if (types.length === 0) {
-		content.createEl('p', {
-			cls: 'crc-text-muted',
-			text: 'No custom organization types defined. Toggle "Show built-in types" to see default types.'
-		});
-	} else {
-		const table = content.createEl('table', { cls: 'cr-org-types-table' });
-
-		const thead = table.createEl('thead');
-		const headerRow = thead.createEl('tr');
-		headerRow.createEl('th', { text: 'Type' });
-		headerRow.createEl('th', { text: 'Icon' });
-		headerRow.createEl('th', { text: 'Source' });
-
-		const tbody = table.createEl('tbody');
-		for (const typeDef of types) {
-			const row = tbody.createEl('tr');
-
-			// Name with color swatch
-			const nameCell = row.createEl('td');
-			const nameWrapper = nameCell.createDiv({ cls: 'cr-type-name-wrapper' });
-			const swatch = nameWrapper.createDiv({ cls: 'cr-type-swatch' });
-			swatch.style.backgroundColor = typeDef.color;
-			nameWrapper.createSpan({ text: typeDef.name });
-
-			// Icon
-			const iconCell = row.createEl('td');
-			const iconSpan = iconCell.createSpan({ cls: 'cr-type-icon' });
-			setIcon(iconSpan, typeDef.icon);
-
-			// Source
-			const sourceCell = row.createEl('td');
-			if (typeDef.builtIn) {
-				sourceCell.createSpan({ text: 'built-in', cls: 'crc-badge crc-badge--muted' });
-			} else {
-				sourceCell.createSpan({ text: 'custom', cls: 'crc-badge' });
-			}
 		}
 	}
 

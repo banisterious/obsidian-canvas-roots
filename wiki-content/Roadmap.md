@@ -25,6 +25,7 @@ For detailed implementation documentation of completed features, see [Release Hi
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.10.3 | [Type Customization](Release-History#type-customization-v0103) | Full type managers for all note categories |
 | v0.10.2 | [Flexible Note Type Detection](Release-History#flexible-note-type-detection-v0102) | Support cr_type, tags, avoids conflicts |
 | v0.10.1 | [GEDCOM Import v2](Release-History#gedcom-import-v2-v0101) | Enhanced import with sources, events, and places |
 | v0.10.0 | [Chronological Story Mapping](Release-History#chronological-story-mapping-v0100) | Event notes, timelines, narrative support |
@@ -62,67 +63,6 @@ For detailed implementation documentation of completed features, see [Release Hi
 - Re-parse GEDCOM for Sources: Match individuals to existing notes, extract `SOUR` records
 - Preview mode before committing changes
 - New card in Import/Export tab: "Enhance existing data"
-
----
-
-### Type Customization
-
-**Summary:** Full type manager for each category - add, edit, delete, and customize types with icons, colors, and display names.
-
-**Problem:**
-- Built-in types have hardcoded icons, colors, and display names
-- Users may want terminology that matches their domain
-- Users don't need all built-in types (e.g., don't use `baptism` events)
-- Value aliases map terminology but don't allow visual customization
-
-**Type Categories:**
-
-| Category | Location | Property |
-|----------|----------|----------|
-| Event types | Events tab | `event_type` |
-| Source types | Sources tab | `source_type` |
-| Organization types | Organizations tab | `org_type` |
-| Place types | Places tab | `place_type` |
-| Relationship types | Settings or People tab | relationship fields |
-
-**Type Definition:**
-```typescript
-interface TypeCustomization {
-  id: string;           // 'birth', 'custom_coronation', etc.
-  name: string;         // Display name
-  icon: LucideIconName; // Lucide icon
-  color: string;        // CSS color
-  category?: string;    // For grouping (core/extended/narrative)
-}
-```
-
-**Settings Storage:**
-```typescript
-interface TypeSettings {
-  // User customizations (overrides built-in defaults)
-  customizations: Record<string, Partial<TypeCustomization>>;
-  // User-created types
-  userTypes: TypeCustomization[];
-  // Hidden types (built-in or user-created)
-  hidden: string[];
-}
-```
-
-**Features:**
-- **Override built-in types**: Change name, icon, or color of any built-in type
-- **Hide types**: Remove from dropdowns; existing notes still work
-- **Create custom types**: Add new types with full customization
-- **Delete types**: Remove user-created types entirely
-- **Reset to defaults**: Restore built-in type to original settings
-- **Contextual UI**: Type manager card in each relevant Control Center tab
-
-**UI Design:**
-- Card in each tab: "Manage event types", "Manage source types", etc.
-- List view with icon, name, color swatch, usage count
-- Edit modal for customization (icon picker, color picker, name field)
-- "Add type" button for creating new types
-- "Reset" button for built-in types with overrides
-- "Hide/Show" toggle for each type
 
 ---
 
