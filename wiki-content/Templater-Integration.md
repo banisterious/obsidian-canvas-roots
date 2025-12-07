@@ -103,7 +103,7 @@ group_name: ""
 
 ```yaml
 ---
-type: place
+cr_type: place
 cr_id: place_<% tp.user.generateCrId() %>
 name: <% tp.file.title %>
 place_type: ""
@@ -123,7 +123,7 @@ coordinates:
 
 ```yaml
 ---
-type: event
+cr_type: event
 cr_id: event_<% tp.user.generateCrId() %>
 title: <% tp.file.title %>
 event_type: custom
@@ -143,7 +143,7 @@ confidence: unknown
 
 ```yaml
 ---
-type: source
+cr_type: source
 cr_id: <% tp.user.generateCrId() %>
 title: <% tp.file.title %>
 source_type: other

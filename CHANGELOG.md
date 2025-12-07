@@ -22,6 +22,10 @@ Completes the `cr_type` migration started in v0.10.2.
   - Updated empty state messages in all tabs
   - Note: `type` property still works for backwards compatibility
 
+### Added
+
+- **Wiki Link in Template Snippets Modal**: Added link to Templater Integration wiki guide for advanced user script setup
+
 ---
 
 ## [0.10.7] - 2025-12-07

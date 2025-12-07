@@ -105,6 +105,17 @@ export class TemplateSnippetsModal extends Modal {
 		schemaLink.setAttribute('target', '_blank');
 		schemaNote.appendText('.');
 
+		// Advanced setup link (user scripts)
+		const advancedNote = schemaSection.createEl('p', { cls: 'crc-text--muted crc-mt-2' });
+		advancedNote.appendText('For advanced setup with reusable user scripts and cr_id generation functions, see the ');
+		const advancedLink = advancedNote.createEl('a', {
+			text: 'Templater integration guide',
+			cls: 'crc-link',
+			href: 'https://github.com/banisterious/obsidian-canvas-roots/wiki/Templater-Integration'
+		});
+		advancedLink.setAttribute('target', '_blank');
+		advancedNote.appendText('.');
+
 		// Close button
 		const buttonContainer = contentEl.createDiv({ cls: 'crc-modal-buttons crc-mt-4' });
 		const closeBtn = buttonContainer.createEl('button', {
