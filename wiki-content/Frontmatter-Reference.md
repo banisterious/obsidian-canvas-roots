@@ -4,6 +4,25 @@ This document defines all frontmatter properties recognized by Canvas Roots for 
 
 ---
 
+## Note Type Detection
+
+Canvas Roots uses multiple methods to identify note types, checked in this order:
+
+1. **`cr_type` property** (default for new installations) - Namespaced to avoid conflicts with other plugins
+2. **`type` property** (legacy) - Supported for backwards compatibility
+3. **Tags** - Optional fallback via tags like `#person`, `#place`, `#event`
+
+**Recommended:** Use `cr_type` for new notes to avoid conflicts with Templater, Dataview, and other plugins that use `type`.
+
+```yaml
+cr_type: person   # Recommended (new standard)
+type: person      # Also supported (legacy)
+```
+
+See [Flexible Note Type Detection](Release-History#flexible-note-type-detection-v0102) for configuration options.
+
+---
+
 ## Data Model Overview
 
 The following diagram shows how the main entity types relate to each other:
@@ -304,7 +323,8 @@ Canvas Roots can generate genealogical reference numbers:
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `type` | `string` | Must be `"place"` | `"place"` |
+| `cr_type` | `string` | Must be `"place"` (recommended) | `"place"` |
+| `type` | `string` | Must be `"place"` (legacy, also supported) | `"place"` |
 | `cr_id` | `string` | Unique identifier for the place | `"place_abc123"` |
 
 ### Basic Information
@@ -390,7 +410,8 @@ Source notes document evidence and citations for genealogical research. Each sou
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `type` | `string` | Must be `"source"` | `"source"` |
+| `cr_type` | `string` | Must be `"source"` (recommended) | `"source"` |
+| `type` | `string` | Must be `"source"` (legacy, also supported) | `"source"` |
 | `cr_id` | `string` | Unique identifier for the source | `"src_abc123"` |
 
 ### Basic Information
@@ -502,7 +523,7 @@ Sources are linked to person notes using the `source` property (with indexed pro
 
 ```yaml
 ---
-type: source
+cr_type: source
 cr_id: "src_1900_census_smith"
 title: "1900 US Census - Smith Family"
 source_type: census
@@ -552,7 +573,7 @@ Confirms John Smith's age and occupation...
 
 ```yaml
 ---
-type: source
+cr_type: source
 cr_id: "src_birth_john_smith"
 title: "Birth Certificate - John Robert Smith"
 source_type: vital_record
@@ -594,7 +615,8 @@ Map notes define custom image maps for fictional worlds or historical maps.
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `type` | `string` | Must be `"map"` | `"map"` |
+| `cr_type` | `string` | Must be `"map"` (recommended) | `"map"` |
+| `type` | `string` | Must be `"map"` (legacy, also supported) | `"map"` |
 | `map_id` | `string` | Unique identifier for the map | `"middle-earth"` |
 
 ### Basic Information
@@ -675,7 +697,8 @@ Schema notes define validation rules for person notes. See [Schema Validation](S
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `type` | `string` | Must be `"schema"` | `"schema"` |
+| `cr_type` | `string` | Must be `"schema"` (recommended) | `"schema"` |
+| `type` | `string` | Must be `"schema"` (legacy, also supported) | `"schema"` |
 | `cr_id` | `string` | Unique identifier for the schema | `"schema-house-stark"` |
 
 ### Basic Information
@@ -926,7 +949,7 @@ Notes about this person...
 
 ```yaml
 ---
-type: place
+cr_type: place
 cr_id: "place_london_001"
 name: "London"
 aliases:
@@ -956,7 +979,7 @@ Capital city of England and the United Kingdom...
 
 ```yaml
 ---
-type: place
+cr_type: place
 cr_id: "place_winterfell_001"
 name: "Winterfell"
 place_category: fictional
@@ -977,7 +1000,7 @@ Seat of House Stark in the North...
 
 ```yaml
 ---
-type: map
+cr_type: map
 map_id: middle-earth
 name: Middle-earth
 universe: tolkien
@@ -1003,7 +1026,7 @@ Map of J.R.R. Tolkien's Middle-earth...
 
 ```yaml
 ---
-type: map
+cr_type: map
 map_id: westeros
 name: Westeros
 universe: got
@@ -1029,7 +1052,7 @@ Map of Westeros from A Song of Ice and Fire...
 
 ```yaml
 ---
-type: map
+cr_type: map
 map_id: historical-europe
 name: Historical Europe 1850
 universe: real
@@ -1062,7 +1085,7 @@ for comparison with contemporary maps...
 
 ````
 ---
-type: schema
+cr_type: schema
 cr_id: schema-date-validation
 name: Date Validation
 description: Ensures date fields are logically consistent
@@ -1108,7 +1131,8 @@ Event notes document life events, story events, and timeline entries as standalo
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `type` | `string` | Must be `"event"` | `"event"` |
+| `cr_type` | `string` | Must be `"event"` (recommended) | `"event"` |
+| `type` | `string` | Must be `"event"` (legacy, also supported) | `"event"` |
 | `cr_id` | `string` | Unique identifier | `"evt_birth_john_1850"` |
 
 ### Basic Information
@@ -1206,7 +1230,7 @@ The `groups` property enables filtering in timeline exports by nation, faction, 
 
 ```yaml
 ---
-type: event
+cr_type: event
 cr_id: evt_birth_john_1850
 title: Birth of John Smith
 event_type: birth
@@ -1232,7 +1256,7 @@ John Robert Smith was born on March 15, 1850 in London...
 
 ```yaml
 ---
-type: event
+cr_type: event
 cr_id: evt_red_wedding
 title: The Red Wedding
 event_type: lore_event
@@ -1272,7 +1296,8 @@ Organization notes define non-genealogical hierarchies such as noble houses, gui
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `type` | `string` | Must be `"organization"` | `"organization"` |
+| `cr_type` | `string` | Must be `"organization"` (recommended) | `"organization"` |
+| `type` | `string` | Must be `"organization"` (legacy, also supported) | `"organization"` |
 | `cr_id` | `string` | Unique identifier | `"org-house-stark"` |
 
 ### Basic Information
@@ -1355,7 +1380,7 @@ memberships:
 
 ```yaml
 ---
-type: organization
+cr_type: organization
 cr_id: org-house-stark
 name: House Stark
 org_type: noble_house

@@ -22,6 +22,7 @@ import type {
 	LifeEvent,
 	EventType
 } from './types/map-types';
+import { isPlaceNote, isPersonNote } from '../utils/note-type-detection';
 
 const logger = getLogger('MapDataService');
 
@@ -195,8 +196,9 @@ export class MapDataService {
 
 			if (!fm) continue;
 
-			// Only process place notes
-			if (fm.type !== 'place') continue;
+			// Only process place notes (uses flexible detection)
+			const cache = this.plugin.app.metadataCache.getFileCache(file);
+			if (!isPlaceNote(fm, cache, this.plugin.settings.noteTypeDetection)) continue;
 
 			// Parse coordinates (handles both object and JSON string formats)
 			const coords = this.parseCoordinates(fm.coordinates);
@@ -250,11 +252,8 @@ export class MapDataService {
 
 			const fm = cache.frontmatter;
 
-			// Skip non-person notes
-			if (fm.type && fm.type !== 'person') continue;
-
-			// Must have cr_id to be a person note
-			if (!fm.cr_id) continue;
+			// Skip non-person notes (uses flexible detection)
+			if (!isPersonNote(fm, cache, this.plugin.settings.noteTypeDetection)) continue;
 
 			const personData: PersonData = {
 				crId: fm.cr_id,

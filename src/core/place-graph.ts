@@ -21,8 +21,9 @@ import {
 	supportsRealCoordinates
 } from '../models/place';
 import { FolderFilterService } from './folder-filter';
-import type { ValueAliasSettings } from '../settings';
+import type { CanvasRootsSettings, ValueAliasSettings } from '../settings';
 import { CANONICAL_PLACE_CATEGORIES, type CanonicalPlaceCategory } from './value-alias-service';
+import { isPlaceNote, isPersonNote } from '../utils/note-type-detection';
 
 const logger = getLogger('PlaceGraph');
 
@@ -35,11 +36,19 @@ export class PlaceGraphService {
 	private placeReferenceCache: PlaceReference[];
 	private folderFilter: FolderFilterService | null = null;
 	private valueAliases: ValueAliasSettings = { eventType: {}, sex: {}, placeCategory: {} };
+	private settings: CanvasRootsSettings | null = null;
 
 	constructor(app: App) {
 		this.app = app;
 		this.placeCache = new Map();
 		this.placeReferenceCache = [];
+	}
+
+	/**
+	 * Set the full plugin settings for note type detection
+	 */
+	setSettings(settings: CanvasRootsSettings): void {
+		this.settings = settings;
 	}
 
 	/**
@@ -665,7 +674,9 @@ export class PlaceGraphService {
 			if (!cache?.frontmatter) continue;
 
 			const fm = cache.frontmatter;
-			if (fm.type === 'place' || !fm.cr_id) continue;
+			// Skip place notes - we want person notes only (uses flexible detection)
+			if (isPlaceNote(fm, cache, this.settings?.noteTypeDetection)) continue;
+			if (!isPersonNote(fm, cache, this.settings?.noteTypeDetection)) continue;
 
 			const data: {
 				birthPlace?: string;
@@ -859,11 +870,9 @@ export class PlaceGraphService {
 
 			const fm = cache.frontmatter;
 
-			// Skip place notes (we only want person notes)
-			if (fm.type === 'place') continue;
-
-			// Must have cr_id to be a valid person note
-			if (!fm.cr_id) continue;
+			// Skip place notes (we only want person notes) - uses flexible detection
+			if (isPlaceNote(fm, cache, this.settings?.noteTypeDetection)) continue;
+			if (!isPersonNote(fm, cache, this.settings?.noteTypeDetection)) continue;
 
 			const personId = fm.cr_id;
 
@@ -949,8 +958,8 @@ export class PlaceGraphService {
 
 		const fm = cache.frontmatter;
 
-		// Must be a place note (type: place)
-		if (fm.type !== 'place') return null;
+		// Must be a place note (uses flexible detection)
+		if (!isPlaceNote(fm, cache, this.settings?.noteTypeDetection)) return null;
 
 		// Must have cr_id
 		if (!fm.cr_id) return null;

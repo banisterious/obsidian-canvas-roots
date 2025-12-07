@@ -13,6 +13,7 @@ import { FolderFilterService } from './folder-filter';
 import { PropertyAliasService, CANONICAL_PERSON_PROPERTIES, CanonicalPersonProperty } from './property-alias-service';
 import type { CanvasRootsSettings, ValueAliasSettings } from '../settings';
 import { CANONICAL_GENDERS, type CanonicalGender } from './value-alias-service';
+import { isSourceNote } from '../utils/note-type-detection';
 
 const logger = getLogger('FamilyGraph');
 
@@ -161,6 +162,7 @@ export class FamilyGraphService {
 	private folderFilter: FolderFilterService | null = null;
 	private propertyAliases: Record<string, string> = {};
 	private valueAliases: ValueAliasSettings = { eventType: {}, sex: {}, placeCategory: {} };
+	private settings: CanvasRootsSettings | null = null;
 
 	constructor(app: App) {
 		this.app = app;
@@ -172,6 +174,13 @@ export class FamilyGraphService {
 	 */
 	setFolderFilter(folderFilter: FolderFilterService): void {
 		this.folderFilter = folderFilter;
+	}
+
+	/**
+	 * Set the full plugin settings for note type detection
+	 */
+	setSettings(settings: CanvasRootsSettings): void {
+		this.settings = settings;
 	}
 
 	/**
@@ -861,8 +870,8 @@ export class FamilyGraphService {
 			const sourceCache = this.app.metadataCache.getFileCache(sourceFile);
 			if (!sourceCache?.frontmatter) continue;
 
-			// Only count links from source notes (type: source)
-			if (sourceCache.frontmatter.type !== 'source') continue;
+			// Only count links from source notes (uses flexible detection)
+			if (!isSourceNote(sourceCache.frontmatter, sourceCache, this.settings?.noteTypeDetection)) continue;
 
 			// Count links to person notes
 			for (const destPath of Object.keys(destinations)) {

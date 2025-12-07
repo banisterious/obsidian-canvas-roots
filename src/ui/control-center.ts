@@ -758,6 +758,7 @@ export class ControlCenterModal extends Modal {
 		if (folderFilter) {
 			statsService.setFolderFilter(folderFilter);
 		}
+		statsService.setSettings(this.plugin.settings);
 		const stats = statsService.collectStats();
 
 		// Clear loading state
@@ -1619,6 +1620,7 @@ export class ControlCenterModal extends Modal {
 		container.empty();
 
 		const statsService = new VaultStatsService(this.app);
+		statsService.setSettings(this.plugin.settings);
 		const stats = statsService.collectStats();
 
 		// If no people, show getting started message
@@ -11969,6 +11971,22 @@ export class ControlCenterModal extends Modal {
 				.onClick(() => void this.runBatchOperation('orphans', selectedScope, selectedFolder))
 			);
 
+		// Migrate legacy type property (only show if cr_type is the primary)
+		if (this.plugin.settings.noteTypeDetection?.primaryTypeProperty === 'cr_type') {
+			new Setting(batchSection)
+				.setName('Migrate legacy type property')
+				.setDesc('Convert type to cr_type for all Canvas Roots notes')
+				.addButton(btn => btn
+					.setButtonText('Preview')
+					.onClick(() => void this.previewBatchOperation('legacy_type', selectedScope, selectedFolder))
+				)
+				.addButton(btn => btn
+					.setButtonText('Apply')
+					.setCta()
+					.onClick(() => void this.runBatchOperation('legacy_type', selectedScope, selectedFolder))
+				);
+		}
+
 		// Data Tools section
 		const toolsSection = container.createDiv({ cls: 'crc-section' });
 		toolsSection.createEl('h3', { text: 'Data tools' });
@@ -12266,6 +12284,7 @@ export class ControlCenterModal extends Modal {
 			data_format: 'Format',
 			orphan_reference: 'Orphan ref',
 			nested_property: 'Nested',
+			legacy_type_property: 'Legacy type',
 		};
 		return names[category] || category;
 	}
@@ -12274,7 +12293,7 @@ export class ControlCenterModal extends Modal {
 	 * Preview a batch operation
 	 */
 	private previewBatchOperation(
-		operation: 'dates' | 'sex' | 'orphans',
+		operation: 'dates' | 'sex' | 'orphans' | 'legacy_type',
 		scope: 'all' | 'staging' | 'folder',
 		folderPath?: string
 	): void {
@@ -12309,7 +12328,7 @@ export class ControlCenterModal extends Modal {
 	 * Run a batch operation
 	 */
 	private async runBatchOperation(
-		operation: 'dates' | 'sex' | 'orphans',
+		operation: 'dates' | 'sex' | 'orphans' | 'legacy_type',
 		scope: 'all' | 'staging' | 'folder',
 		folderPath?: string
 	): Promise<void> {
@@ -12344,6 +12363,10 @@ export class ControlCenterModal extends Modal {
 					operationName = 'Orphan reference clearing';
 					result = await dataQualityService.clearOrphanReferences({ scope, folderPath });
 					break;
+				case 'legacy_type':
+					operationName = 'Legacy type migration';
+					result = await dataQualityService.migrateLegacyTypeProperty({ scope, folderPath });
+					break;
 			}
 
 			// Show result
@@ -12371,13 +12394,13 @@ export class ControlCenterModal extends Modal {
  * Modal for previewing batch operation changes
  */
 class BatchPreviewModal extends Modal {
-	private operation: 'dates' | 'sex' | 'orphans';
+	private operation: 'dates' | 'sex' | 'orphans' | 'legacy_type';
 	private preview: NormalizationPreview;
 	private onApply: () => void;
 
 	constructor(
 		app: App,
-		operation: 'dates' | 'sex' | 'orphans',
+		operation: 'dates' | 'sex' | 'orphans' | 'legacy_type',
 		preview: NormalizationPreview,
 		onApply: () => void
 	) {
@@ -12395,6 +12418,7 @@ class BatchPreviewModal extends Modal {
 			dates: 'Preview: Date normalization',
 			sex: 'Preview: Sex normalization',
 			orphans: 'Preview: Clear orphan references',
+			legacy_type: 'Preview: Migrate legacy type property',
 		};
 		titleEl.setText(titles[this.operation]);
 
@@ -12409,6 +12433,9 @@ class BatchPreviewModal extends Modal {
 				break;
 			case 'orphans':
 				changes = this.preview.orphanClearing;
+				break;
+			case 'legacy_type':
+				changes = this.preview.legacyTypeMigration;
 				break;
 		}
 

@@ -165,6 +165,27 @@ export interface CanvasRootsSettings {
 	timelinesFolder: string;
 	customEventTypes: EventTypeDefinition[];
 	showBuiltInEventTypes: boolean;
+	// Note type detection settings
+	noteTypeDetection: NoteTypeDetectionSettings;
+}
+
+/**
+ * Settings for note type detection
+ * Supports multiple detection methods to avoid conflicts with other plugins
+ */
+export interface NoteTypeDetectionSettings {
+	/**
+	 * Enable tag-based detection (#person, #place, etc.)
+	 * When enabled, tags are checked as a fallback after property-based detection
+	 */
+	enableTagDetection: boolean;
+
+	/**
+	 * Primary property to check for type
+	 * - 'cr_type': Use cr_type property (recommended, avoids conflicts)
+	 * - 'type': Use type property (legacy default)
+	 */
+	primaryTypeProperty: 'cr_type' | 'type';
 }
 
 /**
@@ -318,7 +339,12 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	eventsFolder: 'Canvas Roots/Events',      // Default folder for event notes
 	timelinesFolder: 'Canvas Roots/Timelines', // Default folder for timeline notes
 	customEventTypes: [],                      // User-defined event types (built-ins are always available)
-	showBuiltInEventTypes: true                // Whether to show built-in event types in UI
+	showBuiltInEventTypes: true,               // Whether to show built-in event types in UI
+	// Note type detection settings
+	noteTypeDetection: {
+		enableTagDetection: true,              // Allow #person, #place, etc. as fallback
+		primaryTypeProperty: 'type'            // Legacy default for backwards compatibility
+	}
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {
@@ -824,6 +850,41 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					}));
 		}
+
+		// Note Type Detection
+		new Setting(containerEl)
+			.setName('Note type detection')
+			.setHeading();
+
+		const noteTypeInfo = containerEl.createDiv({ cls: 'setting-item-description cr-info-box' });
+		noteTypeInfo.createEl('strong', { text: '🏷️ Flexible detection:' });
+		noteTypeInfo.appendText(' Choose how Canvas Roots identifies note types. Use ');
+		noteTypeInfo.createEl('code', { text: 'cr_type' });
+		noteTypeInfo.appendText(' to avoid conflicts with other plugins that use the ');
+		noteTypeInfo.createEl('code', { text: 'type' });
+		noteTypeInfo.appendText(' property.');
+
+		new Setting(containerEl)
+			.setName('Primary type property')
+			.setDesc('Which frontmatter property to check first for note type (person, place, event, etc.)')
+			.addDropdown(dropdown => dropdown
+				.addOption('type', 'type (legacy default)')
+				.addOption('cr_type', 'cr_type (avoids conflicts)')
+				.setValue(this.plugin.settings.noteTypeDetection.primaryTypeProperty)
+				.onChange(async (value) => {
+					this.plugin.settings.noteTypeDetection.primaryTypeProperty = value as 'type' | 'cr_type';
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Enable tag-based detection')
+			.setDesc('Allow tags (#person, #place, #event, #source) as fallback when no type property is found.')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.noteTypeDetection.enableTagDetection)
+				.onChange(async (value) => {
+					this.plugin.settings.noteTypeDetection.enableTagDetection = value;
+					await this.plugin.saveSettings();
+				}));
 
 		// Export
 		new Setting(containerEl)

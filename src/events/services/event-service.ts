@@ -18,6 +18,7 @@ import {
 	getEventType
 } from '../types/event-types';
 import { generateCrId } from '../../core/uuid';
+import { isEventNote } from '../../utils/note-type-detection';
 
 /**
  * Safely convert frontmatter value to string
@@ -573,8 +574,9 @@ export class EventService {
 	 * Parse a file into an EventNote object
 	 */
 	parseEventNote(file: TFile, frontmatter: Record<string, unknown>): EventNote | null {
-		// Must have type: event
-		if (frontmatter.type !== 'event') {
+		// Must have type: event (uses flexible detection)
+		const cache = this.app.metadataCache.getFileCache(file);
+		if (!isEventNote(frontmatter, cache, this.settings.noteTypeDetection)) {
 			return null;
 		}
 

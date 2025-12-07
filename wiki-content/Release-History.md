@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.10.x](#v010x)
+  - [Flexible Note Type Detection](#flexible-note-type-detection-v0102)
   - [GEDCOM Import v2](#gedcom-import-v2-v0101)
   - [Chronological Story Mapping](#chronological-story-mapping-v0100)
 - [v0.9.x](#v09x)
@@ -32,6 +33,52 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.10.x
+
+### Flexible Note Type Detection (v0.10.2)
+
+Support multiple methods for identifying Canvas Roots note types, avoiding conflicts with other plugins that use the `type` property.
+
+**Problem Solved:**
+- The generic `type` property conflicts with other plugins (Templater, Dataview, etc.)
+- Some users prefer tags (`#person`) over frontmatter properties
+- Need a namespaced property to avoid conflicts
+
+**New Standard: `cr_type`**
+
+New installations now use `cr_type` as the primary type property:
+```yaml
+cr_type: person
+```
+
+This aligns with the existing `cr_id` convention and avoids conflicts with other plugins.
+
+**Detection Methods (checked in order):**
+1. **`cr_type` property** - New default, namespaced to avoid conflicts (e.g., `cr_type: person`)
+2. **`type` property** - Legacy fallback for existing vaults (e.g., `type: person`)
+3. **Tags** - Additional fallback via tags (`#person`, `#place`, `#event`, `#source`, `#map`, `#organization`)
+   - Supports nested tags (e.g., `#genealogy/person`)
+
+**Settings:**
+- **Primary type property**: Choose between `cr_type` (default) or `type` (legacy)
+- **Enable tag-based detection**: Toggle tags as fallback detection method
+
+**Supported Note Types:**
+- `person` - Person notes with family relationships
+- `place` - Place notes with geographic data
+- `event` - Event notes for chronological mapping
+- `source` - Source notes for evidence management
+- `map` - Custom map configuration notes
+- `organization` - Organization notes for hierarchies
+- `schema` - Schema validation notes
+- `proof_summary` - GPS proof summary notes
+
+**Backwards Compatibility:**
+- Existing users automatically keep `type` as their primary (migrated on first load)
+- Both properties are always checked (primary first, then fallback)
+- Person notes with `cr_id` but no explicit type are still detected as persons
+- No migration of existing notes required
+
+---
 
 ### GEDCOM Import v2 (v0.10.1)
 

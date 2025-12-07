@@ -9,7 +9,6 @@ This document outlines planned features for Canvas Roots. For completed features
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
   - [Data Enhancement Pass](#data-enhancement-pass)
-  - [Flexible Note Type Detection](#flexible-note-type-detection)
   - [Type Customization](#type-customization)
   - [Print & PDF Export](#print--pdf-export)
   - [Research & Analysis Tools](#research--analysis-tools)
@@ -26,6 +25,7 @@ For detailed implementation documentation of completed features, see [Release Hi
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.10.2 | [Flexible Note Type Detection](Release-History#flexible-note-type-detection-v0102) | Support cr_type, tags, avoids conflicts |
 | v0.10.1 | [GEDCOM Import v2](Release-History#gedcom-import-v2-v0101) | Enhanced import with sources, events, and places |
 | v0.10.0 | [Chronological Story Mapping](Release-History#chronological-story-mapping-v0100) | Event notes, timelines, narrative support |
 | v0.9.4 | [Value Aliases](Release-History#value-aliases-v094) | Custom terminology for property values |
@@ -62,23 +62,6 @@ For detailed implementation documentation of completed features, see [Release Hi
 - Re-parse GEDCOM for Sources: Match individuals to existing notes, extract `SOUR` records
 - Preview mode before committing changes
 - New card in Import/Export tab: "Enhance existing data"
-
----
-
-### Flexible Note Type Detection
-
-**Summary:** Support multiple methods for identifying Canvas Roots note types, avoiding conflicts with other plugins that use the `type` property.
-
-**Problem:**
-- Canvas Roots uses `type: person` to identify note types
-- Other plugins use `type` for different purposes
-- Some users prefer tags (`#person`) over frontmatter properties
-
-**Planned Features:**
-- New default property: `cr_type` (namespaced to avoid conflicts)
-- Detection priority: `cr_type` → `type` → Tags → Property alias
-- Tag-based detection: `#person`, `#place`, `#event`, `#source` (and nested tags)
-- Backwards compatibility for existing vaults
 
 ---
 

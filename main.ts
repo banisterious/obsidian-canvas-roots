@@ -74,6 +74,8 @@ export default class CanvasRootsPlugin extends Plugin {
 		if (this.folderFilter) {
 			graphService.setFolderFilter(this.folderFilter);
 		}
+		// Set settings for note type detection
+		graphService.setSettings(this.settings);
 
 		// Populate research coverage and conflict counts when fact-level tracking is enabled
 		if (this.settings.trackFactSourcing) {
@@ -124,6 +126,19 @@ export default class CanvasRootsPlugin extends Plugin {
 				graphService.setConflictCount(person.crId, conflictCount);
 			}
 		}
+	}
+
+	/**
+	 * Create a PlaceGraphService configured with folder filter and settings
+	 */
+	createPlaceGraphService(): PlaceGraphService {
+		const placeGraph = new PlaceGraphService(this.app);
+		if (this.folderFilter) {
+			placeGraph.setFolderFilter(this.folderFilter);
+		}
+		placeGraph.setSettings(this.settings);
+		placeGraph.setValueAliases(this.settings.valueAliases);
+		return placeGraph;
 	}
 
 	async onload() {
@@ -430,7 +445,7 @@ export default class CanvasRootsPlugin extends Plugin {
 				new CreatePlaceModal(this.app, {
 					directory: this.settings.placesFolder || '',
 					familyGraph: this.createFamilyGraphService(),
-					placeGraph: new PlaceGraphService(this.app),
+					placeGraph: this.createPlaceGraphService(),
 					settings: this.settings
 				}).open();
 			}
@@ -2893,7 +2908,20 @@ export default class CanvasRootsPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const savedData = await this.loadData();
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, savedData);
+
+		// Migration: Existing users (who have saved settings but no noteTypeDetection)
+		// should keep 'type' as primary for backwards compatibility.
+		// New users get 'cr_type' as the default.
+		if (savedData && !savedData.noteTypeDetection) {
+			// User has existing settings but never configured noteTypeDetection
+			// Preserve legacy behavior by using 'type' as primary
+			this.settings.noteTypeDetection = {
+				enableTagDetection: true,
+				primaryTypeProperty: 'type'
+			};
+		}
 	}
 
 	async saveSettings() {
@@ -3207,7 +3235,7 @@ export default class CanvasRootsPlugin extends Plugin {
 		}
 
 		// Load the place from the place graph
-		const placeGraph = new PlaceGraphService(this.app);
+		const placeGraph = this.createPlaceGraphService();
 		placeGraph.reloadCache();
 		const place = placeGraph.getPlaceByCrId(crId);
 
@@ -3639,7 +3667,7 @@ export default class CanvasRootsPlugin extends Plugin {
 		}
 
 		// Check which places already have notes
-		const placeGraph = new PlaceGraphService(this.app);
+		const placeGraph = this.createPlaceGraphService();
 		placeGraph.reloadCache();
 
 		const missingPlaces: string[] = [];

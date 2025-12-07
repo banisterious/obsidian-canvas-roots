@@ -15,6 +15,7 @@ import type {
 } from '../types/organization-types';
 import { isValidOrganizationType } from '../constants/organization-types';
 import { getLogger } from '../../core/logging';
+import { isOrganizationNote } from '../../utils/note-type-detection';
 
 const logger = getLogger('OrganizationService');
 
@@ -293,8 +294,8 @@ export class OrganizationService {
 
 		const fm = cache.frontmatter;
 
-		// Must be an organization type
-		if (fm.type !== 'organization') {
+		// Must be an organization note (uses flexible detection)
+		if (!isOrganizationNote(fm, cache, this.plugin.settings.noteTypeDetection)) {
 			return null;
 		}
 

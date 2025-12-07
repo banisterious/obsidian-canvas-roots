@@ -13,6 +13,7 @@ import { getLogger } from './logging';
 import { FamilyGraphService, PersonNode } from './family-graph';
 import { FolderFilterService } from './folder-filter';
 import { CanvasRootsSettings } from '../settings';
+import { ALL_NOTE_TYPES, NoteType } from '../utils/note-type-detection';
 
 const logger = getLogger('DataQuality');
 
@@ -30,7 +31,8 @@ export type IssueCategory =
 	| 'missing_data'
 	| 'data_format'
 	| 'orphan_reference'
-	| 'nested_property';
+	| 'nested_property'
+	| 'legacy_type_property';
 
 /**
  * A single data quality issue
@@ -131,6 +133,7 @@ export interface DataQualityOptions {
 		dataFormat?: boolean;
 		orphanReferences?: boolean;
 		nestedProperties?: boolean;
+		legacyTypeProperty?: boolean;
 	};
 
 	/** Minimum severity to include */
@@ -174,6 +177,7 @@ export class DataQualityService {
 			dataFormat: true,
 			orphanReferences: true,
 			nestedProperties: true,
+			legacyTypeProperty: true,
 		};
 
 		for (const person of people) {
@@ -194,6 +198,9 @@ export class DataQualityService {
 			}
 			if (checks.nestedProperties) {
 				issues.push(...this.checkNestedProperties(person));
+			}
+			if (checks.legacyTypeProperty) {
+				issues.push(...this.checkLegacyTypeProperty(person));
 			}
 		}
 
@@ -726,6 +733,61 @@ export class DataQualityService {
 	}
 
 	/**
+	 * Check for legacy 'type' property usage when 'cr_type' is configured as primary
+	 * This helps users migrate from the old 'type' property to the namespaced 'cr_type'
+	 */
+	private checkLegacyTypeProperty(person: PersonNode): DataQualityIssue[] {
+		const issues: DataQualityIssue[] = [];
+
+		// Only check if cr_type is configured as the primary type property
+		const primaryProperty = this.settings.noteTypeDetection?.primaryTypeProperty ?? 'cr_type';
+		if (primaryProperty !== 'cr_type') {
+			return issues;
+		}
+
+		// Get the cached frontmatter for this file
+		const cache = this.app.metadataCache.getFileCache(person.file);
+		if (!cache?.frontmatter) {
+			return issues;
+		}
+
+		const fm = cache.frontmatter as Record<string, unknown>;
+
+		// Check if note has 'type' property with a valid Canvas Roots type value
+		const typeValue = fm['type'];
+		if (typeof typeValue !== 'string') {
+			return issues;
+		}
+
+		// Check if the type value is a recognized Canvas Roots note type
+		const isCanvasRootsType = ALL_NOTE_TYPES.includes(typeValue as NoteType);
+		if (!isCanvasRootsType) {
+			return issues;
+		}
+
+		// Check if note already has cr_type (no migration needed)
+		const crTypeValue = fm['cr_type'];
+		if (crTypeValue !== undefined) {
+			return issues;
+		}
+
+		// Found a note with legacy 'type' property that should be migrated
+		issues.push({
+			code: 'LEGACY_TYPE_PROPERTY',
+			message: `Uses legacy 'type' property (${typeValue}) instead of 'cr_type'. Migration recommended.`,
+			severity: 'info',
+			category: 'legacy_type_property',
+			person,
+			details: {
+				typeValue,
+				property: 'type',
+			},
+		});
+
+		return issues;
+	}
+
+	/**
 	 * Check if a value is a nested object (not a primitive or array of primitives)
 	 */
 	private isNestedObject(value: unknown): boolean {
@@ -836,6 +898,7 @@ export class DataQualityService {
 			data_format: 0,
 			orphan_reference: 0,
 			nested_property: 0,
+			legacy_type_property: 0,
 		};
 		for (const issue of issues) {
 			byCategory[issue.category]++;
@@ -1046,6 +1109,71 @@ export class DataQualityService {
 	}
 
 	/**
+	 * Migrate legacy 'type' property to 'cr_type'
+	 * Only migrates notes with valid Canvas Roots type values that don't already have cr_type
+	 * Returns the number of files modified
+	 */
+	async migrateLegacyTypeProperty(options: DataQualityOptions = {}): Promise<BatchOperationResult> {
+		const people = this.getPeopleForScope(options);
+		const results: BatchOperationResult = {
+			processed: 0,
+			modified: 0,
+			errors: [],
+		};
+
+		for (const person of people) {
+			// Get the cached frontmatter for this file
+			const cache = this.app.metadataCache.getFileCache(person.file);
+			if (!cache?.frontmatter) {
+				results.processed++;
+				continue;
+			}
+
+			const fm = cache.frontmatter as Record<string, unknown>;
+
+			// Check if note has 'type' property with a valid Canvas Roots type value
+			const typeValue = fm['type'];
+			if (typeof typeValue !== 'string') {
+				results.processed++;
+				continue;
+			}
+
+			// Check if the type value is a recognized Canvas Roots note type
+			const isCanvasRootsType = ALL_NOTE_TYPES.includes(typeValue as NoteType);
+			if (!isCanvasRootsType) {
+				results.processed++;
+				continue;
+			}
+
+			// Check if note already has cr_type (no migration needed)
+			const crTypeValue = fm['cr_type'];
+			if (crTypeValue !== undefined) {
+				results.processed++;
+				continue;
+			}
+
+			// Migrate: add cr_type and remove type
+			try {
+				await this.app.fileManager.processFrontMatter(person.file, (frontmatter) => {
+					frontmatter['cr_type'] = typeValue;
+					delete frontmatter['type'];
+				});
+				results.modified++;
+			} catch (error) {
+				results.errors.push({
+					file: person.file.path,
+					error: error instanceof Error ? error.message : String(error),
+				});
+			}
+
+			results.processed++;
+		}
+
+		logger.info('migrate-type', `Migrated legacy type property: ${results.modified}/${results.processed} files modified`);
+		return results;
+	}
+
+	/**
 	 * Preview what batch normalization would do without making changes
 	 */
 	previewNormalization(options: DataQualityOptions = {}): NormalizationPreview {
@@ -1054,6 +1182,7 @@ export class DataQualityService {
 			dateNormalization: [],
 			genderNormalization: [],
 			orphanClearing: [],
+			legacyTypeMigration: [],
 		};
 
 		// Build lookup of valid cr_ids for orphan detection
@@ -1113,6 +1242,25 @@ export class DataQualityService {
 					oldValue: person.motherCrId,
 					newValue: '(cleared)',
 				});
+			}
+
+			// Check legacy type property
+			const cache = this.app.metadataCache.getFileCache(person.file);
+			if (cache?.frontmatter) {
+				const fm = cache.frontmatter as Record<string, unknown>;
+				const typeValue = fm['type'];
+				const crTypeValue = fm['cr_type'];
+
+				if (typeof typeValue === 'string' &&
+					ALL_NOTE_TYPES.includes(typeValue as NoteType) &&
+					crTypeValue === undefined) {
+					preview.legacyTypeMigration.push({
+						person,
+						field: 'type → cr_type',
+						oldValue: typeValue,
+						newValue: typeValue,
+					});
+				}
 			}
 		}
 
@@ -1267,6 +1415,7 @@ export interface NormalizationPreview {
 	dateNormalization: NormalizationChange[];
 	genderNormalization: NormalizationChange[];
 	orphanClearing: NormalizationChange[];
+	legacyTypeMigration: NormalizationChange[];
 }
 
 /**

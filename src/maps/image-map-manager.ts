@@ -11,6 +11,7 @@ import type { App } from 'obsidian';
 import * as L from 'leaflet';
 import { getLogger } from '../core/logging';
 import type { CustomMapConfig, ImageCorners } from './types/map-types';
+import { isMapNote } from '../utils/note-type-detection';
 
 // Initialize logger early so it can be used by helper functions
 const logger = getLogger('ImageMapManager');
@@ -193,7 +194,8 @@ export class ImageMapManager {
 			if (!cache?.frontmatter) continue;
 
 			const fm = cache.frontmatter;
-			if (fm.type !== 'map') continue;
+			// Uses flexible detection with default settings for backwards compatibility
+			if (!isMapNote(fm, cache)) continue;
 
 			try {
 				const config = this.parseMapConfig(fm, file);

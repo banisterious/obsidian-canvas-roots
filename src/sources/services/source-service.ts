@@ -17,6 +17,7 @@ import {
 } from '../types/source-types';
 import { getSourceTemplate, applyTemplatePlaceholders } from '../types/source-templates';
 import { generateCrId } from '../../core/uuid';
+import { isSourceNote } from '../../utils/note-type-detection';
 
 /**
  * Safely convert frontmatter value to string
@@ -408,8 +409,9 @@ export class SourceService {
 	 * Parse a file into a SourceNote object
 	 */
 	parseSourceNote(file: TFile, frontmatter: Record<string, unknown>): SourceNote | null {
-		// Must have type: source
-		if (frontmatter.type !== 'source') {
+		// Must have type: source (uses flexible detection)
+		const cache = this.app.metadataCache.getFileCache(file);
+		if (!isSourceNote(frontmatter, cache, this.settings.noteTypeDetection)) {
 			return null;
 		}
 

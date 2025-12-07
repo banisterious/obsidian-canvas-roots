@@ -1,6 +1,8 @@
 import { App, TFile } from 'obsidian';
 import { SpouseValue } from '../types/frontmatter';
 import { FolderFilterService } from './folder-filter';
+import type { CanvasRootsSettings } from '../settings';
+import { isPlaceNote, isMapNote, isPersonNote } from '../utils/note-type-detection';
 
 /**
  * Vault statistics for person notes
@@ -71,6 +73,7 @@ export interface FullVaultStats {
 export class VaultStatsService {
 	private app: App;
 	private folderFilter: FolderFilterService | null = null;
+	private settings: CanvasRootsSettings | null = null;
 
 	constructor(app: App) {
 		this.app = app;
@@ -81,6 +84,13 @@ export class VaultStatsService {
 	 */
 	setFolderFilter(folderFilter: FolderFilterService): void {
 		this.folderFilter = folderFilter;
+	}
+
+	/**
+	 * Set the full plugin settings for note type detection
+	 */
+	setSettings(settings: CanvasRootsSettings): void {
+		this.settings = settings;
 	}
 
 	/**
@@ -118,8 +128,8 @@ export class VaultStatsService {
 
 			const fm = cache.frontmatter;
 
-			// Check for place notes (type: place)
-			if (fm.type === 'place') {
+			// Check for place notes (uses flexible detection)
+			if (isPlaceNote(fm, cache, this.settings?.noteTypeDetection)) {
 				totalPlaces++;
 				if (fm.coordinates?.lat !== undefined && fm.coordinates?.long !== undefined) {
 					placesWithCoordinates++;
@@ -129,8 +139,8 @@ export class VaultStatsService {
 				continue;
 			}
 
-			// Check for map notes (type: map)
-			if (fm.type === 'map') {
+			// Check for map notes (uses flexible detection)
+			if (isMapNote(fm, cache, this.settings?.noteTypeDetection)) {
 				totalMaps++;
 				if (fm.universe) {
 					universesSet.add(fm.universe);
