@@ -150,11 +150,11 @@ Enhanced GEDCOM import that creates source notes, event notes, and place notes i
 
 **Source Import:**
 - Parse `SOUR` records and `@S1@`-style source references
-- Create source notes (`type: source`) with available metadata
+- Create source notes (`cr_type: source`) with available metadata
 - Support for `TITL`, `AUTH`, `PUBL`, `REPO` fields
 
 **Event Import:**
-- Create event notes (`type: event`) for all supported GEDCOM tags:
+- Create event notes (`cr_type: event`) for all supported GEDCOM tags:
   - **Core (4):** `BIRT`, `DEAT`, `MARR`, `DIV`
   - **Life Events (6):** `BURI`, `CREM`, `ADOP`, `GRAD`, `RETI`, `CENS`
   - **Career/Residence (3):** `RESI`, `OCCU`, `EDUC`
@@ -202,7 +202,7 @@ Event-based timeline visualization supporting genealogists (source-derived event
 See [Events And Timelines](Events-And-Timelines) wiki page for full documentation.
 
 **Features:**
-- Event notes (`type: event`) as first-class entities with 22 built-in event types
+- Event notes (`cr_type: event`) as first-class entities with 22 built-in event types
 - Create Event Modal for manual event creation
 - Source event extraction ("Extract events" action with smart suggestions)
 - Person Timeline view (calendar badge on person list items)
@@ -220,7 +220,7 @@ See [Events And Timelines](Events-And-Timelines) wiki page for full documentatio
 
 **Event Schema:**
 ```yaml
-type: event
+cr_type: event
 cr_id: "20251205123456"
 title: "Birth of John Smith"
 event_type: birth
@@ -373,7 +373,7 @@ Centralized evidence management linking source documents to person notes.
 See [Evidence & Sources](Evidence-And-Sources) wiki page for full documentation.
 
 **Features:**
-- Source note type (`type: source`) with frontmatter schema
+- Source note type (`cr_type: source`) with frontmatter schema
 - 13 built-in source types (census, vital_record, photo, correspondence, newspaper, military, immigration, etc.)
 - Source counting using Obsidian's `resolvedLinks` metadata cache
 - **Source indicators on generated trees**: Small badges (e.g., "📎 3") on person nodes showing linked source count
@@ -393,7 +393,7 @@ See [Evidence & Sources](Evidence-And-Sources) wiki page for full documentation.
 
 **Source Note Schema:**
 ```yaml
-type: source
+cr_type: source
 cr_id: source-1900-census-smith
 title: "1900 US Federal Census - Smith Family"
 source_type: census
@@ -413,7 +413,7 @@ Define and visualize non-genealogical hierarchies (houses, guilds, corporations)
 
 **Organization Note Schema:**
 ```yaml
-type: organization
+cr_type: organization
 name: "House Stark"
 parent_org: "[[The North]]"
 org_type: noble_house

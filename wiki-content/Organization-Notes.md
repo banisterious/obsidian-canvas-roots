@@ -32,7 +32,7 @@ Create a note with the following frontmatter:
 
 ```yaml
 ---
-type: organization
+cr_type: organization
 cr_id: org-house-stark
 name: House Stark
 org_type: noble_house

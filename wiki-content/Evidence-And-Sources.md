@@ -23,7 +23,7 @@ Create a new markdown file with this frontmatter structure:
 
 ```yaml
 ---
-type: source
+cr_type: source
 cr_id: source-1900-census-smith
 title: "1900 US Federal Census - Smith Family"
 source_type: census
@@ -99,7 +99,7 @@ Source notes link to person notes using wikilinks in the note body. When a sourc
 
 ```markdown
 ---
-type: source
+cr_type: source
 title: "1900 Census - Smith Household"
 source_type: census
 ---
@@ -139,7 +139,7 @@ When generating family trees, you can display badges showing how many sources li
 
 During tree generation, Canvas Roots:
 
-1. Scans all notes with `type: source` frontmatter
+1. Scans all notes with `cr_type: source` frontmatter
 2. Counts how many link to each person note
 3. Adds small text nodes near person nodes showing the count
 

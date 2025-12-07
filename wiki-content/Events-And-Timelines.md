@@ -36,7 +36,7 @@ Create a new markdown file with this frontmatter structure:
 
 ```yaml
 ---
-type: event
+cr_type: event
 cr_id: "20251206143000"
 title: "Birth of John Smith"
 event_type: birth
@@ -141,7 +141,7 @@ Events integrate with Canvas Roots' [Fictional Date Systems](Fictional-Date-Syst
 **Example with Middle-earth Calendar:**
 
 ```yaml
-type: event
+cr_type: event
 title: "Bilbo's Birthday Party"
 event_type: anecdote
 date: "TA 3001"
@@ -485,7 +485,7 @@ For events involving multiple people (marriages, etc.):
 For events without known dates:
 
 ```yaml
-type: event
+cr_type: event
 title: "Person A moved to the Americas"
 event_type: immigration
 date_precision: unknown
@@ -521,7 +521,7 @@ The "Compute sort order" button in the Events tab automatically calculates `sort
 Tag events with groups for filtering by nation, faction, or organization:
 
 ```yaml
-type: event
+cr_type: event
 title: "Battle of Helm's Deep"
 event_type: lore_event
 date: "TA 3019"

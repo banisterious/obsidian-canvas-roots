@@ -22,7 +22,7 @@ Schema validation allows you to define data consistency rules for your person no
 
 ## Overview
 
-Schemas are special notes (with `type: schema` in frontmatter) that define validation rules for person notes. Use schemas to:
+Schemas are special notes (with `cr_type: schema` in frontmatter) that define validation rules for person notes. Use schemas to:
 
 - **Enforce required properties**: Ensure all people in a collection have specific fields
 - **Validate data types**: Check that dates are dates, numbers are numbers, etc.
@@ -55,7 +55,7 @@ The schema definition is stored in a fenced code block with language `json schem
 
 ````
 ---
-type: schema
+cr_type: schema
 cr_id: schema-example-001
 name: Example Schema
 description: Validates example properties
@@ -367,7 +367,7 @@ Schema validation results appear in the Data Quality tab, providing:
 
 ````
 ---
-type: schema
+cr_type: schema
 cr_id: schema-basic-required
 name: Basic Required Fields
 description: Ensures all people have essential information
@@ -389,7 +389,7 @@ applies_to_type: all
 
 ````
 ---
-type: schema
+cr_type: schema
 cr_id: schema-house-stark
 name: House Stark Schema
 description: Validation rules for House Stark members
@@ -438,7 +438,7 @@ applies_to_value: "House Stark"
 
 ````
 ---
-type: schema
+cr_type: schema
 cr_id: schema-date-validation
 name: Date Validation
 description: Ensures date fields are logically consistent
@@ -476,7 +476,7 @@ applies_to_type: all
 
 ````
 ---
-type: schema
+cr_type: schema
 cr_id: schema-import-quality
 name: Import Quality Check
 description: Validates imported GEDCOM data in staging folder

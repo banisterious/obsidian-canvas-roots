@@ -134,7 +134,7 @@ The Maps tab contains four cards:
 
 ### Custom Maps Gallery
 
-The gallery displays thumbnail previews of all map notes in your vault (notes with `type: map` frontmatter).
+The gallery displays thumbnail previews of all map notes in your vault (notes with `cr_type: map` frontmatter).
 
 **Thumbnail display:**
 - Image preview (~150×100px) with the map image
@@ -208,7 +208,7 @@ For fictional worlds or historical maps, you can use your own map images:
 1. Create a map note with frontmatter:
    ```yaml
    ---
-   type: map
+   cr_type: map
    map_id: westeros
    name: Westeros
    universe: got
@@ -236,7 +236,7 @@ Place notes are structured markdown files with YAML frontmatter that describe lo
 
 ```yaml
 ---
-type: place
+cr_type: place
 cr_id: place_abc123
 name: "London"
 aliases:
@@ -526,7 +526,7 @@ Corner positions are saved as flat properties in your map note's frontmatter:
 
 ```yaml
 ---
-type: map
+cr_type: map
 map_id: middle-earth
 name: Middle-earth
 image: assets/maps/middle-earth.jpg
