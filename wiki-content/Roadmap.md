@@ -50,25 +50,28 @@ For detailed implementation documentation of completed features, see [Release Hi
 
 ### Export v2: Full Entity Export
 
-**Summary:** Enhanced export functionality that includes events, sources, and places in addition to person notes. Ensures round-trip fidelity with GEDCOM Import v2.
+**Summary:** Enhanced export functionality that includes events, sources, places, and media in addition to person notes. Ensures round-trip fidelity with GEDCOM Import v2 and enables complete data portability.
 
-**Current Limitation:** All four exporters (GEDCOM 5.5.1, GEDCOM X, Gramps XML, CSV) only export person notes. Event notes, source notes, and place notes created by Import v2 are lost on export.
+**Current Limitation:** All four exporters (GEDCOM 5.5.1, GEDCOM X, Gramps XML, CSV) only export person notes. Event notes, source notes, place notes, and media files created by Import v2 are lost on export.
 
 **Planned Features:**
 - **Event Export:** Export all event notes linked to persons (30+ event types)
 - **Source Export:** Export source notes with citations linked to events
 - **Place Export:** Export place hierarchy with coordinates
+- **Media Export:** Bundle media files (images, documents, audio) in ZIP archive
+- **GEDCOM 7.0 Support:** Modern format with native media embedding
 - **Format-specific mappings:** GEDCOM tags, GEDCOM X facts, Gramps XML events
 - **Sensitive field redaction:** SSN and identity numbers automatically removed
-- **UI enhancements:** Checkboxes to include/exclude entity types
+- **UI enhancements:** Checkboxes to include/exclude entity types and media options
 
 **Supported Formats:**
-| Format | Events | Sources | Places |
-|--------|--------|---------|--------|
-| GEDCOM 5.5.1 | ✅ inline tags | ✅ SOUR records | ✅ PLAC hierarchy |
-| GEDCOM X | ✅ person facts | ✅ sourceDescriptions | ✅ placeDescriptions |
-| Gramps XML | ✅ event records | ✅ source records | ✅ placeobj records |
-| CSV | ✅ event rows | ✅ source rows | ✅ place rows |
+| Format | Events | Sources | Places | Media |
+|--------|--------|---------|--------|-------|
+| GEDCOM 5.5.1 | ✅ inline tags | ✅ SOUR records | ✅ PLAC hierarchy | ⚠️ limited OBJE |
+| GEDCOM 7.0 | ✅ inline tags | ✅ SOUR records | ✅ PLAC records | ✅ full OBJE support |
+| GEDCOM X | ✅ person facts | ✅ sourceDescriptions | ✅ placeDescriptions | ✅ artifacts |
+| Gramps XML | ✅ event records | ✅ source records | ✅ placeobj records | ✅ objects |
+| CSV | ✅ event rows | ✅ source rows | ✅ place rows | ✅ media rows |
 
 See [Export v2 Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/export-v2.md) for implementation details.
 

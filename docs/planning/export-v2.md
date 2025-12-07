@@ -2,25 +2,33 @@
 
 ## Overview
 
-Enhanced export functionality that includes events, sources, and places in addition to person notes. This upgrade ensures round-trip fidelity with GEDCOM Import v2 and captures the full richness of Canvas Roots data.
+Enhanced export functionality that includes events, sources, places, and media in addition to person notes. This upgrade ensures round-trip fidelity with GEDCOM Import v2 and captures the full richness of Canvas Roots data.
+
+**Supported Export Formats:**
+- GEDCOM 5.5.1 (legacy compatibility)
+- GEDCOM 7.0 (modern, with embedded media support)
+- GEDCOM X (JSON format)
+- Gramps XML
+- CSV
 
 ## Current State Analysis
 
 ### What v0.10.x Exports
 
-All four exporters (GEDCOM 5.5.1, GEDCOM X, Gramps XML, CSV) share the same limitations:
+All four current exporters (GEDCOM 5.5.1, GEDCOM X, Gramps XML, CSV) share the same limitations:
 
-| Entity Type | GEDCOM 5.5.1 | GEDCOM X | Gramps XML | CSV |
-|-------------|--------------|----------|------------|-----|
-| **Person notes** | ✅ | ✅ | ✅ | ✅ |
-| **Relationships** | ✅ | ✅ | ✅ | ✅ |
-| **Person birth/death** | ✅ inline | ✅ as facts | ✅ as events | ✅ columns |
-| **Marriage metadata** | ✅ MARR tag | ✅ couple facts | ⚠️ limited | ⚠️ limited |
-| **Event notes** | ❌ | ❌ | ❌ | ❌ |
-| **Source notes** | ❌ | ❌ | ❌ | ❌ |
-| **Place notes** | ❌ | ❌ | ❌ | ❌ |
-| **Source citations** | ❌ | ❌ | ❌ | ❌ |
-| **Place hierarchy** | ❌ | ❌ | ❌ | ❌ |
+| Entity Type | GEDCOM 5.5.1 | GEDCOM 7.0 | GEDCOM X | Gramps XML | CSV |
+|-------------|--------------|------------|----------|------------|-----|
+| **Person notes** | ✅ | ❌ (new) | ✅ | ✅ | ✅ |
+| **Relationships** | ✅ | ❌ (new) | ✅ | ✅ | ✅ |
+| **Person birth/death** | ✅ inline | ❌ (new) | ✅ as facts | ✅ as events | ✅ columns |
+| **Marriage metadata** | ✅ MARR tag | ❌ (new) | ✅ couple facts | ⚠️ limited | ⚠️ limited |
+| **Event notes** | ❌ | ❌ (new) | ❌ | ❌ | ❌ |
+| **Source notes** | ❌ | ❌ (new) | ❌ | ❌ | ❌ |
+| **Place notes** | ❌ | ❌ (new) | ❌ | ❌ | ❌ |
+| **Source citations** | ❌ | ❌ (new) | ❌ | ❌ | ❌ |
+| **Place hierarchy** | ❌ | ❌ (new) | ❌ | ❌ | ❌ |
+| **Media files** | ❌ | ❌ (new) | ❌ | ❌ | ❌ |
 
 ### What Gets Lost
 
@@ -30,6 +38,7 @@ When exporting data that was imported with GEDCOM Import v2:
 2. **Source citations** - Source records and their citations to events are lost
 3. **Place structure** - Place hierarchy and coordinates are not preserved
 4. **Event dates/places** - Events beyond birth/death lose their date/place context
+5. **Media files** - Linked images, documents, and recordings are not included
 
 ## Implementation Plan
 
@@ -94,6 +103,37 @@ Events become tags under the individual:
 | `engagement` | `ENGA` |
 | `annulment` | `ANUL` |
 | `custom` | `EVEN` (with TYPE substructure) |
+
+#### GEDCOM 7.0
+
+GEDCOM 7.0 uses similar structure but with enhanced features:
+
+```gedcom
+0 HEAD
+1 GEDC
+2 VERS 7.0
+0 @I1@ INDI
+1 NAME John /Smith/
+1 BIRT
+2 DATE 15 MAR 1850
+2 PLAC Dublin, Ireland
+2 SOUR @S1@
+3 PAGE Certificate #123
+1 RESI
+2 DATE FROM 1875 TO 1880
+2 PLAC New York, USA
+2 SOUR @S2@
+1 OCCU Blacksmith
+2 DATE ~1870
+1 IMMI
+2 DATE 1875
+2 PLAC New York, USA
+```
+
+**GEDCOM 7.0 Date Improvements:**
+- Simplified date modifiers (`~` for approximate instead of `ABT`)
+- Better range support with `FROM...TO` and `BET...AND`
+- Full ISO 8601 date support
 
 **Date Precision Mapping (Export):**
 
@@ -213,6 +253,32 @@ Sources become top-level SOUR records:
 3 QUAY 3
 ```
 
+#### GEDCOM 7.0
+
+GEDCOM 7.0 sources support multimedia objects directly:
+
+```gedcom
+0 @S1@ SOUR
+1 TITL 1850 US Federal Census
+1 AUTH US Census Bureau
+1 PUBL Ancestry.com
+1 REPO @R1@
+1 NOTE Digitized microfilm
+1 OBJE @M1@
+
+0 @M1@ OBJE
+1 FILE media/1850_census_page12.jpg
+2 FORM image/jpeg
+2 TITL Census Page 12
+
+0 @I1@ INDI
+1 NAME John /Smith/
+1 BIRT
+2 DATE 15 MAR 1850
+2 SOUR @S1@
+3 PAGE Sheet 12, Line 5
+```
+
 **Source Quality Mapping (Export):**
 
 | Canvas Roots `confidence` | GEDCOM QUAY |
@@ -311,6 +377,31 @@ Places can be exported with hierarchy:
 
 GEDCOM uses comma-separated hierarchy from specific to general:
 `City, County, State, Country`
+
+#### GEDCOM 7.0
+
+GEDCOM 7.0 introduces formal place records that can be referenced:
+
+```gedcom
+0 @P1@ _PLAC
+1 NAME Dublin
+1 TYPE City
+1 MAP
+2 LATI N53.3498
+2 LONG W6.2603
+1 _PLAC @P2@
+
+0 @P2@ _PLAC
+1 NAME Ireland
+1 TYPE Country
+
+0 @I1@ INDI
+1 BIRT
+2 DATE 15 MAR 1850
+2 PLAC @P1@
+```
+
+**Note:** GEDCOM 7.0's place record handling is still evolving. We'll monitor the specification and implement according to best practices.
 
 #### GEDCOM X
 
@@ -427,6 +518,287 @@ Export complete!
 - 78 places exported
 ```
 
+### Phase 5: Media Export
+
+**Goal:** Export media files (images, documents, audio, video) with proper linking to sources and persons. Support bundled ZIP export for complete data portability.
+
+#### Export Modes
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| **Reference Only** | Export file paths as references | User manages files separately |
+| **Bundled ZIP** | Include all media in ZIP archive | Complete portable export |
+| **Skip Media** | Exclude all media references | Minimal export |
+
+#### Bundled ZIP Structure
+
+```
+export_smith_family.zip
+├── smith_family.ged          # or .json, .gramps, .csv
+├── manifest.json             # Media inventory and checksums
+└── media/
+    ├── images/
+    │   ├── 1850_census_page12.jpg
+    │   ├── marriage_certificate.png
+    │   └── portrait_john_smith.jpg
+    ├── documents/
+    │   ├── will_1892.pdf
+    │   └── naturalization_papers.pdf
+    └── audio/
+        └── interview_grandma_1985.mp3
+```
+
+#### Manifest File
+
+The manifest provides a complete inventory of bundled media:
+
+```json
+{
+  "version": "1.0",
+  "created": "2024-01-15T10:30:00Z",
+  "generator": "Canvas Roots v0.11.0",
+  "format": "GEDCOM 7.0",
+  "media": [
+    {
+      "id": "M1",
+      "originalPath": "attachments/census/1850_census_page12.jpg",
+      "exportPath": "media/images/1850_census_page12.jpg",
+      "mimeType": "image/jpeg",
+      "size": 245678,
+      "checksum": "sha256:abc123...",
+      "linkedTo": [
+        {"type": "source", "id": "S1", "title": "1850 US Federal Census"}
+      ]
+    },
+    {
+      "id": "M2",
+      "originalPath": "attachments/documents/will_1892.pdf",
+      "exportPath": "media/documents/will_1892.pdf",
+      "mimeType": "application/pdf",
+      "size": 1234567,
+      "checksum": "sha256:def456...",
+      "linkedTo": [
+        {"type": "event", "id": "E45", "eventType": "probate"},
+        {"type": "source", "id": "S12", "title": "Last Will and Testament"}
+      ]
+    }
+  ],
+  "statistics": {
+    "totalFiles": 47,
+    "totalSize": 156789012,
+    "byType": {
+      "image/jpeg": 32,
+      "image/png": 8,
+      "application/pdf": 5,
+      "audio/mpeg": 2
+    }
+  }
+}
+```
+
+#### Format-Specific Media Handling
+
+##### GEDCOM 7.0 (Preferred for Media)
+
+GEDCOM 7.0 natively supports embedded media with MIME types:
+
+```gedcom
+0 HEAD
+1 GEDC
+2 VERS 7.0
+
+0 @M1@ OBJE
+1 FILE media/images/1850_census_page12.jpg
+2 FORM image/jpeg
+2 TITL 1850 Census - John Smith household
+2 _SIZE 245678
+1 NOTE Page 12, Household #45
+
+0 @S1@ SOUR
+1 TITL 1850 US Federal Census
+1 OBJE @M1@
+```
+
+##### GEDCOM 5.5.1
+
+GEDCOM 5.5.1 has limited media support:
+
+```gedcom
+0 @M1@ OBJE
+1 FILE media/images/1850_census_page12.jpg
+1 FORM JPEG
+1 TITL 1850 Census - John Smith household
+
+0 @S1@ SOUR
+1 TITL 1850 US Federal Census
+1 OBJE @M1@
+```
+
+##### GEDCOM X
+
+Media as sourceDescriptions with artifact type:
+
+```json
+{
+  "sourceDescriptions": [
+    {
+      "id": "M1",
+      "resourceType": "http://gedcomx.org/DigitalArtifact",
+      "about": "media/images/1850_census_page12.jpg",
+      "titles": [{"value": "1850 Census - John Smith household"}],
+      "mediaType": "image/jpeg"
+    },
+    {
+      "id": "S1",
+      "titles": [{"value": "1850 US Federal Census"}],
+      "sources": [{"description": "#M1"}]
+    }
+  ]
+}
+```
+
+##### Gramps XML
+
+Gramps has robust media object support:
+
+```xml
+<objects>
+  <object handle="_m001" id="M1">
+    <file src="media/images/1850_census_page12.jpg"
+          mime="image/jpeg"
+          checksum="abc123..."
+          description="1850 Census - John Smith household"/>
+  </object>
+</objects>
+
+<sources>
+  <source handle="_s001" id="S1">
+    <stitle>1850 US Federal Census</stitle>
+    <objref hlink="_m001"/>
+  </source>
+</sources>
+```
+
+##### CSV
+
+Media exported as separate rows or reference columns:
+
+```csv
+Type,ID,Original Path,Export Path,MIME Type,Size,Linked Sources,Linked Events
+media,M1,attachments/census/1850_census_page12.jpg,media/images/1850_census_page12.jpg,image/jpeg,245678,S1,
+media,M2,attachments/documents/will_1892.pdf,media/documents/will_1892.pdf,application/pdf,1234567,S12,E45
+```
+
+#### Media Organization Options
+
+| Option | Description |
+|--------|-------------|
+| **Preserve vault structure** | Keep original folder hierarchy |
+| **Flatten** | All files in single `media/` folder |
+| **Organize by type** | Separate folders for images, documents, audio |
+| **Organize by entity** | Folders per person or source |
+
+#### Supported Media Types
+
+| Category | Extensions | MIME Types |
+|----------|------------|------------|
+| **Images** | jpg, jpeg, png, gif, tiff, webp | image/* |
+| **Documents** | pdf | application/pdf |
+| **Audio** | mp3, wav, m4a, ogg | audio/* |
+| **Video** | mp4, mov, webm | video/* |
+
+#### Implementation Steps
+
+1. **Media Discovery Service**
+   - Scan source notes for `media` field wikilinks
+   - Scan source notes for embedded images (`![[image.jpg]]`)
+   - Build media → entity relationship map
+
+2. **Media Collection**
+   - Resolve wikilinks to actual file paths
+   - Verify files exist and are readable
+   - Calculate checksums for manifest
+
+3. **ZIP Bundle Creation**
+   - Create temporary directory structure
+   - Copy media files with optional reorganization
+   - Generate manifest.json
+   - Write genealogy data file
+   - Create ZIP archive
+
+4. **Format-Specific OBJE Records**
+   - GEDCOM 7.0: Full OBJE records with MIME types
+   - GEDCOM 5.5.1: Limited OBJE with FORM
+   - GEDCOM X: sourceDescriptions with artifact type
+   - Gramps: objects with full metadata
+   - CSV: media reference rows
+
+5. **Progress Tracking**
+   - File copy progress for large media sets
+   - Estimated time remaining
+   - Skip/retry for inaccessible files
+
+#### UI Enhancements for Media
+
+```
+┌─────────────────────────────────────────┐
+│ Export to GEDCOM 7.0                    │
+├─────────────────────────────────────────┤
+│ Export scope:                           │
+│   ○ All people                          │
+│   ○ Collection: [Smith Family ▼]        │
+│                                         │
+│ Include:                                │
+│   ☑ Person notes (152)                  │
+│   ☑ Event notes (423)                   │
+│   ☑ Source notes (45)                   │
+│   ☑ Place notes (78)                    │
+│   ☑ Media files (47)                    │
+│                                         │
+│ Media handling:                         │
+│   ○ Skip media                          │
+│   ○ Reference only (paths in file)      │
+│   ● Bundle in ZIP archive               │
+│                                         │
+│ Media organization:                     │
+│   ● Organize by type                    │
+│   ○ Preserve vault structure            │
+│   ○ Flatten to single folder            │
+│                                         │
+│ Privacy:                                │
+│   ☑ Protect living persons              │
+│                                         │
+│ Filename: [smith_family            ]    │
+│                                         │
+│           [Cancel]  [Export]            │
+└─────────────────────────────────────────┘
+```
+
+#### Progress Display with Media
+
+```
+Exporting to GEDCOM 7.0...
+├── Reading person notes... 152/152 ✓
+├── Reading event notes... 423/423 ✓
+├── Reading source notes... 45/45 ✓
+├── Reading place notes... 78/78 ✓
+├── Collecting media files... 47/47 ✓
+├── Building relationships... ✓
+├── Linking source citations... ✓
+├── Copying media files... 47/47 (156 MB) ✓
+├── Generating manifest... ✓
+├── Writing GEDCOM 7.0 file... ✓
+└── Creating ZIP archive... ✓
+
+Export complete!
+- 152 individuals exported (3 living anonymized)
+- 423 events exported
+- 45 sources exported
+- 78 places exported
+- 47 media files bundled (156 MB)
+- Output: smith_family_export.zip
+```
+
 ## Data Flow
 
 ```
@@ -434,8 +806,9 @@ Export complete!
 │ Canvas Roots Vault                       │
 │ ├── Person notes (with cr_id)            │
 │ ├── Event notes (with person wikilinks)  │
-│ ├── Source notes (with cr_id)            │
-│ └── Place notes (with parent_place)      │
+│ ├── Source notes (with cr_id + media)    │
+│ ├── Place notes (with parent_place)      │
+│ └── Media files (images, documents, etc) │
 └──────┬───────────────────────────────────┘
        │
        ▼
@@ -444,7 +817,8 @@ Export complete!
 │ ├── Collect all person notes             │
 │ ├── Collect linked event notes           │
 │ ├── Collect linked source notes          │
-│ └── Collect linked place notes           │
+│ ├── Collect linked place notes           │
+│ └── Discover linked media files          │
 └──────┬───────────────────────────────────┘
        │
        ▼
@@ -453,13 +827,23 @@ Export complete!
 │ ├── Build person → event links           │
 │ ├── Build event → source links           │
 │ ├── Build event → place links            │
+│ ├── Build source → media links           │
 │ └── Build place hierarchy                │
 └──────┬───────────────────────────────────┘
        │
-       ├──► GedcomExporter   → .ged
-       ├──► GedcomXExporter  → .json
-       ├──► GrampsExporter   → .gramps
-       └──► CsvExporter      → .csv
+       ├──► Gedcom551Exporter → .ged (5.5.1)
+       ├──► Gedcom7Exporter   → .ged (7.0)
+       ├──► GedcomXExporter   → .json
+       ├──► GrampsExporter    → .gramps
+       └──► CsvExporter       → .csv
+       │
+       ▼ (if bundled export)
+┌──────────────────────────────────────────┐
+│ ZIP Bundle Service                       │
+│ ├── Copy media files                     │
+│ ├── Generate manifest.json               │
+│ └── Create ZIP archive                   │
+└──────────────────────────────────────────┘
 ```
 
 ## File Structure
@@ -468,17 +852,20 @@ Export complete!
 src/
 ├── core/
 │   ├── entity-collection-service.ts   # Shared entity collection
-│   └── relationship-builder.ts        # Shared relationship building
+│   ├── relationship-builder.ts        # Shared relationship building
+│   ├── media-discovery-service.ts     # Media file discovery and linking
+│   └── zip-bundle-service.ts          # ZIP archive creation
 ├── gedcom/
-│   └── gedcom-exporter.ts            # Enhanced GEDCOM 5.5.1 export
+│   ├── gedcom-exporter.ts             # Enhanced GEDCOM 5.5.1 export
+│   └── gedcom7-exporter.ts            # New GEDCOM 7.0 export
 ├── gedcomx/
-│   └── gedcomx-exporter.ts           # Enhanced GEDCOM X export
+│   └── gedcomx-exporter.ts            # Enhanced GEDCOM X export
 ├── gramps/
-│   └── gramps-exporter.ts            # Enhanced Gramps XML export
+│   └── gramps-exporter.ts             # Enhanced Gramps XML export
 ├── csv/
-│   └── csv-exporter.ts               # Enhanced CSV export
+│   └── csv-exporter.ts                # Enhanced CSV export
 └── ui/
-    └── export-modal.ts               # Enhanced export UI
+    └── export-modal.ts                # Enhanced export UI with media options
 ```
 
 ## Sensitive Field Handling
@@ -513,12 +900,14 @@ const SENSITIVE_FIELDS: SensitiveFieldConfig[] = [
 
 ### Unit Tests
 
-- Export event types map correctly to GEDCOM/GEDCOM X/Gramps tags
-- Date precision exports correctly (ABT, BEF, AFT, BET)
+- Export event types map correctly to GEDCOM 5.5.1/7.0/GEDCOM X/Gramps tags
+- Date precision exports correctly (ABT, BEF, AFT, BET for 5.5.1; ~ for 7.0)
 - Source citations link correctly to events
 - Place hierarchy builds correctly
 - Sensitive fields are redacted
 - Privacy filtering works correctly
+- Media MIME types detected correctly
+- Manifest JSON validates against schema
 
 ### Integration Tests
 
@@ -526,6 +915,18 @@ const SENSITIVE_FIELDS: SensitiveFieldConfig[] = [
 - Export all entity types from test vault
 - Verify relationships preserved across export
 - Check coordinate precision in place exports
+- GEDCOM 7.0 validates against official schema
+- ZIP bundle extracts correctly with valid manifest
+- Media files preserved with correct checksums
+
+### Media Export Tests
+
+- Media discovery finds all linked files
+- Missing media files handled gracefully
+- Large media sets export without memory issues
+- ZIP compression works correctly
+- Manifest checksums match actual files
+- Media organization options work correctly
 
 ### Test Files
 
@@ -533,6 +934,8 @@ const SENSITIVE_FIELDS: SensitiveFieldConfig[] = [
 - `test-sources.md` - Person with source citations
 - `test-places.md` - Events with place hierarchy
 - `test-privacy.md` - Living person for privacy testing
+- `test-media.md` - Source with linked media files
+- `test-large-media/` - Directory with large/many media files
 
 ## Migration Path
 
@@ -541,7 +944,9 @@ For users with existing exports:
 1. **New exports** will automatically include all entity types
 2. **Existing workflows** remain unchanged (person-only export still works)
 3. **UI defaults** will include all entities where available
-4. **Settings** allow disabling event/source/place export if not needed
+4. **Settings** allow disabling event/source/place/media export if not needed
+5. **GEDCOM 7.0** recommended for users migrating to Gramps or other modern software
+6. **Bundled ZIP** recommended when media files need to transfer with the data
 
 ## Related Documentation
 
