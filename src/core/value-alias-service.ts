@@ -132,7 +132,7 @@ export class ValueAliasService {
 	 * Get the configured aliases for a field type
 	 */
 	getAliases(field: ValueAliasField): Record<string, string> {
-		return this.plugin.settings.valueAliases[field];
+		return this.plugin.settings.valueAliases?.[field] ?? {};
 	}
 
 	/**
