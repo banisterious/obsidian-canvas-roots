@@ -468,35 +468,346 @@ place,place_002,Ireland,country,,,,real
 
 ### Phase 4: UI Integration
 
-**Export Modal Enhancements:**
+**Goal:** Enhance the export UI with statistics preview, format selection, progress modal, and improved user experience.
+
+#### 4.1 Export Statistics Preview
+
+Before exporting, show a real-time summary of what will be included. Updates dynamically as filters change.
 
 ```
 ┌─────────────────────────────────────────┐
-│ Export to GEDCOM                        │
+│ Export Preview                          │
 ├─────────────────────────────────────────┤
-│ Export scope:                           │
-│   ○ All people                          │
-│   ○ Collection: [Smith Family ▼]        │
-│   ○ Branch of: [John Smith     ] [▼]    │
+│ Based on current filters:               │
 │                                         │
-│ Include:                                │
-│   ☑ Person notes (152)                  │
-│   ☑ Event notes (423)                   │
-│   ☑ Source notes (45)                   │
-│   ☑ Place notes (78)                    │
+│ • 152 people (3 living will be hidden)  │
+│ • 287 relationships                     │
+│ • 423 events                            │
+│ • 45 sources                            │
+│ • 78 places                             │
+│ • 47 media files (156 MB)               │
 │                                         │
-│ Privacy:                                │
-│   ☑ Protect living persons              │
-│   ○ Exclude from export                 │
-│   ○ Anonymize (show as "[Living]")      │
-│                                         │
-│ Sensitive fields:                       │
-│   ☑ Redact SSN/identity numbers         │
-│                                         │
-│ Filename: [smith_family.ged        ]    │
-│                                         │
-│           [Cancel]  [Export]            │
+│ Estimated export size: ~2.3 MB          │
+│ (+ 156 MB if media bundled)             │
 └─────────────────────────────────────────┘
+```
+
+**Implementation:**
+- Calculate counts when export card renders
+- Recalculate on filter changes (collection, branch, privacy)
+- Show warning if counts seem low (possible filter issue)
+- Disable export button if 0 people selected
+
+#### 4.2 Format Version Selection
+
+For GEDCOM exports, allow users to choose between versions:
+
+```
+┌─────────────────────────────────────────┐
+│ GEDCOM Version                          │
+├─────────────────────────────────────────┤
+│ ○ GEDCOM 5.5.1 (Legacy)                 │
+│   Maximum compatibility with older      │
+│   software. Limited media support.      │
+│                                         │
+│ ● GEDCOM 7.0 (Recommended)              │
+│   Modern format with full media         │
+│   embedding. Best for Gramps, RootsMagic│
+└─────────────────────────────────────────┘
+```
+
+**Implementation:**
+- Default to 7.0 for new exports
+- Remember user's last choice in settings
+- Show compatibility notes for each version
+- GEDCOM 7.0 enables additional media options
+
+#### 4.3 Entity Inclusion Checkboxes
+
+Allow granular control over what's exported:
+
+```
+┌─────────────────────────────────────────┐
+│ Include in Export                       │
+├─────────────────────────────────────────┤
+│ ☑ Person notes          152             │
+│ ☑ Event notes           423             │
+│ ☑ Source notes          45              │
+│ ☑ Place notes           78              │
+│ ☑ Media files           47 (156 MB)     │
+│                                         │
+│ ⚠ Unchecking sources will remove        │
+│   citation links from events            │
+└─────────────────────────────────────────┘
+```
+
+**Implementation:**
+- All enabled by default
+- Show dependency warnings (sources → citations)
+- Counts update based on collection/branch filters
+- Media checkbox only enabled for GEDCOM 7.0 or bundled ZIP
+
+#### 4.4 Output Location Options
+
+Choose where the export file is saved:
+
+```
+┌─────────────────────────────────────────┐
+│ Output Location                         │
+├─────────────────────────────────────────┤
+│ ● Download to system                    │
+│   Save to your Downloads folder         │
+│                                         │
+│ ○ Save to vault                         │
+│   Save in: [exports/            ]       │
+│   Useful for backup and versioning      │
+│                                         │
+│ ○ Both                                  │
+│   Download and save to vault            │
+└─────────────────────────────────────────┘
+```
+
+**Implementation:**
+- Default to "Download to system" (current behavior)
+- "Save to vault" creates `exports/` folder if needed
+- Remember preference in settings
+- Vault saves use consistent naming: `{filename}_{date}.{ext}`
+
+#### 4.5 Last Export Info
+
+Show information about previous exports from this vault:
+
+```
+┌─────────────────────────────────────────┐
+│ Export History                          │
+├─────────────────────────────────────────┤
+│ Last export: smith-family.ged           │
+│ Date: Dec 5, 2025 at 2:34 PM            │
+│ Format: GEDCOM 7.0                      │
+│ Contents: 148 people, 412 events        │
+│                                         │
+│ [View export log]                       │
+└─────────────────────────────────────────┘
+```
+
+**Implementation:**
+- Store export history in plugin data (last 10 exports)
+- Track: filename, date, format, counts, duration
+- "View export log" opens detailed history modal
+- Helps users verify exports and track changes
+
+#### 4.6 Export Progress Modal
+
+Full-screen modal with detailed progress, similar to GEDCOM Import modal:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Exporting to GEDCOM 7.0                  │
+│                                                             │
+│  ████████████████████████████░░░░░░░░░░  75%               │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ ✓ Reading person notes              152/152         │   │
+│  │ ✓ Reading event notes               423/423         │   │
+│  │ ✓ Reading source notes              45/45           │   │
+│  │ ● Reading place notes               62/78           │   │
+│  │ ○ Building relationships                            │   │
+│  │ ○ Linking source citations                          │   │
+│  │ ○ Collecting media files                            │   │
+│  │ ○ Writing GEDCOM 7.0 file                           │   │
+│  │ ○ Creating ZIP archive                              │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  Elapsed: 0:12  │  Estimated remaining: 0:04               │
+│                                                             │
+│                        [Cancel]                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**After completion:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Export Complete ✓                       │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                    Summary                          │   │
+│  │                                                     │   │
+│  │  People exported:      152 (3 living anonymized)   │   │
+│  │  Events exported:      423                         │   │
+│  │  Sources exported:     45                          │   │
+│  │  Places exported:      78                          │   │
+│  │  Media files:          47 (156 MB)                 │   │
+│  │  Relationships:        287                         │   │
+│  │                                                     │   │
+│  │  Output file:          smith_family_export.zip     │   │
+│  │  File size:            158.3 MB                    │   │
+│  │  Duration:             0:16                        │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ⚠ 2 warnings during export                                │
+│  [View details]                                            │
+│                                                             │
+│              [Export Another]  [Close]                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**With errors:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   Export Completed with Errors              │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ ⚠ 3 media files could not be found:                │   │
+│  │   • attachments/census/missing_file.jpg            │   │
+│  │   • attachments/photos/old_portrait.png            │   │
+│  │   • attachments/docs/will_scan.pdf                 │   │
+│  │                                                     │   │
+│  │ These files are referenced in source notes but     │   │
+│  │ were not found in the vault. Export continued      │   │
+│  │ without them.                                       │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│              [Export Another]  [Close]                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Implementation:**
+- Reuse modal patterns from `gedcom-import-progress-modal.ts`
+- Real-time progress updates via callbacks
+- Cancel support with cleanup (delete partial files)
+- Error aggregation with expandable details
+- "Export Another" resets to export card
+
+#### 4.7 Consolidated Export Card UI
+
+Refactor the four export cards to share common UI components:
+
+**Current state:** ~400 lines of duplicate code across GEDCOM, GEDCOM X, Gramps, CSV export cards.
+
+**Proposed refactor:**
+
+```typescript
+// Shared export options component
+class ExportOptionsBuilder {
+  // Collection filter dropdown
+  addCollectionFilter(container: HTMLElement): void;
+
+  // Branch filter (person picker + direction)
+  addBranchFilter(container: HTMLElement): void;
+
+  // Privacy override settings
+  addPrivacyOptions(container: HTMLElement): void;
+
+  // Entity inclusion checkboxes
+  addEntityCheckboxes(container: HTMLElement): void;
+
+  // Export statistics preview
+  addStatisticsPreview(container: HTMLElement): void;
+
+  // Output location options
+  addOutputLocationOptions(container: HTMLElement): void;
+
+  // File name input
+  addFileNameInput(container: HTMLElement, extension: string): void;
+}
+
+// Usage in each export card
+private renderGedcomExport(container: HTMLElement): void {
+  const builder = new ExportOptionsBuilder(this.plugin);
+
+  // GEDCOM-specific: version selector
+  builder.addVersionSelector(content, ['5.5.1', '7.0']);
+
+  // Shared options
+  builder.addCollectionFilter(content);
+  builder.addBranchFilter(content);
+  builder.addEntityCheckboxes(content);
+  builder.addStatisticsPreview(content);
+  builder.addPrivacyOptions(content);
+  builder.addOutputLocationOptions(content);
+  builder.addFileNameInput(content, '.ged');
+}
+```
+
+**Benefits:**
+- Consistent UI across all export formats
+- Single place to add new options
+- Easier testing and maintenance
+- ~300 lines of code reduction
+
+#### Complete Export Card Mockup
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Export GEDCOM                                         [?]   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│ Export your family tree data to GEDCOM format for sharing   │
+│ with other genealogy software.                              │
+│                                                             │
+│ ─────────────────────────────────────────────────────────── │
+│                                                             │
+│ GEDCOM Version                                              │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ ○ GEDCOM 5.5.1 (Legacy) - Maximum compatibility        │ │
+│ │ ● GEDCOM 7.0 (Recommended) - Full media support        │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ Export Scope                                                │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ Collection: [All people            ▼]                  │ │
+│ │                                                         │ │
+│ │ Branch filter: [Select person...   ]                   │ │
+│ │ Direction:     [No branch filter   ▼]                  │ │
+│ │ □ Include spouses of descendants                       │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ Include in Export                                           │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ ☑ Person notes          152                            │ │
+│ │ ☑ Event notes           423                            │ │
+│ │ ☑ Source notes          45                             │ │
+│ │ ☑ Place notes           78                             │ │
+│ │ ☑ Media files           47 (156 MB)                    │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ Media Handling (GEDCOM 7.0 only)                            │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ ○ Skip media                                           │ │
+│ │ ○ Reference only (paths in file)                       │ │
+│ │ ● Bundle in ZIP archive                                │ │
+│ │                                                         │ │
+│ │ Organization: [Organize by type    ▼]                  │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ Privacy                                                     │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ □ Override privacy settings                            │ │
+│ │   ☑ Enable privacy protection                          │ │
+│ │   Format: [Anonymize as "Living"   ▼]                  │ │
+│ │                                                         │ │
+│ │ 3 of 152 people will be anonymized (living)            │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ Output                                                      │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ Location: [Download to system      ▼]                  │ │
+│ │ Filename: [smith_family            ]                   │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ Export Preview                                              │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ 152 people • 423 events • 45 sources • 78 places       │ │
+│ │ 47 media files (156 MB) • Est. size: ~158 MB           │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│ Last export: smith-family.ged (Dec 5, 2025)                 │
+│                                                             │
+│                              [Export to GEDCOM 7.0]         │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 **Progress Display:**
@@ -854,7 +1165,8 @@ src/
 │   ├── entity-collection-service.ts   # Shared entity collection
 │   ├── relationship-builder.ts        # Shared relationship building
 │   ├── media-discovery-service.ts     # Media file discovery and linking
-│   └── zip-bundle-service.ts          # ZIP archive creation
+│   ├── zip-bundle-service.ts          # ZIP archive creation
+│   └── export-history-service.ts      # Track export history in plugin data
 ├── gedcom/
 │   ├── gedcom-exporter.ts             # Enhanced GEDCOM 5.5.1 export
 │   └── gedcom7-exporter.ts            # New GEDCOM 7.0 export
@@ -865,7 +1177,10 @@ src/
 ├── csv/
 │   └── csv-exporter.ts                # Enhanced CSV export
 └── ui/
-    └── export-modal.ts                # Enhanced export UI with media options
+    ├── export-options-builder.ts      # Shared export card UI components
+    ├── export-progress-modal.ts       # Full-screen progress modal
+    ├── export-results-modal.ts        # Export completion summary
+    └── export-history-modal.ts        # View past exports
 ```
 
 ## Sensitive Field Handling
