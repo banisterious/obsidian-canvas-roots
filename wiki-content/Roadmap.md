@@ -26,6 +26,7 @@ This document outlines planned features for Canvas Roots. For release history an
   - [Property Aliases](#property-aliases-) ✅ v0.9.3
   - [Value Aliases](#value-aliases) ✅ v0.9.4
   - [Flexible Note Type Detection](#flexible-note-type-detection)
+  - [Type Customization](#type-customization)
   - [Sensitive Field Redaction](#sensitive-field-redaction)
   - [Flatten Nested Properties](#flatten-nested-properties)
   - [Note Creation from Images](#note-creation-from-images)
@@ -62,7 +63,8 @@ The following priority order guides future development:
 | 16 | [Data Enhancement Pass](#data-enhancement-pass) | Planned |
 | 17 | [Flexible Note Type Detection](#flexible-note-type-detection) | Planned |
 | 18 | [Print & PDF Export](#print--pdf-export) | Planned |
-| 19 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
+| 19 | [Type Customization](#type-customization) | Planned |
+| 20 | [Transcript Nodes & Oral History](#transcript-nodes--quotable-facts) | Planned |
 
 ---
 
@@ -829,6 +831,59 @@ Note Type Detection
 - Note creation modals use configured property name
 - Bases templates reference configured property name
 - Schema validation supports all detection methods
+
+**Status:** Planned.
+
+---
+
+### Type Customization
+
+**Summary:** Allow users to customize the appearance and behavior of built-in types (relationship types, source types, event types, organization types, etc.) including icons, display names, and colors.
+
+**Problem:**
+- Built-in types have hardcoded icons, colors, and display names
+- Users may want terminology that matches their domain (e.g., "handfasting" instead of "marriage")
+- Visual customization (icons, colors) would help distinguish types in the UI
+- Currently, value aliases only map terminology but don't allow visual customization
+
+**Planned Features:**
+
+**Type Override Settings:**
+- Keep all built-in types available
+- Allow per-type customization of:
+  - **Display name**: Custom label shown in UI (e.g., "Wedding" instead of "Marriage")
+  - **Icon**: Choose from available Lucide icons
+  - **Color**: Custom color for tree nodes, timeline markers, etc.
+
+**Supported Type Categories:**
+- Relationship types (parent, spouse, sibling, custom relationships)
+- Event types (birth, death, marriage, burial, etc.)
+- Source types (vital record, census, newspaper, etc.)
+- Organization types (military, religious, educational, etc.)
+- Place categories (real, historical, fictional, etc.)
+
+**Settings UI:**
+```
+Type Customization
+├── Event Types
+│   ├── birth: [Birth ▼] [🎂] [#4CAF50]
+│   ├── death: [Death ▼] [💀] [#9E9E9E]
+│   ├── marriage: [Wedding ▼] [💒] [#E91E63]
+│   └── ...
+├── Relationship Types
+│   └── ...
+└── [Reset to Defaults]
+```
+
+**Integration Points:**
+- Tree generation uses custom colors
+- Timeline uses custom icons and colors
+- Control Center displays custom names
+- Bases templates reference custom display names
+
+**Future Enhancement:**
+- Full type editor to add/edit/delete types entirely (more complex)
+- Custom type definitions with user-defined fields
 
 **Status:** Planned.
 
