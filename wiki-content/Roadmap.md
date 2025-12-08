@@ -8,6 +8,7 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
+  - [Calendarium Integration](#calendarium-integration) 📋 Medium
   - [Export v2: Full Entity Export](#export-v2-full-entity-export) ⚡ High
   - [Data Enhancement Pass](#data-enhancement-pass) ⚡ High
   - [Print & PDF Export](#print--pdf-export) 📋 Medium
@@ -54,6 +55,46 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
+
+---
+
+### Calendarium Integration
+
+**Priority:** 📋 Medium — Unified timeline experience for fictional worldbuilders
+
+**Summary:** Deep integration with the [Calendarium](https://plugins.javalent.com/calendarium) plugin to enable shared calendar definitions, bidirectional event sync, and cross-calendar date translation. Particularly valuable for worldbuilders using fictional date systems.
+
+**Integration Modes:**
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| Standalone | Canvas Roots manages its own calendars | Users without Calendarium |
+| Calendarium Primary | Canvas Roots reads Calendarium calendars | Existing Calendarium users |
+| Bidirectional | Full sync between both plugins | Power users wanting unified experience |
+
+**Planned Features:**
+- **Calendar Sharing:** Import calendar definitions from Calendarium, eliminating duplicate configuration
+- **Event Sync:** Display Calendarium events on Canvas Roots timelines
+- **Bidirectional Sync:** Create events in either plugin, sync to the other
+- **Cross-Calendar Translation:** Convert dates between different calendar systems (e.g., Third Age to real-world dates)
+
+**Data Mapping:**
+
+| Canvas Roots Field | Calendarium Field |
+|--------------------|-------------------|
+| `fictional_date` | `fc-date` |
+| `calendar_system` | `fc-calendar` |
+| `event_category` | `fc-category` |
+| `display_name` | `fc-display-name` |
+
+**Settings:**
+- `calendariumIntegration`: off / read-only / bidirectional
+- `calendariumDefaultCalendar`: Which calendar to use when creating events
+- `syncCalendariumEvents`: Whether to show Calendarium events on timelines
+
+**API Integration:** Uses `window.Calendarium` global when available, with graceful fallback when Calendarium is not installed.
+
+See [Calendarium Integration Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/calendarium-integration.md) for implementation details.
 
 ---
 
