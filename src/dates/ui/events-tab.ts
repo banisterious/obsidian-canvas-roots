@@ -72,68 +72,62 @@ function renderEventNotesCard(
 	const content = card.querySelector('.crc-card__content') as HTMLElement;
 
 	// Create Event button
-	const buttonRow = content.createDiv({ cls: 'crc-button-row' });
-
-	const createBtn = buttonRow.createEl('button', {
-		cls: 'crc-btn crc-btn--primary'
-	});
-	const icon = createLucideIcon('plus', 16);
-	createBtn.appendChild(icon);
-	createBtn.appendText(' Create event note');
-
-	createBtn.addEventListener('click', () => {
-		const eventService = plugin.getEventService();
-		if (eventService) {
-			const modal = new CreateEventModal(
-				plugin.app,
-				eventService,
-				plugin.settings
-			);
-			modal.open();
-		}
-	});
+	new Setting(content)
+		.setName('Create event note')
+		.setDesc('Create a new event to document a life event')
+		.addButton(button => button
+			.setButtonText('Create')
+			.setCta()
+			.onClick(() => {
+				const eventService = plugin.getEventService();
+				if (eventService) {
+					const modal = new CreateEventModal(
+						plugin.app,
+						eventService,
+						plugin.settings
+					);
+					modal.open();
+				}
+			}));
 
 	// Compute sort order button
-	const computeBtn = buttonRow.createEl('button', {
-		cls: 'crc-btn'
-	});
-	const computeIcon = createLucideIcon('layers', 16);
-	computeBtn.appendChild(computeIcon);
-	computeBtn.appendText(' Compute sort order');
-	computeBtn.setAttribute('title', 'Compute sort_order values from before/after relationships');
+	let computeBtn: HTMLButtonElement;
+	new Setting(content)
+		.setName('Compute sort order')
+		.setDesc('Calculate sort_order values from before/after relationships')
+		.addButton(button => {
+			computeBtn = button.buttonEl;
+			button.setButtonText('Compute')
+				.onClick(async () => {
+					const eventService = plugin.getEventService();
+					if (!eventService) return;
 
-	computeBtn.addEventListener('click', async () => {
-		const eventService = plugin.getEventService();
-		if (!eventService) return;
+					computeBtn.disabled = true;
+					computeBtn.textContent = 'Computing...';
 
-		computeBtn.disabled = true;
-		computeBtn.textContent = 'Computing...';
+					try {
+						const events = eventService.getAllEvents();
+						const result = await computeSortOrder(plugin.app, events);
 
-		try {
-			const events = eventService.getAllEvents();
-			const result = await computeSortOrder(plugin.app, events);
+						if (result.errors.length > 0) {
+							new Notice(`Computed sort order with ${result.errors.length} errors. Check console.`);
+						} else if (result.cycleEvents.length > 0) {
+							new Notice(`Updated ${result.updatedCount} events. ${result.cycleEvents.length} events in cycles couldn't be ordered.`);
+						} else {
+							new Notice(`Successfully computed sort order for ${result.updatedCount} events.`);
+						}
 
-			if (result.errors.length > 0) {
-				new Notice(`Computed sort order with ${result.errors.length} errors. Check console.`);
-			} else if (result.cycleEvents.length > 0) {
-				new Notice(`Updated ${result.updatedCount} events. ${result.cycleEvents.length} events in cycles couldn't be ordered.`);
-			} else {
-				new Notice(`Successfully computed sort order for ${result.updatedCount} events.`);
-			}
-
-			// Invalidate cache to reload events
-			eventService.invalidateCache();
-		} catch (error) {
-			const message = error instanceof Error ? error.message : String(error);
-			new Notice(`Failed to compute sort order: ${message}`);
-		} finally {
-			computeBtn.disabled = false;
-			computeBtn.empty();
-			const icon = createLucideIcon('layers', 16);
-			computeBtn.appendChild(icon);
-			computeBtn.appendText(' Compute sort order');
-		}
-	});
+						// Invalidate cache to reload events
+						eventService.invalidateCache();
+					} catch (error) {
+						const message = error instanceof Error ? error.message : String(error);
+						new Notice(`Failed to compute sort order: ${message}`);
+					} finally {
+						computeBtn.disabled = false;
+						computeBtn.textContent = 'Compute';
+					}
+				});
+		});
 
 	// Event statistics
 	const stats = calculateEventStatistics(plugin);
@@ -178,19 +172,6 @@ function renderEventNotesCard(
 		});
 	}
 
-	// Folder location setting
-	const folderSection = content.createDiv({ cls: 'crc-mt-3' });
-	new Setting(folderSection)
-		.setName('Events folder')
-		.setDesc('Default folder for new event notes')
-		.addText(text => text
-			.setPlaceholder('Canvas Roots/Events')
-			.setValue(plugin.settings.eventsFolder)
-			.onChange(async (value) => {
-				plugin.settings.eventsFolder = value;
-				await plugin.saveSettings();
-			}));
-
 	container.appendChild(card);
 }
 
@@ -234,7 +215,7 @@ function renderTimelineCard(
 	const filterRow = content.createDiv({ cls: 'crc-timeline-filters' });
 
 	// Event type filter
-	const typeFilter = filterRow.createEl('select', { cls: 'crc-timeline-filter' });
+	const typeFilter = filterRow.createEl('select', { cls: 'dropdown' });
 	typeFilter.createEl('option', { value: '', text: 'All types' });
 
 	const eventTypes = getAllEventTypes(
@@ -248,7 +229,7 @@ function renderTimelineCard(
 	}
 
 	// Person filter
-	const personFilter = filterRow.createEl('select', { cls: 'crc-timeline-filter' });
+	const personFilter = filterRow.createEl('select', { cls: 'dropdown' });
 	personFilter.createEl('option', { value: '', text: 'All people' });
 
 	const uniquePeople = eventService.getUniquePeople();

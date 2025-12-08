@@ -71,24 +71,28 @@ function renderOrganizationsListCard(
 	});
 	const content = card.querySelector('.crc-card__content') as HTMLElement;
 
-	// Toolbar
-	const toolbar = content.createDiv({ cls: 'crc-card-toolbar' });
+	// Create organization button
+	new Setting(content)
+		.setName('Create organization')
+		.setDesc('Create a new organization note')
+		.addButton(button => button
+			.setButtonText('Create')
+			.setCta()
+			.onClick(() => {
+				new CreateOrganizationModal(plugin.app, plugin, () => {
+					showTab('organizations');
+				}).open();
+			}));
 
-	const addBtn = toolbar.createEl('button', { cls: 'mod-cta' });
-	setIcon(addBtn.createSpan({ cls: 'crc-button-icon' }), 'plus');
-	addBtn.createSpan({ text: 'Create organization' });
-	addBtn.addEventListener('click', () => {
-		new CreateOrganizationModal(plugin.app, plugin, () => {
-			showTab('organizations');
-		}).open();
-	});
-
-	const templateBtn = toolbar.createEl('button');
-	setIcon(templateBtn.createSpan({ cls: 'crc-button-icon' }), 'file-code');
-	templateBtn.createSpan({ text: 'View templates' });
-	templateBtn.addEventListener('click', () => {
-		new TemplateSnippetsModal(plugin.app, 'organization').open();
-	});
+	// View templates button
+	new Setting(content)
+		.setName('Templater templates')
+		.setDesc('Copy ready-to-use templates for Templater integration')
+		.addButton(button => button
+			.setButtonText('View templates')
+			.onClick(() => {
+				new TemplateSnippetsModal(plugin.app, 'organization').open();
+			}));
 
 	// Get all organizations
 	const allOrgs = orgService.getAllOrganizations();

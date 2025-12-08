@@ -21,6 +21,16 @@ import type {
 	ValidationSummary
 } from '../types/schema-types';
 
+/**
+ * Progress information for validation
+ */
+export interface ValidationProgress {
+	phase: 'scanning' | 'validating' | 'complete';
+	current: number;
+	total: number;
+	currentFile?: string;
+}
+
 const logger = getLogger('ValidationService');
 
 /**
@@ -76,21 +86,55 @@ export class ValidationService {
 
 	/**
 	 * Validate all person notes in the vault
+	 * @param onProgress Optional callback for progress updates
 	 */
-	async validateVault(): Promise<ValidationResult[]> {
+	async validateVault(
+		onProgress?: (progress: ValidationProgress) => void
+	): Promise<ValidationResult[]> {
 		const results: ValidationResult[] = [];
-		const files = this.plugin.app.vault.getMarkdownFiles();
+		const allFiles = this.plugin.app.vault.getMarkdownFiles();
 
-		for (const file of files) {
+		// First pass: identify person notes
+		onProgress?.({ phase: 'scanning', current: 0, total: allFiles.length });
+
+		const personFiles: TFile[] = [];
+		for (let i = 0; i < allFiles.length; i++) {
+			const file = allFiles[i];
 			const cache = this.plugin.app.metadataCache.getFileCache(file);
-			if (!cache?.frontmatter?.cr_id) continue;
 
-			// Skip non-person notes (place, map, schema)
-			if (cache.frontmatter.type) continue;
+			if (cache?.frontmatter?.cr_id && !cache.frontmatter.type) {
+				personFiles.push(file);
+			}
+
+			// Report scanning progress every 100 files
+			if (i % 100 === 0) {
+				onProgress?.({ phase: 'scanning', current: i, total: allFiles.length });
+				// Yield to allow UI updates
+				await new Promise(resolve => setTimeout(resolve, 0));
+			}
+		}
+
+		// Second pass: validate person notes
+		for (let i = 0; i < personFiles.length; i++) {
+			const file = personFiles[i];
+
+			onProgress?.({
+				phase: 'validating',
+				current: i + 1,
+				total: personFiles.length,
+				currentFile: file.basename
+			});
 
 			const personResults = await this.validatePerson(file);
 			results.push(...personResults);
+
+			// Yield to allow UI updates every 10 files
+			if (i % 10 === 0) {
+				await new Promise(resolve => setTimeout(resolve, 0));
+			}
 		}
+
+		onProgress?.({ phase: 'complete', current: personFiles.length, total: personFiles.length });
 
 		logger.info('validate-vault', 'Vault validation complete', {
 			totalResults: results.length,

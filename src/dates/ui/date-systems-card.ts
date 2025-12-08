@@ -57,19 +57,20 @@ export function createDateSystemsCard(
 		renderDateSystemsList(listContainer, plugin, createCard);
 
 		// Add button
-		const addButtonContainer = conditionalContainer.createDiv({ cls: 'cr-date-systems-add' });
-		const addButton = addButtonContainer.createEl('button', {
-			cls: 'mod-cta',
-			text: 'Add date system'
-		});
-		addButton.addEventListener('click', () => {
-			new DateSystemModal(plugin.app, plugin, null, async (system) => {
-				plugin.settings.fictionalDateSystems.push(system);
-				await plugin.saveSettings();
-				renderDateSystemsList(listContainer, plugin, createCard);
-				new Notice(`Added date system: ${system.name}`);
-			}).open();
-		});
+		new Setting(conditionalContainer)
+			.setName('Add date system')
+			.setDesc('Create a new fictional calendar system')
+			.addButton(button => button
+				.setButtonText('Add')
+				.setCta()
+				.onClick(() => {
+					new DateSystemModal(plugin.app, plugin, null, async (system) => {
+						plugin.settings.fictionalDateSystems.push(system);
+						await plugin.saveSettings();
+						renderDateSystemsList(listContainer, plugin, createCard);
+						new Notice(`Added date system: ${system.name}`);
+					}).open();
+				}));
 
 		// Test parsing section
 		conditionalContainer.createEl('h4', { text: 'Test date parsing', cls: 'cr-subsection-heading' });

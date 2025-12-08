@@ -5,7 +5,7 @@
  * with options to customize, hide, and create new types.
  */
 
-import { Notice, Modal } from 'obsidian';
+import { Notice, Modal, Setting } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
 import { createLucideIcon } from '../../ui/lucide-icons';
@@ -35,66 +35,48 @@ export function renderRelationshipTypeManagerCard(
 	});
 	const content = card.querySelector('.crc-card__content') as HTMLElement;
 
-	// Create type button
-	const headerRow = content.createDiv({ cls: 'crc-type-manager-header' });
-
-	const createBtn = headerRow.createEl('button', {
-		cls: 'crc-btn crc-btn--primary'
-	});
-	const plusIcon = createLucideIcon('plus', 16);
-	createBtn.appendChild(plusIcon);
-	createBtn.appendText(' Create relationship type');
-
-	createBtn.addEventListener('click', () => {
-		const modal = new RelationshipTypeEditorModal(plugin.app, plugin, {
-			onSave: () => {
-				renderTypeList();
-				onRefresh();
-			}
-		});
-		modal.open();
-	});
-
-	// Toggle built-in types button
-	const toggleBtn = headerRow.createEl('button', { cls: 'crc-btn' });
-	const toggleIcon = createLucideIcon(
-		plugin.settings.showBuiltInRelationshipTypes ? 'eye' : 'eye-off',
-		16
-	);
-	toggleBtn.appendChild(toggleIcon);
-	toggleBtn.appendText(
-		plugin.settings.showBuiltInRelationshipTypes ? ' Hide built-ins' : ' Show built-ins'
-	);
-	toggleBtn.setAttribute('title', 'Toggle visibility of built-in relationship types');
-
-	toggleBtn.addEventListener('click', async () => {
-		plugin.settings.showBuiltInRelationshipTypes = !plugin.settings.showBuiltInRelationshipTypes;
-		await plugin.saveSettings();
-		renderTypeList();
-		onRefresh();
-		// Update button
-		toggleBtn.empty();
-		const newIcon = createLucideIcon(
-			plugin.settings.showBuiltInRelationshipTypes ? 'eye' : 'eye-off',
-			16
-		);
-		toggleBtn.appendChild(newIcon);
-		toggleBtn.appendText(
-			plugin.settings.showBuiltInRelationshipTypes ? ' Hide built-ins' : ' Show built-ins'
-		);
-	});
+	// Create relationship type button
+	new Setting(content)
+		.setName('Create relationship type')
+		.setDesc('Define a new custom relationship type')
+		.addButton(button => button
+			.setButtonText('Create')
+			.setCta()
+			.onClick(() => {
+				const modal = new RelationshipTypeEditorModal(plugin.app, plugin, {
+					onSave: () => {
+						renderTypeList();
+						onRefresh();
+					}
+				});
+				modal.open();
+			}));
 
 	// Add category button
-	const addCategoryBtn = headerRow.createEl('button', { cls: 'crc-btn' });
-	const folderIcon = createLucideIcon('plus', 16);
-	addCategoryBtn.appendChild(folderIcon);
-	addCategoryBtn.appendText(' Add category');
-	addCategoryBtn.addEventListener('click', () => {
-		openCategoryEditor(plugin, null, false, () => {
-			renderTypeList();
-			onRefresh();
-		});
-	});
+	new Setting(content)
+		.setName('Add category')
+		.setDesc('Create a new category to organize relationship types')
+		.addButton(button => button
+			.setButtonText('Add')
+			.onClick(() => {
+				openCategoryEditor(plugin, null, false, () => {
+					renderTypeList();
+					onRefresh();
+				});
+			}));
+
+	// Toggle built-in types
+	new Setting(content)
+		.setName('Show built-in types')
+		.setDesc('Toggle visibility of default relationship types')
+		.addToggle(toggle => toggle
+			.setValue(plugin.settings.showBuiltInRelationshipTypes !== false)
+			.onChange(async (value) => {
+				plugin.settings.showBuiltInRelationshipTypes = value;
+				await plugin.saveSettings();
+				renderTypeList();
+				onRefresh();
+			}));
 
 	// Type list container
 	const listContainer = content.createDiv({ cls: 'crc-type-manager-list' });

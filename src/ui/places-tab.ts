@@ -421,13 +421,11 @@ function loadPlaceList(
 	let currentSort: PlaceSort = 'name_asc';
 	let displayLimit = 25;
 
-	// Controls row
+	// Controls row (filter + sort + search)
 	const controlsRow = container.createDiv({ cls: 'crc-place-controls crc-mb-3' });
 
 	// Filter dropdown
-	const filterContainer = controlsRow.createDiv({ cls: 'crc-filter-container' });
-	filterContainer.createEl('label', { text: 'Filter: ', cls: 'crc-text-small crc-text-muted' });
-	const filterSelect = filterContainer.createEl('select', { cls: 'dropdown crc-filter-select' });
+	const filterSelect = controlsRow.createEl('select', { cls: 'dropdown' });
 
 	const filterOptions: Array<{ value: PlaceFilter; label: string }> = [
 		{ value: 'all', label: 'All places' },
@@ -446,9 +444,7 @@ function loadPlaceList(
 	}
 
 	// Sort dropdown
-	const sortContainer = controlsRow.createDiv({ cls: 'crc-sort-container' });
-	sortContainer.createEl('label', { text: 'Sort: ', cls: 'crc-text-small crc-text-muted' });
-	const sortSelect = sortContainer.createEl('select', { cls: 'dropdown crc-sort-select' });
+	const sortSelect = controlsRow.createEl('select', { cls: 'dropdown' });
 
 	const sortOptions: Array<{ value: PlaceSort; label: string }> = [
 		{ value: 'name_asc', label: 'Name (A–Z)' },
@@ -463,6 +459,16 @@ function loadPlaceList(
 		sortSelect.createEl('option', { value: opt.value, text: opt.label });
 	}
 
+	// Search input
+	let searchQuery = '';
+	const searchInput = controlsRow.createEl('input', {
+		cls: 'crc-filter-input',
+		attr: {
+			type: 'text',
+			placeholder: `Search ${allPlaces.length} places...`
+		}
+	});
+
 	// Table container
 	const tableContainer = container.createDiv({ cls: 'crc-place-table-container' });
 
@@ -472,6 +478,15 @@ function loadPlaceList(
 
 		// Filter places
 		let filtered = allPlaces.filter(place => {
+			// Apply search filter first
+			if (searchQuery) {
+				const query = searchQuery.toLowerCase();
+				const matchesSearch = place.name.toLowerCase().includes(query) ||
+					(place.placeType && place.placeType.toLowerCase().includes(query)) ||
+					place.category.toLowerCase().includes(query);
+				if (!matchesSearch) return false;
+			}
+
 			switch (currentFilter) {
 				case 'all':
 					return true;
@@ -648,6 +663,12 @@ function loadPlaceList(
 		renderTable();
 	});
 
+	searchInput.addEventListener('input', () => {
+		searchQuery = searchInput.value;
+		displayLimit = 25; // Reset pagination
+		renderTable();
+	});
+
 	// Initial render
 	renderTable();
 }
@@ -703,33 +724,23 @@ function loadReferencedPlaces(
 	// Controls row
 	const controlsRow = container.createDiv({ cls: 'crc-referenced-controls crc-mb-3' });
 
-	// Filter input
-	const filterContainer = controlsRow.createDiv({ cls: 'crc-filter-container' });
-	const filterInput = filterContainer.createEl('input', {
-		type: 'text',
-		placeholder: 'Filter places...',
-		cls: 'crc-filter-input'
-	});
+	// Link status dropdown (filter)
+	const linkStatusSelect = controlsRow.createEl('select', { cls: 'dropdown' });
+	linkStatusSelect.createEl('option', { value: 'all', text: 'All places' });
+	linkStatusSelect.createEl('option', { value: 'linked', text: 'Linked only' });
+	linkStatusSelect.createEl('option', { value: 'unlinked', text: 'Unlinked only' });
 
 	// Sort dropdown
-	const sortContainer = controlsRow.createDiv({ cls: 'crc-sort-container' });
-	sortContainer.createEl('span', { text: 'Sort: ', cls: 'crc-text--muted crc-text--small' });
-	const sortSelect = sortContainer.createEl('select', { cls: 'crc-sort-select dropdown' });
-	sortSelect.createEl('option', { value: 'count', text: 'By count' });
-	sortSelect.createEl('option', { value: 'name', text: 'By name' });
+	const sortSelect = controlsRow.createEl('select', { cls: 'dropdown' });
+	sortSelect.createEl('option', { value: 'count', text: 'Count (high–low)' });
+	sortSelect.createEl('option', { value: 'name', text: 'Name (A–Z)' });
 
-	// Filter checkboxes
-	const filterToggles = controlsRow.createDiv({ cls: 'crc-filter-toggles' });
-
-	const linkedToggle = filterToggles.createEl('label', { cls: 'crc-filter-toggle' });
-	const linkedCheckbox = linkedToggle.createEl('input', { type: 'checkbox' });
-	linkedCheckbox.checked = true;
-	linkedToggle.createEl('span', { text: 'Linked', cls: 'crc-text--small' });
-
-	const unlinkedToggle = filterToggles.createEl('label', { cls: 'crc-filter-toggle' });
-	const unlinkedCheckbox = unlinkedToggle.createEl('input', { type: 'checkbox' });
-	unlinkedCheckbox.checked = true;
-	unlinkedToggle.createEl('span', { text: 'Unlinked', cls: 'crc-text--small' });
+	// Search input
+	const filterInput = controlsRow.createEl('input', {
+		type: 'text',
+		placeholder: `Search ${linked.length + unlinked.length} places...`,
+		cls: 'crc-filter-input'
+	});
 
 	// List container
 	const listContainer = container.createDiv({ cls: 'crc-referenced-list' });
@@ -746,18 +757,18 @@ function loadReferencedPlaces(
 		// Filter and combine lists
 		const allPlaces: Array<{ name: string; count: number; linked: boolean }> = [];
 
-		if (showUnlinked) {
-			for (const p of unlinked) {
-				if (!filterText || p.name.toLowerCase().includes(filterText.toLowerCase())) {
-					allPlaces.push({ ...p, linked: false });
-				}
-			}
-		}
-
 		if (showLinked) {
 			for (const p of linked) {
 				if (!filterText || p.name.toLowerCase().includes(filterText.toLowerCase())) {
 					allPlaces.push({ ...p, linked: true });
+				}
+			}
+		}
+
+		if (showUnlinked) {
+			for (const p of unlinked) {
+				if (!filterText || p.name.toLowerCase().includes(filterText.toLowerCase())) {
+					allPlaces.push({ ...p, linked: false });
 				}
 			}
 		}
@@ -823,8 +834,10 @@ function loadReferencedPlaces(
 	};
 
 	// Event handlers
-	filterInput.addEventListener('input', () => {
-		filterText = filterInput.value;
+	linkStatusSelect.addEventListener('change', () => {
+		const value = linkStatusSelect.value;
+		showLinked = value === 'all' || value === 'linked';
+		showUnlinked = value === 'all' || value === 'unlinked';
 		renderList();
 	});
 
@@ -833,13 +846,8 @@ function loadReferencedPlaces(
 		renderList();
 	});
 
-	linkedCheckbox.addEventListener('change', () => {
-		showLinked = linkedCheckbox.checked;
-		renderList();
-	});
-
-	unlinkedCheckbox.addEventListener('change', () => {
-		showUnlinked = unlinkedCheckbox.checked;
+	filterInput.addEventListener('input', () => {
+		filterText = filterInput.value;
 		renderList();
 	});
 

@@ -5,7 +5,7 @@
  * with options to customize, hide, and create new types.
  */
 
-import { Notice, Modal } from 'obsidian';
+import { Notice, Modal, Setting } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
 import { createLucideIcon } from '../../ui/lucide-icons';
@@ -35,66 +35,48 @@ export function renderPlaceTypeManagerCard(
 	});
 	const content = card.querySelector('.crc-card__content') as HTMLElement;
 
-	// Create type button
-	const headerRow = content.createDiv({ cls: 'crc-type-manager-header' });
-
-	const createBtn = headerRow.createEl('button', {
-		cls: 'crc-btn crc-btn--primary'
-	});
-	const plusIcon = createLucideIcon('plus', 16);
-	createBtn.appendChild(plusIcon);
-	createBtn.appendText(' Create place type');
-
-	createBtn.addEventListener('click', () => {
-		const modal = new PlaceTypeEditorModal(plugin.app, plugin, {
-			onSave: () => {
-				renderTypeList();
-				onRefresh();
-			}
-		});
-		modal.open();
-	});
-
-	// Toggle built-in types button
-	const toggleBtn = headerRow.createEl('button', { cls: 'crc-btn' });
-	const toggleIcon = createLucideIcon(
-		plugin.settings.showBuiltInPlaceTypes ? 'eye' : 'eye-off',
-		16
-	);
-	toggleBtn.appendChild(toggleIcon);
-	toggleBtn.appendText(
-		plugin.settings.showBuiltInPlaceTypes ? ' Hide built-ins' : ' Show built-ins'
-	);
-	toggleBtn.setAttribute('title', 'Toggle visibility of built-in place types');
-
-	toggleBtn.addEventListener('click', async () => {
-		plugin.settings.showBuiltInPlaceTypes = !plugin.settings.showBuiltInPlaceTypes;
-		await plugin.saveSettings();
-		renderTypeList();
-		onRefresh();
-		// Update button
-		toggleBtn.empty();
-		const newIcon = createLucideIcon(
-			plugin.settings.showBuiltInPlaceTypes ? 'eye' : 'eye-off',
-			16
-		);
-		toggleBtn.appendChild(newIcon);
-		toggleBtn.appendText(
-			plugin.settings.showBuiltInPlaceTypes ? ' Hide built-ins' : ' Show built-ins'
-		);
-	});
+	// Create place type button
+	new Setting(content)
+		.setName('Create place type')
+		.setDesc('Define a new custom place type')
+		.addButton(button => button
+			.setButtonText('Create')
+			.setCta()
+			.onClick(() => {
+				const modal = new PlaceTypeEditorModal(plugin.app, plugin, {
+					onSave: () => {
+						renderTypeList();
+						onRefresh();
+					}
+				});
+				modal.open();
+			}));
 
 	// Add category button
-	const addCategoryBtn = headerRow.createEl('button', { cls: 'crc-btn' });
-	const folderIcon = createLucideIcon('plus', 16);
-	addCategoryBtn.appendChild(folderIcon);
-	addCategoryBtn.appendText(' Add category');
-	addCategoryBtn.addEventListener('click', () => {
-		openCategoryEditor(plugin, null, false, () => {
-			renderTypeList();
-			onRefresh();
-		});
-	});
+	new Setting(content)
+		.setName('Add category')
+		.setDesc('Create a new category to organize place types')
+		.addButton(button => button
+			.setButtonText('Add')
+			.onClick(() => {
+				openCategoryEditor(plugin, null, false, () => {
+					renderTypeList();
+					onRefresh();
+				});
+			}));
+
+	// Toggle built-in types
+	new Setting(content)
+		.setName('Show built-in types')
+		.setDesc('Toggle visibility of default place types')
+		.addToggle(toggle => toggle
+			.setValue(plugin.settings.showBuiltInPlaceTypes !== false)
+			.onChange(async (value) => {
+				plugin.settings.showBuiltInPlaceTypes = value;
+				await plugin.saveSettings();
+				renderTypeList();
+				onRefresh();
+			}));
 
 	// Type list container
 	const listContainer = content.createDiv({ cls: 'crc-type-manager-list' });

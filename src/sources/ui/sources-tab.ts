@@ -5,7 +5,7 @@
  * sources list, statistics, and source types.
  */
 
-import { setIcon, TFile, Menu } from 'obsidian';
+import { setIcon, TFile, Menu, Setting } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
 import { createLucideIcon } from '../../ui/lucide-icons';
@@ -152,29 +152,36 @@ function renderSourcesListCard(
 	});
 	const content = card.querySelector('.crc-card__content') as HTMLElement;
 
-	// Toolbar with Create button and Base template button
-	const toolbar = content.createDiv({ cls: 'crc-card-toolbar' });
+	// Create source button
+	new Setting(content)
+		.setName('Create source')
+		.setDesc('Create a new source note to document evidence')
+		.addButton(button => button
+			.setButtonText('Create')
+			.setCta()
+			.onClick(() => {
+				plugin.app.commands.executeCommandById('canvas-roots:create-source-note');
+			}));
 
-	const addBtn = toolbar.createEl('button', { cls: 'mod-cta' });
-	setIcon(addBtn.createSpan({ cls: 'crc-button-icon' }), 'plus');
-	addBtn.createSpan({ text: 'Create source' });
-	addBtn.addEventListener('click', () => {
-		plugin.app.commands.executeCommandById('canvas-roots:create-source-note');
-	});
+	// Create base button
+	new Setting(content)
+		.setName('Create base')
+		.setDesc('Create an Obsidian Base to view sources in a table')
+		.addButton(button => button
+			.setButtonText('Create')
+			.onClick(() => {
+				plugin.app.commands.executeCommandById('canvas-roots:create-sources-base-template');
+			}));
 
-	const baseBtn = toolbar.createEl('button');
-	setIcon(baseBtn.createSpan({ cls: 'crc-button-icon' }), 'table');
-	baseBtn.createSpan({ text: 'Create base' });
-	baseBtn.addEventListener('click', () => {
-		plugin.app.commands.executeCommandById('canvas-roots:create-sources-base-template');
-	});
-
-	const templateBtn = toolbar.createEl('button');
-	setIcon(templateBtn.createSpan({ cls: 'crc-button-icon' }), 'file-code');
-	templateBtn.createSpan({ text: 'View templates' });
-	templateBtn.addEventListener('click', () => {
-		new TemplateSnippetsModal(plugin.app, 'source').open();
-	});
+	// View templates button
+	new Setting(content)
+		.setName('Templater templates')
+		.setDesc('Copy ready-to-use templates for Templater integration')
+		.addButton(button => button
+			.setButtonText('View templates')
+			.onClick(() => {
+				new TemplateSnippetsModal(plugin.app, 'source').open();
+			}));
 
 	const allSources = sourceService.getAllSources();
 

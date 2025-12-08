@@ -318,27 +318,6 @@ Within constraint expressions, you can access any frontmatter property directly 
    - Error breakdown by type
    - List of violations with links to affected notes
 
-### From Data Quality Tab
-
-The Data Quality tab includes a **Schema validation** section at the top showing:
-
-- Last validation summary
-- Quick access to run validation
-- Link to full Schemas tab
-
----
-
-## Data Quality Integration
-
-Schema validation results appear in the Data Quality tab, providing:
-
-- **Summary stats**: People validated, passed, failed
-- **Error breakdown**: Counts by error type (missing required, invalid type, etc.)
-- **Recent violations**: Quick links to notes with errors
-- **Re-validate button**: Run validation without switching tabs
-
----
-
 ## Commands and Context Menu
 
 ### Commands

@@ -17,6 +17,7 @@ import { GrampsImporter, GrampsImportResult } from '../gramps/gramps-importer';
 import { GrampsParser } from '../gramps/gramps-parser';
 import { GedcomImportResultsModal } from './gedcom-import-results-modal';
 import { GedcomImportProgressModal } from './gedcom-import-progress-modal';
+import { SchemaValidationProgressModal } from './schema-validation-progress-modal';
 import { BidirectionalLinker } from '../core/bidirectional-linker';
 import { TreePreviewRenderer } from './tree-preview';
 import { ReferenceNumberingService, NumberingSystem } from '../core/reference-numbering';
@@ -1871,21 +1872,12 @@ export class ControlCenterModal extends Modal {
 			};
 		});
 
-		// Create controls row (search + filter + sort)
+		// Create controls row (filter + sort + search)
 		const controlsRow = container.createDiv({ cls: 'crc-person-controls' });
-
-		// Search input
-		const searchInput = controlsRow.createEl('input', {
-			cls: 'crc-filter-input',
-			attr: {
-				type: 'text',
-				placeholder: `Search ${this.personListItems.length} people...`
-			}
-		});
 
 		// Filter dropdown
 		const filterSelect = controlsRow.createEl('select', {
-			cls: 'crc-person-select dropdown'
+			cls: 'dropdown'
 		});
 		const filterOptions = [
 			{ value: 'all', label: 'All people' },
@@ -1901,7 +1893,7 @@ export class ControlCenterModal extends Modal {
 
 		// Sort dropdown
 		const sortSelect = controlsRow.createEl('select', {
-			cls: 'crc-person-select dropdown'
+			cls: 'dropdown'
 		});
 		const sortOptions = [
 			{ value: 'name-asc', label: 'Name (A–Z)' },
@@ -1914,6 +1906,15 @@ export class ControlCenterModal extends Modal {
 		sortOptions.forEach(opt => {
 			const option = sortSelect.createEl('option', { text: opt.label, value: opt.value });
 			if (opt.value === this.personListSort) option.selected = true;
+		});
+
+		// Search input
+		const searchInput = controlsRow.createEl('input', {
+			cls: 'crc-filter-input',
+			attr: {
+				type: 'text',
+				placeholder: `Search ${this.personListItems.length} people...`
+			}
 		});
 
 		// Usage hint
@@ -5150,22 +5151,70 @@ export class ControlCenterModal extends Modal {
 					text: 'No families found. Add some person notes to get started.'
 				});
 			} else {
-				components.forEach((component, index) => {
-					const familyItem = listContent.createDiv({ cls: 'crc-collection-item' });
+				// Paginated table display
+				const PAGE_SIZE = 25;
+				let displayLimit = PAGE_SIZE;
 
-					const familyName = component.collectionName || `Family ${index + 1}`;
-					const familyHeader = familyItem.createDiv({ cls: 'crc-collection-header' });
-					familyHeader.createEl('strong', { text: `${familyName} ` }); // Added space after name
-					familyHeader.createEl('span', {
-						cls: 'crc-badge',
-						text: `${component.size} ${component.size === 1 ? 'person' : 'people'}`
+				const tableContainer = listContent.createDiv({ cls: 'crc-families-table-container' });
+
+				const renderFamiliesTable = () => {
+					tableContainer.empty();
+
+					// Create table
+					const table = tableContainer.createEl('table', { cls: 'crc-person-table' });
+					const thead = table.createEl('thead');
+					const headerRow = thead.createEl('tr');
+					headerRow.createEl('th', { text: 'Family name', cls: 'crc-person-table__th' });
+					headerRow.createEl('th', { text: 'Size', cls: 'crc-person-table__th' });
+					headerRow.createEl('th', { text: 'Representative', cls: 'crc-person-table__th' });
+
+					const tbody = table.createEl('tbody');
+
+					// Display only up to displayLimit
+					const displayedComponents = components.slice(0, displayLimit);
+
+					displayedComponents.forEach((component, index) => {
+						const row = tbody.createEl('tr', { cls: 'crc-person-table__row' });
+
+						// Family name cell
+						const nameCell = row.createEl('td', { cls: 'crc-person-table__td crc-person-table__td--name' });
+						const familyName = component.collectionName || `Family ${index + 1}`;
+						nameCell.createEl('strong', { text: familyName });
+
+						// Size cell
+						const sizeCell = row.createEl('td', { cls: 'crc-person-table__td' });
+						sizeCell.createEl('span', {
+							cls: 'crc-badge',
+							text: `${component.size} ${component.size === 1 ? 'person' : 'people'}`
+						});
+
+						// Representative cell
+						const repCell = row.createEl('td', { cls: 'crc-person-table__td' });
+						repCell.textContent = component.representative.name;
 					});
 
-					familyItem.createEl('div', {
-						cls: 'crc-text--muted',
-						text: `Representative: ${component.representative.name}`
+					// Footer with count and load more
+					const footer = tableContainer.createDiv({ cls: 'crc-place-table-footer crc-mt-2' });
+
+					const countText = footer.createEl('span', {
+						cls: 'crc-text-muted crc-text-small'
 					});
-				});
+					countText.textContent = `Showing ${displayedComponents.length} of ${components.length} ${components.length !== 1 ? 'families' : 'family'}`;
+
+					if (components.length > displayLimit) {
+						const remaining = components.length - displayLimit;
+						const loadMoreBtn = footer.createEl('button', {
+							text: `Load more (${Math.min(PAGE_SIZE, remaining)} more)`,
+							cls: 'crc-btn crc-btn--small crc-btn--ghost crc-ml-2'
+						});
+						loadMoreBtn.addEventListener('click', () => {
+							displayLimit += PAGE_SIZE;
+							renderFamiliesTable();
+						});
+					}
+				};
+
+				renderFamiliesTable();
 			}
 
 			container.appendChild(listCard);
@@ -6182,74 +6231,93 @@ export class ControlCenterModal extends Modal {
 
 		// Card 1: Validation
 		const validationCard = this.createCard({
-			title: 'Validation',
+			title: 'Validate vault',
 			icon: 'clipboard-check',
-			subtitle: 'Run schema validation on person notes'
+			subtitle: 'Check person notes against your schemas'
 		});
 
 		const validationContent = validationCard.querySelector('.crc-card__content') as HTMLElement;
 
-		// Show last validation summary if available
-		if (this.lastValidationSummary) {
-			const summaryDiv = validationContent.createDiv({ cls: 'crc-validation-summary crc-mb-3' });
-			const summary = this.lastValidationSummary;
+		// Explanation for users
+		const explanation = validationContent.createDiv({ cls: 'crc-info-callout crc-mb-3' });
+		explanation.createEl('p', {
+			text: 'Schema validation checks your person notes against rules you define. ' +
+				'Use it to ensure required properties are filled in, values are the correct type, ' +
+				'and data follows your standards.',
+			cls: 'crc-text--small'
+		});
 
-			const statsRow = summaryDiv.createDiv({ cls: 'crc-stats-row' });
-			statsRow.createEl('span', {
-				text: `Last validated: ${summary.validatedAt.toLocaleString()}`,
-				cls: 'crc-text--muted crc-text--small'
+		// Check if there are any schemas
+		const hasSchemas = await schemaService.getAllSchemas().then(s => s.length > 0);
+		if (!hasSchemas) {
+			const noSchemasNote = validationContent.createDiv({ cls: 'crc-empty-state crc-compact' });
+			setIcon(noSchemasNote.createSpan({ cls: 'crc-empty-icon' }), 'info');
+			noSchemasNote.createEl('p', {
+				text: 'No schemas defined yet. Create a schema below to start validating your data.',
+				cls: 'crc-text--muted'
 			});
-
-			const statsGrid = summaryDiv.createDiv({ cls: 'crc-stats-grid crc-mt-2' });
-			this.createStatItem(statsGrid, 'People', summary.totalPeopleValidated.toString(), 'users');
-			this.createStatItem(statsGrid, 'Schemas', summary.totalSchemas.toString(), 'clipboard-check');
-			this.createStatItem(statsGrid, 'Errors', summary.totalErrors.toString(), summary.totalErrors > 0 ? 'alert-circle' : 'check');
-			this.createStatItem(statsGrid, 'Warnings', summary.totalWarnings.toString(), 'alert-triangle');
+			container.appendChild(validationCard);
 		}
 
-		// Validate vault button
-		const validateButtonContainer = validationContent.createDiv({ cls: 'crc-button-row' });
-		const validateBtn = validateButtonContainer.createEl('button', {
-			cls: 'crc-btn crc-btn--primary',
-			text: 'Validate vault'
-		});
-		setIcon(validateBtn, 'play');
-		validateBtn.prepend(createLucideIcon('play', 16));
+		// Only show validation controls if schemas exist
+		if (hasSchemas) {
+			// Show last validation summary if available
+			if (this.lastValidationSummary) {
+				const summaryDiv = validationContent.createDiv({ cls: 'crc-validation-summary crc-mb-3' });
+				const summary = this.lastValidationSummary;
 
-		const validateStatus = validationContent.createDiv({ cls: 'crc-validation-status crc-mt-2' });
-
-		validateBtn.addEventListener('click', () => void (async () => {
-			validateBtn.disabled = true;
-			validateBtn.textContent = 'Validating...';
-			validateStatus.empty();
-			validateStatus.createEl('span', { text: 'Running validation...', cls: 'crc-text--muted' });
-
-			try {
-				this.lastValidationResults = await validationService.validateVault();
-				this.lastValidationSummary = validationService.getSummary(this.lastValidationResults);
-
-				// Refresh the tab to show updated results
-				void this.showSchemasTab();
-
-				const errorCount = this.lastValidationSummary.totalErrors;
-				if (errorCount === 0) {
-					new Notice('✓ Validation passed! No schema violations found.');
-				} else {
-					new Notice(`Found ${errorCount} validation error${errorCount === 1 ? '' : 's'}`);
-				}
-			} catch (error) {
-				validateStatus.empty();
-				validateStatus.createEl('span', {
-					text: `Error: ${getErrorMessage(error)}`,
-					cls: 'crc-text--error'
+				const statsRow = summaryDiv.createDiv({ cls: 'crc-stats-row' });
+				statsRow.createEl('span', {
+					text: `Last validated: ${summary.validatedAt.toLocaleString()}`,
+					cls: 'crc-text--muted crc-text--small'
 				});
-				new Notice('Validation failed: ' + getErrorMessage(error));
-			} finally {
-				validateBtn.disabled = false;
-				validateBtn.textContent = 'Validate vault';
-				validateBtn.prepend(createLucideIcon('play', 16));
+
+				const statsGrid = summaryDiv.createDiv({ cls: 'crc-stats-grid crc-mt-2' });
+				this.createStatItem(statsGrid, 'People', summary.totalPeopleValidated.toString(), 'users');
+				this.createStatItem(statsGrid, 'Schemas', summary.totalSchemas.toString(), 'clipboard-check');
+				this.createStatItem(statsGrid, 'Errors', summary.totalErrors.toString(), summary.totalErrors > 0 ? 'alert-circle' : 'check');
+				this.createStatItem(statsGrid, 'Warnings', summary.totalWarnings.toString(), 'alert-triangle');
 			}
-		})());
+
+			// Validate vault button
+			new Setting(validationContent)
+				.setName('Run validation')
+				.setDesc('Check all person notes against your schemas')
+				.addButton(button => button
+					.setButtonText('Validate')
+					.setCta()
+					.onClick(() => void (async () => {
+				// Open progress modal
+				const progressModal = new SchemaValidationProgressModal(this.app);
+				progressModal.open();
+
+				try {
+					// Run validation with progress callback
+					this.lastValidationResults = await validationService.validateVault(
+						(progress) => progressModal.updateProgress(progress)
+					);
+					this.lastValidationSummary = validationService.getSummary(this.lastValidationResults);
+
+					// Mark complete and close after a short delay
+					progressModal.markComplete(this.lastValidationSummary);
+					setTimeout(() => {
+						progressModal.close();
+						// Refresh the tab to show updated results
+						void this.showSchemasTab();
+					}, 1500);
+
+					const errorCount = this.lastValidationSummary.totalErrors;
+					if (errorCount === 0) {
+						new Notice('✓ Validation passed! No schema violations found.');
+					} else {
+						new Notice(`Found ${errorCount} validation error${errorCount === 1 ? '' : 's'}`);
+					}
+				} catch (error) {
+					progressModal.close();
+					new Notice('Validation failed: ' + getErrorMessage(error));
+				}
+			})()));
+		}
 
 		container.appendChild(validationCard);
 
@@ -6262,21 +6330,27 @@ export class ControlCenterModal extends Modal {
 
 		const schemasContent = schemasCard.querySelector('.crc-card__content') as HTMLElement;
 
-		// Create schema buttons
+		// Create schema button
 		new Setting(schemasContent)
 			.setName('Create schema')
 			.setDesc('Define a new validation schema for person notes')
 			.addButton(button => button
-				.setButtonText('Create schema')
+				.setButtonText('Create')
+				.setCta()
 				.onClick(() => {
 					new CreateSchemaModal(this.app, this.plugin, {
 						onCreated: () => {
 							void this.loadSchemasGallery(schemaService, schemasGridContainer);
 						}
 					}).open();
-				}))
+				}));
+
+		// Import schema button
+		new Setting(schemasContent)
+			.setName('Import schema')
+			.setDesc('Import a schema from a JSON file')
 			.addButton(button => button
-				.setButtonText('Import JSON')
+				.setButtonText('Import')
 				.onClick(() => {
 					void this.importSchemaFromJson(schemaService, schemasGridContainer);
 				}));
@@ -6738,158 +6812,28 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
-	 * Render schema violations section in Data Quality tab
-	 * Shows summary of schema validation results with quick actions
-	 */
-	private renderSchemaViolationsSection(container: HTMLElement): void {
-		const section = container.createDiv({ cls: 'crc-section crc-schema-violations-section' });
-
-		// Header with link to Schemas tab
-		const header = section.createDiv({ cls: 'crc-section-header' });
-		header.createEl('h3', { text: 'Schema validation' });
-
-		const schemaLink = header.createEl('button', {
-			cls: 'crc-link-button',
-			text: 'Open schemas tab'
-		});
-		setIcon(schemaLink.createSpan({ cls: 'crc-button-icon-right' }), 'external-link');
-		schemaLink.addEventListener('click', () => {
-			this.showTab('schemas');
-		});
-
-		// Check if we have validation results
-		if (!this.lastValidationSummary || this.lastValidationResults.length === 0) {
-			const emptyState = section.createDiv({ cls: 'crc-empty-state crc-compact' });
-			setIcon(emptyState.createSpan({ cls: 'crc-empty-icon' }), 'clipboard-check');
-			emptyState.createEl('p', { text: 'No schema validation has been run yet.' });
-
-			const validateBtn = emptyState.createEl('button', {
-				cls: 'mod-cta',
-				text: 'Run schema validation'
-			});
-			validateBtn.addEventListener('click', () => void this.runSchemaValidationFromDataQuality(section));
-			return;
-		}
-
-		// Summary stats
-		const summary = this.lastValidationSummary;
-		const statsRow = section.createDiv({ cls: 'crc-schema-summary-row' });
-
-		// Calculate passed/failed from results
-		const uniquePeople = new Set(this.lastValidationResults.map(r => r.filePath));
-		const failedPeople = new Set(this.lastValidationResults.filter(r => !r.isValid).map(r => r.filePath));
-		const passedCount = uniquePeople.size - failedPeople.size;
-		const failedCount = failedPeople.size;
-
-		// Total validated
-		const validatedStat = statsRow.createDiv({ cls: 'crc-schema-stat' });
-		setIcon(validatedStat.createSpan({ cls: 'crc-schema-stat-icon' }), 'users');
-		validatedStat.createSpan({ text: `${summary.totalPeopleValidated} validated`, cls: 'crc-schema-stat-text' });
-
-		// Passed
-		const passedStat = statsRow.createDiv({ cls: 'crc-schema-stat crc-schema-stat-success' });
-		setIcon(passedStat.createSpan({ cls: 'crc-schema-stat-icon' }), 'check');
-		passedStat.createSpan({ text: `${passedCount} passed`, cls: 'crc-schema-stat-text' });
-
-		// Failed
-		const failedStat = statsRow.createDiv({ cls: 'crc-schema-stat crc-schema-stat-error' });
-		setIcon(failedStat.createSpan({ cls: 'crc-schema-stat-icon' }), 'alert-circle');
-		failedStat.createSpan({ text: `${failedCount} failed`, cls: 'crc-schema-stat-text' });
-
-		// If there are errors, show breakdown by type
-		if (summary.totalErrors > 0) {
-			const errorBreakdown = section.createDiv({ cls: 'crc-schema-error-breakdown' });
-			errorBreakdown.createEl('h4', { text: 'Error breakdown', cls: 'crc-section-subtitle' });
-
-			const errorGrid = errorBreakdown.createDiv({ cls: 'crc-schema-error-grid' });
-			const errorTypes = summary.errorsByType;
-
-			const errorTypeLabels: Record<string, string> = {
-				missing_required: 'Missing required',
-				invalid_type: 'Invalid type',
-				invalid_enum: 'Invalid enum',
-				out_of_range: 'Out of range',
-				constraint_failed: 'Constraint failed',
-				conditional_required: 'Conditional required',
-				invalid_wikilink_target: 'Invalid wikilink'
-			};
-
-			for (const [type, count] of Object.entries(errorTypes)) {
-				if (count > 0) {
-					const errorItem = errorGrid.createDiv({ cls: 'crc-schema-error-item' });
-					errorItem.createSpan({ text: errorTypeLabels[type] || type, cls: 'crc-schema-error-label' });
-					errorItem.createSpan({ text: count.toString(), cls: 'crc-schema-error-count' });
-				}
-			}
-		}
-
-		// Recent violations (top 5)
-		const failedResults = this.lastValidationResults.filter(r => !r.isValid);
-		if (failedResults.length > 0) {
-			const recentSection = section.createDiv({ cls: 'crc-schema-recent-violations' });
-			recentSection.createEl('h4', { text: 'Recent violations', cls: 'crc-section-subtitle' });
-
-			const violationsList = recentSection.createDiv({ cls: 'crc-schema-violations-list' });
-			const displayCount = Math.min(5, failedResults.length);
-
-			for (let i = 0; i < displayCount; i++) {
-				const result = failedResults[i];
-				const item = violationsList.createDiv({ cls: 'crc-schema-violation-item' });
-
-				// Person link
-				const personLink = item.createEl('a', {
-					cls: 'crc-schema-violation-person',
-					text: result.personName
-				});
-				personLink.addEventListener('click', (e) => {
-					e.preventDefault();
-					void this.app.workspace.openLinkText(result.filePath, '');
-				});
-
-				// Error count badge
-				item.createSpan({
-					cls: 'crc-schema-violation-count',
-					text: `${result.errors.length} error${result.errors.length > 1 ? 's' : ''}`
-				});
-
-				// First error preview
-				if (result.errors.length > 0) {
-					const firstError = result.errors[0];
-					item.createSpan({
-						cls: 'crc-schema-violation-preview',
-						text: firstError.message
-					});
-				}
-			}
-
-			if (failedResults.length > 5) {
-				recentSection.createEl('p', {
-					cls: 'crc-text-muted crc-schema-more-link',
-					text: `+${failedResults.length - 5} more violations. View all in Schemas tab.`
-				});
-			}
-		}
-
-		// Action buttons
-		const actions = section.createDiv({ cls: 'crc-schema-actions' });
-
-		const revalidateBtn = actions.createEl('button', {
-			text: 'Re-validate'
-		});
-		setIcon(revalidateBtn.createSpan({ cls: 'crc-button-icon' }), 'refresh-cw');
-		revalidateBtn.addEventListener('click', () => void this.runSchemaValidationFromDataQuality(section));
-	}
-
-	/**
 	 * Render research gaps section in Data Quality tab
 	 * Shows summary of unsourced facts aligned with GPS methodology
 	 */
 	private renderResearchGapsSection(container: HTMLElement): void {
-		const section = container.createDiv({ cls: 'crc-section crc-research-gaps-section' });
+		// Create card for Research Gaps
+		const card = this.createCard({
+			title: 'Research gaps',
+			icon: 'search',
+			subtitle: 'Track unsourced and weakly sourced facts'
+		});
+		const section = card.querySelector('.crc-card__content') as HTMLElement;
+		section.addClass('crc-research-gaps-section');
 
-		// Header with link to Sources tab
+		// Explanation
+		const explanation = section.createDiv({ cls: 'crc-info-callout crc-mb-3' });
+		explanation.createEl('p', {
+			text: 'Identify facts that need sources or stronger evidence. Focus research efforts on gaps in your documentation.',
+			cls: 'crc-text--small'
+		});
+
+		// Header actions
 		const header = section.createDiv({ cls: 'crc-section-header' });
-		header.createEl('h3', { text: 'Research gaps' });
 
 		const headerActions = header.createDiv({ cls: 'crc-section-header-actions' });
 
@@ -6984,12 +6928,15 @@ export class ControlCenterModal extends Modal {
 			emptyState.createEl('p', {
 				text: `No fact-level source tracking data found. Add sourced_facts to your person notes to track research coverage.`
 			});
+			container.appendChild(card);
 			return;
 		}
 
 		// Render initial breakdown and people list
 		this.renderResearchGapsBreakdown(section, gaps, 'all');
 		this.renderLowestCoveragePeople(section, gaps.lowestCoverage, evidenceService, 'all');
+
+		container.appendChild(card);
 	}
 
 	/**
@@ -7000,11 +6947,21 @@ export class ControlCenterModal extends Modal {
 		const proofService = new ProofSummaryService(this.app, this.plugin.settings);
 		const conflictedProofs = proofService.getProofsByStatus('conflicted');
 
-		const section = container.createDiv({ cls: 'crc-section crc-conflicts-section' });
+		// Create card for Source Conflicts
+		const card = this.createCard({
+			title: 'Source conflicts',
+			icon: 'scale',
+			subtitle: 'Resolve conflicting evidence in your research'
+		});
+		const section = card.querySelector('.crc-card__content') as HTMLElement;
+		section.addClass('crc-conflicts-section');
 
-		// Header
-		const header = section.createDiv({ cls: 'crc-section-header' });
-		header.createEl('h3', { text: 'Source conflicts' });
+		// Explanation
+		const explanation = section.createDiv({ cls: 'crc-info-callout crc-mb-3' });
+		explanation.createEl('p', {
+			text: 'Track and resolve cases where multiple sources provide conflicting information about the same fact.',
+			cls: 'crc-text--small'
+		});
 
 		// Summary stats
 		const statsRow = section.createDiv({ cls: 'crc-schema-summary-row' });
@@ -7066,6 +7023,7 @@ export class ControlCenterModal extends Modal {
 				new TemplateSnippetsModal(this.app, 'proof').open();
 			});
 
+			container.appendChild(card);
 			return;
 		}
 
@@ -7075,6 +7033,7 @@ export class ControlCenterModal extends Modal {
 			const successIcon = successState.createDiv({ cls: 'crc-dq-no-issues-icon' });
 			setIcon(successIcon, 'check');
 			successState.createSpan({ text: 'No unresolved source conflicts' });
+			container.appendChild(card);
 			return;
 		}
 
@@ -7084,6 +7043,8 @@ export class ControlCenterModal extends Modal {
 		for (const proof of conflictedProofs) {
 			this.renderConflictItem(conflictList, proof);
 		}
+
+		container.appendChild(card);
 	}
 
 	/**
@@ -7363,56 +7324,6 @@ export class ControlCenterModal extends Modal {
 		}).catch(() => {
 			new Notice('Failed to copy to clipboard');
 		});
-	}
-
-	/**
-	 * Run schema validation from Data Quality tab and update section
-	 */
-	private async runSchemaValidationFromDataQuality(sectionToReplace: HTMLElement): Promise<void> {
-		// Show loading state
-		sectionToReplace.empty();
-		const loading = sectionToReplace.createDiv({ cls: 'crc-loading' });
-		loading.createSpan({ text: 'Running schema validation...' });
-
-		try {
-			const schemaService = new SchemaService(this.plugin);
-			const validationService = new ValidationService(this.plugin, schemaService);
-
-			const results = await validationService.validateVault();
-			const summary = validationService.getSummary(results);
-
-			// Store results
-			this.lastValidationResults = results;
-			this.lastValidationSummary = summary;
-
-			// Clear and re-render the section
-			const parent = sectionToReplace.parentElement;
-			sectionToReplace.remove();
-
-			if (parent) {
-				// Find where to insert (at the beginning after the intro text)
-				const firstSection = parent.querySelector('.crc-section');
-				if (firstSection) {
-					const newSection = document.createElement('div');
-					parent.insertBefore(newSection, firstSection);
-					this.renderSchemaViolationsSection(newSection.parentElement!);
-					newSection.remove();
-				} else {
-					this.renderSchemaViolationsSection(parent);
-				}
-			}
-
-			// Calculate passed/failed counts for notice
-			const failedResultsCount = new Set(results.filter(r => !r.isValid).map(r => r.filePath)).size;
-			const passedResultsCount = summary.totalPeopleValidated - failedResultsCount;
-			new Notice(`Schema validation complete: ${passedResultsCount} passed, ${failedResultsCount} failed`);
-		} catch (error) {
-			sectionToReplace.empty();
-			sectionToReplace.createEl('p', {
-				cls: 'crc-error',
-				text: `Validation failed: ${getErrorMessage(error)}`
-			});
-		}
 	}
 
 	// ==========================================================================
@@ -11085,16 +10996,6 @@ export class ControlCenterModal extends Modal {
 		const container = this.contentContainer;
 		container.empty();
 
-		// Header
-		container.createEl('h2', { text: 'Data quality' });
-		container.createEl('p', {
-			text: 'Analyze your genealogy data for inconsistencies, missing information, and potential errors.',
-			cls: 'crc-text-muted'
-		});
-
-		// Schema Violations Section (at the top for visibility)
-		this.renderSchemaViolationsSection(container);
-
 		// Research Gaps Section (only when fact-level tracking is enabled)
 		if (this.plugin.settings.trackFactSourcing) {
 			this.renderResearchGapsSection(container);
@@ -11103,15 +11004,27 @@ export class ControlCenterModal extends Modal {
 			this.renderSourceConflictsSection(container);
 		}
 
-		// Analysis scope selector
-		const scopeSection = container.createDiv({ cls: 'crc-section' });
-		scopeSection.createEl('h3', { text: 'Analysis scope' });
+		// Analysis card
+		const analysisCard = this.createCard({
+			title: 'Data analysis',
+			icon: 'search',
+			subtitle: 'Find inconsistencies and missing information'
+		});
+		const analysisContent = analysisCard.querySelector('.crc-card__content') as HTMLElement;
+
+		// Explanation
+		const analysisExplanation = analysisContent.createDiv({ cls: 'crc-info-callout crc-mb-3' });
+		analysisExplanation.createEl('p', {
+			text: 'Scan your genealogy data to identify data issues like missing dates, invalid values, ' +
+				'circular relationships, and orphaned parent references.',
+			cls: 'crc-text--small'
+		});
 
 		let selectedScope: 'all' | 'staging' | 'folder' = 'all';
 		const selectedFolder = '';
 
-		new Setting(scopeSection)
-			.setName('Scope')
+		new Setting(analysisContent)
+			.setName('Analysis scope')
 			.setDesc('Choose which records to analyze')
 			.addDropdown(dropdown => dropdown
 				.addOption('all', 'All records (main tree)')
@@ -11122,32 +11035,39 @@ export class ControlCenterModal extends Modal {
 				})
 			);
 
-		// Run Analysis button
-		const actionSection = container.createDiv({ cls: 'crc-section' });
-
-		const runButton = actionSection.createEl('button', {
-			text: 'Run analysis',
-			cls: 'mod-cta'
-		});
-		setIcon(runButton.createSpan({ cls: 'crc-button-icon' }), 'play');
-
 		// Results container (initially empty)
-		const resultsContainer = container.createDiv({ cls: 'crc-data-quality-results' });
+		const resultsContainer = analysisContent.createDiv({ cls: 'crc-data-quality-results' });
 
-		runButton.addEventListener('click', () => {
-			this.runDataQualityAnalysis(resultsContainer, selectedScope, selectedFolder);
+		// Run analysis button
+		new Setting(analysisContent)
+			.setName('Run analysis')
+			.setDesc('Scan records for data quality issues')
+			.addButton(button => button
+				.setButtonText('Analyze')
+				.setCta()
+				.onClick(() => {
+					this.runDataQualityAnalysis(resultsContainer, selectedScope, selectedFolder);
+				}));
+
+		container.appendChild(analysisCard);
+
+		// Batch Operations card
+		const batchCard = this.createCard({
+			title: 'Batch operations',
+			icon: 'zap',
+			subtitle: 'Fix common data issues across all records'
 		});
+		const batchContent = batchCard.querySelector('.crc-card__content') as HTMLElement;
 
-		// Batch Operations section
-		const batchSection = container.createDiv({ cls: 'crc-section' });
-		batchSection.createEl('h3', { text: 'Batch operations' });
-		batchSection.createEl('p', {
-			text: 'Fix common data issues across all records. Preview changes before applying.',
-			cls: 'crc-text-muted'
+		// Explanation
+		const batchExplanation = batchContent.createDiv({ cls: 'crc-info-callout crc-mb-3' });
+		batchExplanation.createEl('p', {
+			text: 'Apply bulk fixes to standardize your data. Use Preview to see what will change before applying.',
+			cls: 'crc-text--small'
 		});
 
 		// Normalize dates
-		new Setting(batchSection)
+		new Setting(batchContent)
 			.setName('Normalize date formats')
 			.setDesc('Convert dates to standard YYYY-MM-DD format')
 			.addButton(btn => btn
@@ -11163,7 +11083,7 @@ export class ControlCenterModal extends Modal {
 			);
 
 		// Normalize sex
-		new Setting(batchSection)
+		new Setting(batchContent)
 			.setName('Normalize sex values')
 			.setDesc('Standardize to M/F format')
 			.addButton(btn => btn
@@ -11177,7 +11097,7 @@ export class ControlCenterModal extends Modal {
 			);
 
 		// Clear orphan references
-		new Setting(batchSection)
+		new Setting(batchContent)
 			.setName('Clear orphan references')
 			.setDesc('Remove parent references that point to non-existent records')
 			.addButton(btn => btn
@@ -11192,7 +11112,7 @@ export class ControlCenterModal extends Modal {
 
 		// Migrate legacy type property (only show if cr_type is the primary)
 		if (this.plugin.settings.noteTypeDetection?.primaryTypeProperty === 'cr_type') {
-			new Setting(batchSection)
+			new Setting(batchContent)
 				.setName('Migrate legacy type property')
 				.setDesc('Convert type to cr_type for all Canvas Roots notes')
 				.addButton(btn => btn
@@ -11206,9 +11126,22 @@ export class ControlCenterModal extends Modal {
 				);
 		}
 
-		// Data Tools section
-		const toolsSection = container.createDiv({ cls: 'crc-section' });
-		toolsSection.createEl('h3', { text: 'Data tools' });
+		container.appendChild(batchCard);
+
+		// Data Tools card
+		const toolsCard = this.createCard({
+			title: 'Data tools',
+			icon: 'sliders',
+			subtitle: 'Utility tools for managing your data'
+		});
+		const toolsContent = toolsCard.querySelector('.crc-card__content') as HTMLElement;
+
+		// Explanation
+		const toolsExplanation = toolsContent.createDiv({ cls: 'crc-info-callout crc-mb-3' });
+		toolsExplanation.createEl('p', {
+			text: 'Create Obsidian Bases to view and manage your data in spreadsheet-like table views.',
+			cls: 'crc-text--small'
+		});
 
 		const baseTypes = [
 			{ value: 'people', label: 'People', command: 'canvas-roots:create-base-template' },
@@ -11220,7 +11153,7 @@ export class ControlCenterModal extends Modal {
 
 		let selectedBaseType = baseTypes[0];
 
-		new Setting(toolsSection)
+		new Setting(toolsContent)
 			.setName('Create base')
 			.setDesc('Create an Obsidian Base for managing your data in table view')
 			.addDropdown(dropdown => dropdown
@@ -11238,6 +11171,8 @@ export class ControlCenterModal extends Modal {
 					this.app.commands.executeCommandById(selectedBaseType.command);
 				})
 			);
+
+		container.appendChild(toolsCard);
 	}
 
 	/**
