@@ -574,6 +574,66 @@ When corner properties are present, the map loads with that alignment. When they
 - The underlying coordinate system remains unchanged; only the image position changes
 - Alignment affects the Map View display only, not canvas generation
 
+## Using Obsidian Maps Alongside Canvas Roots
+
+[Obsidian Maps](https://github.com/obsidianmd/obsidian-maps) is an official community plugin that adds a Map view to Obsidian Bases. While Canvas Roots provides genealogy-focused map visualization, Obsidian Maps offers complementary features for general place browsing.
+
+### When to Use Each
+
+| Use Case | Recommended Tool |
+|----------|------------------|
+| Visualizing migration paths (birth → death) | Canvas Roots Map View |
+| Journey paths through all life events | Canvas Roots Map View |
+| Heat map of family concentrations | Canvas Roots Map View |
+| Time slider ("who was alive when?") | Canvas Roots Map View |
+| Marker clustering for large datasets | Canvas Roots Map View |
+| Custom fictional/historical image maps | Canvas Roots Map View |
+| Simple "show places on a map" from a Base query | Obsidian Maps |
+| Embedded map view within a markdown note | Obsidian Maps |
+| Custom marker icons per place (Lucide icons) | Obsidian Maps |
+| Custom marker colors per place | Obsidian Maps |
+
+### Using Both Plugins Together
+
+Canvas Roots and Obsidian Maps work well together. Your place notes already include `coordinates` properties that Obsidian Maps can use:
+
+1. **Install Obsidian Maps** from Community Plugins (requires Obsidian 1.10+)
+2. **Create a Places Base** using the Canvas Roots template (Guide tab → Base templates → Places)
+3. **Add a Map view** to your Base:
+   - In the Base, click the view dropdown → Map
+   - Set "Marker coordinates" to `coordinates`
+   - Optionally set "Marker icon" to `icon` and "Marker color" to `color` if you've added those properties
+
+This gives you a simple map view of your places within Bases, while Canvas Roots' Map View remains available for genealogy-specific analysis like migration paths and time-based filtering.
+
+### Feature Comparison
+
+| Feature | Canvas Roots | Obsidian Maps |
+|---------|--------------|---------------|
+| Map library | Leaflet 1.9.4 | MapLibre GL 5.8 |
+| Tile format | Raster (XYZ) | Vector + Raster |
+| Marker clustering | ✓ | — |
+| Migration/journey paths | ✓ | — |
+| Heat map layer | ✓ | — |
+| Time slider animation | ✓ | — |
+| Custom image maps | ✓ | — |
+| Bases integration | — | ✓ |
+| Embedded in notes | — | ✓ |
+| Per-marker icons/colors | By event type | Per-note property |
+| Formula-based properties | — | ✓ |
+
+### Coordinated Workflows
+
+**Scenario: Researching a specific branch**
+1. Create a Base filtered to a collection (e.g., "Smith Family")
+2. Use Obsidian Maps' Map view for quick place browsing
+3. Switch to Canvas Roots Map View for migration path analysis
+
+**Scenario: Place note research**
+1. Browse places in an Obsidian Maps view
+2. Click a marker to open the place note
+3. Use Canvas Roots' "Open in Map View" context menu for full analysis
+
 ## Settings
 
 Configure place features in Settings → Canvas Roots:

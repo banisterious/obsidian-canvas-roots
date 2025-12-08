@@ -274,6 +274,24 @@ export default class CanvasRootsPlugin extends Plugin {
 			}
 		});
 
+		// Add command: Create Places Base Template
+		this.addCommand({
+			id: 'create-places-base-template',
+			name: 'Create places base template',
+			callback: () => {
+				void this.createPlacesBaseTemplate();
+			}
+		});
+
+		// Add command: Create Events Base Template
+		this.addCommand({
+			id: 'create-events-base-template',
+			name: 'Create events base template',
+			callback: () => {
+				void this.createEventsBaseTemplate();
+			}
+		});
+
 		// Add command: Calculate Relationship
 		this.addCommand({
 			id: 'calculate-relationship',

@@ -24,30 +24,42 @@ Individual Notes ←→ Bases Table View
 
 ## Available Base Templates
 
-Canvas Roots provides ready-to-use templates for three types of data:
+Canvas Roots provides ready-to-use templates for five entity types:
 
 | Template | Data Type | Key Features |
 |----------|-----------|--------------|
 | **People** | Person notes | Relationships, dates, lifespans |
 | **Places** | Place notes | Coordinates, hierarchies, categories |
+| **Events** | Event notes | Life events and milestones |
 | **Organizations** | Organization notes | Types, members, universes |
+| **Sources** | Source notes | Citations and references |
 
 ### Creating Base Templates
 
-**From Control Center:**
-- **People tab** → Data tools card → "Create base template"
-- **Places tab** → Data tools card → "Create base template"
-- **Organizations tab** → Data tools card → "Create base template"
+**From Control Center (Guide tab):**
+1. Open Control Center → **Guide** tab
+2. Find the **Base templates** card
+3. Click any template type to create it
+
+**From Control Center (Data Quality tab):**
+1. Open Control Center → **Data quality** tab
+2. Find the **Data tools** section
+3. Select a template type from the dropdown and click **Create**
 
 **From Context Menu:**
 Right-click any folder and select:
 - "Create people Base template"
 - "Create places Base template"
+- "Create events Base template"
 - "Create organizations Base template"
+- "Create sources Base template"
 
 **From Command Palette:**
 - `Canvas Roots: Create base template` (People)
+- `Canvas Roots: Create places base template`
+- `Canvas Roots: Create events base template`
 - `Canvas Roots: Create organizations base template`
+- `Canvas Roots: Create sources base template`
 
 ## Why Use Bases with Canvas Roots?
 
@@ -407,10 +419,37 @@ type_label: 'org_type || "Other"'
 - Creating complex narrative content
 - Linking to external research
 
+## Map View for Bases
+
+[Obsidian Maps](https://github.com/obsidianmd/obsidian-maps) is an official community plugin that adds a Map view layout to Bases. If you're using Obsidian 1.10+, you can install it to display your place notes on an interactive map directly within a Base.
+
+### Setting Up Map View
+
+1. Install **Obsidian Maps** from Community Plugins
+2. Create a Places Base using the Canvas Roots template
+3. In the Base, click the view dropdown → **Map**
+4. Configure the view settings:
+   - Set "Marker coordinates" to `coordinates`
+   - Optionally set "Marker icon" and "Marker color" to custom properties
+
+### When to Use Obsidian Maps vs. Canvas Roots Map View
+
+| Obsidian Maps | Canvas Roots Map View |
+|---------------|----------------------|
+| Simple place browsing within a Base | Migration paths (birth → death) |
+| Embedded map in a note | Journey paths through life events |
+| Custom icons/colors per place | Heat map visualization |
+| Query-filtered views | Time slider animation |
+| | Marker clustering |
+| | Custom image maps (fictional/historical) |
+
+For detailed comparison and coordinated workflows, see [Geographic Features → Using Obsidian Maps Alongside Canvas Roots](Geographic-Features#using-obsidian-maps-alongside-canvas-roots).
+
 ## Additional Resources
 
 - [Obsidian Bases Documentation](https://help.obsidian.md/bases)
 - [Bases Syntax Reference](https://help.obsidian.md/bases/syntax)
+- [Obsidian Maps Plugin](https://github.com/obsidianmd/obsidian-maps) - Map view for Bases
 - [Frontmatter Reference](Frontmatter-Reference) - Complete property documentation
 - [Geographic Features](Geographic-Features) - Place notes and maps
 - [Organization Notes](Organization-Notes) - Organizations and memberships

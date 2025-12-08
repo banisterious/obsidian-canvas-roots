@@ -13,6 +13,19 @@ GEDCOM import improvements and enhanced place variation detection.
 
 ### Added
 
+- **Guide Tab: Base Templates Card**: New card providing quick access to create Obsidian Bases for all entity types
+  - People, Places, Events, Organizations, and Sources templates available
+  - One-click creation with descriptive labels for each type
+  - Consistent styling with other Guide tab cards
+
+- **Data Quality Tab: Base Type Dropdown**: Create base dropdown now supports all entity types
+  - Dropdown selector to choose People, Places, Events, Organizations, or Sources
+  - Replaces single-purpose People template button
+
+- **New Commands**: Added commands for Places and Events base templates
+  - `Create places base template`: Creates an Obsidian Base for geographic locations
+  - `Create events base template`: Creates an Obsidian Base for life events and milestones
+
 - **Geocode Place Context Menu Action**: Right-click any place note to look up coordinates via OpenStreetMap
   - Uses note title and parent place for accurate geocoding
   - Updates frontmatter with lat/long coordinates

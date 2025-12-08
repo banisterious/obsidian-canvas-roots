@@ -29,7 +29,10 @@ export class StandardizePlacesModal extends Modal {
 	private placeService: PlaceGraphService;
 	private variationGroups: PlaceVariationGroup[];
 	private selectedGroups: Map<PlaceVariationGroup, string>; // group -> chosen canonical
+	private appliedGroups: Set<PlaceVariationGroup>; // groups that have been applied
+	private groupElements: Map<PlaceVariationGroup, HTMLElement>; // group -> DOM element
 	private onComplete?: (updated: number) => void;
+	private totalUpdated = 0;
 
 	constructor(
 		app: App,
@@ -40,6 +43,8 @@ export class StandardizePlacesModal extends Modal {
 		this.placeService = new PlaceGraphService(app);
 		this.variationGroups = variationGroups;
 		this.selectedGroups = new Map();
+		this.appliedGroups = new Set();
+		this.groupElements = new Map();
 		this.onComplete = options.onComplete;
 
 		// Pre-select the suggested canonical for each group
@@ -106,6 +111,11 @@ export class StandardizePlacesModal extends Modal {
 	onClose() {
 		const { contentEl } = this;
 		contentEl.empty();
+
+		// Call completion callback if any groups were applied individually
+		if (this.totalUpdated > 0 && this.onComplete) {
+			this.onComplete(this.totalUpdated);
+		}
 	}
 
 	/**
@@ -113,45 +123,59 @@ export class StandardizePlacesModal extends Modal {
 	 */
 	private renderGroups(container: HTMLElement): void {
 		container.empty();
+		this.groupElements.clear();
 
 		for (const group of this.variationGroups) {
 			const groupEl = container.createDiv({ cls: 'crc-variation-group' });
+			this.groupElements.set(group, groupEl);
 
-			// Group header
+			// Group header with apply button
 			const groupHeader = groupEl.createDiv({ cls: 'crc-variation-group-header' });
-			groupHeader.createEl('strong', {
+
+			const headerInfo = groupHeader.createDiv({ cls: 'crc-variation-group-info' });
+			headerInfo.createEl('strong', {
 				text: `${group.variations.length} variations`,
 				cls: 'crc-variation-count'
 			});
-			groupHeader.createEl('span', {
+			headerInfo.createEl('span', {
 				text: ` • ${group.totalCount} total references`,
 				cls: 'crc-text--muted'
 			});
 			if (group.hasLinkedVariation) {
-				const linkedBadge = groupHeader.createEl('span', {
+				const linkedBadge = headerInfo.createEl('span', {
 					text: 'has place note',
 					cls: 'crc-badge crc-badge--success crc-badge--small crc-ml-2'
 				});
 				linkedBadge.title = 'One or more variations are linked to place notes';
 			}
 
+			// Apply button for this group
+			const applyBtn = groupHeader.createEl('button', {
+				text: 'Apply',
+				cls: 'crc-btn crc-btn--small'
+			});
+			applyBtn.addEventListener('click', () => void this.applyGroupStandardization(group, groupEl, applyBtn));
+
 			// Radio buttons for each variation
 			const variationsEl = groupEl.createDiv({ cls: 'crc-variation-options' });
+			const groupIndex = this.variationGroups.indexOf(group);
 
 			for (const variation of group.variations) {
 				const optionEl = variationsEl.createDiv({ cls: 'crc-variation-option' });
 
-				const radioId = `variation-${this.variationGroups.indexOf(group)}-${group.variations.indexOf(variation)}`;
+				const radioId = `variation-${groupIndex}-${group.variations.indexOf(variation)}`;
 				const radio = optionEl.createEl('input', {
 					type: 'radio',
 					cls: 'crc-radio'
 				});
-				radio.name = `group-${this.variationGroups.indexOf(group)}`;
+				radio.name = `group-${groupIndex}`;
 				radio.id = radioId;
 				radio.checked = this.selectedGroups.get(group) === variation;
 				radio.addEventListener('change', () => {
 					if (radio.checked) {
 						this.selectedGroups.set(group, variation);
+						// Hide custom input when selecting a predefined option
+						customInputContainer.addClass('crc-hidden');
 					}
 				});
 
@@ -175,6 +199,96 @@ export class StandardizePlacesModal extends Modal {
 					});
 				}
 			}
+
+			// Custom name option
+			const customOptionEl = variationsEl.createDiv({ cls: 'crc-variation-option' });
+			const customRadioId = `variation-${groupIndex}-custom`;
+			const customRadio = customOptionEl.createEl('input', {
+				type: 'radio',
+				cls: 'crc-radio'
+			});
+			customRadio.name = `group-${groupIndex}`;
+			customRadio.id = customRadioId;
+
+			const customLabel = customOptionEl.createEl('label', { cls: 'crc-radio-label' });
+			customLabel.setAttribute('for', customRadioId);
+			customLabel.createEl('span', { text: 'Custom name...', cls: 'crc-text--muted' });
+
+			// Custom input container (hidden by default)
+			const customInputContainer = variationsEl.createDiv({ cls: 'crc-custom-name-input crc-hidden' });
+			const customInput = customInputContainer.createEl('input', {
+				type: 'text',
+				cls: 'crc-input',
+				placeholder: 'Enter custom place name'
+			});
+			// Pre-fill with the suggested canonical
+			customInput.value = group.canonical;
+
+			customRadio.addEventListener('change', () => {
+				if (customRadio.checked) {
+					customInputContainer.removeClass('crc-hidden');
+					customInput.focus();
+					customInput.select();
+					// Set the custom value
+					this.selectedGroups.set(group, customInput.value);
+				}
+			});
+
+			customInput.addEventListener('input', () => {
+				if (customRadio.checked) {
+					this.selectedGroups.set(group, customInput.value);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Apply standardization for a single group
+	 */
+	private async applyGroupStandardization(
+		group: PlaceVariationGroup,
+		groupEl: HTMLElement,
+		applyBtn: HTMLButtonElement
+	): Promise<void> {
+		const canonical = this.selectedGroups.get(group);
+		if (!canonical) return;
+
+		// Disable the button while processing
+		applyBtn.disabled = true;
+		applyBtn.textContent = 'Applying...';
+
+		const variationsToUpdate = group.variations.filter(v => v !== canonical);
+		let updated = 0;
+		const errors: string[] = [];
+
+		for (const oldValue of variationsToUpdate) {
+			try {
+				const count = await this.updatePlaceReferences(oldValue, canonical);
+				updated += count;
+			} catch (error) {
+				errors.push(`${oldValue}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			}
+		}
+
+		this.totalUpdated += updated;
+		this.appliedGroups.add(group);
+
+		// Update the group element to show completion
+		groupEl.addClass('crc-variation-group--applied');
+		applyBtn.textContent = `Done (${updated})`;
+		applyBtn.addClass('crc-btn--success');
+
+		// Disable radio buttons
+		const radios = groupEl.querySelectorAll('input[type="radio"]');
+		radios.forEach(radio => (radio as HTMLInputElement).disabled = true);
+
+		if (errors.length > 0) {
+			console.error('Errors during group standardization:', errors);
+			new Notice(`Updated ${updated} references with ${errors.length} errors`);
+		} else if (updated > 0) {
+			new Notice(`Updated ${updated} reference${updated !== 1 ? 's' : ''} to "${canonical}"`);
+		} else {
+			new Notice('No changes were needed');
 		}
 	}
 
@@ -197,37 +311,44 @@ export class StandardizePlacesModal extends Modal {
 	}
 
 	/**
-	 * Apply the standardization changes
+	 * Apply the standardization changes for all remaining (non-applied) groups
 	 */
 	private async applyStandardization(): Promise<void> {
-		let totalUpdated = 0;
+		let batchUpdated = 0;
 		const errors: string[] = [];
 
 		for (const [group, canonical] of this.selectedGroups.entries()) {
+			// Skip groups that have already been applied individually
+			if (this.appliedGroups.has(group)) continue;
+
 			// Find all variations that need to be updated (not the canonical one)
 			const variationsToUpdate = group.variations.filter(v => v !== canonical);
 
 			for (const oldValue of variationsToUpdate) {
 				try {
 					const updated = await this.updatePlaceReferences(oldValue, canonical);
-					totalUpdated += updated;
+					batchUpdated += updated;
 				} catch (error) {
 					errors.push(`${oldValue} → ${canonical}: ${error instanceof Error ? error.message : 'Unknown error'}`);
 				}
 			}
+
+			this.appliedGroups.add(group);
 		}
+
+		this.totalUpdated += batchUpdated;
 
 		if (errors.length > 0) {
 			console.error('Errors during standardization:', errors);
-			new Notice(`Updated ${totalUpdated} references. ${errors.length} errors occurred.`);
-		} else if (totalUpdated > 0) {
-			new Notice(`Updated ${totalUpdated} place reference${totalUpdated !== 1 ? 's' : ''}`);
+			new Notice(`Updated ${batchUpdated} references. ${errors.length} errors occurred.`);
+		} else if (batchUpdated > 0) {
+			new Notice(`Updated ${batchUpdated} place reference${batchUpdated !== 1 ? 's' : ''}`);
 		} else {
 			new Notice('No changes were needed');
 		}
 
 		if (this.onComplete) {
-			this.onComplete(totalUpdated);
+			this.onComplete(this.totalUpdated);
 		}
 
 		this.close();
@@ -425,53 +546,85 @@ function normalizePlaceName(name: string): string {
 
 /**
  * Check if one name is a substring of another (after normalization)
+ * This is ONLY for catching cases where one place is a more specific version
+ * of another, like "Boston" vs "Boston, MA, USA"
+ *
+ * This is NOT for matching places that just share a common word.
  */
 function isSubstringMatch(a: string, b: string): boolean {
 	// One must be significantly shorter to be a substring match
-	if (Math.abs(a.length - b.length) < 3) return false;
+	if (Math.abs(a.length - b.length) < 5) return false;
 
 	const shorter = a.length < b.length ? a : b;
 	const longer = a.length < b.length ? b : a;
 
-	// The shorter one should be a significant part of the longer
-	return longer.includes(shorter) && shorter.length >= 4;
+	// Don't match if the shorter string is just a state/country name
+	// These are too common and create false positives
+	const commonRegions = [
+		'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado',
+		'connecticut', 'delaware', 'florida', 'georgia', 'hawaii', 'idaho',
+		'illinois', 'indiana', 'iowa', 'kansas', 'kentucky', 'louisiana',
+		'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota',
+		'mississippi', 'missouri', 'montana', 'nebraska', 'nevada',
+		'new hampshire', 'new jersey', 'new mexico', 'new york',
+		'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon',
+		'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
+		'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington',
+		'west virginia', 'wisconsin', 'wyoming',
+		'usa', 'united states', 'america', 'uk', 'united kingdom',
+		'england', 'scotland', 'wales', 'ireland', 'canada', 'australia',
+		'germany', 'france', 'italy', 'spain'
+	];
+
+	const shorterNorm = shorter.toLowerCase().trim();
+	if (commonRegions.includes(shorterNorm)) {
+		return false;
+	}
+
+	// The shorter one must be at least 8 chars (increased from 6)
+	// and must appear at the START of the longer string (not just anywhere)
+	// This prevents "Hartford" from matching "West Hartford, Hartford, CT"
+	return longer.startsWith(shorter) && shorter.length >= 8;
 }
 
 /**
  * Check for common abbreviation patterns
+ * Only matches when the abbreviation substitution results in identical strings
  */
 function isAbbreviationMatch(a: string, b: string): boolean {
+	// Only check country/state abbreviations that are unambiguous
+	// Removed directional abbreviations (N/S/E/W) as they cause too many false positives
 	const abbreviations: Record<string, string[]> = {
-		'united states': ['usa', 'us', 'u.s.', 'u.s.a.'],
-		'united kingdom': ['uk', 'u.k.', 'britain', 'great britain'],
+		'united states': ['usa', 'u.s.a.'],
+		'united kingdom': ['uk', 'u.k.'],
 		'new york': ['ny', 'n.y.'],
-		'california': ['ca', 'calif.'],
-		'massachusetts': ['ma', 'mass.'],
-		'pennsylvania': ['pa', 'penn.'],
-		'district of columbia': ['dc', 'd.c.', 'washington dc'],
-		'saint': ['st', 'st.'],
-		'mount': ['mt', 'mt.'],
-		'fort': ['ft', 'ft.'],
-		'north': ['n', 'n.'],
-		'south': ['s', 's.'],
-		'east': ['e', 'e.'],
-		'west': ['w', 'w.'],
+		'california': ['calif'],
+		'massachusetts': ['mass'],
+		'pennsylvania': ['penn'],
+		'connecticut': ['ct', 'conn'],
+		'district of columbia': ['dc', 'd.c.'],
+		'saint': ['st.'],  // Only match with period to avoid "St" matching random words
+		'mount': ['mt.'],  // Only match with period
+		'fort': ['ft.'],   // Only match with period
 	};
 
 	const aLower = a.toLowerCase();
 	const bLower = b.toLowerCase();
 
+	// Try substituting abbreviations and see if strings become equal
 	for (const [full, abbrevs] of Object.entries(abbreviations)) {
 		for (const abbrev of abbrevs) {
-			// Check if one contains the full form and the other contains the abbreviation
-			if (
-				(aLower.includes(full) && bLower.includes(abbrev)) ||
-				(bLower.includes(full) && aLower.includes(abbrev))
-			) {
-				// Make sure the rest of the name is similar
-				const aRest = aLower.replace(full, '').replace(abbrev, '').trim();
-				const bRest = bLower.replace(full, '').replace(abbrev, '').trim();
-				if (aRest === bRest || Math.abs(aRest.length - bRest.length) <= 2) {
+			// Try replacing full with abbrev in a, see if it matches b
+			if (aLower.includes(full)) {
+				const aSubstituted = aLower.replace(full, abbrev);
+				if (normalizePlaceName(aSubstituted) === normalizePlaceName(bLower)) {
+					return true;
+				}
+			}
+			// Try replacing abbrev with full in a, see if it matches b
+			if (aLower.includes(abbrev)) {
+				const aSubstituted = aLower.replace(abbrev, full);
+				if (normalizePlaceName(aSubstituted) === normalizePlaceName(bLower)) {
 					return true;
 				}
 			}
@@ -546,6 +699,10 @@ function extractBaseLocality(parts: string[]): string {
  * - "Greene County, Tennessee, USA" vs "Greene County Tennessee"
  * - "Greene County, Tennessee" vs "Greene, Tennessee, USA"
  * - "Scotland County, North Carolina" vs "Scotland County North Carolina USA"
+ *
+ * Does NOT match places that just share a state/country - the base locality must match.
+ * Does NOT match places where one locality name is a prefix of another different place
+ * (e.g., "Newport" should NOT match "Newport News")
  */
 function isHierarchyVariation(a: string, b: string): boolean {
 	// Don't match identical strings
@@ -554,38 +711,47 @@ function isHierarchyVariation(a: string, b: string): boolean {
 	const partsA = parsePlaceHierarchy(a);
 	const partsB = parsePlaceHierarchy(b);
 
-	// Need at least one part each
-	if (partsA.length === 0 || partsB.length === 0) return false;
+	// Need at least two parts each (locality + at least one parent)
+	// Single-part names are too ambiguous for hierarchy matching
+	if (partsA.length < 2 || partsB.length < 2) return false;
 
 	const baseA = extractBaseLocality(partsA);
 	const baseB = extractBaseLocality(partsB);
 
-	// Check if base localities match or one contains the other
-	// This handles "Greene County" matching "Greene"
-	const baseMatch = baseA === baseB ||
-		(baseA.includes(baseB) && baseB.length >= 4) ||
-		(baseB.includes(baseA) && baseA.length >= 4);
+	// Base localities must match exactly, OR differ only by common suffixes like "County", "City", "Township"
+	// This prevents "Newport" from matching "Newport News" (different places)
+	// but allows "Greene" to match "Greene County" (same place, different format)
+	const commonSuffixes = ['county', 'city', 'township', 'town', 'village', 'borough', 'parish'];
+
+	let baseMatch = baseA === baseB;
+
+	if (!baseMatch) {
+		// Check if one is the other plus a common suffix
+		for (const suffix of commonSuffixes) {
+			if (baseA === `${baseB} ${suffix}` || baseB === `${baseA} ${suffix}`) {
+				baseMatch = true;
+				break;
+			}
+		}
+	}
 
 	if (!baseMatch) return false;
 
-	// Check if they share at least one common hierarchy element (state/country)
-	// Skip the first element (base locality) and compare the rest
+	// Must also share at least one hierarchy element (state/county) to confirm they're the same place
+	// But NOT just "usa" or other country-level matches - need state or county level
 	const hierarchyA = partsA.slice(1);
 	const hierarchyB = partsB.slice(1);
 
-	// If either has no hierarchy beyond base, require base to match exactly
-	if (hierarchyA.length === 0 || hierarchyB.length === 0) {
-		return baseA === baseB;
-	}
+	// Filter out country-level matches which are too broad
+	const countryNames = ['usa', 'united states', 'america', 'uk', 'united kingdom', 'canada', 'australia'];
 
-	// Check for shared hierarchy elements
+	// Check for shared hierarchy elements at state/county level
 	for (const elemA of hierarchyA) {
+		if (countryNames.includes(elemA)) continue; // Skip country matches
 		for (const elemB of hierarchyB) {
-			// Match if elements are equal or one contains the other
-			// This handles "USA" matching "United States" after normalization
-			if (elemA === elemB ||
-				(elemA.includes(elemB) && elemB.length >= 2) ||
-				(elemB.includes(elemA) && elemA.length >= 2)) {
+			if (countryNames.includes(elemB)) continue; // Skip country matches
+			// Require exact match for hierarchy elements (after normalization)
+			if (elemA === elemB && elemA.length >= 2) {
 				return true;
 			}
 		}

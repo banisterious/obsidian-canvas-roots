@@ -1500,7 +1500,47 @@ export class ControlCenterModal extends Modal {
 		container.appendChild(tasksCard);
 
 		// =========================================================================
-		// Card 5: Learn More
+		// Card 5: Base Templates (Obsidian Bases)
+		// =========================================================================
+		const templatesCard = this.createCard({
+			title: 'Base templates',
+			icon: 'table-2',
+			subtitle: 'Obsidian Bases integration'
+		});
+		const templatesContent = templatesCard.querySelector('.crc-card__content') as HTMLElement;
+
+		templatesContent.createEl('p', {
+			text: 'Quickly create bases for organizing your data:',
+			cls: 'crc-mb-3'
+		});
+
+		const baseTemplates = [
+			{ icon: 'user', title: 'People', desc: 'Family members with relationships', command: 'canvas-roots:create-base-template' },
+			{ icon: 'map-pin', title: 'Places', desc: 'Geographic locations', command: 'canvas-roots:create-places-base-template' },
+			{ icon: 'calendar', title: 'Events', desc: 'Life events and milestones', command: 'canvas-roots:create-events-base-template' },
+			{ icon: 'building', title: 'Organizations', desc: 'Businesses, churches, schools', command: 'canvas-roots:create-organizations-base-template' },
+			{ icon: 'book', title: 'Sources', desc: 'Citations and references', command: 'canvas-roots:create-sources-base-template' }
+		];
+
+		const templateGrid = templatesContent.createDiv({ cls: 'crc-template-grid' });
+		baseTemplates.forEach(template => {
+			const templateEl = templateGrid.createDiv({ cls: 'crc-template-grid__item' });
+			const iconWrap = templateEl.createDiv({ cls: 'crc-template-grid__icon' });
+			setLucideIcon(iconWrap, template.icon as LucideIconName, 18);
+			const textWrap = templateEl.createDiv({ cls: 'crc-template-grid__text' });
+			textWrap.createEl('div', { text: template.title, cls: 'crc-template-grid__title' });
+			textWrap.createEl('small', { text: template.desc });
+			const btn = templateEl.createEl('button', { text: 'Create', cls: 'crc-btn crc-btn--small' });
+			btn.addEventListener('click', () => {
+				this.close();
+				this.app.commands.executeCommandById(template.command);
+			});
+		});
+
+		container.appendChild(templatesCard);
+
+		// =========================================================================
+		// Card 6: Learn More
 		// =========================================================================
 		const learnCard = this.createCard({
 			title: 'Learn more',
@@ -11170,15 +11210,32 @@ export class ControlCenterModal extends Modal {
 		const toolsSection = container.createDiv({ cls: 'crc-section' });
 		toolsSection.createEl('h3', { text: 'Data tools' });
 
+		const baseTypes = [
+			{ value: 'people', label: 'People', command: 'canvas-roots:create-base-template' },
+			{ value: 'places', label: 'Places', command: 'canvas-roots:create-places-base-template' },
+			{ value: 'events', label: 'Events', command: 'canvas-roots:create-events-base-template' },
+			{ value: 'organizations', label: 'Organizations', command: 'canvas-roots:create-organizations-base-template' },
+			{ value: 'sources', label: 'Sources', command: 'canvas-roots:create-sources-base-template' }
+		];
+
+		let selectedBaseType = baseTypes[0];
+
 		new Setting(toolsSection)
-			.setName('Create base template')
-			.setDesc('Create a ready-to-use Obsidian Bases template for managing family members in table view')
+			.setName('Create base')
+			.setDesc('Create an Obsidian Base for managing your data in table view')
+			.addDropdown(dropdown => dropdown
+				.addOptions(Object.fromEntries(baseTypes.map(t => [t.value, t.label])))
+				.setValue(selectedBaseType.value)
+				.onChange(value => {
+					selectedBaseType = baseTypes.find(t => t.value === value) || baseTypes[0];
+				})
+			)
 			.addButton(btn => btn
-				.setButtonText('Create template')
+				.setButtonText('Create')
 				.setCta()
 				.onClick(() => {
 					this.close();
-					this.app.commands.executeCommandById('canvas-roots:create-base-template');
+					this.app.commands.executeCommandById(selectedBaseType.command);
 				})
 			);
 	}

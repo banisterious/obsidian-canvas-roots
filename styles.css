@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-08 03:07:55 UTC
+ * - Generated: 2025-12-08 04:20:37 UTC
  * - Components: 29 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -338,7 +338,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 4597 lines, 83.89 KB */
+/* Component Size: 4745 lines, 86.71 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -712,6 +712,69 @@ settings:
 
 .crc-card__content {
   padding: 0 24px 24px 24px;
+}
+
+/* Workflow section styling for guided multi-step processes */
+.crc-workflow-section {
+  margin-bottom: 8px;
+}
+
+.crc-workflow-title {
+  font-size: var(--font-ui-small);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 4px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+/* Workflow step styling (matches guide-step but with action button) */
+.crc-workflow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.crc-workflow-step--bordered {
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.crc-workflow-step__badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.crc-workflow-step__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.crc-workflow-step__content h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.crc-workflow-step__content p {
+  margin: 0;
+  font-size: var(--font-ui-small);
+}
+
+.crc-workflow-step .crc-btn {
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .crc-card__actions {
@@ -1845,6 +1908,54 @@ settings:
   color: var(--text-muted);
 }
 
+/* Template Grid Styles (Guide tab Card 5) */
+.crc-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.crc-template-grid__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 8px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+
+.crc-template-grid__item:hover {
+  background: var(--background-modifier-hover);
+  transform: translateY(-1px);
+}
+
+.crc-template-grid__icon {
+  margin-bottom: 6px;
+  color: var(--text-accent);
+}
+
+.crc-template-grid__text {
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.crc-template-grid__title {
+  font-weight: 600;
+}
+
+.crc-template-grid__text small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
 /* Field List Styles (Guide tab Card 2) */
 .crc-field-list {
   margin: 0;
@@ -2948,15 +3059,52 @@ settings:
 .crc-variation-group-header {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 4px;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
+.crc-variation-group-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
 .crc-variation-count {
   color: var(--text-normal);
+}
+
+.crc-variation-group--applied {
+  opacity: 0.7;
+  background: var(--background-primary);
+}
+
+.crc-variation-group--applied .crc-variation-option {
+  pointer-events: none;
+}
+
+.crc-custom-name-input {
+  margin-top: 4px;
+  padding-left: 24px;
+}
+
+.crc-custom-name-input .crc-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 14px;
+}
+
+.crc-custom-name-input .crc-input:focus {
+  border-color: var(--interactive-accent);
+  outline: none;
 }
 
 .crc-variation-options {
@@ -14178,10 +14326,10 @@ input[type="text"]::-webkit-input-placeholder {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-08 03:07:55 UTC
+ * Build completed: 2025-12-08 04:20:38 UTC
  * Components processed: 29
- * Total lines: 13894
- * Total size: 269 KB
+ * Total lines: 14042
+ * Total size: 271.81 KB
  * Build duration: 0.04 seconds
  *
  * Component breakdown:
@@ -14193,7 +14341,7 @@ input[type="text"]::-webkit-input-placeholder {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 4597 lines, 83.89 KB
+ * - modals.css: 4745 lines, 86.71 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

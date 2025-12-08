@@ -126,12 +126,89 @@ function renderActionsCard(
 
 	const actionsContent = actionsCard.querySelector('.crc-card__content') as HTMLElement;
 
+	// Intro text
+	actionsContent.createEl('p', {
+		text: 'Follow these steps in order for best results:',
+		cls: 'crc-mb-3'
+	});
+
+	// Workflow steps data
+	const workflowSteps = [
+		{
+			number: '1',
+			title: 'Standardize place names',
+			desc: 'Find and unify variations',
+			buttonText: 'Find variations',
+			action: () => showStandardizePlacesModal(plugin, showTab)
+		},
+		{
+			number: '2',
+			title: 'Create missing place notes',
+			desc: 'Generate notes for referenced locations',
+			buttonText: 'Find missing',
+			action: () => showCreateMissingPlacesModal(plugin, showTab)
+		},
+		{
+			number: '3',
+			title: 'Build place hierarchy',
+			desc: 'Connect places to parent regions',
+			buttonText: 'Build hierarchy',
+			action: () => showBuildHierarchyModal(plugin, showTab)
+		},
+		{
+			number: '4',
+			title: 'Bulk geocode places',
+			desc: 'Look up coordinates for maps',
+			buttonText: 'Geocode',
+			action: () => {
+				const placeGraph = new PlaceGraphService(plugin.app);
+				placeGraph.setValueAliases(plugin.settings.valueAliases);
+				placeGraph.reloadCache();
+				new BulkGeocodeModal(plugin.app, placeGraph, {
+					onComplete: () => showTab('places')
+				}).open();
+			}
+		}
+	];
+
+	// Render workflow steps with guide-step styling
+	workflowSteps.forEach((step, index) => {
+		const stepEl = actionsContent.createDiv({ cls: 'crc-workflow-step' });
+
+		// Numbered badge
+		const badge = stepEl.createDiv({ cls: 'crc-workflow-step__badge' });
+		badge.textContent = step.number;
+
+		// Content area
+		const content = stepEl.createDiv({ cls: 'crc-workflow-step__content' });
+		content.createEl('h4', { text: step.title, cls: 'crc-mb-1' });
+		content.createEl('p', { text: step.desc, cls: 'crc-text--muted' });
+
+		// Action button
+		const button = stepEl.createEl('button', {
+			text: step.buttonText,
+			cls: 'crc-btn'
+		});
+		button.addEventListener('click', step.action);
+
+		// Add border except for last item
+		if (index < workflowSteps.length - 1) {
+			stepEl.addClass('crc-workflow-step--bordered');
+		}
+	});
+
+	// Other tools section
+	const otherToolsHeader = actionsContent.createDiv({ cls: 'crc-workflow-section crc-mt-4' });
+	otherToolsHeader.createEl('h4', {
+		text: 'Other tools',
+		cls: 'crc-workflow-title'
+	});
+
 	new Setting(actionsContent)
 		.setName('Create new place note')
-		.setDesc('Create a new place note with geographic information')
+		.setDesc('Manually create a place note with geographic information')
 		.addButton(button => button
 			.setButtonText('Create place')
-			.setCta()
 			.onClick(() => {
 				new CreatePlaceModal(plugin.app, {
 					directory: plugin.settings.placesFolder || '',
@@ -139,51 +216,6 @@ function renderActionsCard(
 					placeGraph: new PlaceGraphService(plugin.app),
 					settings: plugin.settings,
 					onCreated: () => {
-						// Refresh the Places tab
-						showTab('places');
-					}
-				}).open();
-			}));
-
-	new Setting(actionsContent)
-		.setName('Create missing place notes')
-		.setDesc('Generate place notes for locations referenced in person notes')
-		.addButton(button => button
-			.setButtonText('Find missing')
-			.onClick(() => {
-				showCreateMissingPlacesModal(plugin, showTab);
-			}));
-
-	new Setting(actionsContent)
-		.setName('Build place hierarchy')
-		.setDesc('Assign parent places to orphan locations')
-		.addButton(button => button
-			.setButtonText('Build hierarchy')
-			.onClick(() => {
-				showBuildHierarchyModal(plugin, showTab);
-			}));
-
-	new Setting(actionsContent)
-		.setName('Standardize place names')
-		.setDesc('Find and unify variations of place names')
-		.addButton(button => button
-			.setButtonText('Find variations')
-			.onClick(() => {
-				showStandardizePlacesModal(plugin, showTab);
-			}));
-
-	new Setting(actionsContent)
-		.setName('Bulk geocode places')
-		.setDesc('Look up coordinates for places without them (uses OpenStreetMap)')
-		.addButton(button => button
-			.setButtonText('Geocode')
-			.onClick(() => {
-				const placeGraph = new PlaceGraphService(plugin.app);
-				placeGraph.setValueAliases(plugin.settings.valueAliases);
-				placeGraph.reloadCache();
-
-				new BulkGeocodeModal(plugin.app, placeGraph, {
-					onComplete: () => {
 						// Refresh the Places tab
 						showTab('places');
 					}
