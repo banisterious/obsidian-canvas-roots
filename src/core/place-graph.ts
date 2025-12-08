@@ -827,19 +827,46 @@ export class PlaceGraphService {
 
 		const files = this.app.vault.getMarkdownFiles();
 
+		// Track unresolved parent wikilinks for second pass
+		const unresolvedParents = new Map<string, string>(); // placeId -> parent wikilink name
+
 		// First pass: load all place nodes
 		for (const file of files) {
 			if (this.folderFilter && !this.folderFilter.shouldIncludeFile(file)) {
 				continue;
 			}
 
-			const placeNode = this.extractPlaceNode(file);
-			if (placeNode) {
-				this.placeCache.set(placeNode.id, placeNode);
+			const result = this.extractPlaceNode(file);
+			if (result) {
+				this.placeCache.set(result.node.id, result.node);
+				if (result.parentWikilink) {
+					unresolvedParents.set(result.node.id, result.parentWikilink);
+				}
 			}
 		}
 
-		// Second pass: build parent-child relationships
+		// Second pass: resolve parent wikilinks to IDs
+		// Build a name-to-id lookup (case-insensitive, includes aliases)
+		const nameToId = new Map<string, string>();
+		for (const place of this.placeCache.values()) {
+			nameToId.set(place.name.toLowerCase(), place.id);
+			for (const alias of place.aliases) {
+				nameToId.set(alias.toLowerCase(), place.id);
+			}
+		}
+
+		for (const [placeId, parentWikilink] of unresolvedParents) {
+			const place = this.placeCache.get(placeId);
+			if (!place) continue;
+
+			// Try to find parent by name (case-insensitive)
+			const parentId = nameToId.get(parentWikilink.toLowerCase());
+			if (parentId) {
+				place.parentId = parentId;
+			}
+		}
+
+		// Third pass: build parent-child relationships
 		for (const place of this.placeCache.values()) {
 			if (place.parentId) {
 				const parent = this.placeCache.get(place.parentId);
@@ -950,9 +977,9 @@ export class PlaceGraphService {
 	}
 
 	/**
-	 * Extracts place node data from a file
+	 * Result from extracting a place node, including any unresolved parent wikilink
 	 */
-	private extractPlaceNode(file: TFile): PlaceNode | null {
+	private extractPlaceNode(file: TFile): { node: PlaceNode; parentWikilink?: string } | null {
 		const cache = this.app.metadataCache.getFileCache(file);
 		if (!cache?.frontmatter) return null;
 
@@ -975,14 +1002,17 @@ export class PlaceGraphService {
 			? fm.aliases
 			: fm.aliases ? [fm.aliases] : [];
 
-		// Extract parent ID
-		const parentId: string | undefined = fm.parent_place_id;
-		if (!parentId && fm.parent_place) {
-			// Try to resolve from wikilink
-			const wikilinkMatch = String(fm.parent_place).match(/\[\[([^\]]+)\]\]/);
+		// Extract parent ID or wikilink
+		// Supports: parent_place_id (preferred), parent_place, parent (GEDCOM import uses 'parent')
+		let parentId: string | undefined = fm.parent_place_id;
+		let parentWikilink: string | undefined;
+
+		// Check for parent wikilink in various property names
+		const parentProp = fm.parent_place || fm.parent;
+		if (!parentId && parentProp) {
+			const wikilinkMatch = String(parentProp).match(/\[\[([^\]|#]+)/);
 			if (wikilinkMatch) {
-				// We'll need to resolve this later after all places are loaded
-				// For now, store the name and resolve in second pass
+				parentWikilink = wikilinkMatch[1];
 			}
 		}
 
@@ -1025,18 +1055,21 @@ export class PlaceGraphService {
 		}
 
 		return {
-			id: fm.cr_id,
-			name,
-			filePath: file.path,
-			category,
-			placeType: fm.place_type,
-			universe: supportsUniverse(category) ? fm.universe : undefined,
-			parentId,
-			childIds: [],
-			aliases,
-			coordinates,
-			customCoordinates,
-			collection: fm.collection
+			node: {
+				id: fm.cr_id,
+				name,
+				filePath: file.path,
+				category,
+				placeType: fm.place_type,
+				universe: supportsUniverse(category) ? fm.universe : undefined,
+				parentId,
+				childIds: [],
+				aliases,
+				coordinates,
+				customCoordinates,
+				collection: fm.collection
+			},
+			parentWikilink
 		};
 	}
 }

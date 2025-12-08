@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.10.10] - 2025-12-07
+
+### Fixed
+
+- **Place Hierarchy Not Loading from GEDCOM Import**: Fixed parent-child relationships not being resolved for GEDCOM-imported places
+  - Root cause: GEDCOM importer writes `parent: "[[ParentName]]"` but PlaceGraphService only checked `parent_place` and `parent_place_id`
+  - Now supports `parent`, `parent_place`, and `parent_place_id` properties
+  - Added proper wikilink resolution in a second pass after all places are loaded
+  - This should significantly reduce orphan place counts for GEDCOM imports
+
+---
+
 ## [0.10.9] - 2025-12-07
 
 Control Center improvements for large vaults.
