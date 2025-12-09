@@ -44,6 +44,9 @@ Place management improvements and Calendarium integration planning.
   - Added `resolvePlaceDisplayName()` helper to convert place IDs to names
   - Statistics now show human-readable place names (e.g., "Texas, USA" instead of "aet-050-abr-564")
 
+- **Referenced places showing IDs instead of names**: Fixed "Referenced places" card displaying `cr_id` values
+  - Applied same `resolvePlaceDisplayName()` fix to `getReferencedPlaces()` method
+
 ### Documentation
 
 - **Calendarium integration planning**: Added user feedback section to planning document

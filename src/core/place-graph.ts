@@ -363,18 +363,22 @@ export class PlaceGraphService {
 
 	/**
 	 * Gets all unique places referenced by person notes (linked or unlinked)
+	 * Returns a map with display names as keys (not cr_id values)
 	 */
 	getReferencedPlaces(): Map<string, { count: number; linked: boolean }> {
 		this.ensureCacheLoaded();
 		const referenced = new Map<string, { count: number; linked: boolean }>();
 
 		for (const ref of this.placeReferenceCache) {
-			const key = ref.placeId || ref.rawValue;
-			const existing = referenced.get(key);
+			// Use place ID for internal grouping, but resolve to display name for the key
+			const internalKey = ref.placeId || ref.rawValue;
+			const displayKey = this.resolvePlaceDisplayName(internalKey);
+
+			const existing = referenced.get(displayKey);
 			if (existing) {
 				existing.count++;
 			} else {
-				referenced.set(key, { count: 1, linked: ref.isLinked });
+				referenced.set(displayKey, { count: 1, linked: ref.isLinked });
 			}
 		}
 
