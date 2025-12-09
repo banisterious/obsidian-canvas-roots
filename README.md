@@ -242,7 +242,7 @@ If you find this plugin useful, please consider supporting its development!
 - [Getting Started](https://github.com/banisterious/obsidian-canvas-roots/wiki/Getting-Started) - Installation and first steps
 - [Data Entry](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Entry) - Creating person notes
 - [Tree Generation](https://github.com/banisterious/obsidian-canvas-roots/wiki/Tree-Generation) - Generating family trees
-- [Import & Export](https://github.com/banisterious/obsidian-canvas-roots/wiki/Import-Export) - GEDCOM and CSV support
+- [Import & Export](https://github.com/banisterious/obsidian-canvas-roots/wiki/Import-Export) - GEDCOM 5.5.1, GEDCOM X (JSON), Gramps XML, and CSV
 - [Geographic Features](https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features) - Maps and places
 - [Evidence & Sources](https://github.com/banisterious/obsidian-canvas-roots/wiki/Evidence-And-Sources) - Source management and indicators
 - [Events & Timelines](https://github.com/banisterious/obsidian-canvas-roots/wiki/Events-And-Timelines) - Life events and timeline visualization
