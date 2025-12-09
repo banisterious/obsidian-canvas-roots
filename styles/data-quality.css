@@ -355,6 +355,94 @@
   font-weight: 500;
 }
 
+/* Batch Preview Modal */
+.crc-batch-preview-modal {
+  width: 650px;
+  max-width: 90vw;
+}
+
+.crc-batch-preview-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+}
+
+.crc-batch-count {
+  margin-bottom: var(--size-4-2);
+  font-weight: 500;
+}
+
+.crc-batch-controls {
+  display: flex;
+  gap: var(--size-4-3);
+  align-items: center;
+  margin-bottom: var(--size-4-3);
+  flex-wrap: wrap;
+}
+
+.crc-batch-search {
+  flex: 1;
+  min-width: 150px;
+}
+
+.crc-batch-search-input {
+  width: 100%;
+  padding: var(--size-4-1) var(--size-4-2);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+}
+
+.crc-batch-search-input:focus {
+  outline: none;
+  border-color: var(--interactive-accent);
+}
+
+.crc-batch-filter-select {
+  padding: var(--size-4-1) var(--size-4-2);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+}
+
+.crc-batch-sort-btn {
+  padding: var(--size-4-1) var(--size-4-2);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  cursor: pointer;
+  min-width: 50px;
+}
+
+.crc-batch-sort-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-batch-table-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 350px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  margin-bottom: var(--size-4-3);
+}
+
+.crc-batch-table-container .crc-batch-preview-table {
+  margin-bottom: 0;
+}
+
+.crc-batch-table-container .crc-batch-preview-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 .crc-batch-arrow {
   color: var(--text-muted);
   padding: 0 var(--size-4-2);

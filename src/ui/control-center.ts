@@ -11582,6 +11582,20 @@ class BatchPreviewModal extends Modal {
 	private preview: NormalizationPreview;
 	private onApply: () => void;
 
+	// All changes for this operation
+	private allChanges: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }> = [];
+	// Filtered/sorted changes for display
+	private filteredChanges: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }> = [];
+
+	// Filter state
+	private searchQuery = '';
+	private selectedField = 'all';
+	private sortAscending = true;
+
+	// UI elements
+	private tbody: HTMLTableSectionElement | null = null;
+	private countEl: HTMLElement | null = null;
+
 	constructor(
 		app: App,
 		operation: 'dates' | 'sex' | 'orphans' | 'legacy_type',
@@ -11596,6 +11610,9 @@ class BatchPreviewModal extends Modal {
 
 	onOpen(): void {
 		const { contentEl, titleEl } = this;
+
+		// Add modal class for sizing
+		this.modalEl.addClass('crc-batch-preview-modal');
 
 		// Set title based on operation
 		const titles: Record<string, string> = {
@@ -11615,34 +11632,75 @@ class BatchPreviewModal extends Modal {
 		}
 
 		// Get changes for this operation
-		let changes: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }>;
 		switch (this.operation) {
 			case 'dates':
-				changes = this.preview.dateNormalization;
+				this.allChanges = [...this.preview.dateNormalization];
 				break;
 			case 'sex':
-				changes = this.preview.genderNormalization;
+				this.allChanges = [...this.preview.genderNormalization];
 				break;
 			case 'orphans':
-				changes = this.preview.orphanClearing;
+				this.allChanges = [...this.preview.orphanClearing];
 				break;
 			case 'legacy_type':
-				changes = this.preview.legacyTypeMigration;
+				this.allChanges = [...this.preview.legacyTypeMigration];
 				break;
 		}
 
-		if (changes.length === 0) {
+		if (this.allChanges.length === 0) {
 			contentEl.createEl('p', {
 				text: 'No changes needed. All values are already in the correct format.',
 				cls: 'crc-text-muted'
 			});
 		} else {
-			contentEl.createEl('p', {
-				text: `${changes.length} change${changes.length === 1 ? '' : 's'} will be made:`,
+			// Count display
+			this.countEl = contentEl.createEl('p', { cls: 'crc-batch-count' });
+
+			// Controls row: search + filter + sort
+			const controlsRow = contentEl.createDiv({ cls: 'crc-batch-controls' });
+
+			// Search input
+			const searchContainer = controlsRow.createDiv({ cls: 'crc-batch-search' });
+			const searchInput = searchContainer.createEl('input', {
+				type: 'text',
+				placeholder: 'Search by name...',
+				cls: 'crc-batch-search-input'
+			});
+			searchInput.addEventListener('input', () => {
+				this.searchQuery = searchInput.value.toLowerCase();
+				this.applyFiltersAndSort();
 			});
 
-			// Changes table
-			const table = contentEl.createEl('table', { cls: 'crc-batch-preview-table' });
+			// Field filter dropdown (only show if multiple fields)
+			const uniqueFields = [...new Set(this.allChanges.map(c => c.field))];
+			if (uniqueFields.length > 1) {
+				const filterContainer = controlsRow.createDiv({ cls: 'crc-batch-filter' });
+				const filterSelect = filterContainer.createEl('select', { cls: 'crc-batch-filter-select' });
+				filterSelect.createEl('option', { text: 'All fields', value: 'all' });
+				for (const field of uniqueFields.sort()) {
+					filterSelect.createEl('option', { text: field, value: field });
+				}
+				filterSelect.addEventListener('change', () => {
+					this.selectedField = filterSelect.value;
+					this.applyFiltersAndSort();
+				});
+			}
+
+			// Sort toggle
+			const sortContainer = controlsRow.createDiv({ cls: 'crc-batch-sort' });
+			const sortBtn = sortContainer.createEl('button', {
+				text: 'A→Z',
+				cls: 'crc-batch-sort-btn'
+			});
+			sortBtn.addEventListener('click', () => {
+				this.sortAscending = !this.sortAscending;
+				sortBtn.textContent = this.sortAscending ? 'A→Z' : 'Z→A';
+				this.applyFiltersAndSort();
+			});
+
+			// Scrollable table container
+			const tableContainer = contentEl.createDiv({ cls: 'crc-batch-table-container' });
+			const table = tableContainer.createEl('table', { cls: 'crc-batch-preview-table' });
 			const thead = table.createEl('thead');
 			const headerRow = thead.createEl('tr');
 			headerRow.createEl('th', { text: 'Person' });
@@ -11650,22 +11708,10 @@ class BatchPreviewModal extends Modal {
 			headerRow.createEl('th', { text: 'Current' });
 			headerRow.createEl('th', { text: 'New' });
 
-			const tbody = table.createEl('tbody');
-			const displayChanges = changes.slice(0, 50); // Limit display for performance
-			for (const change of displayChanges) {
-				const row = tbody.createEl('tr');
-				row.createEl('td', { text: change.person.name });
-				row.createEl('td', { text: change.field });
-				row.createEl('td', { text: change.oldValue, cls: 'crc-batch-old-value' });
-				row.createEl('td', { text: change.newValue, cls: 'crc-batch-new-value' });
-			}
+			this.tbody = table.createEl('tbody');
 
-			if (changes.length > 50) {
-				contentEl.createEl('p', {
-					text: `... and ${changes.length - 50} more changes`,
-					cls: 'crc-text-muted'
-				});
-			}
+			// Initial render
+			this.applyFiltersAndSort();
 		}
 
 		// Buttons
@@ -11679,15 +11725,78 @@ class BatchPreviewModal extends Modal {
 			this.close();
 		});
 
-		if (changes.length > 0) {
+		if (this.allChanges.length > 0) {
 			const applyBtn = buttonContainer.createEl('button', {
-				text: `Apply ${changes.length} change${changes.length === 1 ? '' : 's'}`,
+				text: `Apply ${this.allChanges.length} change${this.allChanges.length === 1 ? '' : 's'}`,
 				cls: 'mod-cta'
 			});
 			applyBtn.addEventListener('click', () => {
 				this.close();
 				this.onApply();
 			});
+		}
+	}
+
+	/**
+	 * Apply filters and sorting, then re-render the table
+	 */
+	private applyFiltersAndSort(): void {
+		// Filter
+		this.filteredChanges = this.allChanges.filter(change => {
+			// Search filter
+			if (this.searchQuery && !change.person.name.toLowerCase().includes(this.searchQuery)) {
+				return false;
+			}
+			// Field filter
+			if (this.selectedField !== 'all' && change.field !== this.selectedField) {
+				return false;
+			}
+			return true;
+		});
+
+		// Sort by person name
+		this.filteredChanges.sort((a, b) => {
+			const cmp = a.person.name.localeCompare(b.person.name);
+			return this.sortAscending ? cmp : -cmp;
+		});
+
+		// Update count
+		if (this.countEl) {
+			if (this.filteredChanges.length === this.allChanges.length) {
+				this.countEl.textContent = `${this.allChanges.length} change${this.allChanges.length === 1 ? '' : 's'} will be made:`;
+			} else {
+				this.countEl.textContent = `Showing ${this.filteredChanges.length} of ${this.allChanges.length} changes:`;
+			}
+		}
+
+		// Re-render table
+		this.renderTable();
+	}
+
+	/**
+	 * Render the filtered/sorted changes to the table body
+	 */
+	private renderTable(): void {
+		if (!this.tbody) return;
+
+		this.tbody.empty();
+
+		for (const change of this.filteredChanges) {
+			const row = this.tbody.createEl('tr');
+			row.createEl('td', { text: change.person.name });
+			row.createEl('td', { text: change.field });
+			row.createEl('td', { text: change.oldValue, cls: 'crc-batch-old-value' });
+			row.createEl('td', { text: change.newValue, cls: 'crc-batch-new-value' });
+		}
+
+		if (this.filteredChanges.length === 0 && this.allChanges.length > 0) {
+			const row = this.tbody.createEl('tr');
+			const cell = row.createEl('td', {
+				text: 'No matches found',
+				cls: 'crc-text-muted'
+			});
+			cell.setAttribute('colspan', '4');
+			cell.style.textAlign = 'center';
 		}
 	}
 
