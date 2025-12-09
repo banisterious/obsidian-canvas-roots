@@ -1217,11 +1217,20 @@ export class DataQualityService {
 			if (person.sex) {
 				const normalized = this.normalizeGender(person.sex);
 				if (normalized && normalized !== person.sex) {
+					// Can be normalized to M/F
 					preview.genderNormalization.push({
 						person,
 						field: 'sex',
 						oldValue: person.sex,
 						newValue: normalized,
+					});
+				} else if (!normalized && person.sex.toLowerCase() !== 'm' && person.sex.toLowerCase() !== 'f') {
+					// Unrecognized value - show in preview but won't change
+					preview.genderNormalization.push({
+						person,
+						field: 'sex',
+						oldValue: person.sex,
+						newValue: '(unrecognized - no change)',
 					});
 				}
 			}

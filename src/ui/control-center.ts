@@ -11725,14 +11725,22 @@ class BatchPreviewModal extends Modal {
 			this.close();
 		});
 
-		if (this.allChanges.length > 0) {
+		// Count actual changes (excluding unrecognized entries that won't be modified)
+		const actualChanges = this.allChanges.filter(c => !c.newValue.includes('(unrecognized'));
+		if (actualChanges.length > 0) {
 			const applyBtn = buttonContainer.createEl('button', {
-				text: `Apply ${this.allChanges.length} change${this.allChanges.length === 1 ? '' : 's'}`,
+				text: `Apply ${actualChanges.length} change${actualChanges.length === 1 ? '' : 's'}`,
 				cls: 'mod-cta'
 			});
 			applyBtn.addEventListener('click', () => {
 				this.close();
 				this.onApply();
+			});
+		} else if (this.allChanges.length > 0) {
+			// Only unrecognized values, no actual changes to apply
+			contentEl.createEl('p', {
+				text: 'No normalizable values found. The listed values are unrecognized and will not be changed.',
+				cls: 'crc-text-muted'
 			});
 		}
 	}
@@ -11782,11 +11790,21 @@ class BatchPreviewModal extends Modal {
 		this.tbody.empty();
 
 		for (const change of this.filteredChanges) {
+			const isUnrecognized = change.newValue.includes('(unrecognized');
 			const row = this.tbody.createEl('tr');
+			if (isUnrecognized) {
+				row.addClass('crc-batch-unrecognized-row');
+			}
 			row.createEl('td', { text: change.person.name });
 			row.createEl('td', { text: change.field });
-			row.createEl('td', { text: change.oldValue, cls: 'crc-batch-old-value' });
-			row.createEl('td', { text: change.newValue, cls: 'crc-batch-new-value' });
+			row.createEl('td', {
+				text: change.oldValue,
+				cls: isUnrecognized ? 'crc-batch-unrecognized-value' : 'crc-batch-old-value'
+			});
+			row.createEl('td', {
+				text: change.newValue,
+				cls: isUnrecognized ? 'crc-text-muted' : 'crc-batch-new-value'
+			});
 		}
 
 		if (this.filteredChanges.length === 0 && this.allChanges.length > 0) {

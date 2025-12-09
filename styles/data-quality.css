@@ -443,6 +443,15 @@
   z-index: 1;
 }
 
+.crc-batch-unrecognized-row {
+  opacity: 0.7;
+}
+
+.crc-batch-unrecognized-value {
+  color: var(--text-warning);
+  font-style: italic;
+}
+
 .crc-batch-arrow {
   color: var(--text-muted);
   padding: 0 var(--size-4-2);
