@@ -308,27 +308,56 @@ The Timeline card includes automated analysis:
 
 ## Timeline Export
 
-Export your event timelines to visual Canvas or Excalidraw formats for presentations, printing, or further editing.
+Export your event timelines to Canvas, Excalidraw, or Markdown formats for presentations, printing, embedding in notes, or further editing.
 
 ### Accessing Timeline Export
 
 1. Go to **Control Center > Events tab**
 2. Find the **Export timeline** card
-3. Configure export options
-4. Click **Export to Canvas** or **Export to Excalidraw**
+3. Select export format (Canvas, Excalidraw, or Markdown)
+4. Configure format-specific options
+5. Apply filters (person, type, group)
+6. Click **Export**
 
-### Export Options
+### Export Formats
+
+| Format | Description | Best For |
+|--------|-------------|----------|
+| **Canvas** | Native Obsidian canvas with linked nodes | Interactive exploration, linking back to notes |
+| **Excalidraw** | Hand-drawn style diagrams | Presentations, visual appeal, manual annotation |
+| **Markdown** | Text-based formats | Embedding in notes, static documentation |
+
+### Canvas/Excalidraw Options
 
 | Option | Description |
 |--------|-------------|
-| Canvas title | Name for the exported canvas file |
-| Layout style | Horizontal, Vertical, or Gantt |
-| Color by | Event type, Category, Confidence, or No color |
-| Filter by person | Export only events for a specific person |
-| Filter by type | Export only a specific event type |
-| Filter by group | Export only events tagged with a specific group/faction |
-| Include edges | Add before/after relationship arrows |
-| Group by person | Organize events by person (rows in Gantt layout) |
+| Title | Name for the exported file |
+| Layout | Horizontal, Vertical, or Gantt |
+| Color by | Event type, Category, Confidence, or Monochrome |
+| Include ordering edges | Draw arrows for before/after relationships |
+| Group by person | Visually group events by their associated person |
+
+### Excalidraw-Specific Options
+
+When Excalidraw format is selected, additional styling options appear:
+
+| Option | Description |
+|--------|-------------|
+| Drawing style | Architect (clean), Artist (natural), or Cartoonist (rough) |
+| Font | Virgil, Excalifont, Comic Shanns, Helvetica, Nunito, Lilita One, or Cascadia |
+| Font size | Size of text labels (10-32, default: 16) |
+| Stroke width | Thickness of lines and borders (1-6, default: 2) |
+| Fill style | Solid, Hachure (diagonal lines), or Cross-hatch |
+| Stroke style | Solid, Dashed, or Dotted |
+
+### Markdown Export Formats
+
+| Format | Description |
+|--------|-------------|
+| **Vertical timeline** | Visual timeline with year columns, colored dots, and event cards. Requires included CSS. |
+| **Condensed table** | Compact markdown table with date, event, people, place, and sources columns |
+| **Simple list** | Bullet list grouped by year. Maximum compatibility, no CSS required. |
+| **Dataview query** | Generates a Dataview query that dynamically displays events. Requires Dataview plugin. |
 
 ### Layout Styles
 
@@ -355,24 +384,23 @@ Export your event timelines to visual Canvas or Excalidraw formats for presentat
 | Confidence | High=green, Medium=yellow, Low=orange, Unknown=red |
 | Monochrome | No colors (gray nodes) |
 
-### Excalidraw Export
+### Filter Options
 
-When the Excalidraw plugin is installed:
-
-1. Export creates a canvas first
-2. Canvas is converted to Excalidraw format
-3. Excalidraw file opens automatically
-
-Excalidraw exports preserve colors and allow hand-drawn style editing.
+| Filter | Description |
+|--------|-------------|
+| Filter by person | Export only events for a specific person |
+| Filter by type | Export only a specific event type |
+| Filter by group | Export only events tagged with a specific group/faction |
 
 ### Export Preview
 
-Before exporting, the preview shows:
+Before exporting, the quick stats row shows:
 
-- Total events to export
-- Events with dates vs undated
-- Events with before/after constraints
-- Unique people and places
+- Total events matching filters
+- Date range (earliest to latest year)
+- Number of unique people
+- Number of unique places
+- Count of dated vs undated events
 
 ## Source Event Extraction
 
