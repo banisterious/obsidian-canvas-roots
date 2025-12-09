@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-09 20:23:17 UTC
+ * - Generated: 2025-12-09 20:35:34 UTC
  * - Components: 30 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -7103,7 +7103,7 @@ settings:
    COMPONENT: DATA-QUALITY.CSS
    ========================================================================== */
 
-/* Component Size: 986 lines, 18.9 KB */
+/* Component Size: 1064 lines, 20.71 KB */
 
 /**
  * Data Quality Tab Styles
@@ -8089,6 +8089,84 @@ settings:
 
 .cr-place-generator-note-link:hover {
   text-decoration: underline;
+}
+
+/* Place generator pagination */
+.cr-place-generator-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--size-4-3);
+  margin-top: var(--size-4-3);
+  padding-top: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.cr-place-generator-page-btn {
+  padding: var(--size-4-1) var(--size-4-3);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  cursor: pointer;
+  font-size: var(--font-ui-smaller);
+}
+
+.cr-place-generator-page-btn:hover:not(:disabled) {
+  background: var(--background-modifier-hover);
+}
+
+.cr-place-generator-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cr-place-generator-page-info {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.cr-place-generator-refs-cell {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.cr-place-generator-action-cell {
+  text-align: center;
+  width: 80px;
+}
+
+.cr-place-generator-create-btn {
+  padding: var(--size-4-1) var(--size-4-2);
+  font-size: var(--font-ui-smaller);
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cr-place-generator-create-btn:hover:not(:disabled) {
+  background-color: var(--interactive-accent-hover);
+}
+
+.cr-place-generator-create-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cr-place-generator-row--created {
+  background-color: var(--background-modifier-success);
+}
+
+.cr-place-generator-row--created .cr-place-generator-create-btn {
+  background-color: var(--color-green);
+  cursor: default;
+}
+
+.cr-place-generator-row--error .cr-place-generator-create-btn {
+  background-color: var(--color-red);
 }
 
 
@@ -15633,11 +15711,11 @@ body.wide-timeline .view-content {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-09 20:23:17 UTC
+ * Build completed: 2025-12-09 20:35:34 UTC
  * Components processed: 30
- * Total lines: 15340
- * Total size: 300.81 KB
- * Build duration: 0.03 seconds
+ * Total lines: 15418
+ * Total size: 302.62 KB
+ * Build duration: 0.02 seconds
  *
  * Component breakdown:
  * - variables.css: 48 lines, 1.33 KB
@@ -15656,7 +15734,7 @@ body.wide-timeline .view-content {
  * - folder-scan.css: 155 lines, 2.56 KB
  * - relationship-calculator.css: 302 lines, 5.21 KB
  * - family-chart-view.css: 629 lines, 14.76 KB
- * - data-quality.css: 986 lines, 18.9 KB
+ * - data-quality.css: 1064 lines, 20.71 KB
  * - relationships.css: 517 lines, 9.76 KB
  * - canvas-navigation.css: 683 lines, 14.64 KB
  * - map-view.css: 1904 lines, 38.98 KB

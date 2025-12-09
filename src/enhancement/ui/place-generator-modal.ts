@@ -40,12 +40,24 @@ export class PlaceGeneratorModal extends Modal {
 	private isScanning = false;
 	private isGenerating = false;
 
+	// Table state for places list
+	private allPlaces: FoundPlace[] = [];
+	private filteredPlaces: FoundPlace[] = [];
+	private searchQuery = '';
+	private sortField: 'name' | 'refs' = 'name';
+	private sortAscending = true;
+	private currentPage = 0;
+	private pageSize = 20;
+
 	// UI elements
 	private contentContainer: HTMLElement | null = null;
 	private previewButton: HTMLButtonElement | null = null;
 	private generateButton: HTMLButtonElement | null = null;
 	private progressContainer: HTMLElement | null = null;
 	private resultsContainer: HTMLElement | null = null;
+	private placesTableBody: HTMLTableSectionElement | null = null;
+	private placesCountEl: HTMLElement | null = null;
+	private paginationContainer: HTMLElement | null = null;
 
 	constructor(
 		app: App,
@@ -275,52 +287,77 @@ export class PlaceGeneratorModal extends Modal {
 		const placesSection = this.resultsContainer.createDiv({ cls: 'cr-place-generator-places' });
 		placesSection.createEl('h4', { text: 'Places to create' });
 
-		// Filter to show only places that would be new
-		const newPlaces = result.foundPlaces.filter(p => {
-			// Simple heuristic: places with referencing files are primary places
-			return p.referencingFiles.length > 0;
-		});
+		// Filter to show only places that would be new (have referencing files)
+		this.allPlaces = result.foundPlaces.filter(p => p.referencingFiles.length > 0);
+		this.currentPage = 0;
+		this.searchQuery = '';
 
-		if (newPlaces.length === 0) {
+		if (this.allPlaces.length === 0) {
 			placesSection.createEl('p', {
 				text: 'No new place notes needed. All places already exist.',
 				cls: 'crc-text--muted'
 			});
 		} else {
-			const list = placesSection.createEl('ul', { cls: 'cr-place-generator-place-list' });
+			// Count display
+			this.placesCountEl = placesSection.createEl('p', { cls: 'crc-batch-count' });
 
-			// Show up to 30 places
-			const maxToShow = 30;
-			const placesToShow = newPlaces.slice(0, maxToShow);
+			// Controls row: search + sort
+			const controlsRow = placesSection.createDiv({ cls: 'crc-batch-controls' });
 
-			for (const place of placesToShow) {
-				const li = list.createEl('li');
-				const placeText = li.createSpan({ text: place.placeString });
+			// Search input
+			const searchContainer = controlsRow.createDiv({ cls: 'crc-batch-search' });
+			const searchInput = searchContainer.createEl('input', {
+				type: 'text',
+				placeholder: 'Search places...',
+				cls: 'crc-batch-search-input'
+			});
+			searchInput.addEventListener('input', () => {
+				this.searchQuery = searchInput.value.toLowerCase();
+				this.currentPage = 0;
+				this.applyFiltersAndSort();
+			});
 
-				// Show reference count
-				if (place.referencingFiles.length > 0) {
-					li.createSpan({
-						text: ` (${place.referencingFiles.length} reference${place.referencingFiles.length === 1 ? '' : 's'})`,
-						cls: 'crc-text--muted'
-					});
-				}
+			// Sort dropdown
+			const sortContainer = controlsRow.createDiv({ cls: 'crc-batch-filter' });
+			const sortSelect = sortContainer.createEl('select', { cls: 'crc-batch-filter-select' });
+			sortSelect.createEl('option', { text: 'Sort by name', value: 'name' });
+			sortSelect.createEl('option', { text: 'Sort by references', value: 'refs' });
+			sortSelect.addEventListener('change', () => {
+				this.sortField = sortSelect.value as 'name' | 'refs';
+				this.applyFiltersAndSort();
+			});
 
-				// Show hierarchy if parsing is enabled
-				if (this.options.parseHierarchy && place.hierarchyParts.length > 1) {
-					li.createEl('br');
-					li.createSpan({
-						text: `  └ Hierarchy: ${place.hierarchyParts.join(' → ')}`,
-						cls: 'crc-text--small crc-text--muted'
-					});
-				}
+			// Sort direction toggle
+			const sortDirContainer = controlsRow.createDiv({ cls: 'crc-batch-sort' });
+			const sortDirBtn = sortDirContainer.createEl('button', {
+				text: 'A→Z',
+				cls: 'crc-batch-sort-btn'
+			});
+			sortDirBtn.addEventListener('click', () => {
+				this.sortAscending = !this.sortAscending;
+				sortDirBtn.textContent = this.sortAscending ? 'A→Z' : 'Z→A';
+				this.applyFiltersAndSort();
+			});
+
+			// Scrollable table container
+			const tableContainer = placesSection.createDiv({ cls: 'crc-batch-table-container' });
+			const table = tableContainer.createEl('table', { cls: 'crc-batch-preview-table' });
+			const thead = table.createEl('thead');
+			const headerRow = thead.createEl('tr');
+			headerRow.createEl('th', { text: 'Place' });
+			headerRow.createEl('th', { text: 'References' });
+			if (this.options.parseHierarchy) {
+				headerRow.createEl('th', { text: 'Hierarchy' });
 			}
+			headerRow.createEl('th', { text: '', cls: 'cr-place-generator-action-header' });
 
-			if (newPlaces.length > maxToShow) {
-				list.createEl('li', {
-					text: `... and ${newPlaces.length - maxToShow} more`,
-					cls: 'crc-text--muted'
-				});
-			}
+			this.placesTableBody = table.createEl('tbody');
+
+			// Pagination container
+			this.paginationContainer = placesSection.createDiv({ cls: 'cr-place-generator-pagination' });
+
+			// Initial render
+			this.applyFiltersAndSort();
 		}
 
 		// Warning callout
@@ -332,6 +369,200 @@ export class PlaceGeneratorModal extends Modal {
 		});
 
 		this.updateButtonStates();
+	}
+
+	/**
+	 * Apply filters and sorting, then re-render the table
+	 */
+	private applyFiltersAndSort(): void {
+		// Filter
+		this.filteredPlaces = this.allPlaces.filter(place => {
+			if (this.searchQuery && !place.placeString.toLowerCase().includes(this.searchQuery)) {
+				return false;
+			}
+			return true;
+		});
+
+		// Sort
+		this.filteredPlaces.sort((a, b) => {
+			let cmp: number;
+			if (this.sortField === 'refs') {
+				cmp = a.referencingFiles.length - b.referencingFiles.length;
+			} else {
+				cmp = a.placeString.localeCompare(b.placeString);
+			}
+			return this.sortAscending ? cmp : -cmp;
+		});
+
+		// Update count
+		if (this.placesCountEl) {
+			if (this.filteredPlaces.length === this.allPlaces.length) {
+				this.placesCountEl.textContent = `${this.allPlaces.length} place${this.allPlaces.length === 1 ? '' : 's'} to create:`;
+			} else {
+				this.placesCountEl.textContent = `Showing ${this.filteredPlaces.length} of ${this.allPlaces.length} places:`;
+			}
+		}
+
+		// Re-render table and pagination
+		this.renderPlacesTable();
+		this.renderPagination();
+	}
+
+	/**
+	 * Render the places table for the current page
+	 */
+	private renderPlacesTable(): void {
+		if (!this.placesTableBody) return;
+
+		this.placesTableBody.empty();
+
+		const startIdx = this.currentPage * this.pageSize;
+		const endIdx = Math.min(startIdx + this.pageSize, this.filteredPlaces.length);
+		const pageItems = this.filteredPlaces.slice(startIdx, endIdx);
+
+		for (const place of pageItems) {
+			const row = this.placesTableBody.createEl('tr');
+
+			// Place name
+			row.createEl('td', { text: place.placeString });
+
+			// Reference count
+			row.createEl('td', {
+				text: String(place.referencingFiles.length),
+				cls: 'cr-place-generator-refs-cell'
+			});
+
+			// Hierarchy (if enabled)
+			if (this.options.parseHierarchy) {
+				row.createEl('td', {
+					text: place.hierarchyParts.length > 1 ? place.hierarchyParts.join(' → ') : '—',
+					cls: 'crc-text--muted'
+				});
+			}
+
+			// Action button
+			const actionCell = row.createEl('td', { cls: 'cr-place-generator-action-cell' });
+			const createBtn = actionCell.createEl('button', {
+				text: 'Create',
+				cls: 'cr-place-generator-create-btn'
+			});
+			createBtn.addEventListener('click', () => {
+				void this.generateSinglePlace(place, row, createBtn);
+			});
+		}
+
+		// Empty state
+		if (pageItems.length === 0 && this.allPlaces.length > 0) {
+			const row = this.placesTableBody.createEl('tr');
+			const cell = row.createEl('td', {
+				text: 'No matches found',
+				cls: 'crc-text--muted'
+			});
+			cell.setAttribute('colspan', this.options.parseHierarchy ? '4' : '3');
+			cell.style.textAlign = 'center';
+		}
+	}
+
+	/**
+	 * Render pagination controls
+	 */
+	private renderPagination(): void {
+		if (!this.paginationContainer) return;
+
+		this.paginationContainer.empty();
+
+		const totalPages = Math.ceil(this.filteredPlaces.length / this.pageSize);
+
+		if (totalPages <= 1) {
+			return;
+		}
+
+		// Previous button
+		const prevBtn = this.paginationContainer.createEl('button', {
+			text: '← Prev',
+			cls: 'cr-place-generator-page-btn'
+		});
+		prevBtn.disabled = this.currentPage === 0;
+		prevBtn.addEventListener('click', () => {
+			if (this.currentPage > 0) {
+				this.currentPage--;
+				this.renderPlacesTable();
+				this.renderPagination();
+			}
+		});
+
+		// Page info
+		const startItem = this.currentPage * this.pageSize + 1;
+		const endItem = Math.min((this.currentPage + 1) * this.pageSize, this.filteredPlaces.length);
+		this.paginationContainer.createSpan({
+			text: `${startItem}–${endItem} of ${this.filteredPlaces.length}`,
+			cls: 'cr-place-generator-page-info'
+		});
+
+		// Next button
+		const nextBtn = this.paginationContainer.createEl('button', {
+			text: 'Next →',
+			cls: 'cr-place-generator-page-btn'
+		});
+		nextBtn.disabled = this.currentPage >= totalPages - 1;
+		nextBtn.addEventListener('click', () => {
+			if (this.currentPage < totalPages - 1) {
+				this.currentPage++;
+				this.renderPlacesTable();
+				this.renderPagination();
+			}
+		});
+	}
+
+	/**
+	 * Generate a single place note
+	 */
+	private async generateSinglePlace(
+		place: FoundPlace,
+		row: HTMLTableRowElement,
+		button: HTMLButtonElement
+	): Promise<void> {
+		// Disable button and show loading state
+		button.disabled = true;
+		button.textContent = '...';
+		button.addClass('cr-place-generator-create-btn--loading');
+
+		try {
+			// Generate just this one place
+			const result = await this.service.generateSinglePlace(place, this.options);
+
+			if (result.success) {
+				// Mark row as completed
+				row.addClass('cr-place-generator-row--created');
+				button.textContent = '✓';
+				button.addClass('cr-place-generator-create-btn--done');
+
+				// Remove from allPlaces so it won't show on re-render
+				const idx = this.allPlaces.findIndex(p => p.placeString === place.placeString);
+				if (idx !== -1) {
+					this.allPlaces.splice(idx, 1);
+				}
+
+				// Update the count display
+				if (this.placesCountEl && this.previewResult) {
+					this.previewResult.notesCreated--;
+					const remaining = this.allPlaces.length;
+					this.placesCountEl.textContent = `${remaining} place${remaining === 1 ? '' : 's'} to create:`;
+				}
+
+				new Notice(`Created place note: ${place.placeString}`);
+			} else {
+				// Show error state
+				button.textContent = '✗';
+				button.addClass('cr-place-generator-create-btn--error');
+				new Notice(`Failed to create ${place.placeString}: ${result.error}`);
+			}
+		} catch (error) {
+			console.error('Error generating single place:', error);
+			button.textContent = '✗';
+			button.addClass('cr-place-generator-create-btn--error');
+			new Notice(`Error creating ${place.placeString}`);
+		}
 	}
 
 	/**

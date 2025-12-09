@@ -10,6 +10,7 @@ export { PlaceGeneratorService, DEFAULT_PLACE_GENERATOR_OPTIONS } from './servic
 export type {
 	PlaceGeneratorOptions,
 	PlaceGeneratorResult,
+	SinglePlaceResult,
 	FoundPlace,
 	PlaceNoteInfo
 } from './services/place-generator';

@@ -82,6 +82,15 @@ export interface PlaceGeneratorResult {
 }
 
 /**
+ * Result of generating a single place
+ */
+export interface SinglePlaceResult {
+	success: boolean;
+	error?: string;
+	noteInfo?: PlaceNoteInfo;
+}
+
+/**
  * Default options for place generation
  */
 export const DEFAULT_PLACE_GENERATOR_OPTIONS: PlaceGeneratorOptions = {
@@ -258,6 +267,123 @@ export class PlaceGeneratorService {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Generate a single place note (and optionally update references)
+	 */
+	async generateSinglePlace(
+		place: FoundPlace,
+		options: Partial<PlaceGeneratorOptions> = {}
+	): Promise<SinglePlaceResult> {
+		const fullOptions: PlaceGeneratorOptions = {
+			...DEFAULT_PLACE_GENERATOR_OPTIONS,
+			placesFolder: this.settings.placesFolder || DEFAULT_PLACE_GENERATOR_OPTIONS.placesFolder,
+			...options,
+			dryRun: false // Never dry run for single place generation
+		};
+
+		try {
+			// Build existing place cache
+			const existingPlaces = await this.buildExistingPlaceCache();
+
+			// Check if place already exists
+			const existingFile = this.findExistingPlace(place.normalizedString, existingPlaces);
+			if (existingFile) {
+				const fileCache = this.app.metadataCache.getFileCache(existingFile);
+				const crId = fileCache?.frontmatter?.cr_id || generateCrId();
+				return {
+					success: true,
+					noteInfo: {
+						path: existingFile.path,
+						crId,
+						name: place.hierarchyParts[0],
+						isNew: false
+					}
+				};
+			}
+
+			// For hierarchy support, we need to create parents first
+			const placeToNoteInfo = new Map<string, PlaceNoteInfo>();
+
+			if (fullOptions.parseHierarchy && place.hierarchyParts.length > 1) {
+				// Create parent places first (from most general to more specific)
+				for (let i = place.hierarchyParts.length - 1; i > 0; i--) {
+					const parentParts = place.hierarchyParts.slice(i);
+					const parentString = parentParts.join(', ');
+
+					// Check if parent already exists or was already created
+					if (placeToNoteInfo.has(parentString)) continue;
+					const existingParent = this.findExistingPlace(parentString, existingPlaces);
+					if (existingParent) {
+						const fileCache = this.app.metadataCache.getFileCache(existingParent);
+						const crId = fileCache?.frontmatter?.cr_id || generateCrId();
+						placeToNoteInfo.set(parentString, {
+							path: existingParent.path,
+							crId,
+							name: parentParts[0],
+							isNew: false
+						});
+						continue;
+					}
+
+					// Create parent place
+					const parentPlace: FoundPlace = {
+						placeString: parentString,
+						normalizedString: parentString,
+						hierarchyParts: parentParts,
+						referencingFiles: [],
+						properties: []
+					};
+
+					const parentNoteInfo = await this.createOrMatchPlaceNote(
+						parentPlace,
+						existingPlaces,
+						placeToNoteInfo,
+						fullOptions
+					);
+					placeToNoteInfo.set(parentString, parentNoteInfo);
+				}
+			}
+
+			// Create the place note
+			const noteInfo = await this.createOrMatchPlaceNote(
+				place,
+				existingPlaces,
+				placeToNoteInfo,
+				fullOptions
+			);
+
+			// Update references if enabled
+			if (fullOptions.updateReferences && place.referencingFiles.length > 0) {
+				for (const file of place.referencingFiles) {
+					try {
+						await this.updatePlaceReference(file, place, noteInfo);
+					} catch (error) {
+						logger.warn('generateSinglePlace', 'Failed to update reference', {
+							file: file.path,
+							error
+						});
+					}
+				}
+			}
+
+			logger.info('generateSinglePlace', 'Place note created', {
+				name: noteInfo.name,
+				path: noteInfo.path
+			});
+
+			return {
+				success: true,
+				noteInfo
+			};
+		} catch (error) {
+			logger.error('generateSinglePlace', 'Failed to create place note', { error });
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : String(error)
+			};
+		}
 	}
 
 	/**
