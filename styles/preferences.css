@@ -91,3 +91,93 @@
 .crc-text-small {
   font-size: 0.85em;
 }
+
+/* ==========================================================================
+   Unified Property Configuration
+   ========================================================================== */
+
+/* Search box */
+.cr-property-search {
+  margin-bottom: var(--cr-spacing-lg);
+  padding-bottom: var(--cr-spacing-md);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-property-search .setting-item {
+  border-top: none;
+  padding-top: 0;
+}
+
+/* Property sections container */
+.cr-property-sections {
+  margin-bottom: var(--cr-spacing-lg);
+}
+
+/* Collapsible property section */
+.cr-property-section {
+  margin-bottom: var(--cr-spacing-md);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+
+.cr-property-section-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--cr-spacing-sm);
+  padding: var(--cr-spacing-sm) var(--cr-spacing-md);
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+  background-color: var(--background-secondary);
+  transition: background-color 0.2s ease;
+}
+
+.cr-property-section-summary:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.cr-property-section-summary::marker,
+.cr-property-section-summary::-webkit-details-marker {
+  display: none;
+}
+
+.cr-property-section-summary::before {
+  content: "▶";
+  display: inline-block;
+  width: 1em;
+  transition: transform 0.2s ease;
+  color: var(--text-muted);
+}
+
+.cr-property-section[open] > .cr-property-section-summary::before {
+  transform: rotate(90deg);
+}
+
+.cr-property-section-title {
+  flex: 1;
+}
+
+.cr-property-section-count {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+/* Property section content */
+.cr-property-section-content {
+  padding: 0;
+}
+
+/* Remove top border from first setting in section */
+.cr-property-section-content .setting-item:first-child {
+  border-top: none;
+}
+
+/* Section divider */
+.cr-property-divider {
+  height: 1px;
+  background: var(--background-modifier-border);
+  border: none;
+  margin: var(--cr-spacing-xl) 0;
+}

@@ -18,7 +18,11 @@ import {
 	CANONICAL_PROPERTY_LABELS,
 	type CanonicalPersonProperty,
 	type CanonicalEventProperty,
-	type CanonicalPlaceProperty
+	type CanonicalPlaceProperty,
+	type PropertyMetadata,
+	PERSON_PROPERTY_METADATA,
+	EVENT_PROPERTY_METADATA,
+	PLACE_PROPERTY_METADATA
 } from '../core/property-alias-service';
 import {
 	ValueAliasService,
@@ -64,7 +68,131 @@ export function renderPreferencesTab(
 }
 
 /**
- * Render the Aliases card (property names + property values)
+ * Render a collapsible property section with Setting rows for each property
+ */
+function renderPropertySection(
+	container: HTMLElement,
+	title: string,
+	properties: PropertyMetadata[],
+	propertyAliasService: PropertyAliasService,
+	showTab: (tabId: string) => void,
+	openByDefault: boolean
+): void {
+	// Create details element for collapsibility
+	const section = container.createEl('details', {
+		cls: 'cr-property-section'
+	});
+
+	if (openByDefault) {
+		section.setAttribute('open', '');
+	}
+
+	// Create summary (clickable header)
+	const summary = section.createEl('summary', {
+		cls: 'cr-property-section-summary'
+	});
+
+	summary.createSpan({
+		text: title,
+		cls: 'cr-property-section-title'
+	});
+
+	summary.createSpan({
+		text: `(${properties.length})`,
+		cls: 'cr-property-section-count'
+	});
+
+	// Create content container
+	const sectionContent = section.createDiv({
+		cls: 'cr-property-section-content'
+	});
+
+	// Lazy rendering: only render content when section is opened
+	let rendered = false;
+
+	const renderContent = () => {
+		if (rendered) return;
+		rendered = true;
+
+		// Render each property as a Setting
+		properties.forEach(meta => {
+			const currentAlias = propertyAliasService.getAlias(meta.canonical) || '';
+
+			const setting = new Setting(sectionContent)
+				.setName(meta.label)
+				.setDesc(meta.description)
+				.addText(text => {
+					text
+						.setPlaceholder(meta.canonical)
+						.setValue(currentAlias)
+						.onChange(async (value) => {
+							const trimmed = value.trim();
+
+							if (trimmed === '') {
+								// Empty = remove alias
+								await propertyAliasService.removeAlias(currentAlias);
+								showTab('preferences'); // Refresh
+								return;
+							}
+
+							// Check if aliasing to itself (warning)
+							if (trimmed === meta.canonical) {
+								new Notice(`"${trimmed}" is already the canonical name`);
+								await propertyAliasService.removeAlias(trimmed);
+								showTab('preferences'); // Refresh
+								return;
+							}
+
+							// Check for duplicate
+							const existingMapping = propertyAliasService.aliases[trimmed];
+							if (existingMapping && existingMapping !== meta.canonical) {
+								new Notice(`"${trimmed}" is already mapped to "${existingMapping}"`);
+								return;
+							}
+
+							// Valid - save
+							await propertyAliasService.setAlias(trimmed, meta.canonical);
+						});
+				})
+				.addExtraButton(button => {
+					button
+						.setIcon('x')
+						.setTooltip('Clear alias')
+						.onClick(async () => {
+							if (currentAlias) {
+								await propertyAliasService.removeAlias(currentAlias);
+								new Notice(`Cleared alias for ${meta.label}`);
+								showTab('preferences'); // Refresh
+							}
+						});
+
+					// Hide clear button if no alias
+					if (!currentAlias) {
+						button.extraSettingsEl.style.opacity = '0.3';
+					}
+				});
+
+			// Store metadata for search filtering
+			setting.settingEl.dataset.canonical = meta.canonical;
+			setting.settingEl.dataset.label = meta.label;
+			setting.settingEl.dataset.description = meta.description;
+		});
+	};
+
+	// Render immediately if open by default, otherwise render on first open
+	if (openByDefault) {
+		renderContent();
+	} else {
+		section.addEventListener('toggle', () => {
+			if (section.open) {
+				renderContent();
+			}
+		}, { once: true });
+	}
+}
+
+/**
+ * Render the unified property and value configuration card
  */
 function renderAliasesCard(
 	container: HTMLElement,
@@ -75,118 +203,118 @@ function renderAliasesCard(
 	showTab: (tabId: string) => void
 ): void {
 	const card = createCard({
-		title: 'Aliases',
+		title: 'Property and value configuration',
 		icon: 'hash',
-		subtitle: 'Map your custom names and values to Canvas Roots fields'
+		subtitle: 'Configure custom property names and values'
 	});
 	const content = card.querySelector('.crc-card__content') as HTMLElement;
 
 	// Description
 	content.createEl('p', {
 		cls: 'crc-text-muted',
-		text: 'Your frontmatter stays unchanged — Canvas Roots reads your names and values and treats them as the mapped fields.'
+		text: 'Map your custom property names and values to Canvas Roots fields. Your frontmatter stays unchanged.'
 	});
 
-	// ===== PROPERTY NAMES SECTION =====
-	content.createEl('h4', {
-		text: 'Property names',
-		cls: 'cr-aliases-section-title'
-	});
+	// ===== SEARCH BOX =====
+	const searchContainer = content.createDiv({ cls: 'cr-property-search' });
+	let currentSearchQuery = '';
 
-	// Get all configured property aliases
-	const propertyAliases = propertyAliasService.getAllAliases();
-
-	if (propertyAliases.length === 0) {
-		// Empty state
-		const emptyState = content.createDiv({ cls: 'crc-empty-state' });
-		emptyState.createEl('p', {
-			text: 'No property name aliases configured.',
-			cls: 'crc-text-muted'
+	new Setting(searchContainer)
+		.addSearch(search => {
+			search
+				.setPlaceholder('Search properties...')
+				.onChange((query) => {
+					currentSearchQuery = query;
+					filterProperties(query);
+				});
 		});
-		emptyState.createEl('p', {
-			text: 'Add aliases if your vault uses different property names (e.g., "birthdate" instead of "born").',
-			cls: 'crc-text-muted crc-text-small'
+
+	// ===== PROPERTY SECTIONS =====
+	const sectionsContainer = content.createDiv({ cls: 'cr-property-sections' });
+
+	// Person properties section
+	renderPropertySection(
+		sectionsContainer,
+		'Person properties',
+		PERSON_PROPERTY_METADATA,
+		propertyAliasService,
+		showTab,
+		true // open by default
+	);
+
+	// Event properties section
+	renderPropertySection(
+		sectionsContainer,
+		'Event properties',
+		EVENT_PROPERTY_METADATA,
+		propertyAliasService,
+		showTab,
+		false // closed by default
+	);
+
+	// Place properties section
+	renderPropertySection(
+		sectionsContainer,
+		'Place properties',
+		PLACE_PROPERTY_METADATA,
+		propertyAliasService,
+		showTab,
+		false // closed by default
+	);
+
+	// Filter function for search
+	function filterProperties(query: string): void {
+		const sections = sectionsContainer.querySelectorAll('.cr-property-section');
+		const normalized = query.toLowerCase().trim();
+
+		if (!normalized) {
+			// Show all
+			sections.forEach(section => {
+				const settingItems = section.querySelectorAll('.setting-item');
+				settingItems.forEach(item => {
+					(item as HTMLElement).style.display = '';
+				});
+				updateSectionCount(section as HTMLElement, settingItems.length, settingItems.length);
+			});
+			return;
+		}
+
+		// Filter each section
+		sections.forEach(section => {
+			const settingItems = section.querySelectorAll('.setting-item');
+			let visibleCount = 0;
+
+			settingItems.forEach(item => {
+				const settingItem = item as HTMLElement;
+				const canonical = settingItem.dataset.canonical || '';
+				const label = settingItem.dataset.label || '';
+				const description = settingItem.dataset.description || '';
+
+				const matches = canonical.toLowerCase().includes(normalized) ||
+					label.toLowerCase().includes(normalized) ||
+					description.toLowerCase().includes(normalized);
+
+				settingItem.style.display = matches ? '' : 'none';
+				if (matches) visibleCount++;
+			});
+
+			updateSectionCount(section as HTMLElement, visibleCount, settingItems.length);
 		});
-	} else {
-		// Property aliases table
-		const table = content.createEl('table', { cls: 'cr-aliases-table' });
+	}
 
-		// Header
-		const thead = table.createEl('thead');
-		const headerRow = thead.createEl('tr');
-		headerRow.createEl('th', { text: 'Your property' });
-		headerRow.createEl('th', { text: 'Maps to' });
-		headerRow.createEl('th', { text: '', cls: 'cr-aliases-table__actions' });
-
-		// Body
-		const tbody = table.createEl('tbody');
-		for (const alias of propertyAliases) {
-			const row = tbody.createEl('tr');
-
-			// User property
-			row.createEl('td', {
-				text: alias.userProperty,
-				cls: 'cr-alias-user-prop'
-			});
-
-			// Canonical property with label
-			const canonicalCell = row.createEl('td');
-			const label = CANONICAL_PROPERTY_LABELS[alias.canonicalProperty as CanonicalPersonProperty] || alias.canonicalProperty;
-			canonicalCell.createSpan({ text: alias.canonicalProperty });
-			canonicalCell.createSpan({
-				text: ` (${label})`,
-				cls: 'crc-text-muted'
-			});
-
-			// Actions
-			const actionsCell = row.createEl('td', { cls: 'cr-aliases-table__actions' });
-
-			// Edit button
-			const editBtn = actionsCell.createEl('button', {
-				cls: 'cr-btn-icon',
-				attr: { 'aria-label': 'Edit alias' }
-			});
-			setIcon(editBtn, 'edit');
-			editBtn.addEventListener('click', () => {
-				new PropertyAliasModal(
-					plugin.app,
-					plugin,
-					alias.userProperty,
-					alias.canonicalProperty,
-					() => showTab('preferences')
-				).open();
-			});
-
-			// Delete button
-			const deleteBtn = actionsCell.createEl('button', {
-				cls: 'cr-btn-icon cr-btn-icon--danger',
-				attr: { 'aria-label': 'Remove alias' }
-			});
-			setIcon(deleteBtn, 'trash');
-			deleteBtn.addEventListener('click', async () => {
-				await propertyAliasService.removeAlias(alias.userProperty);
-				new Notice(`Removed alias: ${alias.userProperty}`);
-				showTab('preferences');
-			});
+	function updateSectionCount(section: HTMLElement, visible: number, total: number): void {
+		const countEl = section.querySelector('.cr-property-section-count');
+		if (countEl) {
+			if (currentSearchQuery && visible < total) {
+				countEl.textContent = `(${visible} of ${total})`;
+			} else {
+				countEl.textContent = `(${total})`;
+			}
 		}
 	}
 
-	// Add property alias button
-	const addPropertyButtonContainer = content.createDiv({ cls: 'cr-aliases-add' });
-	const addPropertyButton = addPropertyButtonContainer.createEl('button', {
-		cls: 'mod-cta'
-	});
-	setIcon(addPropertyButton.createSpan({ cls: 'crc-button-icon' }), 'plus');
-	addPropertyButton.createSpan({ text: 'Add property alias' });
-	addPropertyButton.addEventListener('click', () => {
-		new PropertyAliasModal(
-			plugin.app,
-			plugin,
-			'',
-			'',
-			() => showTab('preferences')
-		).open();
-	});
+	// ===== DIVIDER =====
+	content.createEl('hr', { cls: 'cr-property-divider' });
 
 	// ===== PROPERTY VALUES SECTION =====
 	content.createEl('h4', {
