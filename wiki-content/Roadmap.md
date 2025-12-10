@@ -26,6 +26,7 @@ For detailed implementation documentation of completed features, see [Release Hi
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.10.19 | [Unified Property Configuration](Release-History#unified-property-configuration-v01019) | Consolidated property and value alias management |
 | v0.10.17 | [Data Enhancement Pass](Release-History#data-enhancement-pass-v01017) | Generate place notes from existing data with progress and editing |
 | v0.10.3 | [Type Customization](Release-History#type-customization-v0103) | Full type managers for all note categories |
 | v0.10.2 | [Flexible Note Type Detection](Release-History#flexible-note-type-detection-v0102) | Support cr_type, tags, avoids conflicts |
@@ -430,43 +431,6 @@ oral_facts:
 ## Future Considerations
 
 These features are under consideration but not yet prioritized.
-
-### Unified Property Configuration
-
-**Priority:** 📋 Medium — Single source of truth for all property and value mappings
-
-**Summary:** A dedicated card in the Control Center Preferences tab providing a unified view of all property aliases and value aliases across all note types. Each property the plugin uses has its own row showing the default (canonical) name on the left and an alias field on the right, styled like standard Obsidian settings.
-
-**User Pain Points Addressed:**
-- Property aliases scattered across different configuration locations
-- No visibility into which properties support aliasing
-- Value aliases not transparently showing what maps to what
-- Inconsistent behavior when aliases aren't respected in some parts of the plugin
-
-**Scope:** All entity types (Person, Place, Event, Source, Organization, Map notes).
-
-**Design:**
-- Collapsible sections by note type to manage the ~50+ properties
-- Each row shows: canonical property name (left) → alias text field (right)
-- Empty alias fields indicate "using default"
-- Value aliases section below property aliases (event types, sex values, place categories, note types)
-- Styled to match Obsidian's native settings appearance
-- "Show all" toggle vs showing only configured aliases
-
-**Features:**
-- Inline validation showing conflicts or invalid mappings
-- Visual indicator for configured vs unconfigured properties
-- Bulk operations: "Reset all aliases" for a note type
-- Search/filter to find specific properties quickly
-
-**Technical Notes:**
-- Consolidates existing property alias and value alias functionality into one location
-- Existing Preferences tab alias cards would be replaced or redirect to this unified view
-- Settings data structure remains compatible (no migration needed)
-
-**Inspiration:** Tasks plugin's unified property configuration approach.
-
-See [Unified Property Configuration Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/unified-property-config.md) for implementation details.
 
 ---
 

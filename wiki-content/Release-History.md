@@ -36,6 +36,60 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 
 ## v0.10.x
 
+### Unified Property Configuration (v0.10.19)
+
+Consolidated property and value alias management in a single interface with comprehensive coverage of all canonical properties.
+
+See [unified-property-config.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/unified-property-config.md) for implementation plan.
+
+**Problem Solved:**
+- Property aliases were managed through modal-based workflows with limited discoverability
+- Users couldn't see which properties supported aliasing without trial and error
+- Value aliases were separate from property aliases with inconsistent UI
+- No search/filter to find specific properties across ~55 canonical properties
+
+**Features:**
+
+**Property Aliases:**
+- **Comprehensive coverage**: All 55 canonical properties across Person (27), Event (20), and Place (8) entity types
+- **Collapsible sections**: Properties grouped by entity type (all collapsed by default)
+- **Lazy rendering**: Section content only renders when first expanded for performance
+- **Search/filter**: Find properties by label, description, canonical name, or common aliases
+- **Inline editing**: Configure aliases directly with auto-save on blur
+- **Validation**: Checks for empty values, self-aliasing, conflicts with other properties/aliases
+
+**Value Aliases:**
+- **Unified interface**: Value aliases styled consistently with property aliases
+- **Four value types**: Event type (13 values), Sex (4 values), Place category (6 values), Note type (8 values)
+- **Alias count badges**: Section headers show how many aliases are configured per field
+- **Inline editing**: Configure value mappings with validation on blur
+- **Canonical value labels**: Human-readable display of canonical values
+
+**UI Improvements:**
+- Native Obsidian Setting components for consistent look and feel
+- Validation on blur (not on keystroke) to avoid blocking partial input
+- All sections use HTML `<details>` elements for native collapsibility
+- Search box with real-time filtering across all properties
+
+**Property Coverage:**
+
+| Entity Type | Properties | Examples |
+|-------------|------------|----------|
+| Person | 27 | name, born, died, cr_id, sex, father, mother, spouse, children, birth_place, death_place, occupation, nickname, maiden_name |
+| Event | 20 | title, event_type, date, date_precision, place, person, participants, groups, sources, confidence |
+| Place | 8 | name, full_name, parent_place, latitude, longitude, place_type, place_category, historical_name |
+
+**Value Coverage:**
+
+| Field | Canonical Values | Examples |
+|-------|------------------|----------|
+| Event type | 13 | birth, death, marriage, burial, residence, occupation, education, military, immigration, baptism, confirmation, ordination, custom |
+| Sex | 4 | male, female, nonbinary, unknown |
+| Place category | 6 | real, historical, disputed, legendary, mythological, fictional |
+| Note type | 8 | person, place, event, source, organization, map, schema, timeline |
+
+---
+
 ### Data Enhancement Pass (v0.10.17)
 
 Commands and UI tools to upgrade existing vaults by creating missing linked entities from existing person note data. Designed for users who imported GEDCOM before Canvas Roots supported event, place, or source note types.
