@@ -760,10 +760,52 @@ text.onChange(async (value) => {
 
 ## Status
 
-**🚧 In Progress**
+**✅ Completed**
 
 Branch: `feature/unified-property-config`
+
+### Implementation Summary
+
+**Phase 1: Foundation (Data & Service Layer)** - ✅ Complete
+- Created PropertyMetadata interface with canonical, label, description, category, and commonAliases
+- Defined 27 person properties, 20 event properties, 8 place properties (55 total)
+- Added 6 new service methods to PropertyAliasService
+- Build passed successfully
+
+**Phase 2: UI Components** - ✅ Complete
+- Implemented collapsible sections using `<details>` elements with lazy rendering
+- Added search/filter functionality across all property metadata
+- Replaced modal-based UI with inline Obsidian Setting components
+- Person section open by default, Event/Place collapsed
+- Added comprehensive CSS for unified property configuration
+- Build passed successfully
+
+**Phase 3: Bug Fixes** - ✅ Complete
+- Fixed validation blocking partial input (e.g., "sex2")
+- Moved validation from onChange to blur event
+- Added value restoration on validation failure
+
+### Decisions Made
+
+All open questions resolved during implementation:
+
+1. **Section default state:** Person open, others closed ✅
+2. **Property order:** Logical grouping (identity → dates → places → relationships → other) ✅
+3. **Mobile responsiveness:** Trust Obsidian's native responsive behavior ✅
+4. **Help documentation:** Description text only (no inline help icons) ✅
+5. **Performance:** Lazy rendering implemented from start ✅
+
+### Technical Notes
+
+- Used `cr_type` instead of deprecated `type` property for consistency
+- Validation only on blur prevents blocking user input mid-typing
+- Search filters across label, description, canonical name, and commonAliases
+- Lazy rendering loads section content only when first expanded
 
 ## Changelog
 
 - 2025-12-10: Initial planning document created
+- 2025-12-10: Phase 1 (Foundation) completed - Property metadata and service methods
+- 2025-12-10: Phase 2 (UI Components) completed - Collapsible sections with search
+- 2025-12-10: Phase 3 (Bug Fixes) completed - Fixed validation blocking partial input
+- 2025-12-10: Implementation completed and documented
