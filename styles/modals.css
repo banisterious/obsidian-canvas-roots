@@ -4765,6 +4765,95 @@
   color: var(--text-faint);
 }
 
+/* ==========================================================================
+   EXPORT PROGRESS MODAL
+   ========================================================================== */
+
+.cr-export-progress-modal {
+  max-width: 450px;
+  width: 450px;
+}
+
+.cr-export-progress-modal .modal-content {
+  padding: 24px;
+}
+
+/* Phase indicator */
+.cr-export-phase {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cr-export-phase__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.cr-export-phase__icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--text-accent);
+}
+
+.cr-export-phase__label {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+/* Progress bar */
+.cr-export-progress {
+  margin-bottom: 12px;
+}
+
+.cr-export-progress__track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--background-modifier-border);
+  overflow: hidden;
+}
+
+.cr-export-progress__bar {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--interactive-accent);
+  transition: width 0.2s ease-out;
+}
+
+.cr-export-progress__text {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* Running stats */
+.cr-export-running-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+  min-height: 32px;
+}
+
+.cr-export-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.cr-export-stat svg {
+  color: var(--text-faint);
+}
+
 /* Import results modal styles */
 .cr-import-results-modal {
   max-width: 550px;

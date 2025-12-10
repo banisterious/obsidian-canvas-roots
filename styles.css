@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-10 21:00:12 UTC
+ * - Generated: 2025-12-10 21:07:19 UTC
  * - Components: 30 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -449,7 +449,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 5133 lines, 93.58 KB */
+/* Component Size: 5222 lines, 95.14 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -5215,6 +5215,95 @@ settings:
 }
 
 .cr-import-stat svg {
+  color: var(--text-faint);
+}
+
+/* ==========================================================================
+   EXPORT PROGRESS MODAL
+   ========================================================================== */
+
+.cr-export-progress-modal {
+  max-width: 450px;
+  width: 450px;
+}
+
+.cr-export-progress-modal .modal-content {
+  padding: 24px;
+}
+
+/* Phase indicator */
+.cr-export-phase {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cr-export-phase__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.cr-export-phase__icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--text-accent);
+}
+
+.cr-export-phase__label {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+/* Progress bar */
+.cr-export-progress {
+  margin-bottom: 12px;
+}
+
+.cr-export-progress__track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--background-modifier-border);
+  overflow: hidden;
+}
+
+.cr-export-progress__bar {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--interactive-accent);
+  transition: width 0.2s ease-out;
+}
+
+.cr-export-progress__text {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* Running stats */
+.cr-export-running-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+  min-height: 32px;
+}
+
+.cr-export-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.cr-export-stat svg {
   color: var(--text-faint);
 }
 
@@ -16028,10 +16117,10 @@ body.wide-timeline .view-content {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-10 21:00:12 UTC
+ * Build completed: 2025-12-10 21:07:19 UTC
  * Components processed: 30
- * Total lines: 15735
- * Total size: 309.43 KB
+ * Total lines: 15824
+ * Total size: 310.99 KB
  * Build duration: 0.02 seconds
  *
  * Component breakdown:
@@ -16043,7 +16132,7 @@ body.wide-timeline .view-content {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 4 lines, 0.07 KB
- * - modals.css: 5133 lines, 93.58 KB
+ * - modals.css: 5222 lines, 95.14 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

@@ -4973,8 +4973,16 @@ export class ControlCenterModal extends Modal {
 		outputDestination?: 'download' | 'vault';
 		outputFolder?: string;
 	}): Promise<void> {
+		// Create and open progress modal
+		const { ExportProgressModal } = await import('./export-progress-modal');
+		const progressModal = new ExportProgressModal(this.app, 'GEDCOM');
+		progressModal.open();
+
 		try {
 			logger.info('gedcom-export', `Starting GEDCOM export: ${options.fileName}`);
+
+			// Update progress: loading data
+			progressModal.updateProgress({ phase: 'loading', current: 0, total: 1 });
 
 			// Create exporter
 			const { GedcomExporter } = await import('../gedcom/gedcom-exporter');
@@ -5008,6 +5016,9 @@ export class ControlCenterModal extends Modal {
 			exporter.setPropertyAliasService(propertyAliasService);
 			exporter.setValueAliasService(valueAliasService);
 
+			// Update progress: generating export
+			progressModal.updateProgress({ phase: 'generating', current: 1, total: 2 });
+
 			// Export to GEDCOM
 			const result = exporter.exportToGedcom({
 				peopleFolder: this.plugin.settings.peopleFolder,
@@ -5035,8 +5046,17 @@ export class ControlCenterModal extends Modal {
 				result.errors.forEach(error => logger.error('gedcom-export', error));
 			}
 
+			// Update stats
+			progressModal.updateStats({
+				people: result.individualsExported,
+				relationships: result.familiesExported
+			});
+
 			if (result.success && result.gedcomContent) {
 				const outputDestination = options.outputDestination ?? 'download';
+
+				// Update progress: writing file
+				progressModal.updateProgress({ phase: 'writing', current: 2, total: 2 });
 
 				if (outputDestination === 'vault') {
 					// Save to vault
@@ -5092,6 +5112,14 @@ export class ControlCenterModal extends Modal {
 					}
 					new Notice(noticeMsg);
 				}
+
+				// Mark export as complete
+				progressModal.markComplete();
+
+				// Close the modal after a short delay
+				setTimeout(() => {
+					progressModal.close();
+				}, 1500);
 			} else {
 				throw new Error('Export failed to generate content');
 			}
@@ -5099,6 +5127,7 @@ export class ControlCenterModal extends Modal {
 			const errorMsg = getErrorMessage(error);
 			logger.error('gedcom-export', `GEDCOM export failed: ${errorMsg}`);
 			new Notice(`Failed to export GEDCOM: ${errorMsg}`);
+			progressModal.close();
 		}
 	}
 
@@ -8433,8 +8462,16 @@ export class ControlCenterModal extends Modal {
 		outputDestination?: 'download' | 'vault';
 		outputFolder?: string;
 	}): Promise<void> {
+		// Create and open progress modal
+		const { ExportProgressModal } = await import('./export-progress-modal');
+		const progressModal = new ExportProgressModal(this.app, 'GEDCOM X');
+		progressModal.open();
+
 		try {
 			logger.info('gedcomx-export', `Starting GEDCOM X export: ${options.fileName}`);
+
+			// Update progress: loading data
+			progressModal.updateProgress({ phase: 'loading', current: 0, total: 1 });
 
 			// Create exporter
 			const { GedcomXExporter } = await import('../gedcomx/gedcomx-exporter');
@@ -8468,6 +8505,9 @@ export class ControlCenterModal extends Modal {
 			exporter.setPropertyAliasService(propertyAliasService);
 			exporter.setValueAliasService(valueAliasService);
 
+			// Update progress: generating export
+			progressModal.updateProgress({ phase: 'generating', current: 1, total: 2 });
+
 			// Export to GEDCOM X
 			const result = exporter.exportToGedcomX({
 				peopleFolder: this.plugin.settings.peopleFolder,
@@ -8494,8 +8534,17 @@ export class ControlCenterModal extends Modal {
 				result.errors.forEach(error => logger.error('gedcomx-export', error));
 			}
 
+			// Update stats
+			progressModal.updateStats({
+				people: result.personsExported,
+				relationships: result.relationshipsExported
+			});
+
 			if (result.success && result.jsonContent) {
 				const outputDestination = options.outputDestination ?? 'download';
+
+				// Update progress: writing file
+				progressModal.updateProgress({ phase: 'writing', current: 2, total: 2 });
 
 				if (outputDestination === 'vault') {
 					// Save to vault
@@ -8551,6 +8600,14 @@ export class ControlCenterModal extends Modal {
 					}
 					new Notice(noticeMsg);
 				}
+
+				// Mark export as complete
+				progressModal.markComplete();
+
+				// Close the modal after a short delay
+				setTimeout(() => {
+					progressModal.close();
+				}, 1500);
 			} else {
 				throw new Error('Export failed to generate content');
 			}
@@ -8558,6 +8615,7 @@ export class ControlCenterModal extends Modal {
 			const errorMsg = getErrorMessage(error);
 			logger.error('gedcomx-export', `GEDCOM X export failed: ${errorMsg}`);
 			new Notice(`Failed to export GEDCOM X: ${errorMsg}`);
+			progressModal.close();
 		}
 	}
 
