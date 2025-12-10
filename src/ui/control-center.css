@@ -445,3 +445,64 @@
 .crc-mb-4 {
   margin-bottom: 16px;
 }
+
+.crc-text-sm {
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   EXPORT STATISTICS PREVIEW
+   ========================================================================== */
+
+.crc-export-stats-preview {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.crc-export-stats-preview__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-normal);
+  margin-bottom: 8px;
+}
+
+.crc-export-stats-preview__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crc-export-stats-preview__list li {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding-left: 16px;
+  position: relative;
+}
+
+.crc-export-stats-preview__list li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  color: var(--interactive-accent);
+}
+
+.crc-export-stats-preview__size {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding-top: 8px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.crc-export-stats-preview__warning {
+  font-size: 12px;
+  color: var(--color-orange);
+  padding: 8px 12px;
+  background: var(--background-modifier-error);
+  border-radius: 4px;
+  border-left: 3px solid var(--color-orange);
+}

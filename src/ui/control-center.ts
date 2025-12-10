@@ -7973,6 +7973,9 @@ export class ControlCenterModal extends Modal {
 			cls: 'crc-text-muted crc-mb-4'
 		});
 
+		// Forward-declare updateStatsPreview so we can reference it in onChange handlers
+		let updateStatsPreview: () => Promise<void>;
+
 		// Export options
 		new Setting(content)
 			.setName('People folder')
@@ -8000,6 +8003,7 @@ export class ControlCenterModal extends Modal {
 
 				dropdown.onChange(value => {
 					collectionFilter = value || undefined;
+					void updateStatsPreview();
 				});
 			});
 
@@ -8017,6 +8021,7 @@ export class ControlCenterModal extends Modal {
 						const picker = new PersonPickerModal(this.app, (info) => {
 							branchRootCrId = info.crId;
 							btn.setButtonText(info.name);
+							void updateStatsPreview();
 						});
 						picker.open();
 					});
@@ -8031,6 +8036,7 @@ export class ControlCenterModal extends Modal {
 				dropdown.addOption('descendants', 'Descendants only');
 				dropdown.onChange(value => {
 					branchDirection = value as 'ancestors' | 'descendants' || undefined;
+					void updateStatsPreview();
 				});
 			});
 
@@ -8041,6 +8047,7 @@ export class ControlCenterModal extends Modal {
 				.setValue(false)
 				.onChange(value => {
 					branchIncludeSpouses = value;
+					void updateStatsPreview();
 				})
 			);
 
@@ -8074,6 +8081,7 @@ export class ControlCenterModal extends Modal {
 					privacyProtectionSetting.settingEl.toggleClass('cr-hidden', !value);
 					privacyFormatSetting.settingEl.toggleClass('cr-hidden', !(value && privacyOverrideProtection));
 					void updatePrivacyPreview();
+					void updateStatsPreview();
 				})
 			);
 
@@ -8086,6 +8094,7 @@ export class ControlCenterModal extends Modal {
 					privacyOverrideProtection = value;
 					privacyFormatSetting.settingEl.toggleClass('cr-hidden', !value);
 					void updatePrivacyPreview();
+					void updateStatsPreview();
 				})
 			);
 		privacyProtectionSetting.settingEl.addClass('cr-hidden');
@@ -8102,6 +8111,7 @@ export class ControlCenterModal extends Modal {
 				.onChange(value => {
 					privacyOverrideFormat = value as 'living' | 'private' | 'initials' | 'hidden';
 					void updatePrivacyPreview();
+					void updateStatsPreview();
 				})
 			);
 		privacyFormatSetting.settingEl.addClass('cr-hidden');
@@ -8157,6 +8167,97 @@ export class ControlCenterModal extends Modal {
 
 		// Initial preview based on global settings
 		void updatePrivacyPreview();
+
+		// Export statistics preview
+		const statsPreviewEl = content.createDiv({ cls: 'crc-export-stats-preview crc-mb-4' });
+
+		updateStatsPreview = async (): Promise<void> => {
+			// Import services
+			const { FamilyGraphService } = await import('../core/family-graph');
+			const { PrivacyService } = await import('../core/privacy-service');
+			const { ExportStatisticsService } = await import('../core/export-statistics-service');
+
+			// Setup graph service
+			const graphService = new FamilyGraphService(this.app);
+			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
+			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
+			graphService.setValueAliases(this.plugin.settings.valueAliases);
+			graphService.reloadCache();
+
+			// Setup privacy service
+			const effectiveProtection = privacyOverrideEnabled
+				? privacyOverrideProtection
+				: this.plugin.settings.enablePrivacyProtection;
+			const effectiveFormat = privacyOverrideEnabled
+				? privacyOverrideFormat
+				: this.plugin.settings.privacyDisplayFormat;
+
+			const privacyService = effectiveProtection
+				? new PrivacyService({
+						enablePrivacyProtection: effectiveProtection,
+						livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
+						privacyDisplayFormat: effectiveFormat,
+						hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
+				  })
+				: null;
+
+			// Calculate statistics
+			const statsService = new ExportStatisticsService(this.app);
+			const stats = await statsService.calculateStatistics(graphService, privacyService, {
+				collectionFilter,
+				branchRootCrId,
+				branchDirection,
+				branchIncludeSpouses,
+				privacySettings: effectiveProtection
+					? {
+							enablePrivacyProtection: effectiveProtection,
+							privacyDisplayFormat: effectiveFormat
+					  }
+					: undefined
+			});
+
+			// Update stats display
+			statsPreviewEl.empty();
+
+			const previewTitle = statsPreviewEl.createEl('div', {
+				cls: 'crc-export-stats-preview__title',
+				text: 'Export preview'
+			});
+
+			const statsList = statsPreviewEl.createEl('ul', {
+				cls: 'crc-export-stats-preview__list'
+			});
+
+			// People count with living status
+			const peopleText =
+				stats.excludedPeople > 0
+					? `${stats.totalPeople - stats.excludedPeople} people (${stats.excludedPeople} living will be excluded)`
+					: stats.livingPeople > 0
+					? `${stats.totalPeople} people (${stats.livingPeople} living will be protected)`
+					: `${stats.totalPeople} people`;
+
+			statsList.createEl('li', { text: peopleText });
+			statsList.createEl('li', { text: `${stats.totalRelationships} relationships` });
+			statsList.createEl('li', { text: `${stats.totalEvents} events` });
+			statsList.createEl('li', { text: `${stats.totalSources} sources` });
+			statsList.createEl('li', { text: `${stats.totalPlaces} places` });
+
+			const sizeText = statsPreviewEl.createEl('div', {
+				cls: 'crc-export-stats-preview__size crc-text-muted crc-text-sm crc-mt-2',
+				text: `Estimated export size: ${ExportStatisticsService.formatBytes(stats.estimatedSize)}`
+			});
+
+			// Warning if no people selected
+			if (stats.totalPeople === 0 || stats.totalPeople - stats.excludedPeople === 0) {
+				const warning = statsPreviewEl.createEl('div', {
+					cls: 'crc-export-stats-preview__warning crc-mt-2',
+					text: '⚠ No people will be exported with current filters'
+				});
+			}
+		};
+
+		// Initial stats preview
+		void updateStatsPreview();
 
 		// Export file name
 		let exportFileName = 'family-tree';
