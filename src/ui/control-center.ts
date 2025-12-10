@@ -8272,7 +8272,11 @@ export class ControlCenterModal extends Modal {
 			cls: 'crc-text-muted crc-mb-4'
 		});
 
-		// Export options
+		// Use the ExportOptionsBuilder
+		const { ExportOptionsBuilder } = require('./export-options-builder');
+		const optionsBuilder = new ExportOptionsBuilder(this.app, this.plugin);
+
+		// People folder (read-only display)
 		new Setting(content)
 			.setName('People folder')
 			.setDesc('Folder containing person notes to export')
@@ -8282,180 +8286,12 @@ export class ControlCenterModal extends Modal {
 				.setDisabled(true)
 			);
 
-		// Collection filter option
-		let collectionFilter: string | undefined;
-		new Setting(content)
-			.setName('Collection filter (optional)')
-			.setDesc('Only export people in a specific collection')
-			.addDropdown(async dropdown => {
-				dropdown.addOption('', 'All people');
-
-				// Load collections
-				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
-				const collections = graphService.getUserCollections();
-				collections.forEach(collection => {
-					dropdown.addOption(collection.name, collection.name);
-				});
-
-				dropdown.onChange(value => {
-					collectionFilter = value || undefined;
-				});
-			});
-
-		// Branch filter options
-		let gxBranchRootCrId: string | undefined;
-		let gxBranchDirection: 'ancestors' | 'descendants' | undefined;
-		let gxBranchIncludeSpouses = false;
-
-		new Setting(content)
-			.setName('Branch filter (optional)')
-			.setDesc('Export only ancestors or descendants of a specific person')
-			.addButton(btn => {
-				btn.setButtonText('Select person')
-					.onClick(() => {
-						const picker = new PersonPickerModal(this.app, (info) => {
-							gxBranchRootCrId = info.crId;
-							btn.setButtonText(info.name);
-						});
-						picker.open();
-					});
-			});
-
-		new Setting(content)
-			.setName('Branch direction')
-			.setDesc('Include ancestors (up) or descendants (down)')
-			.addDropdown(dropdown => {
-				dropdown.addOption('', 'No branch filter');
-				dropdown.addOption('ancestors', 'Ancestors only');
-				dropdown.addOption('descendants', 'Descendants only');
-				dropdown.onChange(value => {
-					gxBranchDirection = value as 'ancestors' | 'descendants' || undefined;
-				});
-			});
-
-		new Setting(content)
-			.setName('Include spouses in descendants')
-			.setDesc('When exporting descendants, also include their spouses')
-			.addToggle(toggle => toggle
-				.setValue(false)
-				.onChange(value => {
-					gxBranchIncludeSpouses = value;
-				})
-			);
-
-		// Privacy override options
-		let gxPrivacyOverrideEnabled = false;
-		let gxPrivacyOverrideProtection = this.plugin.settings.enablePrivacyProtection;
-		let gxPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
-
-		// Define updateGxPrivacyPreview before the settings that use it
-		let updateGxPrivacyPreview: () => Promise<void>;
-
-		new Setting(content)
-			.setName('Override privacy settings')
-			.setDesc('Use different privacy settings for this export only')
-			.addToggle(toggle => toggle
-				.setValue(false)
-				.onChange(value => {
-					gxPrivacyOverrideEnabled = value;
-					gxPrivacyProtectionSetting.settingEl.toggleClass('cr-hidden', !value);
-					gxPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !(value && gxPrivacyOverrideProtection));
-					void updateGxPrivacyPreview();
-				})
-			);
-
-		const gxPrivacyProtectionSetting = new Setting(content)
-			.setName('Enable privacy protection')
-			.setDesc('Protect living persons in this export')
-			.addToggle(toggle => toggle
-				.setValue(gxPrivacyOverrideProtection)
-				.onChange(value => {
-					gxPrivacyOverrideProtection = value;
-					gxPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !value);
-					void updateGxPrivacyPreview();
-				})
-			);
-		gxPrivacyProtectionSetting.settingEl.addClass('cr-hidden');
-
-		const gxPrivacyFormatSetting = new Setting(content)
-			.setName('Privacy display format')
-			.setDesc('How to display protected living persons')
-			.addDropdown(dropdown => dropdown
-				.addOption('living', 'Living')
-				.addOption('private', 'Private')
-				.addOption('initials', 'Initials only')
-				.addOption('hidden', 'Exclude from export')
-				.setValue(gxPrivacyOverrideFormat)
-				.onChange(value => {
-					gxPrivacyOverrideFormat = value as 'living' | 'private' | 'initials' | 'hidden';
-					void updateGxPrivacyPreview();
-				})
-			);
-		gxPrivacyFormatSetting.settingEl.addClass('cr-hidden');
-
-		// Privacy preview section
-		const gxPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4 cr-hidden' });
-
-		updateGxPrivacyPreview = async (): Promise<void> => {
-			const effectiveProtection = gxPrivacyOverrideEnabled
-				? gxPrivacyOverrideProtection
-				: this.plugin.settings.enablePrivacyProtection;
-			const effectiveFormat = gxPrivacyOverrideEnabled
-				? gxPrivacyOverrideFormat
-				: this.plugin.settings.privacyDisplayFormat;
-
-			if (!effectiveProtection) {
-				gxPrivacyPreviewEl.addClass('cr-hidden');
-				return;
-			}
-
-			const { FamilyGraphService } = await import('../core/family-graph');
-			const { PrivacyService } = await import('../core/privacy-service');
-
-			const graphService = new FamilyGraphService(this.app);
-			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
-			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
-			graphService.setValueAliases(this.plugin.settings.valueAliases);
-			graphService.reloadCache();
-			const allPeople = graphService.getAllPeople();
-
-			const privacyService = new PrivacyService({
-				enablePrivacyProtection: effectiveProtection,
-				livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
-				privacyDisplayFormat: effectiveFormat,
-				hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
-			});
-
-			const summary = privacyService.getPrivacySummary(allPeople);
-
-			gxPrivacyPreviewEl.empty();
-			gxPrivacyPreviewEl.removeClass('cr-hidden');
-
-			const previewText = effectiveFormat === 'hidden'
-				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
-				: `${summary.protected} of ${summary.total} people will be obfuscated (living)`;
-
-			gxPrivacyPreviewEl.createEl('span', {
-				text: previewText,
-				cls: 'crc-text-muted crc-text-sm'
-			});
-		};
-
-		// Initial preview based on global settings
-		void updateGxPrivacyPreview();
-
-		// Export file name
-		let gxExportFileName = 'family-tree';
-		new Setting(content)
-			.setName('Export file name')
-			.setDesc('Name for the exported .json file (without extension)')
-			.addText(text => text
-				.setPlaceholder('family-tree')
-				.setValue(gxExportFileName)
-				.onChange(value => {
-					gxExportFileName = value || 'family-tree';
-				})
-			);
+		// Build shared export options using the builder
+		optionsBuilder.buildCollectionFilter(content);
+		optionsBuilder.buildBranchFilter(content);
+		optionsBuilder.buildPrivacyOverride(content);
+		optionsBuilder.buildStatsPreview(content);
+		optionsBuilder.buildFileNameInput(content, 'family-tree', '.json');
 
 		// Export button
 		const exportBtn = content.createEl('button', {
@@ -8465,15 +8301,18 @@ export class ControlCenterModal extends Modal {
 
 		exportBtn.addEventListener('click', () => {
 			void (async () => {
+				const options = optionsBuilder.getOptions();
+				const privacySettings = optionsBuilder.getEffectivePrivacySettings();
+
 				await this.handleGedcomXExport({
-					fileName: gxExportFileName,
-					collectionFilter,
-					branchRootCrId: gxBranchRootCrId,
-					branchDirection: gxBranchDirection,
-					branchIncludeSpouses: gxBranchIncludeSpouses,
-					privacyOverride: gxPrivacyOverrideEnabled ? {
-						enablePrivacyProtection: gxPrivacyOverrideProtection,
-						privacyDisplayFormat: gxPrivacyOverrideFormat
+					fileName: options.exportFileName,
+					collectionFilter: options.collectionFilter,
+					branchRootCrId: options.branchRootCrId,
+					branchDirection: options.branchDirection,
+					branchIncludeSpouses: options.branchIncludeSpouses,
+					privacyOverride: options.privacyOverrideEnabled ? {
+						enablePrivacyProtection: privacySettings.enablePrivacyProtection,
+						privacyDisplayFormat: privacySettings.privacyDisplayFormat
 					} : undefined
 				});
 			})();
@@ -8801,7 +8640,11 @@ export class ControlCenterModal extends Modal {
 			cls: 'crc-text-muted crc-mb-4'
 		});
 
-		// Export options
+		// Use the new ExportOptionsBuilder
+		const { ExportOptionsBuilder } = require('./export-options-builder');
+		const optionsBuilder = new ExportOptionsBuilder(this.app, this.plugin);
+
+		// People folder (read-only display)
 		new Setting(content)
 			.setName('People folder')
 			.setDesc('Folder containing person notes to export')
@@ -8811,180 +8654,14 @@ export class ControlCenterModal extends Modal {
 				.setDisabled(true)
 			);
 
-		// Collection filter option
-		let collectionFilter: string | undefined;
-		new Setting(content)
-			.setName('Collection filter (optional)')
-			.setDesc('Only export people in a specific collection')
-			.addDropdown(async dropdown => {
-				dropdown.addOption('', 'All people');
-
-				// Load collections
-				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
-				const collections = graphService.getUserCollections();
-				collections.forEach(collection => {
-					dropdown.addOption(collection.name, collection.name);
-				});
-
-				dropdown.onChange(value => {
-					collectionFilter = value || undefined;
-				});
-			});
-
-		// Branch filter options
-		let grampsBranchRootCrId: string | undefined;
-		let grampsBranchDirection: 'ancestors' | 'descendants' | undefined;
-		let grampsBranchIncludeSpouses = false;
-
-		new Setting(content)
-			.setName('Branch filter (optional)')
-			.setDesc('Export only ancestors or descendants of a specific person')
-			.addButton(btn => {
-				btn.setButtonText('Select person')
-					.onClick(() => {
-						const picker = new PersonPickerModal(this.app, (info) => {
-							grampsBranchRootCrId = info.crId;
-							btn.setButtonText(info.name);
-						});
-						picker.open();
-					});
-			});
-
-		new Setting(content)
-			.setName('Branch direction')
-			.setDesc('Include ancestors (up) or descendants (down)')
-			.addDropdown(dropdown => {
-				dropdown.addOption('', 'No branch filter');
-				dropdown.addOption('ancestors', 'Ancestors only');
-				dropdown.addOption('descendants', 'Descendants only');
-				dropdown.onChange(value => {
-					grampsBranchDirection = value as 'ancestors' | 'descendants' || undefined;
-				});
-			});
-
-		new Setting(content)
-			.setName('Include spouses in descendants')
-			.setDesc('When exporting descendants, also include their spouses')
-			.addToggle(toggle => toggle
-				.setValue(false)
-				.onChange(value => {
-					grampsBranchIncludeSpouses = value;
-				})
-			);
-
-		// Privacy override options
-		let grampsPrivacyOverrideEnabled = false;
-		let grampsPrivacyOverrideProtection = this.plugin.settings.enablePrivacyProtection;
-		let grampsPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
-
-		// Define updateGrampsPrivacyPreview before the settings that use it
-		let updateGrampsPrivacyPreview: () => Promise<void>;
-
-		new Setting(content)
-			.setName('Override privacy settings')
-			.setDesc('Use different privacy settings for this export only')
-			.addToggle(toggle => toggle
-				.setValue(false)
-				.onChange(value => {
-					grampsPrivacyOverrideEnabled = value;
-					grampsPrivacyProtectionSetting.settingEl.toggleClass('cr-hidden', !value);
-					grampsPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !(value && grampsPrivacyOverrideProtection));
-					void updateGrampsPrivacyPreview();
-				})
-			);
-
-		const grampsPrivacyProtectionSetting = new Setting(content)
-			.setName('Enable privacy protection')
-			.setDesc('Protect living persons in this export')
-			.addToggle(toggle => toggle
-				.setValue(grampsPrivacyOverrideProtection)
-				.onChange(value => {
-					grampsPrivacyOverrideProtection = value;
-					grampsPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !value);
-					void updateGrampsPrivacyPreview();
-				})
-			);
-		grampsPrivacyProtectionSetting.settingEl.addClass('cr-hidden');
-
-		const grampsPrivacyFormatSetting = new Setting(content)
-			.setName('Privacy display format')
-			.setDesc('How to display protected living persons')
-			.addDropdown(dropdown => dropdown
-				.addOption('living', 'Living')
-				.addOption('private', 'Private')
-				.addOption('initials', 'Initials only')
-				.addOption('hidden', 'Exclude from export')
-				.setValue(grampsPrivacyOverrideFormat)
-				.onChange(value => {
-					grampsPrivacyOverrideFormat = value as 'living' | 'private' | 'initials' | 'hidden';
-					void updateGrampsPrivacyPreview();
-				})
-			);
-		grampsPrivacyFormatSetting.settingEl.addClass('cr-hidden');
-
-		// Privacy preview section
-		const grampsPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4 cr-hidden' });
-
-		updateGrampsPrivacyPreview = async (): Promise<void> => {
-			const effectiveProtection = grampsPrivacyOverrideEnabled
-				? grampsPrivacyOverrideProtection
-				: this.plugin.settings.enablePrivacyProtection;
-			const effectiveFormat = grampsPrivacyOverrideEnabled
-				? grampsPrivacyOverrideFormat
-				: this.plugin.settings.privacyDisplayFormat;
-
-			if (!effectiveProtection) {
-				grampsPrivacyPreviewEl.addClass('cr-hidden');
-				return;
-			}
-
-			const { FamilyGraphService } = await import('../core/family-graph');
-			const { PrivacyService } = await import('../core/privacy-service');
-
-			const graphService = new FamilyGraphService(this.app);
-			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
-			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
-			graphService.setValueAliases(this.plugin.settings.valueAliases);
-			graphService.reloadCache();
-			const allPeople = graphService.getAllPeople();
-
-			const privacyService = new PrivacyService({
-				enablePrivacyProtection: effectiveProtection,
-				livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
-				privacyDisplayFormat: effectiveFormat,
-				hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
-			});
-
-			const summary = privacyService.getPrivacySummary(allPeople);
-
-			grampsPrivacyPreviewEl.empty();
-			grampsPrivacyPreviewEl.removeClass('cr-hidden');
-
-			const previewText = effectiveFormat === 'hidden'
-				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
-				: `${summary.protected} of ${summary.total} people will be obfuscated (living)`;
-
-			grampsPrivacyPreviewEl.createEl('span', {
-				text: previewText,
-				cls: 'crc-text-muted crc-text-sm'
-			});
-		};
-
-		// Initial preview based on global settings
-		void updateGrampsPrivacyPreview();
+		// Build shared export options using the builder
+		optionsBuilder.buildCollectionFilter(content);
+		optionsBuilder.buildBranchFilter(content);
+		optionsBuilder.buildPrivacyOverride(content);
+		optionsBuilder.buildStatsPreview(content);
 
 		// Export file name
-		let grampsExportFileName = 'family-tree';
-		new Setting(content)
-			.setName('Export file name')
-			.setDesc('Name for the exported .gramps file (without extension)')
-			.addText(text => text
-				.setPlaceholder('family-tree')
-				.setValue(grampsExportFileName)
-				.onChange(value => {
-					grampsExportFileName = value || 'family-tree';
-				})
-			);
+		optionsBuilder.buildFileNameInput(content, 'family-tree', '.gramps');
 
 		// Export button
 		const exportBtn = content.createEl('button', {
@@ -8994,15 +8671,18 @@ export class ControlCenterModal extends Modal {
 
 		exportBtn.addEventListener('click', () => {
 			void (async () => {
+				const options = optionsBuilder.getOptions();
+				const privacySettings = optionsBuilder.getEffectivePrivacySettings();
+
 				await this.handleGrampsExport({
-					fileName: grampsExportFileName,
-					collectionFilter,
-					branchRootCrId: grampsBranchRootCrId,
-					branchDirection: grampsBranchDirection,
-					branchIncludeSpouses: grampsBranchIncludeSpouses,
-					privacyOverride: grampsPrivacyOverrideEnabled ? {
-						enablePrivacyProtection: grampsPrivacyOverrideProtection,
-						privacyDisplayFormat: grampsPrivacyOverrideFormat
+					fileName: options.exportFileName,
+					collectionFilter: options.collectionFilter,
+					branchRootCrId: options.branchRootCrId,
+					branchDirection: options.branchDirection,
+					branchIncludeSpouses: options.branchIncludeSpouses,
+					privacyOverride: options.privacyOverrideEnabled ? {
+						enablePrivacyProtection: privacySettings.enablePrivacyProtection,
+						privacyDisplayFormat: privacySettings.privacyDisplayFormat
 					} : undefined
 				});
 			})();
@@ -9198,7 +8878,11 @@ export class ControlCenterModal extends Modal {
 			cls: 'crc-text-muted crc-mb-4'
 		});
 
-		// Export options
+		// Use the new ExportOptionsBuilder
+		const { ExportOptionsBuilder } = require('./export-options-builder');
+		const optionsBuilder = new ExportOptionsBuilder(this.app, this.plugin);
+
+		// People folder (read-only display)
 		new Setting(content)
 			.setName('People folder')
 			.setDesc('Folder containing person notes to export')
@@ -9208,181 +8892,14 @@ export class ControlCenterModal extends Modal {
 				.setDisabled(true)
 			);
 
-		// Collection filter option
-		let collectionFilter: string | undefined;
-		new Setting(content)
-			.setName('Collection filter (optional)')
-			.setDesc('Only export people in a specific collection')
-			.addDropdown(async dropdown => {
-				dropdown.addOption('', 'All people');
-
-				// Load collections
-				const graphService = new (await import('../core/family-graph')).FamilyGraphService(this.app);
-				const collections = graphService.getUserCollections();
-				collections.forEach(collection => {
-					dropdown.addOption(collection.name, collection.name);
-				});
-
-				dropdown.onChange(value => {
-					collectionFilter = value || undefined;
-				});
-			});
-
-		// Branch filter options for CSV
-		let csvBranchRootCrId: string | undefined;
-		let csvBranchDirection: 'ancestors' | 'descendants' | undefined;
-		let csvBranchIncludeSpouses = false;
-
-		new Setting(content)
-			.setName('Branch filter (optional)')
-			.setDesc('Export only ancestors or descendants of a specific person')
-			.addButton(btn => {
-				btn.setButtonText('Select person')
-					.onClick(() => {
-						const picker = new PersonPickerModal(this.app, (info) => {
-							csvBranchRootCrId = info.crId;
-							btn.setButtonText(info.name);
-						});
-						picker.open();
-					});
-			});
-
-		new Setting(content)
-			.setName('Branch direction')
-			.setDesc('Include ancestors (up) or descendants (down)')
-			.addDropdown(dropdown => {
-				dropdown.addOption('', 'No branch filter');
-				dropdown.addOption('ancestors', 'Ancestors only');
-				dropdown.addOption('descendants', 'Descendants only');
-				dropdown.onChange(value => {
-					csvBranchDirection = value as 'ancestors' | 'descendants' || undefined;
-				});
-			});
-
-		new Setting(content)
-			.setName('Include spouses in descendants')
-			.setDesc('When exporting descendants, also include their spouses')
-			.addToggle(toggle => toggle
-				.setValue(false)
-				.onChange(value => {
-					csvBranchIncludeSpouses = value;
-				})
-			);
-
-		// Privacy override options for CSV
-		let csvPrivacyOverrideEnabled = false;
-		let csvPrivacyOverrideProtection = this.plugin.settings.enablePrivacyProtection;
-		let csvPrivacyOverrideFormat: 'living' | 'private' | 'initials' | 'hidden' = this.plugin.settings.privacyDisplayFormat;
-
-		// Define updateCsvPrivacyPreview before the settings that use it
-		let updateCsvPrivacyPreview: () => Promise<void>;
-
-		new Setting(content)
-			.setName('Override privacy settings')
-			.setDesc('Use different privacy settings for this export only')
-			.addToggle(toggle => toggle
-				.setValue(false)
-				.onChange(value => {
-					csvPrivacyOverrideEnabled = value;
-					csvPrivacyProtectionSetting.settingEl.toggleClass('cr-hidden', !value);
-					csvPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !(value && csvPrivacyOverrideProtection));
-					void updateCsvPrivacyPreview();
-				})
-			);
-
-		const csvPrivacyProtectionSetting = new Setting(content)
-			.setName('Enable privacy protection')
-			.setDesc('Protect living persons in this export')
-			.addToggle(toggle => toggle
-				.setValue(csvPrivacyOverrideProtection)
-				.onChange(value => {
-					csvPrivacyOverrideProtection = value;
-					csvPrivacyFormatSetting.settingEl.toggleClass('cr-hidden', !value);
-					void updateCsvPrivacyPreview();
-				})
-			);
-		csvPrivacyProtectionSetting.settingEl.addClass('cr-hidden');
-
-		const csvPrivacyFormatSetting = new Setting(content)
-			.setName('Privacy display format')
-			.setDesc('How to display protected living persons')
-			.addDropdown(dropdown => dropdown
-				.addOption('living', 'Living')
-				.addOption('private', 'Private')
-				.addOption('initials', 'Initials only')
-				.addOption('hidden', 'Exclude from export')
-				.setValue(csvPrivacyOverrideFormat)
-				.onChange(value => {
-					csvPrivacyOverrideFormat = value as 'living' | 'private' | 'initials' | 'hidden';
-					void updateCsvPrivacyPreview();
-				})
-			);
-		csvPrivacyFormatSetting.settingEl.addClass('cr-hidden');
-
-		// Privacy preview section for CSV
-		const csvPrivacyPreviewEl = content.createDiv({ cls: 'crc-privacy-preview crc-mb-4 cr-hidden' });
-
-		updateCsvPrivacyPreview = async (): Promise<void> => {
-			const effectiveProtection = csvPrivacyOverrideEnabled
-				? csvPrivacyOverrideProtection
-				: this.plugin.settings.enablePrivacyProtection;
-			const effectiveFormat = csvPrivacyOverrideEnabled
-				? csvPrivacyOverrideFormat
-				: this.plugin.settings.privacyDisplayFormat;
-
-			if (!effectiveProtection) {
-				csvPrivacyPreviewEl.addClass('cr-hidden');
-				return;
-			}
-
-			// Load people and calculate privacy summary
-			const { FamilyGraphService } = await import('../core/family-graph');
-			const { PrivacyService } = await import('../core/privacy-service');
-
-			const graphService = new FamilyGraphService(this.app);
-			graphService.setFolderFilter(new (await import('../core/folder-filter')).FolderFilterService(this.plugin.settings));
-			graphService.setPropertyAliases(this.plugin.settings.propertyAliases);
-			graphService.setValueAliases(this.plugin.settings.valueAliases);
-			graphService.reloadCache();
-			const allPeople = graphService.getAllPeople();
-
-			const privacyService = new PrivacyService({
-				enablePrivacyProtection: effectiveProtection,
-				livingPersonAgeThreshold: this.plugin.settings.livingPersonAgeThreshold,
-				privacyDisplayFormat: effectiveFormat,
-				hideDetailsForLiving: this.plugin.settings.hideDetailsForLiving
-			});
-
-			const summary = privacyService.getPrivacySummary(allPeople);
-
-			csvPrivacyPreviewEl.empty();
-			csvPrivacyPreviewEl.removeClass('cr-hidden');
-
-			const previewText = effectiveFormat === 'hidden'
-				? `${summary.excluded} of ${summary.total} people will be excluded (living)`
-				: `${summary.protected} of ${summary.total} people will be obfuscated (living)`;
-
-			csvPrivacyPreviewEl.createEl('span', {
-				text: previewText,
-				cls: 'crc-text-muted crc-text-sm'
-			});
-		};
-
-		// Initial preview based on global settings
-		void updateCsvPrivacyPreview();
+		// Build shared export options using the builder
+		optionsBuilder.buildCollectionFilter(content);
+		optionsBuilder.buildBranchFilter(content);
+		optionsBuilder.buildPrivacyOverride(content);
+		optionsBuilder.buildStatsPreview(content);
 
 		// Export file name
-		let exportFileName = 'family-tree';
-		new Setting(content)
-			.setName('Export file name')
-			.setDesc('Name for the exported .csv file (without extension)')
-			.addText(text => text
-				.setPlaceholder('family-tree')
-				.setValue(exportFileName)
-				.onChange(value => {
-					exportFileName = value || 'family-tree';
-				})
-			);
+		optionsBuilder.buildFileNameInput(content, 'family-tree', '.csv');
 
 		// Export button
 		const exportBtn = content.createEl('button', {
@@ -9392,15 +8909,18 @@ export class ControlCenterModal extends Modal {
 
 		exportBtn.addEventListener('click', () => {
 			void (async () => {
+				const options = optionsBuilder.getOptions();
+				const privacySettings = optionsBuilder.getEffectivePrivacySettings();
+
 				await this.handleCsvExport({
-					fileName: exportFileName,
-					collectionFilter,
-					branchRootCrId: csvBranchRootCrId,
-					branchDirection: csvBranchDirection,
-					branchIncludeSpouses: csvBranchIncludeSpouses,
-					privacyOverride: csvPrivacyOverrideEnabled ? {
-						enablePrivacyProtection: csvPrivacyOverrideProtection,
-						privacyDisplayFormat: csvPrivacyOverrideFormat
+					fileName: options.exportFileName,
+					collectionFilter: options.collectionFilter,
+					branchRootCrId: options.branchRootCrId,
+					branchDirection: options.branchDirection,
+					branchIncludeSpouses: options.branchIncludeSpouses,
+					privacyOverride: options.privacyOverrideEnabled ? {
+						enablePrivacyProtection: privacySettings.enablePrivacyProtection,
+						privacyDisplayFormat: privacySettings.privacyDisplayFormat
 					} : undefined
 				});
 			})();
