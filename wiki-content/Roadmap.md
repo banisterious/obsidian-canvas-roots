@@ -9,7 +9,6 @@ This document outlines planned features for Canvas Roots. For completed features
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
   - [Sex/Gender Identity Expansion](#sexgender-identity-expansion) ⚡ High
-  - [Export v2: Full Entity Export](#export-v2-full-entity-export) ⚡ High
   - [Calendarium Integration](#calendarium-integration) 📋 Medium
   - [Reports & Print Export](#reports--print-export) 📋 Medium
   - [Statistics Dashboard](#statistics-dashboard) 📋 Medium
@@ -26,6 +25,7 @@ For detailed implementation documentation of completed features, see [Release Hi
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.11.0 | [Export v2](Release-History#export-v2-v0110) | Full entity export with round-trip fidelity |
 | v0.10.19 | [Unified Property Configuration](Release-History#unified-property-configuration-v01019) | Consolidated property and value alias management |
 | v0.10.17 | [Data Enhancement Pass](Release-History#data-enhancement-pass-v01017) | Generate place notes from existing data with progress and editing |
 | v0.10.3 | [Type Customization](Release-History#type-customization-v0103) | Full type managers for all note categories |
@@ -88,6 +88,8 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 See [Sex/Gender Identity Expansion Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/sex-gender-expansion.md) for implementation details.
 
+**Note:** Export v2 is now complete in v0.11.0. See [Export v2 (v0.11.0)](Release-History#export-v2-v0110) in Release History for full details.
+
 ---
 
 ### Calendarium Integration
@@ -136,38 +138,6 @@ See [Sex/Gender Identity Expansion Planning Document](https://github.com/baniste
 **Future Consideration:** Per-calendar frontmatter fields (e.g., `mycalendar-date` instead of `fc-calendar` + `fc-date`) to allow one note to have dates across multiple calendars.
 
 See [Calendarium Integration Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/calendarium-integration.md) for implementation details.
-
----
-
-### Export v2: Full Entity Export
-
-**Priority:** ⚡ High — Completes import/export round-trip with GEDCOM Import v2
-
-**Summary:** Enhanced export functionality that includes events, sources, places, and media in addition to person notes. Ensures round-trip fidelity with GEDCOM Import v2 and enables complete data portability.
-
-**Current Limitation:** All four exporters (GEDCOM 5.5.1, GEDCOM X, Gramps XML, CSV) only export person notes. Event notes, source notes, place notes, and media files created by Import v2 are lost on export.
-
-**Planned Features:**
-- **Event Export:** Export all event notes linked to persons (30+ event types)
-- **Source Export:** Export source notes with citations linked to events
-- **Place Export:** Export place hierarchy with coordinates
-- **Media Export:** Bundle media files (images, documents, audio) in ZIP archive
-- **GEDCOM 7.0 Support:** Modern format with native media embedding
-- **Format-specific mappings:** GEDCOM tags, GEDCOM X facts, Gramps XML events
-- **Sensitive field redaction:** SSN and identity numbers automatically removed
-- **UI enhancements:** Checkboxes to include/exclude entity types and media options
-- **Enhanced export experience:** Progress modal with real-time feedback, export preview with entity counts, and export history tracking
-
-**Supported Formats:**
-| Format | Events | Sources | Places | Media |
-|--------|--------|---------|--------|-------|
-| GEDCOM 5.5.1 | ✅ inline tags | ✅ SOUR records | ✅ PLAC hierarchy | ⚠️ limited OBJE |
-| GEDCOM 7.0 | ✅ inline tags | ✅ SOUR records | ✅ PLAC records | ✅ full OBJE support |
-| GEDCOM X | ✅ person facts | ✅ sourceDescriptions | ✅ placeDescriptions | ✅ artifacts |
-| Gramps XML | ✅ event records | ✅ source records | ✅ placeobj records | ✅ objects |
-| CSV | ✅ event rows | ✅ source rows | ✅ place rows | ✅ media rows |
-
-See [Export v2 Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/export-v2.md) for implementation details.
 
 ---
 

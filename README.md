@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.10.17-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.11.0-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, writers, and world-builders.
 
@@ -29,11 +29,13 @@
 
 | Feature | Description |
 |---------|-------------|
+| **Full Entity Export** | Export people, events, sources, places, and custom relationships to all formats |
 | **GEDCOM 5.5.1** | Full round-trip import/export with validation, UUID preservation, and privacy protection |
 | **GEDCOM X** | Import/export with FamilySearch JSON format |
 | **Gramps XML** | Import/export for Gramps genealogy software |
 | **CSV/TSV** | Import/export for spreadsheet workflows with auto-detected column mapping |
 | **Excalidraw Export** | Export canvases for manual annotation and hand-drawn styling |
+| **Enhanced Export UI** | Real-time statistics, entity toggles, format selection, and progress tracking |
 | **Selective Branch Export** | Export only ancestors or descendants of a specific person |
 | **Privacy-Aware Exports** | Optional anonymization of living persons in all export formats |
 

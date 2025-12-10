@@ -8,6 +8,8 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 
 ## Table of Contents
 
+- [v0.11.x](#v011x)
+  - [Export v2](#export-v2-v0110)
 - [v0.10.x](#v010x)
   - [Data Enhancement Pass](#data-enhancement-pass-v01017)
   - [Type Customization](#type-customization-v0103)
@@ -31,6 +33,115 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
   - [Maps Tab](#maps-tab-v062)
   - [Geographic Features](#geographic-features-v060)
   - [Import/Export Enhancements](#importexport-enhancements-v060)
+
+---
+
+## v0.11.x
+
+### Export v2 (v0.11.0)
+
+Complete overhaul of export functionality with full entity support and round-trip fidelity with GEDCOM Import v2.
+
+See [export-v2.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/export-v2.md) for implementation plan.
+
+**Problem Solved:**
+- Previous exports only included people (person notes)
+- Events, sources, places, and custom relationships were lost on export
+- No round-trip fidelity with GEDCOM Import v2 (import created entity notes, but export discarded them)
+- Limited export options and no real-time statistics
+
+**Full Entity Export:**
+
+All four export formats (GEDCOM 5.5.1, GEDCOM X, Gramps XML, CSV) now support:
+
+| Entity Type | Export Support |
+|-------------|----------------|
+| **People** | Full person records with all properties |
+| **Events** | All 22 event types with dates, places, participants, sources, confidence levels |
+| **Sources** | Source notes with citations, repositories, quality classification |
+| **Places** | Place hierarchy, coordinates, categories, types preserved |
+| **Custom Relationships** | Godparent, guardian, mentor, etc. (GEDCOM: ASSO records; other formats: dedicated fields) |
+
+**Enhanced Export UI:**
+
+- **Export statistics preview**: Real-time count of entities before export
+  - Shows people count, event count, source count, place count
+  - Respects collection filters and branch filters
+  - Updates dynamically as options change
+- **Entity inclusion toggles**: Granular control over what to include
+  - Toggle people, events, sources, places individually
+  - Statistics update to reflect selections
+- **Format-specific options**:
+  - GEDCOM: Version selector (5.5.1 vs 7.0), collection codes toggle, custom relationships toggle
+  - All formats: Entity toggles, output location, privacy settings
+- **Output location options**:
+  - Download file (traditional behavior)
+  - Save to vault (specify folder path)
+- **Export progress modal**: Full-screen modal showing:
+  - Current phase (loading, filtering, privacy, events, sources, places, generating, writing)
+  - Progress bar with percentage
+  - Running statistics (entities processed so far)
+  - Phase-specific icons and labels
+- **Last export info**: Display previous export timestamp, entity counts, destination
+
+**Property & Value Alias Integration:**
+
+All exporters now respect user-configured property and value aliases:
+
+- **Property aliases**: Export using canonical property names (e.g., `born` → `BIRT` in GEDCOM)
+- **Value aliases**: Map custom event types, sex values, place categories to canonical values before export
+- **Gender identity field**: New `gender_identity` property exported appropriately for each format
+  - GEDCOM: Custom `_GEND` tag
+  - GEDCOM X: `gender` field
+  - Gramps XML: Custom attribute
+  - CSV: Dedicated column
+
+**Custom Relationships Export:**
+
+GEDCOM 5.5.1 now exports custom relationships as ASSO records:
+
+```gedcom
+1 ASSO @I2@
+2 RELA godparent
+2 NOTE Relationship from 1920-05-15 to 1935-08-20
+2 NOTE Became godparent at baptism
+```
+
+- Includes relationship type name as RELA descriptor
+- Date ranges in NOTE subrecords
+- Custom notes preserved
+- Only defined relationships exported (not inferred bidirectional ones)
+- Toggle option in export settings (enabled by default)
+
+**Round-Trip Fidelity:**
+
+Exports now preserve all data from GEDCOM Import v2:
+
+| Import Creates | Export Preserves |
+|----------------|------------------|
+| Event notes | All event types, dates, places, participants, sources |
+| Source notes | Citations, repositories, confidence levels, media links |
+| Place notes | Hierarchy, coordinates, categories, historical names |
+| Custom relationships | ASSO records with full metadata |
+
+**Before Export v2:**
+```
+Import GEDCOM → 500 people, 350 events, 200 sources, 150 places
+Export GEDCOM → 500 people only (850 entities lost)
+```
+
+**After Export v2:**
+```
+Import GEDCOM → 500 people, 350 events, 200 sources, 150 places
+Export GEDCOM → 500 people, 350 events, 200 sources, 150 places (full fidelity)
+```
+
+**Architecture:**
+
+- **Shared ExportOptionsBuilder**: Consolidated UI component used across all export formats
+- **Service injection pattern**: Exporters conditionally load EventService, SourceService, PlaceGraphService, RelationshipService
+- **Progress callback system**: Unified progress reporting for all export phases
+- **ExportStatisticsService**: Calculates real-time entity counts based on current filter settings
 
 ---
 

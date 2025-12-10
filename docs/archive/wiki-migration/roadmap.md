@@ -1,7 +1,7 @@
 # Canvas Roots: Development Roadmap
 
-> **Last Updated:** 2025-12-09
-> **Current Version:** v0.10.17
+> **Last Updated:** 2025-12-10
+> **Current Version:** v0.11.0
 
 This document outlines planned features for Canvas Roots. For release history and completed features, see [CHANGELOG.md](../CHANGELOG.md).
 
@@ -448,18 +448,21 @@ confidence: medium
 
 ### Import/Export Enhancements
 
-**Status:** ✅ Complete in v0.6.0
+**Status:** ✅ Complete in v0.11.0
 
 **Completed Features:**
-- GEDCOM import/export
-- GEDCOM X import/export (JSON format)
-- Gramps XML import/export
-- CSV import/export
+- GEDCOM import/export with full entity support (people, events, sources, places)
+- GEDCOM X import/export (JSON format) with full entity support
+- Gramps XML import/export with full entity support
+- CSV import/export with full entity support
 - Privacy-aware exports with redaction options
 - Separate Import and Export cards in Control Center UI
-
-**Future Enhancements:**
-- Additional GEDCOM fields (sources, notes, events)
+- Custom relationships export via GEDCOM ASSO records
+- Property and value alias integration across all exporters
+- Gender identity field export
+- Enhanced export UI with statistics preview, entity toggles, and progress modal
+- Output location options (download or save to vault)
+- Round-trip fidelity with GEDCOM Import v2
 
 ---
 
