@@ -15,6 +15,10 @@ import { PropertyAliasService } from '../core/property-alias-service';
 import { ValueAliasService } from '../core/value-alias-service';
 import { EventService } from '../events/services/event-service';
 import type { EventNote } from '../events/types/event-types';
+import { SourceService } from '../sources/services/source-service';
+import type { SourceNote } from '../sources/types/source-types';
+import { PlaceGraphService } from '../core/place-graph';
+import type { PlaceNode } from '../models/place';
 import type { CanvasRootsSettings } from '../settings';
 import {
 	type GedcomXDocument,
@@ -24,6 +28,7 @@ import {
 	type GedcomXFact,
 	type GedcomXSourceDescription,
 	type GedcomXAgent,
+	type GedcomXPlaceDescription,
 	GEDCOMX_TYPES
 } from './gedcomx-types';
 
@@ -84,6 +89,8 @@ export class GedcomXExporter {
 	private app: App;
 	private graphService: FamilyGraphService;
 	private eventService: EventService | null = null;
+	private sourceService: SourceService | null = null;
+	private placeGraphService: PlaceGraphService | null = null;
 	private propertyAliasService: PropertyAliasService | null = null;
 	private valueAliasService: ValueAliasService | null = null;
 
@@ -100,6 +107,24 @@ export class GedcomXExporter {
 	 */
 	setEventService(settings: CanvasRootsSettings): void {
 		this.eventService = new EventService(this.app, settings);
+	}
+
+	/**
+	 * Set source service for loading source notes
+	 */
+	setSourceService(settings: CanvasRootsSettings): void {
+		this.sourceService = new SourceService(this.app, settings);
+	}
+
+	/**
+	 * Set place graph service for loading place notes
+	 */
+	setPlaceGraphService(settings: CanvasRootsSettings): void {
+		this.placeGraphService = new PlaceGraphService(this.app);
+		this.placeGraphService.setSettings(settings);
+		if (settings.valueAliases) {
+			this.placeGraphService.setValueAliases(settings.valueAliases);
+		}
 	}
 
 	/**
@@ -217,11 +242,29 @@ export class GedcomXExporter {
 				logger.info('export', `Loaded ${allEvents.length} events`);
 			}
 
+			// Load sources if source service is available
+			let allSources: SourceNote[] = [];
+			if (this.sourceService) {
+				new Notice('Loading source notes...');
+				allSources = this.sourceService.getAllSources();
+				logger.info('export', `Loaded ${allSources.length} sources`);
+			}
+
+			// Load places if place graph service is available
+			let allPlaces: PlaceNode[] = [];
+			if (this.placeGraphService) {
+				new Notice('Loading place notes...');
+				allPlaces = this.placeGraphService.getAllPlaces();
+				logger.info('export', `Loaded ${allPlaces.length} places`);
+			}
+
 			// Build GEDCOM X document
 			new Notice('Generating GEDCOM X data...');
 			const document = this.buildGedcomXDocument(
 				filteredPeople,
 				allEvents,
+				allSources,
+				allPlaces,
 				options,
 				privacyService
 			);
@@ -250,6 +293,8 @@ export class GedcomXExporter {
 	private buildGedcomXDocument(
 		people: PersonNode[],
 		events: EventNote[],
+		sources: SourceNote[],
+		places: PlaceNode[],
 		options: GedcomXExportOptions,
 		privacyService: PrivacyService | null
 	): GedcomXDocument {
@@ -259,17 +304,29 @@ export class GedcomXExporter {
 			crIdToGedcomXId.set(person.crId, `P${index + 1}`);
 		});
 
+		// Create ID mapping for sources
+		const sourceIdMap = new Map<string, string>();
+		sources.forEach((source, index) => {
+			sourceIdMap.set(source.crId, `SD${index + 2}`); // Start at SD2 (SD1 is export metadata)
+		});
+
+		// Create ID mapping for places
+		const placeIdMap = new Map<string, string>();
+		places.forEach((place, index) => {
+			placeIdMap.set(place.id, `PL${index + 1}`);
+		});
+
 		// Build persons
 		const persons: GedcomXPerson[] = people.map(person => {
-			return this.buildPerson(person, crIdToGedcomXId, events, privacyService);
+			return this.buildPerson(person, crIdToGedcomXId, events, sourceIdMap, placeIdMap, privacyService);
 		});
 
 		// Build relationships
 		const relationships = this.buildRelationships(people, crIdToGedcomXId);
 
-		// Build source description
+		// Build source descriptions - start with export metadata
 		const sourceDescriptions: GedcomXSourceDescription[] = [{
-			id: 'S1',
+			id: 'SD1',
 			titles: [{
 				value: `Export from ${options.sourceApp || 'Canvas Roots'}`
 			}],
@@ -277,6 +334,23 @@ export class GedcomXExporter {
 				value: `Exported on ${new Date().toISOString()}`
 			}]
 		}];
+
+		// Add source records from Canvas Roots
+		for (const source of sources) {
+			const sourceId = sourceIdMap.get(source.crId);
+			if (sourceId) {
+				sourceDescriptions.push(this.buildSourceDescription(source, sourceId));
+			}
+		}
+
+		// Build place descriptions
+		const placeDescriptions: GedcomXPlaceDescription[] = [];
+		for (const place of places) {
+			const placeId = placeIdMap.get(place.id);
+			if (placeId) {
+				placeDescriptions.push(this.buildPlaceDescription(place, placeId, placeIdMap));
+			}
+		}
 
 		// Build agent (submitter)
 		const agents: GedcomXAgent[] = [{
@@ -289,12 +363,94 @@ export class GedcomXExporter {
 		return {
 			id: options.fileName || 'export',
 			lang: 'en',
-			description: '#S1',
+			description: '#SD1',
 			persons,
 			relationships,
 			sourceDescriptions,
-			agents
+			agents,
+			places: placeDescriptions.length > 0 ? placeDescriptions : undefined
 		};
+	}
+
+	/**
+	 * Build a GEDCOM X source description from a SourceNote
+	 */
+	private buildSourceDescription(source: SourceNote, sourceId: string): GedcomXSourceDescription {
+		const sourceDesc: GedcomXSourceDescription = {
+			id: sourceId
+		};
+
+		// Add title
+		if (source.title) {
+			sourceDesc.titles = [{ value: source.title }];
+		}
+
+		// Build citation text from available fields
+		const citationParts: string[] = [];
+		if (source.repository) {
+			citationParts.push(source.repository);
+		}
+		if (source.collection) {
+			citationParts.push(source.collection);
+		}
+		if (source.date) {
+			citationParts.push(`(${source.date})`);
+		}
+
+		if (citationParts.length > 0) {
+			sourceDesc.citations = [{ value: citationParts.join(', ') }];
+		}
+
+		// Add repository URL if present
+		if (source.repositoryUrl) {
+			sourceDesc.about = source.repositoryUrl;
+		}
+
+		return sourceDesc;
+	}
+
+	/**
+	 * Build a GEDCOM X place description from a PlaceNode
+	 */
+	private buildPlaceDescription(place: PlaceNode, placeId: string, placeIdMap: Map<string, string>): GedcomXPlaceDescription {
+		const placeDesc: GedcomXPlaceDescription = {
+			id: placeId,
+			names: [{ value: place.name }]
+		};
+
+		// Add place type as URI if available
+		if (place.placeType) {
+			// Map common place types to GEDCOM X URIs
+			const typeMapping: Record<string, string> = {
+				'city': 'http://gedcomx.org/City',
+				'town': 'http://gedcomx.org/Town',
+				'village': 'http://gedcomx.org/Village',
+				'country': 'http://gedcomx.org/Country',
+				'state': 'http://gedcomx.org/State',
+				'province': 'http://gedcomx.org/Province',
+				'county': 'http://gedcomx.org/County',
+				'parish': 'http://gedcomx.org/Parish',
+				'cemetery': 'http://gedcomx.org/Cemetery',
+				'church': 'http://gedcomx.org/Church'
+			};
+			placeDesc.type = typeMapping[place.placeType.toLowerCase()] || `http://gedcomx.org/${place.placeType}`;
+		}
+
+		// Add coordinates if available
+		if (place.coordinates) {
+			placeDesc.latitude = place.coordinates.lat;
+			placeDesc.longitude = place.coordinates.long;
+		}
+
+		// Add jurisdiction (parent place) if available
+		if (place.parentId) {
+			const parentPlaceId = placeIdMap.get(place.parentId);
+			if (parentPlaceId) {
+				placeDesc.jurisdiction = { resource: `#${parentPlaceId}` };
+			}
+		}
+
+		return placeDesc;
 	}
 
 	/**
@@ -304,6 +460,8 @@ export class GedcomXExporter {
 		person: PersonNode,
 		crIdToGedcomXId: Map<string, string>,
 		events: EventNote[],
+		sourceIdMap: Map<string, string>,
+		placeIdMap: Map<string, string>,
 		privacyService: PrivacyService | null
 	): GedcomXPerson {
 		const gedcomXId = crIdToGedcomXId.get(person.crId) || person.crId;
@@ -392,7 +550,7 @@ export class GedcomXExporter {
 
 		// Add event facts linked to this person
 		if (events.length > 0) {
-			const eventFacts = this.buildEventFacts(person, events);
+			const eventFacts = this.buildEventFacts(person, events, sourceIdMap);
 			facts.push(...eventFacts);
 		}
 
@@ -675,7 +833,7 @@ export class GedcomXExporter {
 	 * Build event facts for a person
 	 * Returns GEDCOM X facts array for events linked to this person
 	 */
-	private buildEventFacts(person: PersonNode, events: EventNote[]): GedcomXFact[] {
+	private buildEventFacts(person: PersonNode, events: EventNote[], sourceIdMap: Map<string, string>): GedcomXFact[] {
 		const facts: GedcomXFact[] = [];
 
 		// Filter events that reference this person
@@ -732,6 +890,20 @@ export class GedcomXExporter {
 					fact.value = event.description || event.title;
 				}
 
+				// Add source references if present
+				if (event.sources && event.sources.length > 0) {
+					fact.sources = [];
+					for (const sourceLink of event.sources) {
+						const sourceCrId = this.extractSourceCrId(sourceLink);
+						if (sourceCrId) {
+							const sourceId = sourceIdMap.get(sourceCrId);
+							if (sourceId) {
+								fact.sources.push({ description: `#${sourceId}` });
+							}
+						}
+					}
+				}
+
 				facts.push(fact);
 			} else if (event.eventType === 'custom' || event.eventType) {
 				// Custom event type - use generic fact type
@@ -765,10 +937,47 @@ export class GedcomXExporter {
 					}
 				}
 
+				// Add source references if present
+				if (event.sources && event.sources.length > 0) {
+					fact.sources = [];
+					for (const sourceLink of event.sources) {
+						const sourceCrId = this.extractSourceCrId(sourceLink);
+						if (sourceCrId) {
+							const sourceId = sourceIdMap.get(sourceCrId);
+							if (sourceId) {
+								fact.sources.push({ description: `#${sourceId}` });
+							}
+						}
+					}
+				}
+
 				facts.push(fact);
 			}
 		}
 
 		return facts;
+	}
+
+	/**
+	 * Extract cr_id from a source wikilink
+	 * Handles formats like [[Source Name]] or [[Source Name|Display]]
+	 */
+	private extractSourceCrId(wikilink: string): string | null {
+		// Remove wikilink brackets
+		const cleanLink = wikilink.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+		// Remove display text after pipe
+		const linkPath = cleanLink.split('|')[0].trim();
+
+		// Try to find source by title (file name without extension)
+		if (this.sourceService) {
+			const sources = this.sourceService.getAllSources();
+			const source = sources.find(s => {
+				const fileName = s.filePath.split('/').pop()?.replace('.md', '') || '';
+				return fileName === linkPath || s.title === linkPath;
+			});
+			return source?.crId || null;
+		}
+
+		return null;
 	}
 }

@@ -14,6 +14,10 @@ import { PropertyAliasService } from '../core/property-alias-service';
 import { ValueAliasService } from '../core/value-alias-service';
 import { EventService } from '../events/services/event-service';
 import type { EventNote } from '../events/types/event-types';
+import { SourceService } from '../sources/services/source-service';
+import type { SourceNote } from '../sources/types/source-types';
+import { PlaceGraphService } from '../core/place-graph';
+import type { PlaceNode } from '../models/place';
 import type { CanvasRootsSettings } from '../settings';
 
 const logger = getLogger('CsvExporter');
@@ -139,6 +143,8 @@ export class CsvExporter {
 	private app: App;
 	private graphService: FamilyGraphService;
 	private eventService: EventService | null = null;
+	private sourceService: SourceService | null = null;
+	private placeGraphService: PlaceGraphService | null = null;
 	private propertyAliasService: PropertyAliasService | null = null;
 	private valueAliasService: ValueAliasService | null = null;
 
@@ -155,6 +161,24 @@ export class CsvExporter {
 	 */
 	setEventService(settings: CanvasRootsSettings): void {
 		this.eventService = new EventService(this.app, settings);
+	}
+
+	/**
+	 * Set source service for loading source notes
+	 */
+	setSourceService(settings: CanvasRootsSettings): void {
+		this.sourceService = new SourceService(this.app, settings);
+	}
+
+	/**
+	 * Set place graph service for loading place notes
+	 */
+	setPlaceGraphService(settings: CanvasRootsSettings): void {
+		this.placeGraphService = new PlaceGraphService(this.app);
+		this.placeGraphService.setSettings(settings);
+		if (settings.valueAliases) {
+			this.placeGraphService.setValueAliases(settings.valueAliases);
+		}
 	}
 
 	/**
@@ -281,12 +305,30 @@ export class CsvExporter {
 				logger.info('export', `Loaded ${allEvents.length} events`);
 			}
 
+			// Load sources if source service is available
+			let allSources: SourceNote[] = [];
+			if (this.sourceService) {
+				new Notice('Loading source notes...');
+				allSources = this.sourceService.getAllSources();
+				logger.info('export', `Loaded ${allSources.length} sources`);
+			}
+
+			// Load places if place graph service is available
+			let allPlaces: PlaceNode[] = [];
+			if (this.placeGraphService) {
+				new Notice('Loading place notes...');
+				allPlaces = this.placeGraphService.getAllPlaces();
+				logger.info('export', `Loaded ${allPlaces.length} places`);
+			}
+
 			// Build CSV content
 			new Notice('Generating CSV data...');
 			const csvContent = this.buildCsvContent(
 				filteredPeople,
 				personLookup,
 				allEvents,
+				allSources,
+				allPlaces,
 				options,
 				privacyService
 			);
@@ -314,6 +356,8 @@ export class CsvExporter {
 		people: PersonNode[],
 		personLookup: Map<string, PersonNode>,
 		events: EventNote[],
+		sources: SourceNote[],
+		places: PlaceNode[],
 		options: CsvExportOptions,
 		privacyService: PrivacyService | null
 	): string {
@@ -351,6 +395,46 @@ export class CsvExporter {
 				const eventRow = this.buildEventRow(event, delimiter);
 				if (eventRow) {
 					lines.push(eventRow);
+				}
+			}
+		}
+
+		// Add source records if sources are available
+		if (sources.length > 0) {
+			// Add blank line separator
+			lines.push('');
+
+			// Add source header row
+			if (includeHeader) {
+				const sourceHeaders = ['Type', 'ID', 'Title', 'Repository', 'Collection', 'Date', 'Confidence'];
+				lines.push(sourceHeaders.map(h => this.escapeField(h, delimiter)).join(delimiter));
+			}
+
+			// Add source data rows
+			for (const source of sources) {
+				const sourceRow = this.buildSourceRow(source, delimiter);
+				if (sourceRow) {
+					lines.push(sourceRow);
+				}
+			}
+		}
+
+		// Add place records if places are available
+		if (places.length > 0) {
+			// Add blank line separator
+			lines.push('');
+
+			// Add place header row
+			if (includeHeader) {
+				const placeHeaders = ['Type', 'ID', 'Name', 'Place Type', 'Parent', 'Latitude', 'Longitude', 'Category'];
+				lines.push(placeHeaders.map(h => this.escapeField(h, delimiter)).join(delimiter));
+			}
+
+			// Add place data rows
+			for (const place of places) {
+				const placeRow = this.buildPlaceRow(place, places, delimiter);
+				if (placeRow) {
+					lines.push(placeRow);
 				}
 			}
 		}
@@ -556,6 +640,80 @@ export class CsvExporter {
 
 		// Confidence column
 		fields.push(this.escapeField(event.confidence || 'unknown', delimiter));
+
+		return fields.join(delimiter);
+	}
+
+	/**
+	 * Build a single CSV row for a source
+	 * Format: Type,ID,Title,Repository,Collection,Date,Confidence
+	 */
+	private buildSourceRow(source: SourceNote, delimiter: string): string | null {
+		const fields: string[] = [];
+
+		// Type column - always "source"
+		fields.push(this.escapeField('source', delimiter));
+
+		// ID column
+		fields.push(this.escapeField(source.crId, delimiter));
+
+		// Title column
+		fields.push(this.escapeField(source.title || '', delimiter));
+
+		// Repository column
+		fields.push(this.escapeField(source.repository || '', delimiter));
+
+		// Collection column
+		fields.push(this.escapeField(source.collection || '', delimiter));
+
+		// Date column (date of original document)
+		fields.push(this.escapeField(source.date || '', delimiter));
+
+		// Confidence column
+		fields.push(this.escapeField(source.confidence || 'unknown', delimiter));
+
+		return fields.join(delimiter);
+	}
+
+	/**
+	 * Build a single CSV row for a place
+	 * Format: Type,ID,Name,Place Type,Parent,Latitude,Longitude,Category
+	 */
+	private buildPlaceRow(place: PlaceNode, allPlaces: PlaceNode[], delimiter: string): string | null {
+		const fields: string[] = [];
+
+		// Type column - always "place"
+		fields.push(this.escapeField('place', delimiter));
+
+		// ID column
+		fields.push(this.escapeField(place.id, delimiter));
+
+		// Name column
+		fields.push(this.escapeField(place.name, delimiter));
+
+		// Place Type column
+		fields.push(this.escapeField(place.placeType || '', delimiter));
+
+		// Parent column - wikilink format if parent exists
+		let parentValue = '';
+		if (place.parentId) {
+			const parent = allPlaces.find(p => p.id === place.parentId);
+			if (parent) {
+				parentValue = `[[${parent.name}]]`;
+			}
+		}
+		fields.push(this.escapeField(parentValue, delimiter));
+
+		// Latitude column
+		const lat = place.coordinates?.lat !== undefined ? String(place.coordinates.lat) : '';
+		fields.push(this.escapeField(lat, delimiter));
+
+		// Longitude column
+		const long = place.coordinates?.long !== undefined ? String(place.coordinates.long) : '';
+		fields.push(this.escapeField(long, delimiter));
+
+		// Category column
+		fields.push(this.escapeField(place.category, delimiter));
 
 		return fields.join(delimiter);
 	}

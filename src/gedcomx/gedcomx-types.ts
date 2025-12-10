@@ -100,6 +100,13 @@ export interface GedcomXGender {
 }
 
 /**
+ * Source reference for facts
+ */
+export interface GedcomXSourceReference {
+	description?: string; // Reference to source description (e.g., "#SD1")
+}
+
+/**
  * Fact (birth, death, marriage, etc.)
  */
 export interface GedcomXFact {
@@ -109,6 +116,7 @@ export interface GedcomXFact {
 	place?: GedcomXPlace;
 	value?: string; // For facts like occupation
 	qualifiers?: GedcomXQualifier[];
+	sources?: GedcomXSourceReference[]; // Source references
 }
 
 /**
@@ -208,6 +216,7 @@ export interface GedcomXPlaceDescription {
 	type?: string;
 	latitude?: number;
 	longitude?: number;
+	jurisdiction?: GedcomXResourceReference;
 }
 
 /**

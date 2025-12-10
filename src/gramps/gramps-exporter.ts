@@ -15,6 +15,10 @@ import { PropertyAliasService } from '../core/property-alias-service';
 import { ValueAliasService } from '../core/value-alias-service';
 import { EventService } from '../events/services/event-service';
 import type { EventNote } from '../events/types/event-types';
+import { SourceService } from '../sources/services/source-service';
+import type { SourceNote } from '../sources/types/source-types';
+import { PlaceGraphService } from '../core/place-graph';
+import type { PlaceNode } from '../models/place';
 import type { CanvasRootsSettings } from '../settings';
 
 const logger = getLogger('GrampsExporter');
@@ -86,6 +90,8 @@ export class GrampsExporter {
 	private app: App;
 	private graphService: FamilyGraphService;
 	private eventService: EventService | null = null;
+	private sourceService: SourceService | null = null;
+	private placeGraphService: PlaceGraphService | null = null;
 	private propertyAliasService: PropertyAliasService | null = null;
 	private valueAliasService: ValueAliasService | null = null;
 
@@ -102,6 +108,24 @@ export class GrampsExporter {
 	 */
 	setEventService(settings: CanvasRootsSettings): void {
 		this.eventService = new EventService(this.app, settings);
+	}
+
+	/**
+	 * Set source service for loading source notes
+	 */
+	setSourceService(settings: CanvasRootsSettings): void {
+		this.sourceService = new SourceService(this.app, settings);
+	}
+
+	/**
+	 * Set place graph service for loading place notes
+	 */
+	setPlaceGraphService(settings: CanvasRootsSettings): void {
+		this.placeGraphService = new PlaceGraphService(this.app);
+		this.placeGraphService.setSettings(settings);
+		if (settings.valueAliases) {
+			this.placeGraphService.setValueAliases(settings.valueAliases);
+		}
 	}
 
 	/**
@@ -220,11 +244,29 @@ export class GrampsExporter {
 				logger.info('export', `Loaded ${allEvents.length} events`);
 			}
 
+			// Load sources if source service is available
+			let allSources: SourceNote[] = [];
+			if (this.sourceService) {
+				new Notice('Loading source notes...');
+				allSources = this.sourceService.getAllSources();
+				logger.info('export', `Loaded ${allSources.length} sources`);
+			}
+
+			// Load places if place graph service is available
+			let allPlaces: PlaceNode[] = [];
+			if (this.placeGraphService) {
+				new Notice('Loading place notes...');
+				allPlaces = this.placeGraphService.getAllPlaces();
+				logger.info('export', `Loaded ${allPlaces.length} places`);
+			}
+
 			// Build Gramps XML document
 			new Notice('Generating Gramps XML data...');
 			const xmlContent = this.buildGrampsXml(
 				filteredPeople,
 				allEvents,
+				allSources,
+				allPlaces,
 				options,
 				privacyService
 			);
@@ -253,6 +295,8 @@ export class GrampsExporter {
 	private buildGrampsXml(
 		people: PersonNode[],
 		events: EventNote[],
+		sources: SourceNote[],
+		places: PlaceNode[],
 		options: GrampsExportOptions,
 		privacyService: PrivacyService | null
 	): { xml: string; familyCount: number; eventCount: number } {
@@ -264,6 +308,13 @@ export class GrampsExporter {
 			handleCounter: 1
 		};
 
+		// Add source handles to context
+		const sourceHandles = new Map<string, string>();
+		sources.forEach(source => {
+			const handle = `_s${this.generateHandle(context)}`;
+			sourceHandles.set(source.crId, handle);
+		});
+
 		// Generate handles for all people first
 		people.forEach(person => {
 			const handle = `_${this.generateHandle(context)}`;
@@ -271,8 +322,9 @@ export class GrampsExporter {
 		});
 
 		// Build XML sections
-		const eventsXml = this.buildEvents(people, events, context, privacyService);
-		const places = this.buildPlaces(people, context);
+		const sourcesXml = this.buildSources(sources, sourceHandles, context);
+		const eventsXml = this.buildEvents(people, events, context, sourceHandles, privacyService);
+		const placesXml = this.buildPlaces(places, context);
 		const persons = this.buildPersons(people, events, context, privacyService);
 		const families = this.buildFamilies(people, context);
 
@@ -291,8 +343,9 @@ export class GrampsExporter {
       <resname>${this.escapeXml(options.sourceApp || 'Canvas Roots')}</resname>
     </researcher>
   </header>
+${sourcesXml.xml}
 ${eventsXml.xml}
-${places.xml}
+${placesXml.xml}
 ${persons.xml}
 ${families.xml}
 </database>
@@ -306,12 +359,63 @@ ${families.xml}
 	}
 
 	/**
+	 * Build sources section
+	 */
+	private buildSources(
+		sources: SourceNote[],
+		sourceHandles: Map<string, string>,
+		context: GrampsExportContext
+	): { xml: string } {
+		if (sources.length === 0) {
+			return { xml: '  <sources/>' };
+		}
+
+		const sourceLines: string[] = [];
+		let sourceCounter = 1;
+
+		for (const source of sources) {
+			const handle = sourceHandles.get(source.crId);
+			if (!handle) continue;
+
+			sourceLines.push(`    <source handle="${handle}" id="S${sourceCounter++}">`);
+
+			// Title
+			if (source.title) {
+				sourceLines.push(`      <stitle>${this.escapeXml(source.title)}</stitle>`);
+			}
+
+			// Repository (author in Gramps terminology)
+			if (source.repository) {
+				sourceLines.push(`      <sauthor>${this.escapeXml(source.repository)}</sauthor>`);
+			}
+
+			// Collection (publication info in Gramps)
+			if (source.collection) {
+				sourceLines.push(`      <spubinfo>${this.escapeXml(source.collection)}</spubinfo>`);
+			}
+
+			// Add note with additional information
+			if (source.date || source.repositoryUrl) {
+				const noteHandle = `_n${this.generateHandle(context)}`;
+				sourceLines.push(`      <noteref hlink="${noteHandle}"/>`);
+			}
+
+			sourceLines.push('    </source>');
+		}
+
+		return {
+			xml: '  <sources>\n' + sourceLines.join('\n') + '\n  </sources>'
+		};
+	}
+
+	/**
 	 * Build events section
 	 */
 	private buildEvents(
 		people: PersonNode[],
 		events: EventNote[],
 		context: GrampsExportContext,
+		sourceHandles: Map<string, string>,
 		privacyService: PrivacyService | null
 	): { xml: string; count: number } {
 		const eventLines: string[] = [];
@@ -422,6 +526,19 @@ ${families.xml}
 				eventLines.push(`      <description>${this.escapeXml(description)}</description>`);
 			}
 
+			// Add source references if present
+			if (event.sources && event.sources.length > 0) {
+				for (const sourceLink of event.sources) {
+					const sourceCrId = this.extractSourceCrId(sourceLink);
+					if (sourceCrId) {
+						const sourceHandle = sourceHandles.get(sourceCrId);
+						if (sourceHandle) {
+							eventLines.push(`      <sourceref hlink="${sourceHandle}"/>`);
+						}
+					}
+				}
+			}
+
 			eventLines.push('    </event>');
 		}
 
@@ -436,30 +553,118 @@ ${families.xml}
 	}
 
 	/**
-	 * Build places section
+	 * Build places section from PlaceNode data
 	 */
 	private buildPlaces(
-		people: PersonNode[],
+		places: PlaceNode[],
 		context: GrampsExportContext
-	): { xml: string } {
-		// Places are created on-demand in buildEvents, so just format them
-		if (context.placeHandles.size === 0) {
-			return { xml: '  <places/>' };
+	): { xml: string; count: number } {
+		// Build map of place handles (cr_id -> handle)
+		const placeHandleMap = new Map<string, string>();
+		for (const place of places) {
+			const handle = `_p${this.generateHandle(context)}`;
+			placeHandleMap.set(place.id, handle);
+		}
+
+		// If no places, return empty section
+		if (places.length === 0) {
+			return { xml: '  <places/>', count: 0 };
 		}
 
 		const placeLines: string[] = [];
 		let placeCounter = 1;
 
-		context.placeHandles.forEach((handle, placeName) => {
-			placeLines.push(`    <placeobj handle="${handle}" id="P${placeCounter++}">`);
-			placeLines.push(`      <ptitle>${this.escapeXml(placeName)}</ptitle>`);
-			placeLines.push(`      <pname value="${this.escapeXml(placeName)}"/>`);
+		for (const place of places) {
+			const handle = placeHandleMap.get(place.id);
+			if (!handle) continue;
+
+			// Get place type for Gramps (map to Gramps types)
+			const placeType = this.mapPlaceTypeToGramps(place.placeType);
+
+			placeLines.push(`    <placeobj handle="${handle}" id="P${placeCounter++}"${placeType ? ` type="${this.escapeXml(placeType)}"` : ''}>`);
+
+			// Build hierarchical title by traversing parents
+			const hierarchicalName = this.buildHierarchicalPlaceName(place, places);
+			placeLines.push(`      <ptitle>${this.escapeXml(hierarchicalName)}</ptitle>`);
+
+			// Place name
+			placeLines.push(`      <pname value="${this.escapeXml(place.name)}"/>`);
+
+			// Coordinates (if present)
+			if (place.coordinates) {
+				placeLines.push(`      <coord lat="${place.coordinates.lat}" long="${place.coordinates.long}"/>`);
+			}
+
+			// Parent reference (if present)
+			if (place.parentId) {
+				const parentHandle = placeHandleMap.get(place.parentId);
+				if (parentHandle) {
+					placeLines.push(`      <placeref hlink="${parentHandle}"/>`);
+				}
+			}
+
 			placeLines.push('    </placeobj>');
-		});
+		}
 
 		return {
-			xml: '  <places>\n' + placeLines.join('\n') + '\n  </places>'
+			xml: '  <places>\n' + placeLines.join('\n') + '\n  </places>',
+			count: places.length
 		};
+	}
+
+	/**
+	 * Build hierarchical place name by traversing parent chain
+	 */
+	private buildHierarchicalPlaceName(place: PlaceNode, allPlaces: PlaceNode[]): string {
+		const parts: string[] = [place.name];
+		const visited = new Set<string>();
+		let currentId = place.parentId;
+
+		while (currentId) {
+			if (visited.has(currentId)) {
+				// Circular reference detected
+				break;
+			}
+			visited.add(currentId);
+
+			const parent = allPlaces.find(p => p.id === currentId);
+			if (parent) {
+				parts.push(parent.name);
+				currentId = parent.parentId;
+			} else {
+				break;
+			}
+		}
+
+		return parts.join(', ');
+	}
+
+	/**
+	 * Map Canvas Roots place type to Gramps place type
+	 */
+	private mapPlaceTypeToGramps(placeType?: string): string {
+		if (!placeType) return '';
+
+		const mapping: Record<string, string> = {
+			'planet': 'Unknown',
+			'continent': 'Unknown',
+			'country': 'Country',
+			'state': 'State',
+			'province': 'Province',
+			'region': 'Region',
+			'county': 'County',
+			'city': 'City',
+			'town': 'Town',
+			'village': 'Village',
+			'district': 'District',
+			'parish': 'Parish',
+			'castle': 'Building',
+			'estate': 'Farm',
+			'cemetery': 'Cemetery',
+			'church': 'Church'
+		};
+
+		return mapping[placeType.toLowerCase()] || placeType.charAt(0).toUpperCase() + placeType.slice(1);
 	}
 
 	/**
@@ -850,5 +1055,28 @@ ${families.xml}
 
 		// Return mapped type, or use the original event type if not mapped
 		return mapping[eventType] || eventType.charAt(0).toUpperCase() + eventType.slice(1);
+	}
+
+	/**
+	 * Extract cr_id from a source wikilink
+	 * Handles formats like [[Source Name]] or [[Source Name|Display]]
+	 */
+	private extractSourceCrId(wikilink: string): string | null {
+		// Remove wikilink brackets
+		const cleanLink = wikilink.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+		// Remove display text after pipe
+		const linkPath = cleanLink.split('|')[0].trim();
+
+		// Try to find source by title (file name without extension)
+		if (this.sourceService) {
+			const sources = this.sourceService.getAllSources();
+			const source = sources.find(s => {
+				const fileName = s.filePath.split('/').pop()?.replace('.md', '') || '';
+				return fileName === linkPath || s.title === linkPath;
+			});
+			return source?.crId || null;
+		}
+
+		return null;
 	}
 }

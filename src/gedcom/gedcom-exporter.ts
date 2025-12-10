@@ -14,6 +14,10 @@ import { PropertyAliasService } from '../core/property-alias-service';
 import { ValueAliasService } from '../core/value-alias-service';
 import { EventService } from '../events/services/event-service';
 import type { EventNote } from '../events/types/event-types';
+import { SourceService } from '../sources/services/source-service';
+import type { SourceNote } from '../sources/types/source-types';
+import { PlaceGraphService } from '../core/place-graph';
+import type { PlaceNode } from '../models/place';
 import type { CanvasRootsSettings } from '../settings';
 
 const logger = getLogger('GedcomExporter');
@@ -88,6 +92,8 @@ export class GedcomExporter {
 	private app: App;
 	private graphService: FamilyGraphService;
 	private eventService: EventService | null = null;
+	private sourceService: SourceService | null = null;
+	private placeGraphService: PlaceGraphService | null = null;
 	private propertyAliasService: PropertyAliasService | null = null;
 	private valueAliasService: ValueAliasService | null = null;
 
@@ -104,6 +110,24 @@ export class GedcomExporter {
 	 */
 	setEventService(settings: CanvasRootsSettings): void {
 		this.eventService = new EventService(this.app, settings);
+	}
+
+	/**
+	 * Set source service for loading source notes
+	 */
+	setSourceService(settings: CanvasRootsSettings): void {
+		this.sourceService = new SourceService(this.app, settings);
+	}
+
+	/**
+	 * Set place graph service for loading place notes
+	 */
+	setPlaceGraphService(settings: CanvasRootsSettings): void {
+		this.placeGraphService = new PlaceGraphService(this.app);
+		this.placeGraphService.setSettings(settings);
+		if (settings.valueAliases) {
+			this.placeGraphService.setValueAliases(settings.valueAliases);
+		}
 	}
 
 	/**
@@ -225,11 +249,29 @@ export class GedcomExporter {
 				logger.info('export', `Loaded ${allEvents.length} events`);
 			}
 
+			// Load sources if source service is available
+			let allSources: SourceNote[] = [];
+			if (this.sourceService) {
+				new Notice('Loading source notes...');
+				allSources = this.sourceService.getAllSources();
+				logger.info('export', `Loaded ${allSources.length} sources`);
+			}
+
+			// Load places if place graph service is available
+			let allPlaces: PlaceNode[] = [];
+			if (this.placeGraphService) {
+				new Notice('Loading place notes...');
+				allPlaces = this.placeGraphService.getAllPlaces();
+				logger.info('export', `Loaded ${allPlaces.length} places`);
+			}
+
 			// Build GEDCOM content
 			new Notice('Generating GEDCOM data...');
 			const gedcomContent = this.buildGedcomContent(
 				filteredPeople,
 				allEvents,
+				allSources,
+				allPlaces,
 				options,
 				privacyService
 			);
@@ -260,6 +302,8 @@ export class GedcomExporter {
 	private buildGedcomContent(
 		people: PersonNode[],
 		events: EventNote[],
+		sources: SourceNote[],
+		places: PlaceNode[],
 		options: GedcomExportOptions,
 		privacyService: PrivacyService | null
 	): string {
@@ -267,6 +311,17 @@ export class GedcomExporter {
 
 		// Build header
 		lines.push(...this.buildHeader(options));
+
+		// Build source records
+		const sourceIdMap = new Map<string, string>();
+		let sourceCounter = 1;
+
+		for (const source of sources) {
+			const sourceId = `S${sourceCounter}`;
+			sourceIdMap.set(source.crId, sourceId);
+			lines.push(...this.buildSourceRecord(source, sourceId));
+			sourceCounter++;
+		}
 
 		// Build individual records
 		const crIdToGedcomId = new Map<string, string>();
@@ -287,6 +342,7 @@ export class GedcomExporter {
 				gedcomId,
 				crIdToGedcomId,
 				events,
+				sourceIdMap,
 				options,
 				privacyService
 			));
@@ -339,6 +395,110 @@ export class GedcomExporter {
 	}
 
 	/**
+	 * Build source record
+	 */
+	private buildSourceRecord(source: SourceNote, sourceId: string): string[] {
+		const lines: string[] = [];
+
+		lines.push(`0 @${sourceId}@ SOUR`);
+
+		// Title
+		if (source.title) {
+			lines.push(`1 TITL ${source.title}`);
+		}
+
+		// Repository (mapped to AUTH in GEDCOM 5.5.1)
+		if (source.repository) {
+			lines.push(`1 AUTH ${source.repository}`);
+		}
+
+		// Collection (mapped to PUBL in GEDCOM 5.5.1)
+		if (source.collection) {
+			lines.push(`1 PUBL ${source.collection}`);
+		}
+
+		// Date of original document
+		if (source.date) {
+			const gedcomDate = this.formatDateForGedcom(source.date);
+			if (gedcomDate) {
+				lines.push(`1 DATA`);
+				lines.push(`2 DATE ${gedcomDate}`);
+			}
+		}
+
+		// Repository URL as note
+		if (source.repositoryUrl) {
+			lines.push(`1 NOTE ${source.repositoryUrl}`);
+		}
+
+		return lines;
+	}
+
+	/**
+	 * Build hierarchical place string from place node
+	 * Returns comma-separated hierarchy from specific to general (e.g., "Dublin, Dublin County, Leinster, Ireland")
+	 */
+	private buildPlaceHierarchy(placeNode: PlaceNode): string {
+		if (!this.placeGraphService) {
+			return placeNode.name;
+		}
+
+		const hierarchy = this.placeGraphService.getHierarchyPath(placeNode.id);
+		return hierarchy.map(p => p.name).join(', ');
+	}
+
+	/**
+	 * Build place lines with hierarchy and coordinates
+	 * Returns GEDCOM lines for a place (PLAC, FORM, MAP with LATI/LONG)
+	 */
+	private buildPlaceLines(placeName: string, level: number): string[] {
+		const lines: string[] = [];
+
+		// If no place graph service, just output simple place name
+		if (!this.placeGraphService) {
+			lines.push(`${level} PLAC ${placeName}`);
+			return lines;
+		}
+
+		// Try to find the place by name
+		const placeNode = this.placeGraphService.getPlaceByName(placeName);
+
+		if (!placeNode) {
+			// Place not found in graph - output as-is
+			lines.push(`${level} PLAC ${placeName}`);
+			return lines;
+		}
+
+		// Build hierarchical place name
+		const hierarchyString = this.buildPlaceHierarchy(placeNode);
+		lines.push(`${level} PLAC ${hierarchyString}`);
+
+		// Add FORM to indicate hierarchy structure (if there's a hierarchy)
+		const hierarchy = this.placeGraphService.getHierarchyPath(placeNode.id);
+		if (hierarchy.length > 1) {
+			const formParts = hierarchy.map(p => p.placeType || 'Place');
+			lines.push(`${level + 1} FORM ${formParts.join(', ')}`);
+		}
+
+		// Add MAP record with coordinates if available
+		if (placeNode.coordinates) {
+			lines.push(`${level + 1} MAP`);
+
+			// Format latitude with N/S prefix
+			const latPrefix = placeNode.coordinates.lat >= 0 ? 'N' : 'S';
+			const latValue = Math.abs(placeNode.coordinates.lat).toFixed(4);
+			lines.push(`${level + 2} LATI ${latPrefix}${latValue}`);
+
+			// Format longitude with E/W prefix
+			const longPrefix = placeNode.coordinates.long >= 0 ? 'E' : 'W';
+			const longValue = Math.abs(placeNode.coordinates.long).toFixed(4);
+			lines.push(`${level + 2} LONG ${longPrefix}${longValue}`);
+		}
+
+		return lines;
+	}
+
+	/**
 	 * Build individual record
 	 */
 	private buildIndividualRecord(
@@ -346,6 +506,7 @@ export class GedcomExporter {
 		gedcomId: string,
 		_crIdToGedcomId: Map<string, string>,
 		events: EventNote[],
+		sourceIdMap: Map<string, string>,
 		options: GedcomExportOptions,
 		privacyService: PrivacyService | null
 	): string[] {
@@ -395,7 +556,7 @@ export class GedcomExporter {
 				}
 			}
 			if (person.birthPlace && (!privacyResult?.isProtected || privacyResult.showBirthPlace)) {
-				lines.push(`2 PLAC ${person.birthPlace}`);
+				lines.push(...this.buildPlaceLines(person.birthPlace, 2));
 			}
 		}
 
@@ -409,7 +570,7 @@ export class GedcomExporter {
 				}
 			}
 			if (person.deathPlace) {
-				lines.push(`2 PLAC ${person.deathPlace}`);
+				lines.push(...this.buildPlaceLines(person.deathPlace, 2));
 			}
 		}
 
@@ -420,7 +581,7 @@ export class GedcomExporter {
 
 		// Add events linked to this person
 		if (events.length > 0) {
-			const eventLines = this.buildEventRecords(person, events);
+			const eventLines = this.buildEventRecords(person, events, sourceIdMap);
 			lines.push(...eventLines);
 		}
 
@@ -474,7 +635,7 @@ export class GedcomExporter {
 			}
 
 			if (family.marriagePlace) {
-				lines.push(`2 PLAC ${family.marriagePlace}`);
+				lines.push(...this.buildPlaceLines(family.marriagePlace, 2));
 			}
 		}
 
@@ -780,7 +941,7 @@ export class GedcomExporter {
 	 * Build event records for a person
 	 * Returns GEDCOM lines for events linked to this person
 	 */
-	private buildEventRecords(person: PersonNode, events: EventNote[]): string[] {
+	private buildEventRecords(person: PersonNode, events: EventNote[], sourceIdMap: Map<string, string>): string[] {
 		const lines: string[] = [];
 
 		// Filter events that reference this person
@@ -825,7 +986,20 @@ export class GedcomExporter {
 				// Add place if present
 				if (event.place) {
 					const placeName = event.place.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
-					lines.push(`2 PLAC ${placeName}`);
+					lines.push(...this.buildPlaceLines(placeName, 2));
+				}
+
+				// Add source references if present
+				if (event.sources && event.sources.length > 0) {
+					for (const sourceLink of event.sources) {
+						const sourceCrId = this.extractSourceCrId(sourceLink);
+						if (sourceCrId) {
+							const sourceId = sourceIdMap.get(sourceCrId);
+							if (sourceId) {
+								lines.push(`2 SOUR @${sourceId}@`);
+							}
+						}
+					}
 				}
 
 				// Add note with event title and description
@@ -852,7 +1026,20 @@ export class GedcomExporter {
 				// Add place if present
 				if (event.place) {
 					const placeName = event.place.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
-					lines.push(`2 PLAC ${placeName}`);
+					lines.push(...this.buildPlaceLines(placeName, 2));
+				}
+
+				// Add source references if present
+				if (event.sources && event.sources.length > 0) {
+					for (const sourceLink of event.sources) {
+						const sourceCrId = this.extractSourceCrId(sourceLink);
+						if (sourceCrId) {
+							const sourceId = sourceIdMap.get(sourceCrId);
+							if (sourceId) {
+								lines.push(`2 SOUR @${sourceId}@`);
+							}
+						}
+					}
 				}
 
 				// Add note with description
@@ -863,5 +1050,28 @@ export class GedcomExporter {
 		}
 
 		return lines;
+	}
+
+	/**
+	 * Extract cr_id from a source wikilink
+	 * Handles formats like [[Source Name]] or [[Source Name|Display]]
+	 */
+	private extractSourceCrId(wikilink: string): string | null {
+		// Remove wikilink brackets
+		const cleanLink = wikilink.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+		// Remove display text after pipe
+		const linkPath = cleanLink.split('|')[0].trim();
+
+		// Try to find source by title (file name without extension)
+		if (this.sourceService) {
+			const sources = this.sourceService.getAllSources();
+			const source = sources.find(s => {
+				const fileName = s.filePath.split('/').pop()?.replace('.md', '') || '';
+				return fileName === linkPath || s.title === linkPath;
+			});
+			return source?.crId || null;
+		}
+
+		return null;
 	}
 }
