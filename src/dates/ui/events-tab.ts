@@ -1297,6 +1297,30 @@ interface EventStatistics {
 }
 
 /**
+ * Resolve a property from frontmatter using alias mapping
+ * Checks canonical property first, then falls back to aliases
+ */
+function resolveProperty(
+	frontmatter: Record<string, unknown>,
+	canonicalProperty: string,
+	aliases: Record<string, string>
+): unknown {
+	// Canonical property takes precedence
+	if (frontmatter[canonicalProperty] !== undefined) {
+		return frontmatter[canonicalProperty];
+	}
+
+	// Check aliases - find user property that maps to this canonical property
+	for (const [userProp, mappedCanonical] of Object.entries(aliases)) {
+		if (mappedCanonical === canonicalProperty && frontmatter[userProp] !== undefined) {
+			return frontmatter[userProp];
+		}
+	}
+
+	return undefined;
+}
+
+/**
  * Calculate event statistics from event notes
  */
 function calculateEventStatistics(plugin: CanvasRootsPlugin): EventStatistics {
@@ -1318,6 +1342,9 @@ function calculateEventStatistics(plugin: CanvasRootsPlugin): EventStatistics {
 	// Narrative event types
 	const narrativeTypes = ['anecdote', 'lore_event', 'plot_point', 'flashback', 'foreshadowing', 'backstory', 'climax', 'resolution'];
 
+	// Get property aliases for resolving aliased properties
+	const aliases = plugin.settings.propertyAliases || {};
+
 	// Get all markdown files
 	const files = plugin.app.vault.getMarkdownFiles();
 
@@ -1332,13 +1359,14 @@ function calculateEventStatistics(plugin: CanvasRootsPlugin): EventStatistics {
 
 		stats.totalEvents++;
 
-		// Check for date
-		if (frontmatter.date) {
+		// Check for date (using property aliases)
+		const dateValue = resolveProperty(frontmatter, 'date', aliases);
+		if (dateValue) {
 			stats.withDates++;
 		}
 
-		// Categorize by event type
-		const eventType = frontmatter.event_type as string;
+		// Categorize by event type (using property aliases)
+		const eventType = resolveProperty(frontmatter, 'event_type', aliases) as string;
 		if (coreTypes.includes(eventType)) {
 			stats.byCategory.core++;
 		} else if (extendedTypes.includes(eventType)) {
