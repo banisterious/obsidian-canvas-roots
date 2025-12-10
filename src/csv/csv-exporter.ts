@@ -12,6 +12,9 @@ import { getErrorMessage } from '../core/error-utils';
 import { PrivacyService, type PrivacySettings } from '../core/privacy-service';
 import { PropertyAliasService } from '../core/property-alias-service';
 import { ValueAliasService } from '../core/value-alias-service';
+import { EventService } from '../events/services/event-service';
+import type { EventNote } from '../events/types/event-types';
+import type { CanvasRootsSettings } from '../settings';
 
 const logger = getLogger('CsvExporter');
 
@@ -135,6 +138,7 @@ export interface CsvExportResult {
 export class CsvExporter {
 	private app: App;
 	private graphService: FamilyGraphService;
+	private eventService: EventService | null = null;
 	private propertyAliasService: PropertyAliasService | null = null;
 	private valueAliasService: ValueAliasService | null = null;
 
@@ -144,6 +148,13 @@ export class CsvExporter {
 		if (folderFilter) {
 			this.graphService.setFolderFilter(folderFilter);
 		}
+	}
+
+	/**
+	 * Set event service for loading event notes
+	 */
+	setEventService(settings: CanvasRootsSettings): void {
+		this.eventService = new EventService(this.app, settings);
 	}
 
 	/**
@@ -262,11 +273,20 @@ export class CsvExporter {
 				personLookup.set(person.crId, person);
 			}
 
+			// Load events if event service is available
+			let allEvents: EventNote[] = [];
+			if (this.eventService) {
+				new Notice('Loading event notes...');
+				allEvents = this.eventService.getAllEvents();
+				logger.info('export', `Loaded ${allEvents.length} events`);
+			}
+
 			// Build CSV content
 			new Notice('Generating CSV data...');
 			const csvContent = this.buildCsvContent(
 				filteredPeople,
 				personLookup,
+				allEvents,
 				options,
 				privacyService
 			);
@@ -293,6 +313,7 @@ export class CsvExporter {
 	private buildCsvContent(
 		people: PersonNode[],
 		personLookup: Map<string, PersonNode>,
+		events: EventNote[],
 		options: CsvExportOptions,
 		privacyService: PrivacyService | null
 	): string {
@@ -302,16 +323,36 @@ export class CsvExporter {
 
 		const lines: string[] = [];
 
-		// Add header row
+		// Add header row for person records
 		if (includeHeader) {
 			const headers = columns.map(col => this.escapeField(CSV_COLUMN_HEADERS[col], delimiter));
 			lines.push(headers.join(delimiter));
 		}
 
-		// Add data rows
+		// Add person data rows
 		for (const person of people) {
 			const row = this.buildRow(person, personLookup, columns, delimiter, privacyService);
 			lines.push(row);
+		}
+
+		// Add event records if events are available
+		if (events.length > 0) {
+			// Add blank line separator
+			lines.push('');
+
+			// Add event header row
+			if (includeHeader) {
+				const eventHeaders = ['Type', 'Person', 'Event Type', 'Date', 'Date Precision', 'Place', 'Description', 'Confidence'];
+				lines.push(eventHeaders.map(h => this.escapeField(h, delimiter)).join(delimiter));
+			}
+
+			// Add event data rows
+			for (const event of events) {
+				const eventRow = this.buildEventRow(event, delimiter);
+				if (eventRow) {
+					lines.push(eventRow);
+				}
+			}
 		}
 
 		return lines.join('\n');
@@ -481,6 +522,42 @@ export class CsvExporter {
 		}
 
 		return value;
+	}
+
+	/**
+	 * Build a single CSV row for an event
+	 * Format: Type,Person,Event Type,Date,Date Precision,Place,Description,Confidence
+	 */
+	private buildEventRow(event: EventNote, delimiter: string): string | null {
+		const fields: string[] = [];
+
+		// Type column - always "event"
+		fields.push(this.escapeField('event', delimiter));
+
+		// Person column - use person field or first person from persons array
+		const personLink = event.person || (event.persons && event.persons.length > 0 ? event.persons[0] : '');
+		fields.push(this.escapeField(personLink, delimiter));
+
+		// Event Type column
+		fields.push(this.escapeField(event.eventType || '', delimiter));
+
+		// Date column
+		fields.push(this.escapeField(event.date || '', delimiter));
+
+		// Date Precision column
+		fields.push(this.escapeField(event.datePrecision || 'unknown', delimiter));
+
+		// Place column
+		const placeLink = event.place || '';
+		fields.push(this.escapeField(placeLink, delimiter));
+
+		// Description column
+		fields.push(this.escapeField(event.description || event.title || '', delimiter));
+
+		// Confidence column
+		fields.push(this.escapeField(event.confidence || 'unknown', delimiter));
+
+		return fields.join(delimiter);
 	}
 
 	/**

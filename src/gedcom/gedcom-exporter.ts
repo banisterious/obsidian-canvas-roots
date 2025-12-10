@@ -12,6 +12,9 @@ import { getErrorMessage } from '../core/error-utils';
 import { PrivacyService, type PrivacySettings } from '../core/privacy-service';
 import { PropertyAliasService } from '../core/property-alias-service';
 import { ValueAliasService } from '../core/value-alias-service';
+import { EventService } from '../events/services/event-service';
+import type { EventNote } from '../events/types/event-types';
+import type { CanvasRootsSettings } from '../settings';
 
 const logger = getLogger('GedcomExporter');
 
@@ -84,6 +87,7 @@ interface GedcomFamilyRecord {
 export class GedcomExporter {
 	private app: App;
 	private graphService: FamilyGraphService;
+	private eventService: EventService | null = null;
 	private propertyAliasService: PropertyAliasService | null = null;
 	private valueAliasService: ValueAliasService | null = null;
 
@@ -93,6 +97,13 @@ export class GedcomExporter {
 		if (folderFilter) {
 			this.graphService.setFolderFilter(folderFilter);
 		}
+	}
+
+	/**
+	 * Set event service for loading event notes
+	 */
+	setEventService(settings: CanvasRootsSettings): void {
+		this.eventService = new EventService(this.app, settings);
 	}
 
 	/**
@@ -206,10 +217,19 @@ export class GedcomExporter {
 				}
 			}
 
+			// Load events if event service is available
+			let allEvents: EventNote[] = [];
+			if (this.eventService) {
+				new Notice('Loading event notes...');
+				allEvents = this.eventService.getAllEvents();
+				logger.info('export', `Loaded ${allEvents.length} events`);
+			}
+
 			// Build GEDCOM content
 			new Notice('Generating GEDCOM data...');
 			const gedcomContent = this.buildGedcomContent(
 				filteredPeople,
+				allEvents,
 				options,
 				privacyService
 			);
@@ -239,6 +259,7 @@ export class GedcomExporter {
 	 */
 	private buildGedcomContent(
 		people: PersonNode[],
+		events: EventNote[],
 		options: GedcomExportOptions,
 		privacyService: PrivacyService | null
 	): string {
@@ -265,6 +286,7 @@ export class GedcomExporter {
 				person,
 				gedcomId,
 				crIdToGedcomId,
+				events,
 				options,
 				privacyService
 			));
@@ -323,6 +345,7 @@ export class GedcomExporter {
 		person: PersonNode,
 		gedcomId: string,
 		_crIdToGedcomId: Map<string, string>,
+		events: EventNote[],
 		options: GedcomExportOptions,
 		privacyService: PrivacyService | null
 	): string[] {
@@ -393,6 +416,12 @@ export class GedcomExporter {
 		// Occupation (hide for protected persons)
 		if (person.occupation && !privacyResult?.isProtected) {
 			lines.push(`1 OCCU ${person.occupation}`);
+		}
+
+		// Add events linked to this person
+		if (events.length > 0) {
+			const eventLines = this.buildEventRecords(person, events);
+			lines.push(...eventLines);
 		}
 
 		// UUID preservation using _UID custom tag
@@ -708,5 +737,131 @@ export class GedcomExporter {
 		const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
 			'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 		return months[monthIndex] || 'JAN';
+	}
+
+	/**
+	 * Map Canvas Roots event type to GEDCOM tag
+	 */
+	private eventTypeToGedcomTag(eventType: string): string | null {
+		const mapping: Record<string, string> = {
+			'birth': 'BIRT',
+			'death': 'DEAT',
+			'burial': 'BURI',
+			'cremation': 'CREM',
+			'adoption': 'ADOP',
+			'graduation': 'GRAD',
+			'retirement': 'RETI',
+			'census': 'CENS',
+			'residence': 'RESI',
+			'occupation': 'OCCU',
+			'education': 'EDUC',
+			'probate': 'PROB',
+			'will': 'WILL',
+			'naturalization': 'NATU',
+			'military': 'MILI',
+			'immigration': 'IMMI',
+			'emigration': 'EMIG',
+			'baptism': 'BAPM',
+			'christening': 'CHR',
+			'confirmation': 'CONF',
+			'first_communion': 'FCOM',
+			'ordination': 'ORDN',
+			'bar_mitzvah': 'BARM',
+			'bas_mitzvah': 'BASM',
+			'blessing': 'BLES',
+			'engagement': 'ENGA',
+			'annulment': 'ANUL'
+		};
+
+		return mapping[eventType] || null;
+	}
+
+	/**
+	 * Build event records for a person
+	 * Returns GEDCOM lines for events linked to this person
+	 */
+	private buildEventRecords(person: PersonNode, events: EventNote[]): string[] {
+		const lines: string[] = [];
+
+		// Filter events that reference this person
+		const personEvents = events.filter(event => {
+			// Check if person is referenced in event.person field
+			if (event.person) {
+				const personLink = event.person.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+				if (personLink === person.name || personLink === person.file.basename) {
+					return true;
+				}
+			}
+
+			// Check if person is in event.persons array
+			if (event.persons) {
+				for (const p of event.persons) {
+					const personLink = p.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+					if (personLink === person.name || personLink === person.file.basename) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		});
+
+		// Build GEDCOM lines for each event
+		for (const event of personEvents) {
+			const gedcomTag = this.eventTypeToGedcomTag(event.eventType);
+
+			if (gedcomTag) {
+				// Standard GEDCOM event tag
+				lines.push(`1 ${gedcomTag}`);
+
+				// Add date if present
+				if (event.date) {
+					const gedcomDate = this.formatDateForGedcom(event.date);
+					if (gedcomDate) {
+						lines.push(`2 DATE ${gedcomDate}`);
+					}
+				}
+
+				// Add place if present
+				if (event.place) {
+					const placeName = event.place.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+					lines.push(`2 PLAC ${placeName}`);
+				}
+
+				// Add note with event title and description
+				if (event.title || event.description) {
+					const noteText = event.description || event.title;
+					lines.push(`2 NOTE ${noteText}`);
+				}
+			} else if (event.eventType === 'custom' || event.eventType) {
+				// Custom event type - use EVEN tag with TYPE
+				lines.push('1 EVEN');
+
+				// Add custom type
+				const eventName = event.title || event.eventType;
+				lines.push(`2 TYPE ${eventName}`);
+
+				// Add date if present
+				if (event.date) {
+					const gedcomDate = this.formatDateForGedcom(event.date);
+					if (gedcomDate) {
+						lines.push(`2 DATE ${gedcomDate}`);
+					}
+				}
+
+				// Add place if present
+				if (event.place) {
+					const placeName = event.place.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+					lines.push(`2 PLAC ${placeName}`);
+				}
+
+				// Add note with description
+				if (event.description) {
+					lines.push(`2 NOTE ${event.description}`);
+				}
+			}
+		}
+
+		return lines;
 	}
 }
