@@ -1095,11 +1095,25 @@ export class PlaceGraphService {
 
 		// Extract parent ID or wikilink
 		// Supports: parent_place_id (preferred), parent_place, parent (GEDCOM import uses 'parent')
+		// Also supports property aliases
+		const propAliases = this.settings?.propertyAliases || {};
 		let parentId: string | undefined = fm.parent_place_id;
 		let parentWikilink: string | undefined;
 
 		// Check for parent wikilink in various property names
-		const parentProp = fm.parent_place || fm.parent;
+		// First try canonical names, then check property aliases
+		let parentProp = fm.parent_place || fm.parent;
+
+		// Check property aliases if canonical properties not found
+		if (!parentProp) {
+			for (const [userProp, mappedCanonical] of Object.entries(propAliases)) {
+				if (mappedCanonical === 'parent_place' && fm[userProp] !== undefined) {
+					parentProp = fm[userProp];
+					break;
+				}
+			}
+		}
+
 		if (!parentId && parentProp) {
 			const wikilinkMatch = String(parentProp).match(/\[\[([^\]|#]+)/);
 			if (wikilinkMatch) {
