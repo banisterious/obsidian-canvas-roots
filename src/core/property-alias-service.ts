@@ -200,11 +200,11 @@ export const PERSON_PROPERTY_METADATA: PropertyMetadata[] = [
 		commonAliases: ['id', 'person_id', 'uuid']
 	},
 	{
-		canonical: 'type',
-		label: 'Type',
+		canonical: 'cr_type',
+		label: 'CR type',
 		description: 'Note type identifier (usually "person")',
 		category: 'person',
-		commonAliases: ['note_type', 'cr_type']
+		commonAliases: ['type', 'note_type']
 	},
 	{
 		canonical: 'sex',
