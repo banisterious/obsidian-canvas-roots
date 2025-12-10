@@ -8,7 +8,7 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
-  - [Sex/Gender Identity Expansion](#sexgender-identity-expansion) ⚡ High
+  - [Configurable Normalization](#configurable-normalization) 📋 Medium
   - [Calendarium Integration](#calendarium-integration) 📋 Medium
   - [Reports & Print Export](#reports--print-export) 📋 Medium
   - [Statistics Dashboard](#statistics-dashboard) 📋 Medium
@@ -26,6 +26,7 @@ For detailed implementation documentation of completed features, see [Release Hi
 | Version | Feature | Summary |
 |:-------:|---------|---------|
 | v0.11.0 | [Export v2](Release-History#export-v2-v0110) | Full entity export with round-trip fidelity |
+| v0.10.20 | [Sex/Gender Identity Fields](Release-History#sexgender-identity-fields-v01020) | Separate gender_identity field with export support |
 | v0.10.19 | [Unified Property Configuration](Release-History#unified-property-configuration-v01019) | Consolidated property and value alias management |
 | v0.10.17 | [Data Enhancement Pass](Release-History#data-enhancement-pass-v01017) | Generate place notes from existing data with progress and editing |
 | v0.10.3 | [Type Customization](Release-History#type-customization-v0103) | Full type managers for all note categories |
@@ -60,35 +61,28 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 ---
 
-### Sex/Gender Identity Expansion
+### Configurable Normalization
 
-**Priority:** ⚡ High — Inclusive handling for writers and worldbuilders
+**Priority:** 📋 Medium — Flexible data standardization for worldbuilders
 
-**Summary:** More inclusive handling of sex and gender for writers and worldbuilders, while maintaining GEDCOM compatibility for genealogists. Leverages the existing Schema system for custom value definitions.
+**Summary:** User-configurable normalization rules for sex/gender values and other enum fields. Allows worldbuilders to define custom normalization targets while genealogists maintain GEDCOM M/F compatibility.
 
-**Current state:** The `sex` field follows GEDCOM standards (M/F) for historical record compatibility. The "Normalize sex values" batch operation standardizes variations to M/F.
+**Current Limitation:** The "Normalize sex values" batch operation standardizes all variations to GEDCOM M/F values. Users with custom sex values (e.g., worldbuilders using "hermaphrodite", "neuter") cannot normalize to their own custom values.
 
-**Phased Approach:**
+**Planned Features:**
 
-| Phase | Feature | Complexity | Status |
-|-------|---------|------------|--------|
-| 1 | Separate `gender_identity` field | Low | ✅ Complete (v0.10.20) |
-| 2 | Schema-based sex/gender definitions | Done | ✅ Complete (v0.6.3) |
-| 3 | Value Aliases for sex field | Low-Medium | ✅ Complete (v0.9.4, enhanced v0.10.19) |
-| 4 | Configurable normalization | Medium | Planned |
+- **Per-universe normalization targets**: Configure which canonical value to normalize to (e.g., universe A normalizes to M/F, universe B normalizes to custom values)
+- **Normalization preview**: Show what will change before applying
+- **Custom normalization rules**: Define synonym mappings (e.g., "H" → "hermaphrodite")
+- **Selective normalization**: Choose which properties to normalize (sex, event types, place categories)
+- **Export format mapping**: Map non-standard values to GEDCOM-compatible values during export only
 
-**User personas:**
-- **Genealogist:** Uses `sex` field with GEDCOM M/F values; optionally `gender_identity` for living relatives or LGBTQ+ research
-- **Fiction writer / Worldbuilder:** Custom sex values via Schema, `gender_identity` field, flexible normalization
+**Integration:**
+- Builds on [Value Aliases](Release-History#value-aliases-v094) and [Schema Validation](Release-History#schema-validation-v063)
+- Respects universe-scoped schemas for available values
+- Uses existing Data Quality tab infrastructure
 
-**Implementation notes:**
-- Phase 2 complete—the [Schema system](Release-History#schema-validation-v063) supports `enum` types with custom `values` arrays, scoped by collection/universe
-- Phase 3 complete—[Value Aliases](Release-History#value-aliases-v094) already support the `sex` field with 4 canonical values (male, female, nonbinary, unknown) and built-in synonyms. The [Unified Property Configuration](Release-History#unified-property-configuration-v01019) UI makes sex value aliases easy to discover and configure.
-- Export formats would need mapping for non-standard values (applies to Phase 4)
-
-See [Sex/Gender Identity Expansion Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/sex-gender-expansion.md) for implementation details.
-
-**Note:** Export v2 is now complete in v0.11.0. See [Export v2 (v0.11.0)](Release-History#export-v2-v0110) in Release History for full details.
+See [Sex/Gender Identity Expansion Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/sex-gender-expansion.md) for full context (Phase 4).
 
 ---
 

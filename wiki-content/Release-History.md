@@ -11,6 +11,8 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 - [v0.11.x](#v011x)
   - [Export v2](#export-v2-v0110)
 - [v0.10.x](#v010x)
+  - [Sex/Gender Identity Fields](#sexgender-identity-fields-v01020)
+  - [Unified Property Configuration](#unified-property-configuration-v01019)
   - [Data Enhancement Pass](#data-enhancement-pass-v01017)
   - [Type Customization](#type-customization-v0103)
   - [Flexible Note Type Detection](#flexible-note-type-detection-v0102)
@@ -146,6 +148,54 @@ Export GEDCOM → 500 people, 350 events, 200 sources, 150 places (full fidelity
 ---
 
 ## v0.10.x
+
+### Sex/Gender Identity Fields (v0.10.20)
+
+Separate `gender_identity` field for inclusive handling of sex and gender, with full export support across all formats.
+
+See [sex-gender-expansion.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/sex-gender-expansion.md) for implementation plan (Phases 1-3).
+
+**Problem Solved:**
+- The `sex` field follows GEDCOM standards (M/F) for historical record compatibility, but doesn't capture gender identity
+- Writers and worldbuilders need separate fields for biological sex vs. gender identity
+- LGBTQ+ genealogists researching trans individuals need respectful data handling
+
+**Features:**
+
+**Gender Identity Field (Phase 1):**
+- New optional `gender_identity` property on person notes
+- Separate from biological `sex` field for historical record accuracy
+- Displayed in People tab person details
+- Included in all export formats:
+  - GEDCOM: Custom `_GEND` tag
+  - GEDCOM X: `gender` field
+  - Gramps XML: Custom attribute
+  - CSV: Dedicated column
+
+**Schema-Based Definitions (Phase 2):**
+- Schema system supports custom sex/gender values via `enum` types
+- Scoped by collection or universe for worldbuilding
+- Example: `sex` values of ["male", "female", "neuter", "hermaphrodite", "asexual"] for alien species
+
+**Value Aliases (Phase 3):**
+- Sex field supports 4 canonical values: male, female, nonbinary, unknown
+- Built-in synonyms (M → male, F → female)
+- Custom aliases configurable via Unified Property Configuration UI
+- All exporters respect value aliases
+
+**User Personas:**
+- **Genealogist:** Uses `sex` field with GEDCOM M/F values; optionally `gender_identity` for living relatives or LGBTQ+ research
+- **Fiction writer / Worldbuilder:** Custom sex values via Schema, separate `gender_identity` field for character development
+
+**Respectful Trans Documentation:**
+When documenting trans individuals:
+- `name` field holds chosen/current name (displayed by default)
+- Optional `birth_name` field for birth records if needed for research
+- `gender_identity` captures current identity
+- `sex` captures what appears on historical records
+- Privacy options can exclude `birth_name` and `sex` from exports
+
+---
 
 ### Unified Property Configuration (v0.10.19)
 
