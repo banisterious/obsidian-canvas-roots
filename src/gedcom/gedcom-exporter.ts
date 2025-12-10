@@ -545,6 +545,13 @@ export class GedcomExporter {
 			lines.push(`1 SEX ${sex}`);
 		}
 
+		// Gender identity (custom tag for gender identity, distinct from biological sex)
+		const genderIdentity = this.resolveGenderIdentityValue(person);
+		if (genderIdentity && !privacyResult?.isProtected) {
+			lines.push(`1 EVEN ${genderIdentity}`);
+			lines.push('2 TYPE Gender Identity');
+		}
+
 		// Birth (hide if protected and hideDetailsForLiving is enabled)
 		const showBirthDetails = !privacyResult?.isProtected || privacyResult.showBirthDate;
 		if (showBirthDetails && (person.birthDate || person.birthPlace)) {
@@ -820,6 +827,33 @@ export class GedcomExporter {
 		}
 
 		return undefined;
+	}
+
+	/**
+	 * Resolve gender_identity value using property and value alias services
+	 * Returns resolved gender identity value as string
+	 */
+	private resolveGenderIdentityValue(person: PersonNode): string | undefined {
+		// Try to resolve gender_identity from frontmatter using property aliases
+		let genderIdentityValue: string | undefined;
+
+		// If property alias service is available, try to resolve from raw frontmatter
+		if (this.propertyAliasService) {
+			const cache = this.app.metadataCache.getFileCache(person.file);
+			if (cache?.frontmatter) {
+				const resolved = this.propertyAliasService.resolve(cache.frontmatter, 'gender_identity');
+				if (resolved && typeof resolved === 'string') {
+					genderIdentityValue = resolved;
+				}
+			}
+		}
+
+		// If we have a gender_identity value, resolve it using value alias service
+		if (genderIdentityValue && this.valueAliasService) {
+			return this.valueAliasService.resolve('gender_identity', genderIdentityValue);
+		}
+
+		return genderIdentityValue;
 	}
 
 	/**

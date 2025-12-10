@@ -33,6 +33,7 @@ export type CsvColumn =
 	| 'birth_place'
 	| 'death_place'
 	| 'sex'
+	| 'gender_identity'
 	| 'occupation'
 	| 'father_id'
 	| 'father_name'
@@ -75,6 +76,7 @@ export const CSV_COLUMN_HEADERS: Record<CsvColumn, string> = {
 	birth_place: 'Birth Place',
 	death_place: 'Death Place',
 	sex: 'Sex',
+	gender_identity: 'Gender Identity',
 	occupation: 'Occupation',
 	father_id: 'Father ID',
 	father_name: 'Father Name',
@@ -503,6 +505,14 @@ export class CsvExporter {
 					value = this.resolveSexValue(person) || '';
 					break;
 
+				case 'gender_identity':
+					if (privacyResult?.isProtected) {
+						value = '';
+					} else {
+						value = this.resolveGenderIdentityValue(person) || '';
+					}
+					break;
+
 				case 'occupation':
 					if (privacyResult?.isProtected) {
 						value = '';
@@ -584,6 +594,33 @@ export class CsvExporter {
 		}
 
 		return sexValue;
+	}
+
+	/**
+	 * Resolve gender_identity value using property and value alias services
+	 * Returns resolved gender identity value as string
+	 */
+	private resolveGenderIdentityValue(person: PersonNode): string | undefined {
+		// Try to resolve gender_identity from frontmatter using property aliases
+		let genderIdentityValue: string | undefined;
+
+		// If property alias service is available, try to resolve from raw frontmatter
+		if (this.propertyAliasService) {
+			const cache = this.app.metadataCache.getFileCache(person.file);
+			if (cache?.frontmatter) {
+				const resolved = this.propertyAliasService.resolve(cache.frontmatter, 'gender_identity');
+				if (resolved && typeof resolved === 'string') {
+					genderIdentityValue = resolved;
+				}
+			}
+		}
+
+		// If we have a gender_identity value, resolve it using value alias service
+		if (genderIdentityValue && this.valueAliasService) {
+			return this.valueAliasService.resolve('gender_identity', genderIdentityValue);
+		}
+
+		return genderIdentityValue;
 	}
 
 	/**

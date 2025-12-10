@@ -35,7 +35,7 @@ export class PlaceGraphService {
 	private placeCache: Map<string, PlaceNode>;
 	private placeReferenceCache: PlaceReference[];
 	private folderFilter: FolderFilterService | null = null;
-	private valueAliases: ValueAliasSettings = { eventType: {}, sex: {}, placeCategory: {}, noteType: {} };
+	private valueAliases: ValueAliasSettings = { eventType: {}, sex: {}, gender_identity: {}, placeCategory: {}, noteType: {} };
 	private settings: CanvasRootsSettings | null = null;
 
 	constructor(app: App) {

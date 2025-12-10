@@ -554,6 +554,15 @@ export class GedcomXExporter {
 			facts.push(...eventFacts);
 		}
 
+		// Add gender_identity as a custom fact (if not protected)
+		const genderIdentity = this.resolveGenderIdentityValue(person);
+		if (genderIdentity && !privacyResult?.isProtected) {
+			facts.push({
+				type: 'http://gedcomx.org/Fact',
+				value: `Gender Identity: ${genderIdentity}`
+			});
+		}
+
 		// Build gender (resolve using alias services)
 		const sexValue = this.resolveSexValue(person);
 		const gender = this.convertGender(sexValue);
@@ -743,6 +752,33 @@ export class GedcomXExporter {
 		}
 
 		return sexValue;
+	}
+
+	/**
+	 * Resolve gender_identity value using property and value alias services
+	 * Returns resolved gender identity value as string
+	 */
+	private resolveGenderIdentityValue(person: PersonNode): string | undefined {
+		// Try to resolve gender_identity from frontmatter using property aliases
+		let genderIdentityValue: string | undefined;
+
+		// If property alias service is available, try to resolve from raw frontmatter
+		if (this.propertyAliasService) {
+			const cache = this.app.metadataCache.getFileCache(person.file);
+			if (cache?.frontmatter) {
+				const resolved = this.propertyAliasService.resolve(cache.frontmatter, 'gender_identity');
+				if (resolved && typeof resolved === 'string') {
+					genderIdentityValue = resolved;
+				}
+			}
+		}
+
+		// If we have a gender_identity value, resolve it using value alias service
+		if (genderIdentityValue && this.valueAliasService) {
+			return this.valueAliasService.resolve('gender_identity', genderIdentityValue);
+		}
+
+		return genderIdentityValue;
 	}
 
 	/**

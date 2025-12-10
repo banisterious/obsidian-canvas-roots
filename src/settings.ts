@@ -249,10 +249,11 @@ export interface NoteTypeDetectionSettings {
  * Maps user values to canonical values for each supported field type
  */
 export interface ValueAliasSettings {
-	eventType: Record<string, string>;      // userValue → canonicalEventType
-	sex: Record<string, string>;            // userValue → canonicalSex (GEDCOM aligned)
-	placeCategory: Record<string, string>;  // userValue → canonicalPlaceCategory
-	noteType: Record<string, string>;       // userValue → canonicalNoteType (cr_type/type)
+	eventType: Record<string, string>;        // userValue → canonicalEventType
+	sex: Record<string, string>;              // userValue → canonicalSex (GEDCOM aligned)
+	gender_identity: Record<string, string>;  // userValue → canonicalGenderIdentity
+	placeCategory: Record<string, string>;    // userValue → canonicalPlaceCategory
+	noteType: Record<string, string>;         // userValue → canonicalNoteType (cr_type/type)
 }
 
 /**
@@ -413,6 +414,7 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	valueAliases: {
 		eventType: {},             // Maps user event type → canonical event type
 		sex: {},                   // Maps user sex value → canonical sex (GEDCOM aligned)
+		gender_identity: {},       // Maps user gender_identity value → canonical gender identity
 		placeCategory: {},         // Maps user place category → canonical place category
 		noteType: {}               // Maps user note type (cr_type/type) → canonical note type
 	},

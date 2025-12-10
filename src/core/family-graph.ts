@@ -161,7 +161,7 @@ export class FamilyGraphService {
 	private personCache: Map<string, PersonNode>;
 	private folderFilter: FolderFilterService | null = null;
 	private propertyAliases: Record<string, string> = {};
-	private valueAliases: ValueAliasSettings = { eventType: {}, sex: {}, placeCategory: {}, noteType: {} };
+	private valueAliases: ValueAliasSettings = { eventType: {}, sex: {}, gender_identity: {}, placeCategory: {}, noteType: {} };
 	private settings: CanvasRootsSettings | null = null;
 
 	constructor(app: App) {

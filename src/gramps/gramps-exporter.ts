@@ -772,6 +772,12 @@ ${families.xml}
 				}
 			}
 
+			// Add gender_identity as attribute (if not protected)
+			const genderIdentity = this.resolveGenderIdentityValue(person);
+			if (genderIdentity && !privacyResult?.isProtected) {
+				personLines.push('      <attribute type="Gender Identity" value="' + this.escapeXml(genderIdentity) + '"/>');
+			}
+
 			// Family references (childof and parentin) - added after families are built
 			// For now, just close the person tag
 			personLines.push('    </person>');
@@ -949,6 +955,33 @@ ${families.xml}
 		}
 
 		return sexValue;
+	}
+
+	/**
+	 * Resolve gender_identity value using property and value alias services
+	 * Returns resolved gender identity value as string
+	 */
+	private resolveGenderIdentityValue(person: PersonNode): string | undefined {
+		// Try to resolve gender_identity from frontmatter using property aliases
+		let genderIdentityValue: string | undefined;
+
+		// If property alias service is available, try to resolve from raw frontmatter
+		if (this.propertyAliasService) {
+			const cache = this.app.metadataCache.getFileCache(person.file);
+			if (cache?.frontmatter) {
+				const resolved = this.propertyAliasService.resolve(cache.frontmatter, 'gender_identity');
+				if (resolved && typeof resolved === 'string') {
+					genderIdentityValue = resolved;
+				}
+			}
+		}
+
+		// If we have a gender_identity value, resolve it using value alias service
+		if (genderIdentityValue && this.valueAliasService) {
+			return this.valueAliasService.resolve('gender_identity', genderIdentityValue);
+		}
+
+		return genderIdentityValue;
 	}
 
 	/**

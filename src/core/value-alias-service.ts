@@ -11,7 +11,7 @@ import type CanvasRootsPlugin from '../../main';
 /**
  * Field types that support value aliasing
  */
-export type ValueAliasField = 'eventType' | 'sex' | 'placeCategory' | 'noteType';
+export type ValueAliasField = 'eventType' | 'sex' | 'gender_identity' | 'placeCategory' | 'noteType';
 
 /**
  * Canonical event types
@@ -52,6 +52,22 @@ export const CANONICAL_GENDERS = CANONICAL_SEX_VALUES;
 export type CanonicalGender = CanonicalSex;
 
 /**
+ * Canonical gender_identity values
+ * For self-identified gender (distinct from biological sex)
+ * Users can define custom values via value aliases
+ */
+export const CANONICAL_GENDER_IDENTITY_VALUES = [
+	'male',
+	'female',
+	'nonbinary',
+	'genderfluid',
+	'agender',
+	'other'
+] as const;
+
+export type CanonicalGenderIdentity = typeof CANONICAL_GENDER_IDENTITY_VALUES[number];
+
+/**
  * Canonical place categories
  */
 export const CANONICAL_PLACE_CATEGORIES = [
@@ -87,6 +103,7 @@ export type CanonicalNoteType = typeof CANONICAL_NOTE_TYPES[number];
 export const VALUE_ALIAS_FIELD_LABELS: Record<ValueAliasField, string> = {
 	eventType: 'Event type',
 	sex: 'Sex',
+	gender_identity: 'Gender identity',
 	placeCategory: 'Place category',
 	noteType: 'Note type (cr_type)'
 };
@@ -122,6 +139,18 @@ export const SEX_LABELS: Record<CanonicalSex, string> = {
 
 // Backwards compatibility alias
 export const GENDER_LABELS = SEX_LABELS;
+
+/**
+ * Human-readable labels for canonical gender_identity values
+ */
+export const GENDER_IDENTITY_LABELS: Record<CanonicalGenderIdentity, string> = {
+	male: 'Male',
+	female: 'Female',
+	nonbinary: 'Non-binary',
+	genderfluid: 'Genderfluid',
+	agender: 'Agender',
+	other: 'Other'
+};
 
 /**
  * Human-readable labels for canonical place categories
@@ -180,6 +209,19 @@ export const BUILTIN_SYNONYMS: Record<ValueAliasField, Record<string, string>> =
 		'nb': 'nonbinary',
 		'enby': 'nonbinary'
 	},
+	gender_identity: {
+		// Common alternatives
+		'm': 'male',
+		'f': 'female',
+		'man': 'male',
+		'woman': 'female',
+		'nb': 'nonbinary',
+		'enby': 'nonbinary',
+		'non-binary': 'nonbinary',
+		'genderqueer': 'nonbinary',
+		'gender-fluid': 'genderfluid',
+		'fluid': 'genderfluid'
+	},
 	placeCategory: {
 		// Common alternatives
 		'actual': 'real',
@@ -235,6 +277,8 @@ export class ValueAliasService {
 				return CANONICAL_EVENT_TYPES;
 			case 'sex':
 				return CANONICAL_SEX_VALUES;
+			case 'gender_identity':
+				return CANONICAL_GENDER_IDENTITY_VALUES;
 			case 'placeCategory':
 				return CANONICAL_PLACE_CATEGORIES;
 			case 'noteType':
@@ -251,6 +295,8 @@ export class ValueAliasService {
 				return EVENT_TYPE_LABELS[value as CanonicalEventType] || value;
 			case 'sex':
 				return SEX_LABELS[value as CanonicalSex] || value;
+			case 'gender_identity':
+				return GENDER_IDENTITY_LABELS[value as CanonicalGenderIdentity] || value;
 			case 'placeCategory':
 				return PLACE_CATEGORY_LABELS[value as CanonicalPlaceCategory] || value;
 			case 'noteType':

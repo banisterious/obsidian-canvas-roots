@@ -29,15 +29,18 @@ import {
 	VALUE_ALIAS_FIELD_LABELS,
 	EVENT_TYPE_LABELS,
 	SEX_LABELS,
+	GENDER_IDENTITY_LABELS,
 	PLACE_CATEGORY_LABELS,
 	NOTE_TYPE_LABELS,
 	CANONICAL_EVENT_TYPES,
 	CANONICAL_SEX_VALUES,
+	CANONICAL_GENDER_IDENTITY_VALUES,
 	CANONICAL_PLACE_CATEGORIES,
 	CANONICAL_NOTE_TYPES,
 	type ValueAliasField,
 	type CanonicalEventType,
 	type CanonicalSex,
+	type CanonicalGenderIdentity,
 	type CanonicalPlaceCategory,
 	type CanonicalNoteType
 } from '../core/value-alias-service';
@@ -562,6 +565,8 @@ function getCanonicalValueLabel(field: ValueAliasField, value: string): string {
 			return EVENT_TYPE_LABELS[value as CanonicalEventType] || value;
 		case 'sex':
 			return SEX_LABELS[value as CanonicalSex] || value;
+		case 'gender_identity':
+			return GENDER_IDENTITY_LABELS[value as CanonicalGenderIdentity] || value;
 		case 'placeCategory':
 			return PLACE_CATEGORY_LABELS[value as CanonicalPlaceCategory] || value;
 		case 'noteType':
@@ -1248,6 +1253,8 @@ class ValueAliasModal extends Modal {
 				return 'nameday';
 			case 'sex':
 				return 'masc';
+			case 'gender_identity':
+				return 'genderqueer';
 			case 'placeCategory':
 				return 'canon';
 			case 'noteType':
@@ -1261,6 +1268,8 @@ class ValueAliasModal extends Modal {
 				return CANONICAL_EVENT_TYPES;
 			case 'sex':
 				return CANONICAL_SEX_VALUES;
+			case 'gender_identity':
+				return CANONICAL_GENDER_IDENTITY_VALUES;
 			case 'placeCategory':
 				return CANONICAL_PLACE_CATEGORIES;
 			case 'noteType':
@@ -1274,6 +1283,8 @@ class ValueAliasModal extends Modal {
 				return EVENT_TYPE_LABELS[value as CanonicalEventType] || value;
 			case 'sex':
 				return SEX_LABELS[value as CanonicalSex] || value;
+			case 'gender_identity':
+				return GENDER_IDENTITY_LABELS[value as CanonicalGenderIdentity] || value;
 			case 'placeCategory':
 				return PLACE_CATEGORY_LABELS[value as CanonicalPlaceCategory] || value;
 			case 'noteType':
