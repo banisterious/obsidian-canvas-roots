@@ -350,10 +350,22 @@ export class CreateEventModal extends Modal {
 					}
 				}
 
+				// Disable category header options in the select element
+				const selectEl = dropdown.selectEl;
+				for (const option of Array.from(selectEl.options)) {
+					if (option.value.startsWith('__category_')) {
+						option.disabled = true;
+						option.style.fontWeight = 'bold';
+						option.style.color = 'var(--text-muted)';
+					}
+				}
+
 				dropdown.setValue(this.eventType);
 				dropdown.onChange(value => {
-					// Ignore category headers
-					if (!value.startsWith('__category_')) {
+					// Safety: ignore category headers if somehow selected
+					if (value.startsWith('__category_')) {
+						dropdown.setValue(this.eventType);
+					} else {
 						this.eventType = value;
 					}
 				});

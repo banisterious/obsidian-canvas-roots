@@ -256,9 +256,23 @@ export class ExtractEventsModal extends Modal {
 						dropdown.addOption(type.id, `  ${type.name}`);
 					}
 				}
+
+				// Disable category header options in the select element
+				const selectEl = dropdown.selectEl;
+				for (const option of Array.from(selectEl.options)) {
+					if (option.value.startsWith('__category_')) {
+						option.disabled = true;
+						option.style.fontWeight = 'bold';
+						option.style.color = 'var(--text-muted)';
+					}
+				}
+
 				dropdown.setValue(event.eventType);
 				dropdown.onChange(value => {
-					if (!value.startsWith('__category_')) {
+					// Safety: ignore category headers if somehow selected
+					if (value.startsWith('__category_')) {
+						dropdown.setValue(event.eventType);
+					} else {
 						event.eventType = value;
 						// Update title if it's the default pattern
 						const typeDef = this.getEventTypeDef(value);
