@@ -4763,6 +4763,12 @@ export default class CanvasRootsPlugin extends Plugin {
 							propertiesAdded = true;
 						}
 
+						// cr_type: Set to 'person' if missing
+						if (!frontmatter.cr_type) {
+							frontmatter.cr_type = 'person';
+							propertiesAdded = true;
+						}
+
 						// name: Use filename if missing
 						if (!frontmatter.name) {
 							frontmatter.name = file.basename;

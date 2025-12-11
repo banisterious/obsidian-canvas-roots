@@ -1284,6 +1284,7 @@ export class ControlCenterModal extends Modal {
 			// Properties with aliasing support
 			const personProps = [
 				{ canonical: 'cr_id', desc: 'Unique identifier', req: true },
+				{ canonical: 'cr_type', desc: 'Must be "person"', req: true },
 				{ canonical: 'name', desc: 'Full name', req: true },
 				{ combined: ['father', 'mother'], desc: 'Wikilinks to parents', req: false },
 				{ canonical: 'spouse', desc: 'Array of spouse wikilinks', req: false },

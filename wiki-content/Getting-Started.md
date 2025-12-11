@@ -43,6 +43,7 @@ Create a new note for a person in your family tree:
 ```yaml
 ---
 cr_id: john-smith-001
+cr_type: person
 name: John Smith
 born: 1920-05-15
 died: 1995-08-20
@@ -60,6 +61,7 @@ Create notes for related family members and link them:
 ```yaml
 ---
 cr_id: mary-smith-001
+cr_type: person
 name: Mary Smith
 born: 1922-03-10
 died: 2001-11-30

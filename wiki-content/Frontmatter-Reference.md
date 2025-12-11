@@ -128,6 +128,7 @@ erDiagram
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
 | `cr_id` | `string` | Unique identifier (UUID). **Required** for all person notes. | `"a1b2c3d4-e5f6-7890-abcd-ef1234567890"` |
+| `cr_type` | `string` | Note type identifier. Must be `"person"`. | `"person"` |
 
 ### Basic Information
 
@@ -900,6 +901,7 @@ When using "Add essential properties" in Data Quality tools, these properties ar
 ```yaml
 ---
 cr_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+cr_type: "person"
 name: "John Robert Smith"
 born: "1888-05-15"
 died: "1952-08-20"

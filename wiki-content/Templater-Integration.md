@@ -84,6 +84,7 @@ name: <% tp.file.title %>
 ```yaml
 ---
 cr_id: <% tp.user.generateCrId() %>
+cr_type: person
 name: <% tp.file.title %>
 born: ""
 died: ""

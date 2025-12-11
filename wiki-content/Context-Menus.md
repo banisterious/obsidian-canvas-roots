@@ -39,7 +39,7 @@ Right-click on any markdown file with a `cr_id` frontmatter property:
 | → Matrilineal (mother's line) | Mark descendants through female line only |
 | **Create place notes...** | Create notes for places mentioned in this person's data |
 | **Add essential properties** | |
-| → Add essential person properties | Add missing cr_id, name, born, died, etc. |
+| → Add essential person properties | Add missing cr_id, cr_type, name, born, died, etc. |
 | → Add essential place properties | Convert to a place note with required fields |
 | **More options...** | Open the Control Center |
 
@@ -115,7 +115,7 @@ Right-click on markdown files without Canvas Roots properties:
 
 | Action | Description |
 |--------|-------------|
-| **Add essential person properties** | Convert to a person note with cr_id, name, etc. |
+| **Add essential person properties** | Convert to a person note with cr_id, cr_type, name, etc. |
 | **Add essential place properties** | Convert to a place note with required fields |
 
 ## Mobile vs Desktop

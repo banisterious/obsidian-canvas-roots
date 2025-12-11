@@ -31,6 +31,7 @@ export function generatePeopleBaseTemplate(aliases: PropertyAliases = {}): strin
 	// Get aliased property names
 	const name = getPropertyName('name', aliases);
 	const cr_id = getPropertyName('cr_id', aliases);
+	const cr_type = getPropertyName('cr_type', aliases);
 	const sex = getPropertyName('sex', aliases);
 	const born = getPropertyName('born', aliases);
 	const died = getPropertyName('died', aliases);
@@ -61,6 +62,7 @@ filters:
   or:
     - file.hasTag("person")
     - file.hasProperty("${cr_id}")
+    - note.${cr_type} = "person"
 formulas:
   display_name: ${name} || file.name
   full_lifespan: if(${born} && ${died}, ${died}.year() - ${born}.year() + " years", "")
@@ -344,6 +346,7 @@ filters:
   or:
     - file.hasTag("person")
     - file.hasProperty("cr_id")
+    - note.cr_type = "person"
 formulas:
   display_name: name || file.name
   full_lifespan: if(born && died, died.year() - born.year() + " years", "")

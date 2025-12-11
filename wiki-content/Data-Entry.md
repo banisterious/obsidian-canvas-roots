@@ -12,7 +12,7 @@ The fastest way to set up a person note is using the context menu:
 2. Right-click the file in the file explorer
 3. Select **Canvas Roots → Add essential person properties**
 
-This automatically adds all required fields (`cr_id`, `name`) plus common optional fields (`born`, `died`, `father`, `mother`, `spouse`). You can also select multiple files and add properties to all of them at once.
+This automatically adds all required fields (`cr_id`, `cr_type`, `name`) plus common optional fields (`born`, `died`, `father`, `mother`, `spouse`). You can also select multiple files and add properties to all of them at once.
 
 > **Tip:** See [Context Menus](Context-Menus) for all available right-click actions.
 
@@ -23,6 +23,7 @@ Create individual notes for each person with YAML frontmatter containing relatio
 ### Required Fields
 
 - `cr_id`: Unique identifier (UUID format recommended)
+- `cr_type`: Must be `"person"` for person notes
 - `name`: Person's name
 
 ### Optional Relationship Fields
@@ -46,6 +47,7 @@ Create individual notes for each person with YAML frontmatter containing relatio
 ```yaml
 ---
 cr_id: abc-123-def-456
+cr_type: person
 name: John Robert Smith
 father: "[[John Smith Sr]]"
 father_id: xyz-789-uvw-012
@@ -71,6 +73,7 @@ For complex marital histories, use indexed spouse properties:
 ```yaml
 ---
 cr_id: abc-123-def-456
+cr_type: person
 name: John Robert Smith
 
 # First spouse
