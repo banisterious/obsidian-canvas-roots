@@ -259,6 +259,9 @@ export class ControlCenterModal extends Modal {
 			activeItem.classList.add('crc-nav-item--active');
 		}
 
+		// Reset scroll position to top
+		this.contentContainer.scrollTop = 0;
+
 		// Update active tab and show content
 		this.activeTab = tabId;
 		this.showTab(tabId);
