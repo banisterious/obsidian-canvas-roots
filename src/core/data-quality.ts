@@ -1023,7 +1023,8 @@ export class DataQualityService {
 	}
 
 	/**
-	 * Normalize gender values to standard M/F format
+	 * Normalize sex values using value alias system
+	 * Converts user values to canonical values (male, female, nonbinary, unknown)
 	 * Returns the number of files modified
 	 */
 	async normalizeGenderValues(options: DataQualityOptions = {}): Promise<BatchOperationResult> {
@@ -1034,12 +1035,28 @@ export class DataQualityService {
 			errors: [],
 		};
 
+		// Import canonical values
+		const { CANONICAL_SEX_VALUES } = await import('./value-alias-service');
+		const canonicalValues = new Set(CANONICAL_SEX_VALUES);
+
 		for (const person of people) {
 			if (person.sex) {
-				const normalized = this.normalizeGender(person.sex);
-				if (normalized && normalized !== person.sex) {
+				const currentValue = person.sex.trim();
+
+				// Check if already canonical
+				if (canonicalValues.has(currentValue as any)) {
+					results.processed++;
+					continue;
+				}
+
+				// Try to find a value alias mapping
+				const valueAliases = this.settings.valueAliases?.sex || {};
+				const normalizedValue = valueAliases[currentValue];
+
+				// If we have a mapping and it's different, apply it
+				if (normalizedValue && normalizedValue !== currentValue) {
 					try {
-						await this.updatePersonFrontmatter(person.file, { gender: normalized });
+						await this.updatePersonFrontmatter(person.file, { sex: normalizedValue });
 						results.modified++;
 					} catch (error) {
 						results.errors.push({
@@ -1052,7 +1069,7 @@ export class DataQualityService {
 			results.processed++;
 		}
 
-		logger.info('normalize-gender', `Normalized gender values: ${results.modified}/${results.processed} files modified`);
+		logger.info('normalize-sex', `Normalized sex values: ${results.modified}/${results.processed} files modified`);
 		return results;
 	}
 
@@ -1106,6 +1123,401 @@ export class DataQualityService {
 
 		logger.info('clear-orphans', `Cleared orphan references: ${results.modified}/${results.processed} files modified`);
 		return results;
+	}
+
+	/**
+	 * Detect bidirectional relationship inconsistencies
+	 * Returns array of detected inconsistencies across all person notes
+	 */
+	async detectBidirectionalInconsistencies(options: DataQualityOptions = {}): Promise<BidirectionalInconsistency[]> {
+		const people = this.getPeopleForScope(options);
+		const inconsistencies: BidirectionalInconsistency[] = [];
+
+		// Build lookup of all person cr_ids
+		const crIdMap = new Map<string, PersonNode>();
+		for (const person of people) {
+			crIdMap.set(person.crId, person);
+		}
+
+		for (const person of people) {
+			// Check if father lists this person as child
+			if (person.fatherCrId) {
+				const father = crIdMap.get(person.fatherCrId);
+				if (father) {
+					const fatherCache = this.app.metadataCache.getFileCache(father.file);
+					const fatherChildrenIds = this.extractArrayField(fatherCache?.frontmatter, 'children_id');
+					if (!fatherChildrenIds.includes(person.crId)) {
+						inconsistencies.push({
+							type: 'missing-child-in-parent',
+							person,
+							relatedPerson: father,
+							field: 'father_id',
+							description: `Will add ${person.name || person.file.basename} to ${father.name || father.file.basename}'s children_id (${person.name || person.file.basename} lists them as father)`
+						});
+					}
+				}
+			}
+
+			// Check if mother lists this person as child
+			if (person.motherCrId) {
+				const mother = crIdMap.get(person.motherCrId);
+				if (mother) {
+					const motherCache = this.app.metadataCache.getFileCache(mother.file);
+					const motherChildrenIds = this.extractArrayField(motherCache?.frontmatter, 'children_id');
+					if (!motherChildrenIds.includes(person.crId)) {
+						inconsistencies.push({
+							type: 'missing-child-in-parent',
+							person,
+							relatedPerson: mother,
+							field: 'mother_id',
+							description: `Will add ${person.name || person.file.basename} to ${mother.name || mother.file.basename}'s children_id (${person.name || person.file.basename} lists them as mother)`
+						});
+					}
+				}
+			}
+
+			// Check if children list this person as parent
+			if (person.childrenCrIds) {
+				for (const childCrId of person.childrenCrIds) {
+					const child = crIdMap.get(childCrId);
+					if (child) {
+						const childCache = this.app.metadataCache.getFileCache(child.file);
+						const childFatherId = childCache?.frontmatter?.father_id;
+						const childMotherId = childCache?.frontmatter?.mother_id;
+
+						if (childFatherId !== person.crId && childMotherId !== person.crId) {
+							// Determine which parent field to add based on person's sex
+							const targetField = person.sex === 'M' ? 'father_id' : person.sex === 'F' ? 'mother_id' : 'father_id or mother_id';
+							inconsistencies.push({
+								type: 'missing-parent-in-child',
+								person,
+								relatedPerson: child,
+								field: 'children_id',
+								description: `Will add ${person.name || person.file.basename} to ${child.name || child.file.basename}'s ${targetField} (${person.name || person.file.basename} lists them as child)`
+							});
+						}
+					}
+				}
+			}
+
+			// Check if spouses list this person as spouse
+			if (person.spouseCrIds) {
+				for (const spouseCrId of person.spouseCrIds) {
+					const spouse = crIdMap.get(spouseCrId);
+					if (spouse) {
+						const spouseCache = this.app.metadataCache.getFileCache(spouse.file);
+						const spouseSpouseIds = this.extractArrayField(spouseCache?.frontmatter, 'spouse_id');
+
+						// Also check indexed spouse properties
+						let hasIndexedSpouse = false;
+						if (spouseCache?.frontmatter) {
+							for (let i = 1; i <= 10; i++) {
+								const indexedId = spouseCache.frontmatter[`spouse${i}_id`];
+								if (indexedId === person.crId) {
+									hasIndexedSpouse = true;
+									break;
+								}
+							}
+						}
+
+						if (!spouseSpouseIds.includes(person.crId) && !hasIndexedSpouse) {
+							inconsistencies.push({
+								type: 'missing-spouse-in-spouse',
+								person,
+								relatedPerson: spouse,
+								field: 'spouse_id',
+								description: `Will add ${person.name || person.file.basename} to ${spouse.name || spouse.file.basename}'s spouse_id (${person.name || person.file.basename} lists them as spouse)`
+							});
+						}
+					}
+				}
+			}
+		}
+
+		logger.info('detect-bidirectional', `Found ${inconsistencies.length} bidirectional relationship inconsistencies`);
+		return inconsistencies;
+	}
+
+	/**
+	 * Fix bidirectional relationship inconsistencies
+	 * Adds missing reciprocal relationships
+	 */
+	async fixBidirectionalInconsistencies(
+		inconsistencies: BidirectionalInconsistency[]
+	): Promise<BatchOperationResult> {
+		const results: BatchOperationResult = {
+			processed: 0,
+			modified: 0,
+			errors: [],
+		};
+
+		for (const issue of inconsistencies) {
+			results.processed++;
+
+			try {
+				if (issue.type === 'missing-child-in-parent') {
+					// Add person to parent's children_id array
+					await this.addToArrayField(issue.relatedPerson.file, 'children_id', issue.person.crId);
+					// Also add wikilink to children array
+					const childName = issue.person.name || issue.person.file.basename;
+					await this.addToArrayField(issue.relatedPerson.file, 'children', `[[${childName}]]`);
+					results.modified++;
+				} else if (issue.type === 'missing-parent-in-child') {
+					// Determine if this person should be father or mother based on sex
+					const sex = issue.person.sex;
+					const parentField = sex === 'F' ? 'mother_id' : 'father_id';
+					const parentWikilinkField = sex === 'F' ? 'mother' : 'father';
+
+					// Check if the parent field is already occupied
+					const childCache = this.app.metadataCache.getFileCache(issue.relatedPerson.file);
+					const existingParent = childCache?.frontmatter?.[parentField];
+
+					if (!existingParent) {
+						// Add parent to child
+						await this.updatePersonFrontmatter(issue.relatedPerson.file, {
+							[parentField]: issue.person.crId,
+							[parentWikilinkField]: `[[${issue.person.name || issue.person.file.basename}]]`
+						});
+						results.modified++;
+					} else {
+						// Parent field already occupied, log warning
+						logger.warn('fix-bidirectional', `Cannot add parent - ${parentField} already set in ${issue.relatedPerson.file.basename}`);
+						results.errors.push({
+							file: issue.relatedPerson.file.path,
+							error: `${parentField} already set to ${existingParent}`
+						});
+					}
+				} else if (issue.type === 'missing-spouse-in-spouse') {
+					// Add person to spouse's spouse_id array
+					await this.addToArrayField(issue.relatedPerson.file, 'spouse_id', issue.person.crId);
+					// Also add wikilink to spouse array
+					const personName = issue.person.name || issue.person.file.basename;
+					await this.addToArrayField(issue.relatedPerson.file, 'spouse', `[[${personName}]]`);
+					results.modified++;
+				}
+			} catch (error) {
+				results.errors.push({
+					file: issue.person.file.path,
+					error: error instanceof Error ? error.message : String(error),
+				});
+			}
+		}
+
+		logger.info('fix-bidirectional', `Fixed ${results.modified}/${results.processed} bidirectional inconsistencies`);
+		return results;
+	}
+
+	/**
+	 * Helper method to extract array field from frontmatter
+	 */
+	private extractArrayField(frontmatter: Record<string, unknown> | undefined, fieldName: string): string[] {
+		if (!frontmatter) return [];
+
+		const value = frontmatter[fieldName];
+		if (!value) return [];
+		if (Array.isArray(value)) return value.filter(v => typeof v === 'string') as string[];
+		if (typeof value === 'string') return [value];
+		return [];
+	}
+
+	/**
+	 * Helper method to add value to array field in frontmatter
+	 */
+	private async addToArrayField(file: TFile, fieldName: string, value: string): Promise<void> {
+		await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+			const existing = frontmatter[fieldName];
+
+			if (!existing) {
+				// Field doesn't exist, create as array with single value
+				frontmatter[fieldName] = [value];
+			} else if (Array.isArray(existing)) {
+				// Already an array, add if not present
+				if (!existing.includes(value)) {
+					existing.push(value);
+				}
+			} else {
+				// Single value, convert to array if different
+				if (existing !== value) {
+					frontmatter[fieldName] = [existing, value];
+				}
+			}
+		});
+	}
+
+	/**
+	 * Detect impossible dates (preview only)
+	 * Finds logical date errors like birth after death, unrealistic lifespans, etc.
+	 */
+	async detectImpossibleDates(options: DataQualityOptions = {}): Promise<ImpossibleDateIssue[]> {
+		const people = this.getPeopleForScope(options);
+		const issues: ImpossibleDateIssue[] = [];
+
+		// Build lookup map for relationship checks
+		const peopleMap = new Map<string, PersonNode>();
+		for (const person of people) {
+			peopleMap.set(person.crId, person);
+		}
+
+		for (const person of people) {
+			const birthDate = person.birthDate ? this.parseDate(person.birthDate) : null;
+			const deathDate = person.deathDate ? this.parseDate(person.deathDate) : null;
+
+			// Check: Birth after death
+			if (birthDate && deathDate && birthDate > deathDate) {
+				issues.push({
+					type: 'birth-after-death',
+					person,
+					description: `Born ${person.birthDate} after death ${person.deathDate}`,
+					personDate: person.birthDate,
+					relatedDate: person.deathDate
+				});
+			}
+
+			// Check: Unrealistic lifespan (>120 years)
+			if (birthDate && deathDate) {
+				const ageInYears = (deathDate.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+				if (ageInYears > 120) {
+					issues.push({
+						type: 'unrealistic-lifespan',
+						person,
+						description: `Lived ${Math.round(ageInYears)} years (birth: ${person.birthDate}, death: ${person.deathDate})`,
+						personDate: person.birthDate,
+						relatedDate: person.deathDate
+					});
+				}
+			}
+
+			// Check parent relationships
+			if (person.fatherCrId) {
+				const father = peopleMap.get(person.fatherCrId);
+				if (father) {
+					const fatherBirthDate = father.birthDate ? this.parseDate(father.birthDate) : null;
+					const fatherDeathDate = father.deathDate ? this.parseDate(father.deathDate) : null;
+
+					// Parent born after child
+					if (fatherBirthDate && birthDate && fatherBirthDate > birthDate) {
+						issues.push({
+							type: 'parent-born-after-child',
+							person,
+							relatedPerson: father,
+							description: `Father ${father.name || father.file.basename} born ${father.birthDate} after child born ${person.birthDate}`,
+							personDate: person.birthDate,
+							relatedDate: father.birthDate
+						});
+					}
+
+					// Parent too young (<10 years)
+					if (fatherBirthDate && birthDate) {
+						const parentAgeAtBirth = (birthDate.getTime() - fatherBirthDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+						if (parentAgeAtBirth < 10) {
+							issues.push({
+								type: 'parent-too-young',
+								person,
+								relatedPerson: father,
+								description: `Father ${father.name || father.file.basename} was ${Math.round(parentAgeAtBirth)} years old at child's birth`,
+								personDate: person.birthDate,
+								relatedDate: father.birthDate
+							});
+						}
+					}
+
+					// Child born after parent death (allowing 1 year for posthumous births)
+					if (fatherDeathDate && birthDate) {
+						const monthsAfterDeath = (birthDate.getTime() - fatherDeathDate.getTime()) / (1000 * 60 * 60 * 24 * 30);
+						if (monthsAfterDeath > 12) {
+							issues.push({
+								type: 'child-born-after-parent-death',
+								person,
+								relatedPerson: father,
+								description: `Born ${person.birthDate}, ${Math.round(monthsAfterDeath)} months after father died ${father.deathDate}`,
+								personDate: person.birthDate,
+								relatedDate: father.deathDate
+							});
+						}
+					}
+				}
+			}
+
+			// Same checks for mother
+			if (person.motherCrId) {
+				const mother = peopleMap.get(person.motherCrId);
+				if (mother) {
+					const motherBirthDate = mother.birthDate ? this.parseDate(mother.birthDate) : null;
+					const motherDeathDate = mother.deathDate ? this.parseDate(mother.deathDate) : null;
+
+					// Parent born after child
+					if (motherBirthDate && birthDate && motherBirthDate > birthDate) {
+						issues.push({
+							type: 'parent-born-after-child',
+							person,
+							relatedPerson: mother,
+							description: `Mother ${mother.name || mother.file.basename} born ${mother.birthDate} after child born ${person.birthDate}`,
+							personDate: person.birthDate,
+							relatedDate: mother.birthDate
+						});
+					}
+
+					// Parent too young (<10 years)
+					if (motherBirthDate && birthDate) {
+						const parentAgeAtBirth = (birthDate.getTime() - motherBirthDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+						if (parentAgeAtBirth < 10) {
+							issues.push({
+								type: 'parent-too-young',
+								person,
+								relatedPerson: mother,
+								description: `Mother ${mother.name || mother.file.basename} was ${Math.round(parentAgeAtBirth)} years old at child's birth`,
+								personDate: person.birthDate,
+								relatedDate: mother.birthDate
+							});
+						}
+					}
+
+					// Child born after parent death (mother can't have posthumous births)
+					if (motherDeathDate && birthDate && motherDeathDate < birthDate) {
+						issues.push({
+							type: 'child-born-after-parent-death',
+							person,
+							relatedPerson: mother,
+							description: `Born ${person.birthDate} after mother died ${mother.deathDate}`,
+							personDate: person.birthDate,
+							relatedDate: mother.deathDate
+						});
+					}
+				}
+			}
+		}
+
+		logger.info('detect-impossible-dates', `Found ${issues.length} impossible date issues`);
+		return issues;
+	}
+
+	/**
+	 * Helper to parse date string to Date object
+	 * Handles YYYY-MM-DD and partial dates (YYYY-MM, YYYY)
+	 */
+	private parseDate(dateStr: string): Date | null {
+		if (!dateStr) return null;
+
+		// Remove any circa indicators
+		const cleaned = dateStr.replace(/^(c\.|ca\.|circa|~)\s*/i, '').trim();
+
+		// Handle date ranges - use the first date
+		const rangeMatch = cleaned.match(/^(\d{4}(?:-\d{2}(?:-\d{2})?)?)/);
+		const datePart = rangeMatch ? rangeMatch[1] : cleaned;
+
+		// Try to parse ISO format
+		const parts = datePart.split('-');
+		if (parts.length >= 1) {
+			const year = parseInt(parts[0]);
+			const month = parts.length >= 2 ? parseInt(parts[1]) - 1 : 0; // Default to January
+			const day = parts.length >= 3 ? parseInt(parts[2]) : 1; // Default to 1st
+
+			if (!isNaN(year)) {
+				return new Date(year, month, day);
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -1213,24 +1625,19 @@ export class DataQualityService {
 				}
 			}
 
-			// Check sex
+			// Check sex - use value alias system
 			if (person.sex) {
-				const normalized = this.normalizeGender(person.sex);
-				if (normalized && normalized !== person.sex) {
-					// Can be normalized to M/F
+				const currentValue = person.sex.trim();
+				const valueAliases = this.settings.valueAliases?.sex || {};
+				const normalizedValue = valueAliases[currentValue];
+
+				// Check if we have a mapping that's different from current
+				if (normalizedValue && normalizedValue !== currentValue) {
 					preview.genderNormalization.push({
 						person,
 						field: 'sex',
 						oldValue: person.sex,
-						newValue: normalized,
-					});
-				} else if (!normalized && person.sex.toLowerCase() !== 'm' && person.sex.toLowerCase() !== 'f') {
-					// Unrecognized value - show in preview but won't change
-					preview.genderNormalization.push({
-						person,
-						field: 'sex',
-						oldValue: person.sex,
-						newValue: '(unrecognized - no change)',
+						newValue: normalizedValue,
 					});
 				}
 			}
@@ -1375,21 +1782,6 @@ export class DataQualityService {
 	}
 
 	/**
-	 * Normalize gender value to M or F
-	 */
-	private normalizeGender(value: string): string | null {
-		const normalized = value.toLowerCase().trim();
-		if (normalized === 'm' || normalized === 'male') {
-			return 'M';
-		}
-		if (normalized === 'f' || normalized === 'female') {
-			return 'F';
-		}
-		// Unknown value, can't normalize
-		return null;
-	}
-
-	/**
 	 * Update frontmatter fields in a person file
 	 */
 	private async updatePersonFrontmatter(
@@ -1435,4 +1827,47 @@ export interface NormalizationChange {
 	field: string;
 	oldValue: string;
 	newValue: string;
+}
+
+/**
+ * Types of bidirectional relationship inconsistencies
+ */
+export type BidirectionalInconsistencyType =
+	| 'missing-child-in-parent'
+	| 'missing-parent-in-child'
+	| 'missing-spouse-in-spouse';
+
+/**
+ * A bidirectional relationship inconsistency
+ */
+export interface BidirectionalInconsistency {
+	type: BidirectionalInconsistencyType;
+	person: PersonNode;
+	relatedPerson: PersonNode;
+	field: string;
+	description: string;
+}
+
+/**
+ * Types of impossible date issues
+ */
+export type ImpossibleDateType =
+	| 'birth-after-death'
+	| 'death-before-birth'
+	| 'unrealistic-lifespan'
+	| 'parent-born-after-child'
+	| 'parent-died-before-child'
+	| 'parent-too-young'
+	| 'child-born-after-parent-death';
+
+/**
+ * An impossible date issue
+ */
+export interface ImpossibleDateIssue {
+	type: ImpossibleDateType;
+	person: PersonNode;
+	relatedPerson?: PersonNode;
+	description: string;
+	personDate?: string;
+	relatedDate?: string;
 }
