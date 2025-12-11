@@ -1781,6 +1781,22 @@ export class ControlCenterModal extends Modal {
 					void this.removeOrphanedRefs();
 				}));
 
+		// Fifth operation: Validate date formats
+		new Setting(batchContent)
+			.setName('Validate date formats')
+			.setDesc('Check all date fields (born, died, birth_date, death_date) for format issues based on your date validation preferences')
+			.addButton(button => button
+				.setButtonText('Preview')
+				.onClick(() => {
+					void this.previewValidateDates();
+				}))
+			.addButton(button => button
+				.setButtonText('Apply')
+				.setCta()
+				.onClick(() => {
+					void this.validateDates();
+				}));
+
 		container.appendChild(batchCard);
 
 		// Statistics Card
@@ -12514,6 +12530,199 @@ export class ControlCenterModal extends Modal {
 		// Refresh the People tab
 		this.showTab('people');
 	}
+
+	/**
+	 * Preview date format validation
+	 */
+	private async previewValidateDates(): Promise<void> {
+		const familyGraph = this.plugin.createFamilyGraphService();
+		familyGraph.ensureCacheLoaded();
+
+		const issues: Array<{
+			file: TFile;
+			name: string;
+			field: string;
+			value: string;
+			issue: string;
+		}> = [];
+
+		new Notice('Analyzing date formats...');
+
+		const files = this.app.vault.getMarkdownFiles();
+
+		for (const file of files) {
+			const cache = this.app.metadataCache.getFileCache(file);
+			if (!cache?.frontmatter?.cr_id) continue;
+
+			const fm = cache.frontmatter as Record<string, unknown>;
+			const name = (fm.name as string) || file.basename;
+
+			// Skip fictional dates (they have fc-calendar property)
+			if (fm['fc-calendar']) continue;
+
+			// Check born/birth_date field
+			const born = fm.born || fm.birth_date;
+			if (born && typeof born === 'string') {
+				const issue = this.validateDateFormat(born);
+				if (issue) {
+					issues.push({
+						file,
+						name,
+						field: fm.born ? 'born' : 'birth_date',
+						value: born,
+						issue
+					});
+				}
+			}
+
+			// Check died/death_date field
+			const died = fm.died || fm.death_date;
+			if (died && typeof died === 'string') {
+				const issue = this.validateDateFormat(died);
+				if (issue) {
+					issues.push({
+						file,
+						name,
+						field: fm.died ? 'died' : 'death_date',
+						value: died,
+						issue
+					});
+				}
+			}
+		}
+
+		if (issues.length === 0) {
+			new Notice('✓ All dates are valid according to your validation settings');
+			return;
+		}
+
+		// Show preview modal
+		new DateValidationPreviewModal(this.app, this.plugin, issues).open();
+	}
+
+	/**
+	 * Validate a date string according to current settings
+	 * @returns Issue description if invalid, null if valid
+	 */
+	private validateDateFormat(dateStr: string): string | null {
+		const settings = this.plugin.settings;
+		const trimmed = dateStr.trim();
+
+		// Check for circa dates
+		const circaPrefixes = ['c.', 'ca.', 'circa', '~'];
+		const hasCirca = circaPrefixes.some(prefix =>
+			trimmed.toLowerCase().startsWith(prefix) ||
+			trimmed.toLowerCase().startsWith(prefix + ' ')
+		);
+
+		if (hasCirca && !settings.allowCircaDates) {
+			return 'Circa dates not allowed (check "Allow circa dates" setting)';
+		}
+
+		// Remove circa prefix for further validation
+		let cleanDate = trimmed;
+		if (hasCirca) {
+			for (const prefix of circaPrefixes) {
+				if (cleanDate.toLowerCase().startsWith(prefix)) {
+					cleanDate = cleanDate.slice(prefix.length).trim();
+					break;
+				}
+				if (cleanDate.toLowerCase().startsWith(prefix + ' ')) {
+					cleanDate = cleanDate.slice(prefix.length + 1).trim();
+					break;
+				}
+			}
+		}
+
+		// Check for date ranges
+		const hasRange = cleanDate.includes(' to ') ||
+			(cleanDate.includes('-') && cleanDate.split('-').length === 3 && cleanDate.split('-')[2].length === 4);
+
+		if (hasRange && !settings.allowDateRanges) {
+			return 'Date ranges not allowed (check "Allow date ranges" setting)';
+		}
+
+		// If it's a range, validate each part separately
+		if (hasRange) {
+			const parts = cleanDate.includes(' to ')
+				? cleanDate.split(' to ')
+				: cleanDate.split('-').slice(0, 2);
+
+			for (const part of parts) {
+				const partIssue = this.validateSingleDate(part.trim());
+				if (partIssue) return partIssue;
+			}
+			return null;
+		}
+
+		// Validate single date
+		return this.validateSingleDate(cleanDate);
+	}
+
+	/**
+	 * Validate a single date (not a range) according to current settings
+	 */
+	private validateSingleDate(dateStr: string): string | null {
+		const settings = this.plugin.settings;
+
+		// ISO 8601 format: YYYY-MM-DD or YYYY-MM or YYYY
+		const iso8601Full = /^(\d{4})-(\d{2})-(\d{2})$/;
+		const iso8601Month = /^(\d{4})-(\d{2})$/;
+		const iso8601Year = /^(\d{4})$/;
+		const iso8601NoZeros = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+
+		// GEDCOM format: DD MMM YYYY or DD MMM or MMM YYYY
+		const gedcomFull = /^(\d{1,2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})$/i;
+		const gedcomMonth = /^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})$/i;
+
+		// Check for standard: ISO 8601
+		if (settings.dateFormatStandard === 'iso8601') {
+			// Check if leading zeros are required
+			if (settings.requireLeadingZeros) {
+				if (iso8601Full.test(dateStr)) return null;
+				if (settings.allowPartialDates && iso8601Month.test(dateStr)) return null;
+				if (settings.allowPartialDates && iso8601Year.test(dateStr)) return null;
+				return 'ISO 8601 format required with leading zeros (YYYY-MM-DD)';
+			} else {
+				if (iso8601Full.test(dateStr) || iso8601NoZeros.test(dateStr)) return null;
+				if (settings.allowPartialDates && (iso8601Month.test(dateStr) || iso8601Year.test(dateStr))) return null;
+				return 'ISO 8601 format required (YYYY-MM-DD or YYYY-M-D)';
+			}
+		}
+
+		// Check for standard: GEDCOM
+		if (settings.dateFormatStandard === 'gedcom') {
+			if (gedcomFull.test(dateStr)) return null;
+			if (settings.allowPartialDates && gedcomMonth.test(dateStr)) return null;
+			if (settings.allowPartialDates && iso8601Year.test(dateStr)) return null;
+			return 'GEDCOM format required (DD MMM YYYY, e.g., 15 JAN 1920)';
+		}
+
+		// Flexible standard: accept multiple formats
+		if (settings.dateFormatStandard === 'flexible') {
+			// Accept ISO 8601 formats
+			if (iso8601Full.test(dateStr) || (!settings.requireLeadingZeros && iso8601NoZeros.test(dateStr))) return null;
+			if (settings.allowPartialDates && (iso8601Month.test(dateStr) || iso8601Year.test(dateStr))) return null;
+
+			// Accept GEDCOM formats
+			if (gedcomFull.test(dateStr)) return null;
+			if (settings.allowPartialDates && gedcomMonth.test(dateStr)) return null;
+
+			// If we got here, the format is not recognized
+			return 'Unrecognized date format (expected YYYY-MM-DD or DD MMM YYYY)';
+		}
+
+		return 'Unknown date format standard';
+	}
+
+	/**
+	 * Apply date format validation (currently just shows preview)
+	 * Note: We don't auto-correct dates as this could introduce errors
+	 */
+	private async validateDates(): Promise<void> {
+		new Notice('Date validation is preview-only. Review issues and manually correct dates in your notes.');
+		await this.previewValidateDates();
+	}
 }
 
 /**
@@ -13885,5 +14094,247 @@ class CrossImportReviewModal extends Modal {
 		closeBtn.addEventListener('click', () => {
 			this.close();
 		});
+	}
+}
+
+/**
+ * Modal for previewing date validation issues
+ */
+class DateValidationPreviewModal extends Modal {
+	private plugin: CanvasRootsPlugin;
+	private allIssues: Array<{
+		file: TFile;
+		name: string;
+		field: string;
+		value: string;
+		issue: string;
+	}>;
+	private filteredIssues: Array<{
+		file: TFile;
+		name: string;
+		field: string;
+		value: string;
+		issue: string;
+	}> = [];
+
+	// Filter state
+	private searchQuery = '';
+	private selectedField = 'all';
+	private sortAscending = true;
+
+	// UI elements
+	private tbody: HTMLTableSectionElement | null = null;
+	private countEl: HTMLElement | null = null;
+
+	constructor(
+		app: App,
+		plugin: CanvasRootsPlugin,
+		issues: Array<{
+			file: TFile;
+			name: string;
+			field: string;
+			value: string;
+			issue: string;
+		}>
+	) {
+		super(app);
+		this.plugin = plugin;
+		this.allIssues = issues;
+		this.filteredIssues = [...issues];
+	}
+
+	onOpen(): void {
+		const { contentEl, titleEl } = this;
+
+		this.modalEl.addClass('crc-batch-preview-modal');
+		titleEl.setText('Preview: Date format validation issues');
+
+		// Summary
+		const summaryEl = contentEl.createDiv({ cls: 'crc-batch-summary' });
+		summaryEl.createEl('p', {
+			text: `Found ${this.allIssues.length} date${this.allIssues.length === 1 ? '' : 's'} with format issues.`,
+			cls: 'crc-batch-summary-text'
+		});
+		this.countEl = summaryEl.createEl('p', {
+			text: `Showing ${this.filteredIssues.length} of ${this.allIssues.length}`,
+			cls: 'crc-batch-summary-count'
+		});
+
+		// Search and filter controls
+		const controlsEl = contentEl.createDiv({ cls: 'crc-batch-controls' });
+
+		// Search input
+		const searchContainer = controlsEl.createDiv({ cls: 'crc-batch-control' });
+		searchContainer.createEl('label', { text: 'Search:', cls: 'crc-batch-label' });
+		const searchInput = searchContainer.createEl('input', {
+			type: 'text',
+			placeholder: 'Filter by person name...',
+			cls: 'crc-batch-search'
+		});
+		searchInput.addEventListener('input', () => {
+			this.searchQuery = searchInput.value.toLowerCase();
+			this.applyFiltersAndRender();
+		});
+
+		// Field filter dropdown
+		const fieldContainer = controlsEl.createDiv({ cls: 'crc-batch-control' });
+		fieldContainer.createEl('label', { text: 'Field:', cls: 'crc-batch-label' });
+		const fieldSelect = fieldContainer.createEl('select', { cls: 'crc-batch-select' });
+
+		const fieldOptions = [
+			{ value: 'all', label: 'All fields' },
+			{ value: 'born', label: 'Birth dates' },
+			{ value: 'birth_date', label: 'Birth dates (birth_date)' },
+			{ value: 'died', label: 'Death dates' },
+			{ value: 'death_date', label: 'Death dates (death_date)' }
+		];
+
+		for (const opt of fieldOptions) {
+			const option = fieldSelect.createEl('option', {
+				value: opt.value,
+				text: opt.label
+			});
+		}
+
+		fieldSelect.addEventListener('change', () => {
+			this.selectedField = fieldSelect.value;
+			this.applyFiltersAndRender();
+		});
+
+		// Sort toggle
+		const sortContainer = controlsEl.createDiv({ cls: 'crc-batch-control' });
+		sortContainer.createEl('label', { text: 'Sort:', cls: 'crc-batch-label' });
+		const sortBtn = sortContainer.createEl('button', {
+			text: this.sortAscending ? 'A → Z' : 'Z → A',
+			cls: 'crc-batch-sort-btn'
+		});
+		sortBtn.addEventListener('click', () => {
+			this.sortAscending = !this.sortAscending;
+			sortBtn.setText(this.sortAscending ? 'A → Z' : 'Z → A');
+			this.applyFiltersAndRender();
+		});
+
+		// Table
+		const tableContainer = contentEl.createDiv({ cls: 'crc-batch-table-container' });
+		const table = tableContainer.createEl('table', { cls: 'crc-batch-table' });
+
+		// Table header
+		const thead = table.createEl('thead');
+		const headerRow = thead.createEl('tr');
+		headerRow.createEl('th', { text: 'Person' });
+		headerRow.createEl('th', { text: 'Field' });
+		headerRow.createEl('th', { text: 'Current value' });
+		headerRow.createEl('th', { text: 'Issue' });
+		headerRow.createEl('th', { text: 'Action' });
+
+		// Table body
+		this.tbody = table.createEl('tbody');
+
+		// Render initial data
+		this.renderTable();
+
+		// Info box
+		const infoEl = contentEl.createDiv({ cls: 'crc-batch-info' });
+		const infoIcon = infoEl.createEl('span', { cls: 'crc-batch-info-icon' });
+		setIcon(infoIcon, 'info');
+		infoEl.createEl('span', {
+			text: 'Date validation is preview-only. Click "Open note" to manually correct each date. Configure validation rules in Control Center > Preferences > Date validation.'
+		});
+
+		// Buttons
+		const buttonContainer = contentEl.createDiv({ cls: 'crc-batch-buttons' });
+
+		const closeBtn = buttonContainer.createEl('button', {
+			text: 'Close',
+			cls: 'mod-cta'
+		});
+		closeBtn.addEventListener('click', () => {
+			this.close();
+		});
+	}
+
+	private applyFiltersAndRender(): void {
+		// Apply search filter
+		let filtered = this.allIssues.filter(issue =>
+			issue.name.toLowerCase().includes(this.searchQuery)
+		);
+
+		// Apply field filter
+		if (this.selectedField !== 'all') {
+			filtered = filtered.filter(issue => issue.field === this.selectedField);
+		}
+
+		// Apply sort
+		filtered.sort((a, b) => {
+			const aName = a.name.toLowerCase();
+			const bName = b.name.toLowerCase();
+			return this.sortAscending
+				? aName.localeCompare(bName)
+				: bName.localeCompare(aName);
+		});
+
+		this.filteredIssues = filtered;
+
+		// Update count
+		if (this.countEl) {
+			this.countEl.setText(`Showing ${this.filteredIssues.length} of ${this.allIssues.length}`);
+		}
+
+		// Re-render table
+		this.renderTable();
+	}
+
+	private renderTable(): void {
+		if (!this.tbody) return;
+
+		this.tbody.empty();
+
+		for (const issue of this.filteredIssues) {
+			const row = this.tbody.createEl('tr');
+
+			// Person name
+			row.createEl('td', { text: issue.name });
+
+			// Field
+			row.createEl('td', { text: issue.field });
+
+			// Current value
+			row.createEl('td', {
+				text: issue.value,
+				cls: 'crc-batch-value'
+			});
+
+			// Issue
+			row.createEl('td', {
+				text: issue.issue,
+				cls: 'crc-batch-issue'
+			});
+
+			// Action: Open note button
+			const actionCell = row.createEl('td');
+			const openBtn = actionCell.createEl('button', {
+				text: 'Open note',
+				cls: 'crc-batch-action-btn'
+			});
+			openBtn.addEventListener('click', () => {
+				this.app.workspace.getLeaf().openFile(issue.file);
+			});
+		}
+
+		// Show empty state if no results
+		if (this.filteredIssues.length === 0) {
+			const emptyRow = this.tbody.createEl('tr');
+			const emptyCell = emptyRow.createEl('td', {
+				attr: { colspan: '5' },
+				cls: 'crc-batch-empty'
+			});
+			emptyCell.createEl('p', {
+				text: 'No issues match the current filters'
+			});
+		}
+	}
+
+	onClose(): void {
+		this.contentEl.empty();
 	}
 }

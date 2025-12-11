@@ -68,6 +68,9 @@ export function renderPreferencesTab(
 
 	// Canvas Styling card
 	renderCanvasStylingCard(container, plugin, createCard);
+
+	// Date Validation card
+	renderDateValidationCard(container, plugin, createCard);
 }
 
 /**
@@ -924,6 +927,88 @@ function renderCanvasStylingCard(
 				plugin.settings.spouseEdgeLabelFormat = value as SpouseEdgeLabelFormat;
 				await plugin.saveSettings();
 				new Notice('Spouse edge label format updated');
+			}));
+
+	container.appendChild(card);
+}
+
+/**
+ * Render the Date Validation card
+ */
+function renderDateValidationCard(
+	container: HTMLElement,
+	plugin: CanvasRootsPlugin,
+	createCard: (options: { title: string; icon?: LucideIconName; subtitle?: string }) => HTMLElement
+): void {
+	const card = createCard({
+		title: 'Date validation',
+		icon: 'calendar',
+		subtitle: 'Configure date format standards for batch validation'
+	});
+	const content = card.querySelector('.crc-card__content') as HTMLElement;
+
+	// Info text
+	content.createEl('p', {
+		cls: 'crc-text-muted',
+		text: 'These settings control how dates are validated in the "Validate date formats" batch operation. Fictional dates (with fc-calendar property) are automatically skipped.'
+	});
+
+	// Date Format Standard
+	new Setting(content)
+		.setName('Date format standard')
+		.setDesc('Preferred date format standard for validation')
+		.addDropdown(dropdown => dropdown
+			.addOption('iso8601', 'ISO 8601 - strict YYYY-MM-DD format')
+			.addOption('gedcom', 'GEDCOM - DD MMM YYYY (e.g., 15 JAN 1920)')
+			.addOption('flexible', 'Flexible - allows multiple formats')
+			.setValue(plugin.settings.dateFormatStandard)
+			.onChange(async (value) => {
+				plugin.settings.dateFormatStandard = value as 'iso8601' | 'gedcom' | 'flexible';
+				await plugin.saveSettings();
+			}));
+
+	// Allow Partial Dates
+	new Setting(content)
+		.setName('Allow partial dates')
+		.setDesc('Accept dates with missing day or month (e.g., "1920-05" or "1920")')
+		.addToggle(toggle => toggle
+			.setValue(plugin.settings.allowPartialDates)
+			.onChange(async (value) => {
+				plugin.settings.allowPartialDates = value;
+				await plugin.saveSettings();
+			}));
+
+	// Allow Circa Dates
+	new Setting(content)
+		.setName('Allow circa dates')
+		.setDesc('Accept approximate dates with "c.", "ca.", "circa", or "~" prefix (e.g., "c. 1850")')
+		.addToggle(toggle => toggle
+			.setValue(plugin.settings.allowCircaDates)
+			.onChange(async (value) => {
+				plugin.settings.allowCircaDates = value;
+				await plugin.saveSettings();
+			}));
+
+	// Allow Date Ranges
+	new Setting(content)
+		.setName('Allow date ranges')
+		.setDesc('Accept date ranges with hyphen or "to" (e.g., "1850-1920" or "1850 to 1920")')
+		.addToggle(toggle => toggle
+			.setValue(plugin.settings.allowDateRanges)
+			.onChange(async (value) => {
+				plugin.settings.allowDateRanges = value;
+				await plugin.saveSettings();
+			}));
+
+	// Require Leading Zeros
+	new Setting(content)
+		.setName('Require leading zeros')
+		.setDesc('Require zero-padded months and days (e.g., "1920-05-01" instead of "1920-5-1")')
+		.addToggle(toggle => toggle
+			.setValue(plugin.settings.requireLeadingZeros)
+			.onChange(async (value) => {
+				plugin.settings.requireLeadingZeros = value;
+				await plugin.saveSettings();
 			}));
 
 	container.appendChild(card);

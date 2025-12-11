@@ -244,6 +244,12 @@ export interface CanvasRootsSettings {
 	hiddenCategories: string[];
 	// Note type detection settings
 	noteTypeDetection: NoteTypeDetectionSettings;
+	// Date validation settings
+	dateFormatStandard: 'iso8601' | 'gedcom' | 'flexible';
+	allowPartialDates: boolean;
+	allowCircaDates: boolean;
+	allowDateRanges: boolean;
+	requireLeadingZeros: boolean;
 }
 
 /**
@@ -454,7 +460,13 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	noteTypeDetection: {
 		enableTagDetection: true,              // Allow #person, #place, etc. as fallback
 		primaryTypeProperty: 'type'            // Legacy default for backwards compatibility
-	}
+	},
+	// Date validation settings
+	dateFormatStandard: 'flexible',            // Most permissive default
+	allowPartialDates: true,                   // Allow YYYY-MM or YYYY
+	allowCircaDates: true,                     // Allow circa dates (c. 1850, ca. 1920)
+	allowDateRanges: true,                     // Allow date ranges (1850-1920)
+	requireLeadingZeros: false                 // Don't require YYYY-MM-DD format (allow YYYY-M-D)
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {
