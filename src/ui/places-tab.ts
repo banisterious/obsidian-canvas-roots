@@ -1456,14 +1456,14 @@ function showNormalizePlaceNamesPreview(plugin: CanvasRootsPlugin, showTab: (tab
 		const cleaned = name.trim().replace(/\s+/g, ' ');
 		if (!cleaned) return null;
 
-		const words = cleaned.split(' ');
-		const normalized = words.map(word => {
+		// Helper function to normalize a single word/segment
+		const normalizeWord = (word: string, isFirstWord: boolean): string => {
 			if (!word) return word;
 
 			const lowerWord = word.toLowerCase();
 
-			// Preserve initials (single letter followed by period, like "A.", "B.", etc.)
-			if (/^[a-z]\.$/i.test(word)) {
+			// Preserve initials (A., B., A.B., H.G., etc.)
+			if (/^([a-z]\.)+$/i.test(word)) {
 				return word.toUpperCase();
 			}
 
@@ -1474,14 +1474,40 @@ function showNormalizePlaceNamesPreview(plugin: CanvasRootsPlugin, showTab: (tab
 
 			// Common place name prefixes that should stay lowercase (unless at start)
 			const lowercasePrefixes = ['van', 'von', 'de', 'del', 'della', 'di', 'da', 'le', 'la', 'den', 'der', 'ten', 'ter', 'du'];
-
-			const wordIndex = words.indexOf(word);
-			if (wordIndex > 0 && lowercasePrefixes.includes(lowerWord)) {
+			if (!isFirstWord && lowercasePrefixes.includes(lowerWord)) {
 				return lowerWord;
+			}
+
+			// Handle hyphenated names (Abdul-Aziz, Saint-Pierre, etc.)
+			if (word.includes('-')) {
+				return word.split('-')
+					.map(part => normalizeWord(part, false))
+					.join('-');
 			}
 
 			// Standard title case
 			return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+		};
+
+		const words = cleaned.split(' ');
+		const normalized = words.map((word, index) => {
+			// Handle parentheses
+			if (word.startsWith('(') && word.endsWith(')')) {
+				const inner = word.slice(1, -1);
+				return '(' + normalizeWord(inner, false) + ')';
+			}
+
+			if (word.startsWith('(')) {
+				const inner = word.slice(1);
+				return '(' + normalizeWord(inner, index === 0);
+			}
+
+			if (word.endsWith(')')) {
+				const inner = word.slice(0, -1);
+				return normalizeWord(inner, false) + ')';
+			}
+
+			return normalizeWord(word, index === 0);
 		});
 
 		const result = normalized.join(' ');

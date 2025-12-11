@@ -11999,16 +11999,15 @@ export class ControlCenterModal extends Modal {
 			const cleaned = name.trim().replace(/\s+/g, ' ');
 			if (!cleaned) return null;
 
-			// Check if already in proper format (avoid unnecessary changes)
-			const words = cleaned.split(' ');
-			const normalized = words.map(word => {
-				// Handle empty words
+			// Helper function to normalize a single word/segment
+			const normalizeWord = (word: string, isFirstWord: boolean): string => {
 				if (!word) return word;
 
 				const lowerWord = word.toLowerCase();
 
-				// Preserve initials (single letter followed by period, like "A.", "B.", etc.)
-				if (/^[a-z]\.$/i.test(word)) {
+				// Preserve initials (A., B., A.B., H.G., etc.)
+				// Matches patterns like "A.", "A.B.", "H.G.", etc.
+				if (/^([a-z]\.)+$/i.test(word)) {
 					return word.toUpperCase();
 				}
 
@@ -12019,10 +12018,7 @@ export class ControlCenterModal extends Modal {
 
 				// Common surname prefixes that should stay lowercase (unless at start)
 				const lowercasePrefixes = ['van', 'von', 'de', 'del', 'della', 'di', 'da', 'le', 'la', 'den', 'der', 'ten', 'ter', 'du'];
-
-				// Check if it's a lowercase prefix (and not the first word)
-				const wordIndex = words.indexOf(word);
-				if (wordIndex > 0 && lowercasePrefixes.includes(lowerWord)) {
+				if (!isFirstWord && lowercasePrefixes.includes(lowerWord)) {
 					return lowerWord;
 				}
 
@@ -12042,8 +12038,39 @@ export class ControlCenterModal extends Modal {
 					return "O'" + word.charAt(2).toUpperCase() + word.slice(3).toLowerCase();
 				}
 
+				// Handle hyphenated names (Abdul-Aziz, Mary-Jane, etc.)
+				if (word.includes('-')) {
+					return word.split('-')
+						.map(part => normalizeWord(part, false))
+						.join('-');
+				}
+
 				// Standard title case
 				return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+			};
+
+			// Split by spaces to get words
+			const words = cleaned.split(' ');
+			const normalized = words.map((word, index) => {
+				// Handle parentheses - preserve content inside and apply title case
+				if (word.startsWith('(') && word.endsWith(')')) {
+					const inner = word.slice(1, -1);
+					return '(' + normalizeWord(inner, false) + ')';
+				}
+
+				// Handle opening parenthesis
+				if (word.startsWith('(')) {
+					const inner = word.slice(1);
+					return '(' + normalizeWord(inner, index === 0);
+				}
+
+				// Handle closing parenthesis
+				if (word.endsWith(')')) {
+					const inner = word.slice(0, -1);
+					return normalizeWord(inner, false) + ')';
+				}
+
+				return normalizeWord(word, index === 0);
 			});
 
 			const result = normalized.join(' ');
@@ -12109,16 +12136,15 @@ export class ControlCenterModal extends Modal {
 			const cleaned = name.trim().replace(/\s+/g, ' ');
 			if (!cleaned) return null;
 
-			// Check if already in proper format (avoid unnecessary changes)
-			const words = cleaned.split(' ');
-			const normalized = words.map(word => {
-				// Handle empty words
+			// Helper function to normalize a single word/segment
+			const normalizeWord = (word: string, isFirstWord: boolean): string => {
 				if (!word) return word;
 
 				const lowerWord = word.toLowerCase();
 
-				// Preserve initials (single letter followed by period, like "A.", "B.", etc.)
-				if (/^[a-z]\.$/i.test(word)) {
+				// Preserve initials (A., B., A.B., H.G., etc.)
+				// Matches patterns like "A.", "A.B.", "H.G.", etc.
+				if (/^([a-z]\.)+$/i.test(word)) {
 					return word.toUpperCase();
 				}
 
@@ -12129,10 +12155,7 @@ export class ControlCenterModal extends Modal {
 
 				// Common surname prefixes that should stay lowercase (unless at start)
 				const lowercasePrefixes = ['van', 'von', 'de', 'del', 'della', 'di', 'da', 'le', 'la', 'den', 'der', 'ten', 'ter', 'du'];
-
-				// Check if it's a lowercase prefix (and not the first word)
-				const wordIndex = words.indexOf(word);
-				if (wordIndex > 0 && lowercasePrefixes.includes(lowerWord)) {
+				if (!isFirstWord && lowercasePrefixes.includes(lowerWord)) {
 					return lowerWord;
 				}
 
@@ -12152,8 +12175,39 @@ export class ControlCenterModal extends Modal {
 					return "O'" + word.charAt(2).toUpperCase() + word.slice(3).toLowerCase();
 				}
 
+				// Handle hyphenated names (Abdul-Aziz, Mary-Jane, etc.)
+				if (word.includes('-')) {
+					return word.split('-')
+						.map(part => normalizeWord(part, false))
+						.join('-');
+				}
+
 				// Standard title case
 				return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+			};
+
+			// Split by spaces to get words
+			const words = cleaned.split(' ');
+			const normalized = words.map((word, index) => {
+				// Handle parentheses - preserve content inside and apply title case
+				if (word.startsWith('(') && word.endsWith(')')) {
+					const inner = word.slice(1, -1);
+					return '(' + normalizeWord(inner, false) + ')';
+				}
+
+				// Handle opening parenthesis
+				if (word.startsWith('(')) {
+					const inner = word.slice(1);
+					return '(' + normalizeWord(inner, index === 0);
+				}
+
+				// Handle closing parenthesis
+				if (word.endsWith(')')) {
+					const inner = word.slice(0, -1);
+					return normalizeWord(inner, false) + ')';
+				}
+
+				return normalizeWord(word, index === 0);
 			});
 
 			const result = normalized.join(' ');
