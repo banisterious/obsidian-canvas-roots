@@ -1749,6 +1749,22 @@ export class ControlCenterModal extends Modal {
 					void this.removePlaceholders();
 				}));
 
+		// Third operation: Normalize name formatting
+		new Setting(batchContent)
+			.setName('Normalize name formatting')
+			.setDesc('Standardize name capitalization: "JOHN SMITH" → "John Smith", handle prefixes like van, de, Mac')
+			.addButton(button => button
+				.setButtonText('Preview')
+				.onClick(() => {
+					void this.previewNormalizeNames();
+				}))
+			.addButton(button => button
+				.setButtonText('Apply')
+				.setCta()
+				.onClick(() => {
+					void this.normalizeNames();
+				}));
+
 		container.appendChild(batchCard);
 
 		// Statistics Card
@@ -11946,6 +11962,205 @@ export class ControlCenterModal extends Modal {
 		// Refresh the People tab
 		this.showTab('people');
 	}
+
+	/**
+	 * Preview name formatting normalization
+	 */
+	private async previewNormalizeNames(): Promise<void> {
+		const familyGraph = this.plugin.createFamilyGraphService();
+		familyGraph.ensureCacheLoaded();
+		const people = familyGraph.getAllPeople();
+
+		const changes: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }> = [];
+
+		/**
+		 * Normalize a name to proper Title Case with smart handling of prefixes
+		 */
+		const normalizeName = (name: string): string | null => {
+			if (!name || typeof name !== 'string') return null;
+
+			// Trim and collapse multiple spaces
+			const cleaned = name.trim().replace(/\s+/g, ' ');
+			if (!cleaned) return null;
+
+			// Check if already in proper format (avoid unnecessary changes)
+			const words = cleaned.split(' ');
+			const normalized = words.map(word => {
+				// Handle empty words
+				if (!word) return word;
+
+				// Common surname prefixes that should stay lowercase (unless at start)
+				const lowercasePrefixes = ['van', 'von', 'de', 'del', 'della', 'di', 'da', 'le', 'la', 'den', 'der', 'ten', 'ter', 'du'];
+				const lowerWord = word.toLowerCase();
+
+				// Handle prefixes like Mac, Mc, O'
+				if (lowerWord.startsWith('mac') && word.length > 3) {
+					return 'Mac' + word.charAt(3).toUpperCase() + word.slice(4).toLowerCase();
+				}
+				if (lowerWord.startsWith('mc') && word.length > 2) {
+					return 'Mc' + word.charAt(2).toUpperCase() + word.slice(3).toLowerCase();
+				}
+				if (lowerWord.startsWith("o'") && word.length > 2) {
+					return "O'" + word.charAt(2).toUpperCase() + word.slice(3).toLowerCase();
+				}
+
+				// Check if it's a lowercase prefix (and not the first word)
+				const wordIndex = words.indexOf(word);
+				if (wordIndex > 0 && lowercasePrefixes.includes(lowerWord)) {
+					return lowerWord;
+				}
+
+				// Standard title case
+				return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+			});
+
+			const result = normalized.join(' ');
+
+			// Only return if it's different from the input
+			return result !== cleaned ? result : null;
+		};
+
+		for (const person of people) {
+			const cache = this.app.metadataCache.getFileCache(person.file);
+			if (!cache?.frontmatter) continue;
+
+			const fm = cache.frontmatter as Record<string, unknown>;
+
+			// Check name field
+			if (fm.name && typeof fm.name === 'string') {
+				const normalized = normalizeName(fm.name);
+				if (normalized) {
+					changes.push({
+						person: { name: person.name || 'Unknown' },
+						field: 'name',
+						oldValue: fm.name,
+						newValue: normalized
+					});
+				}
+			}
+		}
+
+		if (changes.length === 0) {
+			new Notice('No names need normalization');
+			return;
+		}
+
+		const modal = new NameNormalizationPreviewModal(
+			this.app,
+			changes,
+			() => void this.normalizeNames()
+		);
+		modal.open();
+	}
+
+	/**
+	 * Apply name formatting normalization
+	 */
+	private async normalizeNames(): Promise<void> {
+		new Notice('Normalizing name formatting...');
+
+		const familyGraph = this.plugin.createFamilyGraphService();
+		familyGraph.ensureCacheLoaded();
+		const people = familyGraph.getAllPeople();
+
+		let modified = 0;
+		let processed = 0;
+		const errors: string[] = [];
+
+		/**
+		 * Normalize a name to proper Title Case with smart handling of prefixes
+		 */
+		const normalizeName = (name: string): string | null => {
+			if (!name || typeof name !== 'string') return null;
+
+			// Trim and collapse multiple spaces
+			const cleaned = name.trim().replace(/\s+/g, ' ');
+			if (!cleaned) return null;
+
+			// Check if already in proper format (avoid unnecessary changes)
+			const words = cleaned.split(' ');
+			const normalized = words.map(word => {
+				// Handle empty words
+				if (!word) return word;
+
+				// Common surname prefixes that should stay lowercase (unless at start)
+				const lowercasePrefixes = ['van', 'von', 'de', 'del', 'della', 'di', 'da', 'le', 'la', 'den', 'der', 'ten', 'ter', 'du'];
+				const lowerWord = word.toLowerCase();
+
+				// Handle prefixes like Mac, Mc, O'
+				if (lowerWord.startsWith('mac') && word.length > 3) {
+					return 'Mac' + word.charAt(3).toUpperCase() + word.slice(4).toLowerCase();
+				}
+				if (lowerWord.startsWith('mc') && word.length > 2) {
+					return 'Mc' + word.charAt(2).toUpperCase() + word.slice(3).toLowerCase();
+				}
+				if (lowerWord.startsWith("o'") && word.length > 2) {
+					return "O'" + word.charAt(2).toUpperCase() + word.slice(3).toLowerCase();
+				}
+
+				// Check if it's a lowercase prefix (and not the first word)
+				const wordIndex = words.indexOf(word);
+				if (wordIndex > 0 && lowercasePrefixes.includes(lowerWord)) {
+					return lowerWord;
+				}
+
+				// Standard title case
+				return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+			});
+
+			const result = normalized.join(' ');
+
+			// Only return if it's different from the input
+			return result !== cleaned ? result : null;
+		};
+
+		for (const person of people) {
+			processed++;
+
+			try {
+				const cache = this.app.metadataCache.getFileCache(person.file);
+				if (!cache?.frontmatter) continue;
+
+				const fm = cache.frontmatter as Record<string, unknown>;
+				let hasChanges = false;
+
+				await this.app.fileManager.processFrontMatter(person.file, (frontmatter) => {
+					// Normalize name field
+					if (fm.name && typeof fm.name === 'string') {
+						const normalized = normalizeName(fm.name);
+						if (normalized) {
+							frontmatter.name = normalized;
+							hasChanges = true;
+						}
+					}
+				});
+
+				if (hasChanges) {
+					modified++;
+				}
+			} catch (error) {
+				errors.push(`${person.file.path}: ${getErrorMessage(error)}`);
+			}
+		}
+
+		// Show result
+		if (modified > 0) {
+			new Notice(`✓ Normalized names in ${modified} ${modified === 1 ? 'file' : 'files'}`);
+		} else {
+			new Notice('No names needed normalization');
+		}
+
+		if (errors.length > 0) {
+			new Notice(`⚠ ${errors.length} errors occurred. Check console for details.`);
+			console.error('Normalize names errors:', errors);
+		}
+
+		// Refresh the family graph cache
+		familyGraph.reloadCache();
+
+		// Refresh the People tab
+		this.showTab('people');
+	}
 }
 
 /**
@@ -12356,6 +12571,200 @@ class PlaceholderRemovalPreviewModal extends Modal {
 				cls: 'crc-text-muted'
 			});
 			cell.setAttribute('colspan', '4');
+		}
+	}
+
+	onClose(): void {
+		const { contentEl } = this;
+		contentEl.empty();
+	}
+}
+
+/**
+ * Modal for previewing name formatting normalization
+ */
+class NameNormalizationPreviewModal extends Modal {
+	// All changes for this operation
+	private allChanges: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }>;
+	// Filtered/sorted changes for display
+	private filteredChanges: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }> = [];
+	private onApply: () => void;
+
+	// Filter state
+	private searchQuery = '';
+	private sortAscending = true;
+
+	// UI elements
+	private tbody: HTMLTableSectionElement | null = null;
+	private countEl: HTMLElement | null = null;
+
+	constructor(
+		app: App,
+		changes: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }>,
+		onApply: () => void
+	) {
+		super(app);
+		this.allChanges = changes;
+		this.onApply = onApply;
+	}
+
+	onOpen(): void {
+		const { contentEl, titleEl } = this;
+
+		// Add modal class for sizing
+		this.modalEl.addClass('crc-batch-preview-modal');
+
+		titleEl.setText('Preview: Normalize name formatting');
+
+		// Description
+		const description = contentEl.createDiv({ cls: 'crc-batch-description' });
+		description.createEl('p', {
+			text: 'This operation standardizes name capitalization and handles surname prefixes:'
+		});
+		const useCases = description.createEl('ul');
+		useCases.createEl('li', { text: 'ALL CAPS names: "JOHN SMITH" → "John Smith"' });
+		useCases.createEl('li', { text: 'Lowercase names: "john doe" → "John Doe"' });
+		useCases.createEl('li', { text: 'Mac/Mc prefixes: "macdonald" → "MacDonald", "mccarthy" → "McCarthy"' });
+		useCases.createEl('li', { text: "O' prefix: \"o'brien\" → \"O'Brien\"" });
+		useCases.createEl('li', { text: 'Dutch/German prefixes: "Vincent Van Gogh" → "Vincent van Gogh"' });
+		useCases.createEl('li', { text: 'Multiple spaces collapsed to single space' });
+
+		// Count display
+		this.countEl = contentEl.createEl('p', { cls: 'crc-batch-count' });
+
+		// Controls row: search + sort
+		const controlsRow = contentEl.createDiv({ cls: 'crc-batch-controls' });
+
+		// Search input
+		const searchContainer = controlsRow.createDiv({ cls: 'crc-batch-search' });
+		const searchInput = searchContainer.createEl('input', {
+			type: 'text',
+			placeholder: 'Search by name...',
+			cls: 'crc-batch-search-input'
+		});
+		searchInput.addEventListener('input', () => {
+			this.searchQuery = searchInput.value.toLowerCase();
+			this.applyFiltersAndSort();
+		});
+
+		// Sort toggle
+		const sortContainer = controlsRow.createDiv({ cls: 'crc-batch-sort' });
+		const sortBtn = sortContainer.createEl('button', {
+			text: 'A→Z',
+			cls: 'crc-batch-sort-btn'
+		});
+		sortBtn.addEventListener('click', () => {
+			this.sortAscending = !this.sortAscending;
+			sortBtn.textContent = this.sortAscending ? 'A→Z' : 'Z→A';
+			this.applyFiltersAndSort();
+		});
+
+		// Scrollable table container
+		const tableContainer = contentEl.createDiv({ cls: 'crc-batch-table-container' });
+		const table = tableContainer.createEl('table', { cls: 'crc-batch-preview-table' });
+
+		// Header
+		const thead = table.createEl('thead');
+		const headerRow = thead.createEl('tr');
+		headerRow.createEl('th', { text: 'Person' });
+		headerRow.createEl('th', { text: 'Current name' });
+		headerRow.createEl('th', { text: 'Normalized name' });
+
+		this.tbody = table.createEl('tbody');
+
+		// Initial render
+		this.applyFiltersAndSort();
+
+		// Backup warning
+		const warning = contentEl.createDiv({ cls: 'crc-warning-callout' });
+		const warningIcon = createLucideIcon('alert-triangle', 16);
+		warning.appendChild(warningIcon);
+		warning.createSpan({
+			text: ' Backup your vault before proceeding. This operation will modify existing notes.'
+		});
+
+		// Buttons
+		const buttonContainer = contentEl.createDiv({ cls: 'crc-confirmation-buttons' });
+
+		const cancelButton = buttonContainer.createEl('button', {
+			text: 'Cancel',
+			cls: 'crc-btn-secondary'
+		});
+		cancelButton.addEventListener('click', () => this.close());
+
+		const applyButton = buttonContainer.createEl('button', {
+			text: `Apply ${this.allChanges.length} change${this.allChanges.length === 1 ? '' : 's'}`,
+			cls: 'mod-cta'
+		});
+		applyButton.addEventListener('click', async () => {
+			// Disable buttons during operation
+			applyButton.disabled = true;
+			cancelButton.disabled = true;
+			applyButton.textContent = 'Applying changes...';
+
+			// Run the operation
+			await this.onApply();
+
+			// Close modal after completion
+			this.close();
+		});
+	}
+
+	/**
+	 * Apply filters and sorting, then re-render the table
+	 */
+	private applyFiltersAndSort(): void {
+		// Filter
+		this.filteredChanges = this.allChanges.filter(change => {
+			// Search filter
+			if (this.searchQuery && !change.person.name.toLowerCase().includes(this.searchQuery)) {
+				return false;
+			}
+			return true;
+		});
+
+		// Sort by person name
+		this.filteredChanges.sort((a, b) => {
+			const cmp = a.person.name.localeCompare(b.person.name);
+			return this.sortAscending ? cmp : -cmp;
+		});
+
+		// Update count
+		if (this.countEl) {
+			const peopleCount = new Set(this.allChanges.map(c => c.person.name)).size;
+			if (this.filteredChanges.length === this.allChanges.length) {
+				this.countEl.textContent = `Found ${this.allChanges.length} ${this.allChanges.length === 1 ? 'name' : 'names'} to normalize across ${peopleCount} ${peopleCount === 1 ? 'person' : 'people'}:`;
+			} else {
+				this.countEl.textContent = `Showing ${this.filteredChanges.length} of ${this.allChanges.length} names:`;
+			}
+		}
+
+		// Re-render table
+		this.renderTable();
+	}
+
+	/**
+	 * Render the filtered/sorted changes to the table body
+	 */
+	private renderTable(): void {
+		if (!this.tbody) return;
+
+		this.tbody.empty();
+
+		for (const change of this.filteredChanges) {
+			const row = this.tbody.createEl('tr');
+			row.createEl('td', { text: change.person.name });
+			row.createEl('td', { text: change.oldValue, cls: 'crc-batch-old-value' });
+			row.createEl('td', { text: change.newValue, cls: 'crc-batch-new-value' });
+		}
+
+		if (this.filteredChanges.length === 0 && this.allChanges.length > 0) {
+			const row = this.tbody.createEl('tr');
+			const cell = row.createEl('td', {
+				text: 'No matches found',
+				cls: 'crc-text-muted'
+			});
+			cell.setAttribute('colspan', '3');
 		}
 	}
 
