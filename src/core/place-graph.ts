@@ -514,7 +514,9 @@ export class PlaceGraphService {
 			}
 
 			// Orphan detection (no parent and not a top-level place type)
-			if (!place.parentId && place.placeType && !['continent', 'country'].includes(place.placeType)) {
+			// Countries and regions without parents are typically sovereign nations
+			// (Taiwan, South Korea, etc.) that don't need parent linking
+			if (!place.parentId && place.placeType && !['continent', 'country', 'region'].includes(place.placeType)) {
 				orphanPlaces++;
 				issues.push({
 					type: 'orphan_place',

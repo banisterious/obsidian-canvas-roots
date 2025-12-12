@@ -94,6 +94,7 @@ export class EnrichPlaceHierarchyModal extends Modal {
 	private cancelButton: HTMLButtonElement | null = null;
 	private countText: HTMLElement | null = null;
 	private timeText: HTMLElement | null = null;
+	private previewContainer: HTMLElement | null = null;
 
 	private createMissingParents = true;
 	private includeIncompleteHierarchies = false;
@@ -147,6 +148,9 @@ export class EnrichPlaceHierarchyModal extends Modal {
 			text: 'This will geocode each place, parse the full address into hierarchy components (city → county → state → country), and create or link parent place notes.',
 			cls: 'cr-text-muted cr-text-small'
 		});
+
+		// Preview list of places to enrich
+		this.renderPlacePreviewList(contentEl);
 
 		// Estimated time
 		this.timeText = description.createEl('p', {
@@ -251,12 +255,17 @@ export class EnrichPlaceHierarchyModal extends Modal {
 	private loadPlacesToEnrich(): void {
 		const allPlaces = this.placeGraph.getAllPlaces();
 
+		// Place types that are top-level and don't need parent linking
+		// Countries are obvious, but regions without parents are typically
+		// sovereign nations (Taiwan, South Korea, etc.) that shouldn't be enriched
+		const topLevelTypes = ['country', 'region'];
+
 		// Filter to places without parent that are "real" category
 		// (fictional/mythological places shouldn't use real-world geocoding)
-		// Exclude countries - they're top-level and don't need parent linking
+		// Exclude top-level types - they don't need parent linking
 		const orphanPlaces = allPlaces.filter(place =>
 			!place.parentId &&
-			place.placeType !== 'country' &&
+			!topLevelTypes.includes(place.placeType || '') &&
 			['real', 'historical', 'disputed'].includes(place.category)
 		);
 
@@ -340,6 +349,48 @@ export class EnrichPlaceHierarchyModal extends Modal {
 		}
 		if (this.timeText) {
 			this.timeText.textContent = this.getTimeText();
+		}
+		// Also update the preview list
+		this.updatePlacePreviewList();
+	}
+
+	/**
+	 * Render the preview list of places to enrich
+	 */
+	private renderPlacePreviewList(container: HTMLElement): void {
+		this.previewContainer = container.createDiv({ cls: 'cr-enrich-preview-list' });
+		this.updatePlacePreviewList();
+	}
+
+	/**
+	 * Update the preview list content
+	 */
+	private updatePlacePreviewList(): void {
+		if (!this.previewContainer) return;
+
+		this.previewContainer.empty();
+
+		if (this.placesToEnrich.length === 0) {
+			return;
+		}
+
+		// Create scrollable list
+		const listEl = this.previewContainer.createDiv({ cls: 'cr-enrich-preview-items' });
+
+		for (const place of this.placesToEnrich) {
+			const item = listEl.createDiv({ cls: 'cr-enrich-preview-item' });
+
+			const icon = item.createSpan({ cls: 'cr-enrich-preview-icon' });
+			setLucideIcon(icon, 'map-pin', 14);
+
+			const nameSpan = item.createSpan({ cls: 'cr-enrich-preview-name' });
+			nameSpan.textContent = place.name;
+
+			// Show place type if available
+			if (place.placeType) {
+				const typeSpan = item.createSpan({ cls: 'cr-enrich-preview-type cr-text-muted' });
+				typeSpan.textContent = ` (${place.placeType})`;
+			}
 		}
 	}
 

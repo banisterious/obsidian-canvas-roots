@@ -193,18 +193,27 @@ function loadDataQualityCard(
 		issuesByType.get(issue.type)!.push(issue);
 	}
 
+	// Get duplicate place groups (using same logic as merge modal)
+	// This ensures the card count matches what the modal will actually find
+	const duplicateGroups = findDuplicatePlaceNotes(plugin.app, {
+		settings: plugin.settings,
+		folderFilter: plugin.getFolderFilter()
+	});
+
 	// Calculate total issues (missing places + other issues, but avoid double counting)
 	// Missing places are tracked separately from PlaceIssue 'missing_place_note'
+	// Exclude 'duplicate_name' from place-graph since we use findDuplicatePlaceNotes instead
 	const missingPlaceNoteIssues = issuesByType.get('missing_place_note') || [];
-	const otherIssueCount = issues.length - missingPlaceNoteIssues.length;
-	const totalIssues = missingPlaces.length + otherIssueCount;
+	const duplicateNameIssues = issuesByType.get('duplicate_name') || [];
+	const otherIssueCount = issues.length - missingPlaceNoteIssues.length - duplicateNameIssues.length;
+	const totalIssues = missingPlaces.length + otherIssueCount + duplicateGroups.length;
 
 	// Count categories (only count non-empty ones)
 	let categoryCount = 0;
 	if (missingPlaces.length > 0) categoryCount++;
 	if (issuesByType.has('real_missing_coords')) categoryCount++;
 	if (issuesByType.has('orphan_place')) categoryCount++;
-	if (issuesByType.has('duplicate_name')) categoryCount++;
+	if (duplicateGroups.length > 0) categoryCount++;
 	if (issuesByType.has('circular_hierarchy')) categoryCount++;
 	if (issuesByType.has('fictional_with_coords')) categoryCount++;
 	if (issuesByType.has('invalid_category')) categoryCount++;
@@ -312,11 +321,13 @@ function loadDataQualityCard(
 
 	// 3. Orphan places (simplified - just count + action button)
 	// Count real-world places without parents (matching EnrichPlaceHierarchyModal criteria)
-	// Exclude countries - they're top-level and don't need parent linking
+	// Exclude top-level types - countries and regions without parents are typically
+	// sovereign nations (Taiwan, South Korea, etc.) that don't need parent linking
+	const topLevelTypes = ['country', 'region'];
 	const allPlaces = placeService.getAllPlaces();
 	const orphanRealPlaces = allPlaces.filter(place =>
 		!place.parentId &&
-		place.placeType !== 'country' &&
+		!topLevelTypes.includes(place.placeType || '') &&
 		['real', 'historical', 'disputed'].includes(place.category)
 	);
 	if (orphanRealPlaces.length > 0) {
@@ -340,13 +351,12 @@ function loadDataQualityCard(
 		});
 	}
 
-	// 4. Duplicate names (simplified - just count + action button)
-	const duplicates = issuesByType.get('duplicate_name') || [];
-	if (duplicates.length > 0) {
+	// 4. Duplicate places (using duplicateGroups computed earlier)
+	if (duplicateGroups.length > 0) {
 		renderSimplifiedIssueRow(sectionsContainer, {
 			icon: 'copy',
-			title: `${duplicates.length} potential duplicate${duplicates.length !== 1 ? 's' : ''}`,
-			description: 'Place names that appear multiple times',
+			title: `${duplicateGroups.length} potential duplicate${duplicateGroups.length !== 1 ? 's' : ''}`,
+			description: 'Place notes that may represent the same location',
 			action: {
 				label: 'Merge duplicates',
 				onClick: () => showMergeDuplicatePlacesModal(plugin, showTab)
@@ -1370,10 +1380,11 @@ function showBuildHierarchyModal(plugin: CanvasRootsPlugin, showTab: (tabId: str
 	const allPlaces = placeService.getAllPlaces();
 
 	// Find orphan places (no parent and not top-level types)
+	// Countries and regions without parents are typically sovereign nations
 	const orphanPlaces = allPlaces.filter(place =>
 		!place.parentId &&
 		place.placeType &&
-		!['continent', 'country'].includes(place.placeType)
+		!['continent', 'country', 'region'].includes(place.placeType)
 	);
 
 	if (orphanPlaces.length === 0) {

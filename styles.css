@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-12 02:51:19 UTC
+ * - Generated: 2025-12-12 03:05:08 UTC
  * - Components: 30 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -574,7 +574,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 5222 lines, 95.14 KB */
+/* Component Size: 5270 lines, 95.95 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -5566,6 +5566,54 @@ settings:
 
 .cr-bulk-geocode-description p {
   margin: 0 0 8px 0;
+}
+
+/* Preview list of places to enrich */
+.cr-enrich-preview-list {
+  margin: 12px 0;
+}
+
+.cr-enrich-preview-items {
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--background-secondary);
+  font-size: 12px;
+}
+
+.cr-enrich-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-enrich-preview-item:last-child {
+  border-bottom: none;
+}
+
+.cr-enrich-preview-icon {
+  flex-shrink: 0;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.cr-enrich-preview-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cr-enrich-preview-type {
+  font-size: 11px;
+  flex-shrink: 0;
 }
 
 .cr-bulk-geocode-progress {
@@ -16399,11 +16447,11 @@ body.wide-timeline .view-content {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-12 02:51:19 UTC
+ * Build completed: 2025-12-12 03:05:08 UTC
  * Components processed: 30
- * Total lines: 16106
- * Total size: 317.66 KB
- * Build duration: 0.05 seconds
+ * Total lines: 16154
+ * Total size: 318.47 KB
+ * Build duration: 0.03 seconds
  *
  * Component breakdown:
  * - variables.css: 48 lines, 1.33 KB
@@ -16414,7 +16462,7 @@ body.wide-timeline .view-content {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 129 lines, 3.33 KB
- * - modals.css: 5222 lines, 95.14 KB
+ * - modals.css: 5270 lines, 95.95 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

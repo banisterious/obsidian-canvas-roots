@@ -4990,6 +4990,54 @@
   margin: 0 0 8px 0;
 }
 
+/* Preview list of places to enrich */
+.cr-enrich-preview-list {
+  margin: 12px 0;
+}
+
+.cr-enrich-preview-items {
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--background-secondary);
+  font-size: 12px;
+}
+
+.cr-enrich-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-enrich-preview-item:last-child {
+  border-bottom: none;
+}
+
+.cr-enrich-preview-icon {
+  flex-shrink: 0;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.cr-enrich-preview-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cr-enrich-preview-type {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
 .cr-bulk-geocode-progress {
   margin: 16px 0;
   flex: 1;
