@@ -26,6 +26,10 @@ Obsidian plugin review fixes (Round 11) and bug fixes.
 
 - **People base showing non-person notes** - Fixed the "Create People base" template including place, event, and source notes in the family members view
 
+- **Events base template not working** - Rewrote the Events base template to use correct Obsidian Bases syntax (matching the working People base template structure). Added formulas for date formatting and duration calculations
+
+- **Removed invalid visibleProperties from base templates** - Removed non-standard `visibleProperties` key from People and Events base templates (not part of official Bases schema)
+
 ---
 
 ## [0.11.3] - 2025-12-12

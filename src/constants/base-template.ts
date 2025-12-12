@@ -40,23 +40,7 @@ export function generatePeopleBaseTemplate(aliases: PropertyAliases = {}): strin
 	const spouse = getPropertyName('spouse', aliases);
 	const child = getPropertyName('child', aliases);
 
-	return `visibleProperties:
-  - formula.display_name
-  - note.${father}
-  - note.${mother}
-  - note.${spouse}
-  - note.${child}
-  - formula.birth_display
-  - formula.death_display
-  - note.${sex}
-  - note.collection
-  - note.group_name
-  - note.root_person
-  - note.lineage
-  - note.generation
-  - note.ahnentafel
-  - note.daboville
-summaries:
+	return `summaries:
   generation_span: if(values.length > 0, values.max().year() - values.min().year(), 0)
 filters:
   and:
@@ -327,23 +311,7 @@ views:
  * Uses canonical property names (no aliases)
  * @deprecated Use generatePeopleBaseTemplate() instead
  */
-export const BASE_TEMPLATE = `visibleProperties:
-  - formula.display_name
-  - note.father
-  - note.mother
-  - note.spouse
-  - note.child
-  - formula.birth_display
-  - formula.death_display
-  - note.sex
-  - note.collection
-  - note.group_name
-  - note.root_person
-  - note.lineage
-  - note.generation
-  - note.ahnentafel
-  - note.daboville
-summaries:
+export const BASE_TEMPLATE = `summaries:
   generation_span: if(values.length > 0, values.max().year() - values.min().year(), 0)
 filters:
   and:
