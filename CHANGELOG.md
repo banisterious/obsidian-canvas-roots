@@ -9,11 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Standardize place types modal** (Places tab) - New data quality tool to convert generic place types like "locality" to standard types (city, town, village)
+  - Detects places with non-standard types from GEDCOM imports
+  - Bulk actions to set all places to the same type
+  - Individual type selection with one-click apply
+  - Shows parent place context for better decision making
+
+- **Place notes table open buttons** - Added separate buttons to open place notes in new tab or new window
+
 ### Fixed
 
 - **Tree output root person picker showing non-person notes** - Fixed person browser in Control Center > Tree output tab listing events, sources, and places instead of only person notes
 
 - **Remove placeholder values treating empty/null as issues** - The batch operation now only flags actual placeholder text ("Unknown", "N/A", "???", etc.) and no longer treats null/undefined/empty properties as problems
+
+- **Enrich place hierarchy modal preview list** - Modal now shows which places will be enriched before starting
+
+- **Top-level places incorrectly listed as orphans** - Countries and regions without parents (Taiwan, South Korea, etc.) are no longer flagged for hierarchy enrichment
+
+- **Duplicate place detection mismatch** - Data quality card count now matches what the merge modal actually finds
 
 ---
 
