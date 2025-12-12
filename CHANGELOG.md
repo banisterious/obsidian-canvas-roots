@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Comprehensive GEDCOM edge case test file** - New test file `gedcom-testing/gedcom-sample-edge-cases.ged` with 50+ intentional data quality issues for stress testing:
+- **Comprehensive GEDCOM edge case test file** - New test file `gedcom-testing/gedcom-sample-medium-edge-cases.ged` with 50+ intentional data quality issues for stress testing:
   - Duplicate names without distinguishing data
   - Multiple parents claiming the same child
   - Impossible dates (death before birth, future dates, parent younger than child)

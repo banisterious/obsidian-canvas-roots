@@ -5,7 +5,7 @@
 1 DEST ANY
 1 DATE 12 DEC 2025
 1 SUBM @SUBM1@
-1 FILE gedcom-sample-edge-cases.ged
+1 FILE gedcom-sample-medium-edge-cases.ged
 1 GEDC
 2 VERS 5.5.1
 2 FORM LINEAGE-LINKED

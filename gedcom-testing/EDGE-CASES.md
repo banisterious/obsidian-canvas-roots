@@ -1,6 +1,6 @@
 # GEDCOM Edge Cases Test File
 
-This document describes the intentional data quality issues in `gedcom-sample-edge-cases.ged` for testing Canvas Roots data quality detection and handling.
+This document describes the intentional data quality issues in `gedcom-sample-medium-edge-cases.ged` for testing Canvas Roots data quality detection and handling.
 
 ## Test Categories
 
@@ -155,7 +155,7 @@ This document describes the intentional data quality issues in `gedcom-sample-ed
 
 ## Using This File
 
-1. Import `gedcom-sample-edge-cases.ged` into your test vault
+1. Import `gedcom-sample-medium-edge-cases.ged` into your test vault
 2. Run the Data Quality analysis
 3. Verify each issue category is detected
 4. Test the fix/resolution workflows
