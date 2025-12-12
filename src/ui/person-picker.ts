@@ -136,8 +136,7 @@ export class PersonPickerModal extends Modal {
 	private showLoadingState(): void {
 		const { contentEl } = this;
 		this.loadingEl = contentEl.createDiv({ cls: 'crc-picker-loading' });
-		const spinner = this.loadingEl.createDiv({ cls: 'crc-picker-loading__spinner' });
-		spinner.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.4" stroke-dashoffset="10"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>';
+		this.loadingEl.createDiv({ cls: 'crc-picker-loading__spinner' });
 		this.loadingEl.createDiv({ cls: 'crc-picker-loading__text', text: 'Loading people...' });
 	}
 

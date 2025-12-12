@@ -147,7 +147,7 @@ function renderTimelineEvent(
 	// Node with icon
 	const node = connector.createDiv({ cls: 'crc-timeline-event__node' });
 	if (eventType) {
-		node.style.setProperty('--event-color', eventType.color);
+		node.setCssProps({ '--event-color': eventType.color });
 		const icon = createLucideIcon(eventType.icon, 14);
 		node.appendChild(icon);
 	} else {

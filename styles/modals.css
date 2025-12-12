@@ -1166,13 +1166,19 @@
 }
 
 .crc-picker-loading__spinner {
-  color: var(--interactive-accent);
-  margin-bottom: 12px;
-}
-
-.crc-picker-loading__spinner svg {
   width: 32px;
   height: 32px;
+  margin: 0 auto 12px;
+  border: 3px solid var(--background-modifier-border);
+  border-top-color: var(--interactive-accent);
+  border-radius: 50%;
+  animation: crc-spinner-rotate 1s linear infinite;
+}
+
+@keyframes crc-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .crc-picker-loading__text {

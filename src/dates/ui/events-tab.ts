@@ -445,7 +445,7 @@ function renderEventTable(
 					.onClick(async () => {
 						const confirmed = await confirmDeleteEvent(plugin.app, event.title);
 						if (confirmed) {
-							await plugin.app.vault.delete(event.file);
+							await plugin.app.fileManager.trashFile(event.file);
 							new Notice(`Deleted event: ${event.title}`);
 						}
 					});

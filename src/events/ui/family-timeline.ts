@@ -337,8 +337,8 @@ function renderFamilyTimelineEvent(
 
 	// Node with person color
 	const node = connector.createDiv({ cls: 'crc-family-timeline-event__node' });
-	node.style.setProperty('--event-color', member.color);
-	node.style.borderColor = member.color;
+	node.setCssProps({ '--event-color': member.color });
+	node.setCssStyles({ borderColor: member.color });
 
 	if (eventType) {
 		const icon = createLucideIcon(eventType.icon, 14);

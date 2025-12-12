@@ -11,7 +11,15 @@ interface PersonForStats {
 	collection?: string;
 	birthDate?: string;
 	deathDate?: string;
-	[key: string]: any; // Allow other properties
+	[key: string]: string | undefined; // Allow other string properties
+}
+
+/**
+ * Minimal interface for FamilyGraphService methods used by statistics calculation
+ */
+interface GraphServiceForStats {
+	getAncestors(crId: string, includeSelf: boolean): Array<{ crId: string }>;
+	getDescendants(crId: string, includeSelf: boolean, includeSpouses?: boolean): Array<{ crId: string }>;
 }
 
 /**
@@ -65,13 +73,16 @@ export class ExportStatisticsService {
 	 * Calculate export statistics based on filter options
 	 */
 	async calculateStatistics(
-		graphService: any, // FamilyGraphService
+		graphService: GraphServiceForStats,
 		privacyService: PrivacyService | null,
 		filterOptions: ExportFilterOptions = {}
 	): Promise<ExportStatistics> {
 		// Get all people from the person cache (same as exporters use)
-		graphService['loadPersonCache']();
-		let people = Array.from(graphService['personCache'].values()) as PersonForStats[];
+		// Access private members via bracket notation - cast to Record for property access
+		const gs = graphService as unknown as Record<string, unknown>;
+		(gs['loadPersonCache'] as () => void)();
+		const personCache = gs['personCache'] as Map<string, PersonForStats>;
+		let people = Array.from(personCache.values());
 
 		// Apply collection filter
 		if (filterOptions.collectionFilter) {
@@ -91,7 +102,7 @@ export class ExportStatisticsService {
 							filterOptions.branchIncludeSpouses
 					  );
 
-			const branchCrIds = new Set(branchPeople.map((p: any) => p.crId));
+			const branchCrIds = new Set(branchPeople.map((p) => p.crId));
 			people = people.filter((person: PersonForStats) => branchCrIds.has(person.crId));
 		}
 

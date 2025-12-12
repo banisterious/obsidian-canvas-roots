@@ -927,7 +927,7 @@ export class MergeDuplicatePlacesModal extends Modal {
 				// 3. Move duplicate file to trash
 				const duplicateFile = this.app.vault.getAbstractFileByPath(duplicate.filePath);
 				if (duplicateFile instanceof TFile) {
-					await this.app.vault.trash(duplicateFile, true);
+					await this.app.fileManager.trashFile(duplicateFile);
 					filesDeleted++;
 				}
 			} catch (error) {
@@ -1013,7 +1013,7 @@ export class MergeDuplicatePlacesModal extends Modal {
 					// Move to trash
 					const duplicateFile = this.app.vault.getAbstractFileByPath(duplicate.filePath);
 					if (duplicateFile instanceof TFile) {
-						await this.app.vault.trash(duplicateFile, true);
+						await this.app.fileManager.trashFile(duplicateFile);
 						totalDeleted++;
 					}
 				} catch (error) {
