@@ -11868,7 +11868,7 @@ export class ControlCenterModal extends Modal {
 		familyGraph.ensureCacheLoaded();
 		const people = familyGraph.getAllPeople();
 
-		const changes: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }> = [];
+		const changes: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string; file: TFile }> = [];
 
 		for (const person of people) {
 			const cache = this.app.metadataCache.getFileCache(person.file);
@@ -11884,7 +11884,8 @@ export class ControlCenterModal extends Modal {
 						person: { name: person.name || 'Unknown' },
 						field: 'spouse',
 						oldValue: `${fm.spouse.length} entries (${fm.spouse.length - unique.length} duplicates)`,
-						newValue: `${unique.length} entries (deduplicated)`
+						newValue: `${unique.length} entries (deduplicated)`,
+						file: person.file
 					});
 				}
 			}
@@ -11897,7 +11898,8 @@ export class ControlCenterModal extends Modal {
 						person: { name: person.name || 'Unknown' },
 						field: 'spouse_id',
 						oldValue: `${fm.spouse_id.length} entries (${fm.spouse_id.length - unique.length} duplicates)`,
-						newValue: `${unique.length} entries (deduplicated)`
+						newValue: `${unique.length} entries (deduplicated)`,
+						file: person.file
 					});
 				}
 			}
@@ -11912,7 +11914,8 @@ export class ControlCenterModal extends Modal {
 						person: { name: person.name || 'Unknown' },
 						field: fieldName,
 						oldValue: `${childrenArray.length} entries (${childrenArray.length - unique.length} duplicates)`,
-						newValue: `${unique.length} entries (deduplicated)`
+						newValue: `${unique.length} entries (deduplicated)`,
+						file: person.file
 					});
 				}
 			}
@@ -11925,7 +11928,8 @@ export class ControlCenterModal extends Modal {
 						person: { name: person.name || 'Unknown' },
 						field: 'children_id',
 						oldValue: `${fm.children_id.length} entries (${fm.children_id.length - unique.length} duplicates)`,
-						newValue: `${unique.length} entries (deduplicated)`
+						newValue: `${unique.length} entries (deduplicated)`,
+						file: person.file
 					});
 				}
 			}
@@ -13352,9 +13356,9 @@ export class ControlCenterModal extends Modal {
  */
 class DuplicateRelationshipsPreviewModal extends Modal {
 	// All changes for this operation
-	private allChanges: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }>;
+	private allChanges: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string; file: TFile }>;
 	// Filtered/sorted changes for display
-	private filteredChanges: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }> = [];
+	private filteredChanges: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string; file: TFile }> = [];
 	private onApply: () => Promise<void>;
 
 	// Filter state
@@ -13368,7 +13372,7 @@ class DuplicateRelationshipsPreviewModal extends Modal {
 
 	constructor(
 		app: App,
-		changes: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string }>,
+		changes: Array<{ person: { name: string }; field: string; oldValue: string; newValue: string; file: TFile }>,
 		onApply: () => Promise<void>
 	) {
 		super(app);
@@ -13440,6 +13444,7 @@ class DuplicateRelationshipsPreviewModal extends Modal {
 		headerRow.createEl('th', { text: 'Field' });
 		headerRow.createEl('th', { text: 'Current' });
 		headerRow.createEl('th', { text: 'After' });
+		headerRow.createEl('th', { text: 'Actions' });
 
 		this.tbody = table.createEl('tbody');
 
@@ -13533,6 +13538,31 @@ class DuplicateRelationshipsPreviewModal extends Modal {
 			row.createEl('td', { text: change.field });
 			row.createEl('td', { text: change.oldValue, cls: 'crc-batch-old-value' });
 			row.createEl('td', { text: change.newValue, cls: 'crc-batch-new-value' });
+
+			// Action buttons
+			const actionCell = row.createEl('td', { cls: 'crc-batch-actions' });
+
+			// Open in tab button
+			const openTabBtn = actionCell.createEl('button', {
+				cls: 'crc-batch-action-btn clickable-icon',
+				attr: { 'aria-label': 'Open note in tab' }
+			});
+			const fileIcon = createLucideIcon('file-text', 14);
+			openTabBtn.appendChild(fileIcon);
+			openTabBtn.addEventListener('click', () => {
+				this.app.workspace.getLeaf().openFile(change.file);
+			});
+
+			// Open in new window button
+			const openWindowBtn = actionCell.createEl('button', {
+				cls: 'crc-batch-action-btn clickable-icon',
+				attr: { 'aria-label': 'Open note in new window' }
+			});
+			const windowIcon = createLucideIcon('external-link', 14);
+			openWindowBtn.appendChild(windowIcon);
+			openWindowBtn.addEventListener('click', () => {
+				this.app.workspace.getLeaf('window').openFile(change.file);
+			});
 		}
 
 		if (this.filteredChanges.length === 0 && this.allChanges.length > 0) {
@@ -13541,7 +13571,7 @@ class DuplicateRelationshipsPreviewModal extends Modal {
 				text: 'No matches found',
 				cls: 'crc-text-muted'
 			});
-			cell.setAttribute('colspan', '4');
+			cell.setAttribute('colspan', '5');
 		}
 	}
 
