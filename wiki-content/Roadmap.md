@@ -15,6 +15,7 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Reports & Print Export](#reports--print-export) 📋 Medium
   - [Statistics Dashboard](#statistics-dashboard) 📋 Medium
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
+  - [Step & Adoptive Parent Support](#step--adoptive-parent-support) 💡 Low
 - [Future Considerations](#future-considerations)
 - [Known Limitations](#known-limitations)
 - [Contributing](#contributing)
@@ -525,6 +526,52 @@ oral_facts:
 - Map relationship structure of interviews
 - Interview as central hub node
 - Edge thickness indicates mention frequency
+
+---
+
+### Step & Adoptive Parent Support
+
+**Priority:** 💡 Low — Specialized for blended families and adoption records
+
+**Summary:** Distinguish biological, step, and adoptive parent relationships in person notes. Prevents false parent claim conflicts when GEDCOM files contain non-biological parent relationships.
+
+**Problem Statement:**
+
+Canvas Roots currently assumes all parent relationships are biological. When GEDCOM files contain step-parent or adoptive relationships (via `PEDI` tags), these are imported as primary parent claims, triggering false conflicts.
+
+**Proposed Schema:**
+
+```yaml
+# Biological parents (existing)
+father_id: abc-123-def-456
+mother_id: ghi-789-jkl-012
+
+# Step-parents (new)
+stepfather_id: mno-345-pqr-678
+stepmother_id: stu-901-vwx-234
+
+# Adoptive parents (new)
+adoptive_father_id: yza-567-bcd-890
+adoptive_mother_id: efg-123-hij-456
+```
+
+**Phased Implementation:**
+
+| Phase | Goal | Features |
+|-------|------|----------|
+| 1 | Schema & import | New fields, GEDCOM PEDI tag parsing |
+| 2 | Conflict detection | Exclude step/adoptive from biological conflicts |
+| 3 | Canvas & tree | Visual distinction (dashed/dotted edges) |
+
+**GEDCOM Pedigree Types:**
+
+| PEDI Value | Meaning | Canvas Roots Field |
+|------------|---------|-------------------|
+| `birth` | Biological | `father_id`, `mother_id` |
+| `adop` | Adopted | `adoptive_father_id`, `adoptive_mother_id` |
+| `step` | Step-child | `stepfather_id`, `stepmother_id` |
+
+See [Step & Adoptive Parent Support Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/step-adoptive-parent-support.md) for implementation details.
 
 ---
 
