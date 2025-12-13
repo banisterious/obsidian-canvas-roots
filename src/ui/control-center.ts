@@ -5410,10 +5410,10 @@ export class ControlCenterModal extends Modal {
 				await this.plugin.saveSettings();
 			}
 
-			// Sync bidirectional relationships after import if enabled
-			if (this.plugin.settings.enableBidirectionalSync && result.success && result.individualsImported > 0) {
-				await this.syncImportedRelationships();
-			}
+			// Note: Bidirectional relationship sync after GEDCOM import is intentionally skipped.
+			// GEDCOM data already contains complete bidirectional relationships, and running
+			// syncImportedRelationships causes corruption when there are duplicate names
+			// (e.g., two "John Smith" people) because the sync matches by filename, not cr_id.
 
 			// Show results notice
 			let noticeMsg = `Import complete: ${result.individualsImported} people`;
