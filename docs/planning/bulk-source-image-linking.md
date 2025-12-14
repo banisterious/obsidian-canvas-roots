@@ -38,17 +38,17 @@ Analysis based on a real genealogy collection (~280 files, ~140 actionable sourc
 
 | Pattern | Example | Extractable Data |
 |---------|---------|------------------|
-| `surname_year_type` | `armitage_1870_census.jpg` | surname, year, type |
-| `surname_given_byear_year_place_type` | `armstrong_chester_b1826_1870_USA_IL_census.jpg` | full structured |
-| `surname_given_byear_type_part` | `armitage_george_b1843_civil_war_record_a.jpg` | with multi-part |
-| `surname_given_byear_type_card` | `banister_edmond_eugene_b1880_wwi_draft_registration_card.jpg` | WWI draft |
-| `surname_and_surname_various_...` | `banister_and_hughes_various_p7A_1910_USA_OK_census.jpg` | multi-family |
+| `surname_year_type` | `thornwood_1870_census.jpg` | surname, year, type |
+| `surname_given_byear_year_place_type` | `whitmore_chester_b1826_1870_USA_IL_census.jpg` | full structured |
+| `surname_given_byear_type_part` | `thornwood_george_b1843_civil_war_record_a.jpg` | with multi-part |
+| `surname_given_byear_type_card` | `calloway_edmond_eugene_b1880_wwi_draft_registration_card.jpg` | WWI draft |
+| `surname_and_surname_various_...` | `calloway_and_pembrook_various_p7A_1910_USA_OK_census.jpg` | multi-family |
 | `ss_shipname_pas_list_date` | `ss_george_washington_pas_list_1912-oct-28.jpg` | passenger list |
-| Descriptive (spaces) | `Cemetery Record for Iowa - Frances Siebengartner...` | free-form |
+| Descriptive (spaces) | `Cemetery Record for Iowa - Frances Lindquist...` | free-form |
 
 ### Extracted Tokens
 
-- **Surnames:** armitage, armstrong, banister, bench, blades, britch, brown, dunham, eldred, gilbert, hoadley, hughes, kale, mccasland, mckinney, merriam, musick, padget, renner, scales, schultz, seymour, siebengartner, treadway, trobaugh
+- **Surnames:** thornwood, whitmore, calloway, hartley, graves, pembrook, ashford, westbrook, fairchild, marston, aldridge, crawford, brennan, holcombe, stanton, kensington, fairbanks, winthrop, hartwell, kingsley, beaumont, aldrich, lindquist, ashworth, wakefield
 - **Record types:** census, civil_war_record, wwi_draft_reg_card, wwii_draft_reg_card, birth_record, marriage_record, divorce, obit, family_record, pas_list (passenger list)
 - **Place codes:** USA_IL, USA_MI, USA_OK, USA_TN, USA_OH, USA_KY, USA_MO, USA_IN, USA_VT, USA_MA, USA_CA, USA_AR, england
 - **Multi-part suffixes:** `_a`, `_b`, `_2a`, `_2b`, `_p1`, `_p2`, `_page1`, `_page2`, `_allparts`, `_02`
@@ -94,6 +94,7 @@ interface ParsedImageFilename {
 - `mapToSourceType(typeToken: string): SourceType`
 - `extractLocation(tokens: string[]): { country?: string; state?: string }`
 - `generateSourceTitle(parsed: ParsedImageFilename): string`
+- `generateStandardFilename(parsed: ParsedImageFilename, extension: string): string`
 
 #### 1.2 Import Wizard UI
 
@@ -101,8 +102,10 @@ interface ParsedImageFilename {
 
 **Wizard Steps:**
 
-1. **Select Source** — Choose folder or files to import
-   - Folder picker (external path)
+1. **Select Source** — Choose folder or files to process
+   - Toggle: "Import from external folder" vs "Use existing vault folder"
+   - External: Folder picker (external path)
+   - Vault: Folder suggester for existing vault folders
    - File filter options (exclude `thumb_*`, `.doc`, etc.)
    - Show file count and preview
 
@@ -112,16 +115,24 @@ interface ParsedImageFilename {
    - Confidence indicator (color-coded)
    - Multi-part grouping visual indicator
 
-3. **Configure Import** — Settings for this import
-   - Destination folder (default from settings)
-   - Copy vs Move toggle
+3. **Rename Files** (optional) — Standardize filenames
+   - Toggle: "Rename files to standard format"
+   - Preview table: Current Name → Proposed Name
+   - Editable proposed names for manual adjustments
+   - Format based on parsed metadata: `surname_given_byyyy_type_yyyy_place.ext`
+   - Checkbox per row to include/exclude from renaming
+   - Warning for potential conflicts (duplicate names)
+
+4. **Configure Import** — Settings for this import
+   - Destination folder (default from settings) — only shown for external imports
+   - Copy vs Move toggle — only shown for external imports
    - Source note folder
 
-4. **Execute** — Progress bar and results
-   - Copy/move images to vault
+5. **Execute** — Progress bar and results
+   - Copy/move images to vault (external import only)
    - Create source notes
    - Link media to sources
-   - Summary: X sources created, Y images imported
+   - Summary: X sources created, Y images processed
 
 #### 1.3 Settings & Integration
 
@@ -195,7 +206,6 @@ interface ImageMatchResult {
 
 - **Duplicate detection:** Warn if image already exists in vault
 - **Source note matching:** Link to existing source instead of creating new
-- **Batch rename tool:** Standardize filenames before import
 - **OCR integration:** Extract text from images (future)
 
 ---
@@ -274,9 +284,9 @@ surname_givenname_byyyy_recordtype_yyyy_place.ext
 
 Examples:
 
-- `armitage_george_b1843_census_1870_USA_TN.jpg`
-- `banister_lawrence_ward_b1878_wwi_draft_1917_USA_OK.jpg`
-- `seymour_james_b1791_birth_record.png`
+- `thornwood_george_b1843_census_1870_USA_TN.jpg`
+- `calloway_lawrence_ward_b1878_wwi_draft_1917_USA_OK.jpg`
+- `kensington_james_b1791_birth_record.png`
 
 ---
 
