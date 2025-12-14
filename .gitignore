@@ -54,31 +54,12 @@ Thumbs.db
 .env.local
 .env.*.local
 
-# External documentation and reference libraries
-docs/developer/obsidian-developer-docs/
-docs/developer/obsidian-help-docs/
-docs/developer/family-chart/
-docs/developer/jsoncanvas-spec/
+# External documentation and reference libraries (cloned repos for local reference)
+external/
 
-# Leaflet and map-related reference libraries
-docs/developer/obsidian-map-view/
-docs/developer/obsidian-leaflet/
-docs/developer/leaflet-markercluster/
-docs/developer/overlapping-marker-spiderfier/
-docs/developer/leaflet-timeline/
-docs/developer/leaflet-migration/
-docs/developer/leaflet-polyline-decorator/
-docs/developer/leaflet-zoomify/
-docs/developer/leaflet-distortable-image/
-docs/developer/leaflet-iiif/
-
-# Other cloned reference repos
-docs/developer/obsidian-style-settings/
-docs/developer/obsidian-maps/
+# Developer working files
 docs/developer/pr-reviews/
-docs/developer/calendarium-reference/
 docs/developer/custom-timeline-css/
-docs/developer/obsidian-modular-css-layout/
 
 # Claude Code working files
 CLAUDE.md
