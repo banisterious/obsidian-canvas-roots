@@ -227,6 +227,8 @@ See [Sex/Gender Identity Expansion Planning Document](https://github.com/baniste
 
 **Priority:** 📋 Medium — Unified timeline experience for fictional worldbuilders
 
+**Status:** ✅ Phase 1 complete (v0.12.0) | Phases 2-4 planned
+
 **Summary:** Integration with the [Calendarium](https://plugins.javalent.com/calendarium) plugin to share calendar definitions, eliminating duplicate configuration for worldbuilders. Designed to be invisible to users who don't need it—settings default to off, and no UI changes appear unless Calendarium is installed.
 
 **User Feedback (December 2024):**
@@ -244,12 +246,21 @@ See [Sex/Gender Identity Expansion Planning Document](https://github.com/baniste
 | Bidirectional | Full sync between both plugins | Power users wanting unified experience |
 
 **Phased Approach:**
-- **Phase 1 (recommended):** Import calendar definitions from Calendarium—delivers ~80% of value
+- ✅ **Phase 1 (v0.12.0):** Import calendar definitions from Calendarium—delivers ~80% of value
 - **Phase 2:** Display Calendarium events on Canvas Roots timelines; support date ranges (`fc-end`)
 - **Phase 3:** Bidirectional sync between plugins
 - **Phase 4:** Cross-calendar date translation
 
-**Data Mapping:**
+**Phase 1 Implementation (v0.12.0):**
+- Detects Calendarium plugin installation
+- Imports calendar definitions (names, eras, abbreviations, year directions)
+- Displays imported calendars in Date Systems card and Create Event modal
+- Graceful fallback when Calendarium not installed
+- Integrations card hidden when Calendarium not installed
+
+See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#calendarium-integration) for usage documentation.
+
+**Data Mapping (Planned for Phase 2+):**
 
 | Canvas Roots Field | Calendarium Field |
 |--------------------|-------------------|
@@ -260,9 +271,7 @@ See [Sex/Gender Identity Expansion Planning Document](https://github.com/baniste
 | `display_name` | `fc-display-name` |
 
 **Settings:**
-- `calendariumIntegration`: off / read-only / bidirectional
-- `calendariumDefaultCalendar`: Which calendar to use when creating events
-- `syncCalendariumEvents`: Whether to show Calendarium events on timelines
+- `calendariumIntegration`: off / read-only (bidirectional planned for Phase 3)
 
 **API Integration:** Uses `window.Calendarium` global when available, with graceful fallback when Calendarium is not installed.
 

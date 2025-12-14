@@ -8,6 +8,8 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 
 ## Table of Contents
 
+- [v0.12.x](#v012x)
+  - [Calendarium Integration Phase 1](#calendarium-integration-phase-1-v0120)
 - [v0.11.x](#v011x)
   - [Export v2](#export-v2-v0110)
 - [v0.10.x](#v010x)
@@ -35,6 +37,55 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
   - [Maps Tab](#maps-tab-v062)
   - [Geographic Features](#geographic-features-v060)
   - [Import/Export Enhancements](#importexport-enhancements-v060)
+
+---
+
+## v0.12.x
+
+### Calendarium Integration Phase 1 (v0.12.0)
+
+Integration with the [Calendarium](https://github.com/javalent/calendarium) plugin to import calendar definitions for fictional dates.
+
+**Problem Solved:**
+- Worldbuilders using Calendarium for fantasy calendar management had to manually recreate calendar definitions in Canvas Roots
+- No way to leverage existing Calendarium calendar structure (eras, year directions)
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **Calendar import** | Automatically import Calendarium calendars as Canvas Roots date systems |
+| **Era preservation** | Era names, abbreviations, and year directions are preserved |
+| **Zero configuration** | Calendars appear automatically when integration is enabled |
+| **Invisible when not needed** | Integrations card only appears if Calendarium is installed |
+
+**How It Works:**
+
+1. Install [Calendarium](https://github.com/javalent/calendarium) plugin
+2. Open Control Center → Preferences → Integrations
+3. Set Integration mode to "Read-only (import calendars)"
+4. Calendarium calendars appear in Date Systems card and Create Event modal
+
+**Technical Details:**
+
+- Uses `window.Calendarium` global API
+- Waits for Calendarium settings to load before importing
+- Converts Calendarium eras to Canvas Roots `FictionalEra` format
+- Handles starting eras (epoch 0) and regular eras with dates
+- Extracts era abbreviations from Calendarium format strings
+
+**Settings:**
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| `calendariumIntegration` | `off`, `read` | `off` |
+
+**Future Phases:**
+- Phase 2: Display Calendarium events on timelines
+- Phase 3: Bidirectional sync between plugins
+- Phase 4: Cross-calendar date translation
+
+See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#calendarium-integration) and [Roadmap - Calendarium Integration](Roadmap#calendarium-integration) for details.
 
 ---
 

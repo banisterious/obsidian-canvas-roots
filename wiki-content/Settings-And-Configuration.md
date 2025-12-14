@@ -432,9 +432,33 @@ Custom relationship types can be added for specialized genealogical relationship
 
 ---
 
+## Integrations
+
+Settings for third-party plugin integrations. The Integrations card in Control Center → Preferences only appears when supported plugins are installed.
+
+### Calendarium Integration
+
+If the [Calendarium](https://github.com/javalent/calendarium) plugin is installed, you can import its calendar definitions for use with fictional dates.
+
+| Setting | Options | Description |
+|---------|---------|-------------|
+| **Integration mode** | `off`, `read` | Controls how Canvas Roots interacts with Calendarium |
+
+- **Off**: No integration (default)
+- **Read-only (import calendars)**: Import calendar definitions from Calendarium
+
+When enabled, Calendarium calendars appear in:
+- The Date Systems card under "From Calendarium"
+- The Date system dropdown in the Create Event modal
+
+See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#calendarium-integration) for details.
+
+---
+
 ## See Also
 
 - [Frontmatter Reference](Frontmatter-Reference) - Complete property documentation
 - [Data Management](Data-Management) - Managing your family data
 - [Schema Validation](Schema-Validation) - Creating validation rules
 - [Geographic Features](Geographic-Features) - Place and map features
+- [Fictional Date Systems](Fictional-Date-Systems) - Custom calendars and Calendarium integration

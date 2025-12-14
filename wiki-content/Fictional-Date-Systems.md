@@ -13,6 +13,7 @@ Fictional Date Systems allow you to define custom calendars and eras for world-b
 - [Creating Custom Systems](#creating-custom-systems)
 - [Test Date Parsing](#test-date-parsing)
 - [Technical Details](#technical-details)
+- [Calendarium Integration](#calendarium-integration)
 - [Future Enhancements](#future-enhancements)
 
 ---
@@ -250,20 +251,58 @@ Date systems are stored in plugin settings:
 
 ---
 
+## Calendarium Integration
+
+Canvas Roots integrates with the [Calendarium](https://github.com/javalent/calendarium) plugin to import calendar definitions. If you already use Calendarium for fantasy calendar management, you can now use those same calendars in Canvas Roots without duplicate configuration.
+
+### Enabling the Integration
+
+1. Install and enable the [Calendarium](https://github.com/javalent/calendarium) plugin
+2. Open Control Center → **Preferences** tab
+3. Find the **Integrations** card (only visible when Calendarium is installed)
+4. Set **Integration mode** to "Read-only (import calendars)"
+
+### How It Works
+
+- **Automatic import**: Calendarium calendars appear automatically in Canvas Roots
+- **Zero configuration**: Calendar names, eras, and abbreviations are imported as-is
+- **Read-only**: Canvas Roots reads from Calendarium but doesn't modify it
+- **Invisible when not needed**: The Integrations card only appears if Calendarium is installed
+
+### Where Calendarium Calendars Appear
+
+Once enabled, imported calendars appear in:
+
+- **Date Systems card** (Control Center → Events tab): Listed under "From Calendarium" section
+- **Create Event modal**: Available in the Date system dropdown when creating events
+- **Date parsing**: Era abbreviations from Calendarium calendars work in date fields
+
+### Limitations
+
+The current integration (Phase 1) imports calendar structure only:
+
+- Calendar names and eras are imported
+- Era abbreviations are derived from Calendarium's format strings
+- Year direction (forward/backward) is preserved
+
+**Not yet supported:**
+- Displaying Calendarium events on Canvas Roots timelines
+- Bidirectional sync between plugins
+- Cross-calendar date translation
+
+See the [Roadmap](Roadmap#calendarium-integration) for planned enhancements.
+
+---
+
 ## Future Enhancements
 
-### Calendarium Integration (Planned)
+Additional Calendarium integration features are planned:
 
-Canvas Roots plans to support integration with the popular [Calendarium](https://github.com/javalent/calendarium) community plugin. This will enable:
+- **Phase 2: Event display** - Show Calendarium events on person and place timelines
+- **Phase 3: Bidirectional sync** - Keep events in sync between both plugins
+- **Phase 4: Cross-calendar translation** - Convert dates between different calendar systems
 
-- **Calendar sharing**: Use Calendarium's calendar definitions in Canvas Roots
-- **Event synchronization**: Display Canvas Roots events in Calendarium's calendar views
-- **Bidirectional sync**: Optionally keep events in sync between both systems
-- **Cross-calendar translation**: Convert dates between different calendar systems
-
-If you use Calendarium for fantasy calendar management, this integration will allow you to leverage your existing calendar definitions while using Canvas Roots' genealogy and worldbuilding features.
-
-See the [Chronological Story Mapping plan](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/chronological-story-mapping.md) for full details on this planned integration.
+See the [Calendarium Integration roadmap](Roadmap#calendarium-integration) for details.
 
 ---
 
