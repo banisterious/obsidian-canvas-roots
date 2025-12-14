@@ -9,11 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.12.2] - 2025-12-14
+
 ### Fixed
 
 - **Bases Lifespan formula error** - Fixed "Cannot find function 'year' on type Date" error in the Lifespan calculated property. Changed formula syntax from `.year()` method to `(date1 - date2).years.floor()` duration syntax which is correct for Obsidian Bases.
 
-- **Bases Living/Deceased members views** - Fixed "Living members" and "Deceased members" views showing incorrect results when the `died` property exists but is empty. Changed filter from negation syntax to `isEmpty()` function which correctly handles both missing and empty property values. Also added explicit `visibleProperties` to these views to display all expected columns.
+- **Bases Living/Deceased members views** - Fixed "Living members" and "Deceased members" views showing incorrect results when the `died` property exists but is empty. Changed filter from negation syntax to `isEmpty()` function which correctly handles both missing and empty property values. Added `name` to the view's `order` field so the Name column displays.
 
 ---
 
