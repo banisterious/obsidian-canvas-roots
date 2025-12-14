@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.12.0] - 2025-12-14
+
+### Added
+
+- **Calendarium integration (Phase 1)** - Canvas Roots can now import calendar definitions from the [Calendarium](https://github.com/javalent/calendarium) plugin. When Calendarium is installed and enabled, an "Integrations" card appears in Control Center Preferences with a toggle to enable read-only calendar import. Imported calendars appear in the "From Calendarium" section of the Date Systems card and can be selected when creating events with fictional dates. This eliminates the need to manually recreate calendar systems that are already defined in Calendarium.
+
 ### Changed
 
 - **Stricter ESLint rules** - Added `await-thenable`, `no-base-to-string`, `no-console`, `no-case-declarations`, and `no-constant-condition` rules. Fixed all violations across the codebase.
