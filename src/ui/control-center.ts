@@ -9381,6 +9381,8 @@ export class ControlCenterModal extends Modal {
 
 			createStat('Individuals', analysis.individualCount);
 			createStat('Relationships', analysis.familyCount);
+			createStat('Places', analysis.placeCount);
+			createStat('Events', analysis.eventCount);
 			createStat('Family groups', analysis.componentCount);
 
 			// Import destination info
@@ -9389,6 +9391,46 @@ export class ControlCenterModal extends Modal {
 				cls: 'crc-text-muted crc-mt-4'
 			});
 
+			// Import options
+			let createPlaceNotes = analysis.placeCount > 0;
+			let createEventNotes = analysis.eventCount > 0;
+			const placesFolder = this.plugin.settings.placesFolder || 'Canvas Roots/Places';
+			const eventsFolder = this.plugin.settings.eventsFolder || 'Canvas Roots/Events';
+
+			const optionsContainer = analysisContainer.createDiv({ cls: 'crc-mt-4' });
+
+			if (analysis.placeCount > 0) {
+				const placeCheckbox = optionsContainer.createEl('label', {
+					cls: 'crc-checkbox-label'
+				});
+				const checkbox = placeCheckbox.createEl('input', {
+					type: 'checkbox'
+				});
+				checkbox.checked = createPlaceNotes;
+				checkbox.addEventListener('change', () => {
+					createPlaceNotes = checkbox.checked;
+				});
+				placeCheckbox.createSpan({
+					text: ` Create place notes (${analysis.placeCount} places → ${placesFolder}/)`
+				});
+			}
+
+			if (analysis.eventCount > 0) {
+				const eventCheckbox = optionsContainer.createEl('label', {
+					cls: 'crc-checkbox-label'
+				});
+				const checkbox = eventCheckbox.createEl('input', {
+					type: 'checkbox'
+				});
+				checkbox.checked = createEventNotes;
+				checkbox.addEventListener('change', () => {
+					createEventNotes = checkbox.checked;
+				});
+				eventCheckbox.createSpan({
+					text: ` Create event notes (${analysis.eventCount} events → ${eventsFolder}/)`
+				});
+			}
+
 			// Import button
 			const importBtn = analysisContainer.createEl('button', {
 				cls: 'crc-btn crc-btn--primary crc-mt-4',
@@ -9396,7 +9438,7 @@ export class ControlCenterModal extends Modal {
 			});
 
 			importBtn.addEventListener('click', () => {
-				void this.handleGrampsImport(file, targetFolder);
+				void this.handleGrampsImport(file, targetFolder, createPlaceNotes, placesFolder, createEventNotes, eventsFolder);
 			});
 
 		} catch (error: unknown) {
@@ -9411,7 +9453,14 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Handle Gramps XML file import
 	 */
-	private async handleGrampsImport(file: File, destFolder: string): Promise<void> {
+	private async handleGrampsImport(
+		file: File,
+		destFolder: string,
+		createPlaceNotes: boolean = false,
+		placesFolder?: string,
+		createEventNotes: boolean = false,
+		eventsFolder?: string
+	): Promise<void> {
 		try {
 			// Read file with automatic gzip decompression for .gramps files
 			const content = await readFileWithDecompression(file);
@@ -9422,7 +9471,11 @@ export class ControlCenterModal extends Modal {
 			const result = await importer.importFile(content, {
 				peopleFolder: destFolder,
 				overwriteExisting: false,
-				fileName: file.name
+				fileName: file.name,
+				createPlaceNotes,
+				placesFolder,
+				createEventNotes,
+				eventsFolder
 			});
 
 			// Show results notification
@@ -9449,16 +9502,25 @@ export class ControlCenterModal extends Modal {
 	 * Show Gramps XML import results
 	 */
 	private showGrampsImportResults(result: GrampsImportResult): void {
-		new Notice(
-			`Gramps import complete: ${result.individualsImported} people imported` +
-			(result.errors.length > 0 ? ` (${result.errors.length} errors)` : ''),
-			5000
-		);
+		let message = `Gramps import complete: ${result.individualsImported} people imported`;
+		if (result.placeNotesCreated && result.placeNotesCreated > 0) {
+			message += `, ${result.placeNotesCreated} places`;
+		}
+		if (result.eventNotesCreated && result.eventNotesCreated > 0) {
+			message += `, ${result.eventNotesCreated} events`;
+		}
+		if (result.errors.length > 0) {
+			message += ` (${result.errors.length} errors)`;
+		}
+
+		new Notice(message, 5000);
 
 		// Log detailed results
 		logger.info('gramps', 'Import results:', {
 			imported: result.individualsImported,
 			created: result.notesCreated,
+			places: result.placeNotesCreated || 0,
+			events: result.eventNotesCreated || 0,
 			errors: result.errors.length
 		});
 

@@ -49,10 +49,36 @@ export interface ParsedGrampsPerson {
 }
 
 /**
+ * Parsed place from Gramps format
+ */
+export interface ParsedGrampsPlace {
+	handle: string;
+	id?: string;
+	name?: string;
+	type?: string;
+}
+
+/**
+ * Parsed event from Gramps format
+ */
+export interface ParsedGrampsEvent {
+	handle: string;
+	id?: string;
+	type?: string;
+	date?: string;
+	placeName?: string;
+	description?: string;
+	/** Person handles associated with this event */
+	personHandles: string[];
+}
+
+/**
  * Complete parsed Gramps data
  */
 export interface ParsedGrampsData {
 	persons: Map<string, ParsedGrampsPerson>;
+	places: Map<string, ParsedGrampsPlace>;
+	events: Map<string, ParsedGrampsEvent>;
 	header: {
 		source?: string;
 		version?: string;
@@ -211,10 +237,52 @@ export class GrampsParser {
 		// Second pass: resolve family relationships
 		this.resolveRelationships(persons, database);
 
-		logger.info('parse', `Parsed ${persons.size} persons from Gramps XML`);
+		// Convert places to parsed format
+		const places = new Map<string, ParsedGrampsPlace>();
+		for (const [handle, grampsPlace] of database.places) {
+			places.set(handle, {
+				handle: grampsPlace.handle,
+				id: grampsPlace.id,
+				name: grampsPlace.name,
+				type: grampsPlace.type
+			});
+		}
+
+		// Convert events to parsed format and link to persons
+		const events = new Map<string, ParsedGrampsEvent>();
+		for (const [handle, grampsEvent] of database.events) {
+			// Find persons associated with this event
+			const personHandles: string[] = [];
+			for (const [personHandle, person] of database.persons) {
+				if (person.eventrefs.some(ref => ref.hlink === handle)) {
+					personHandles.push(personHandle);
+				}
+			}
+
+			// Resolve place name
+			let placeName: string | undefined;
+			if (grampsEvent.place) {
+				const place = database.places.get(grampsEvent.place);
+				placeName = place?.name;
+			}
+
+			events.set(handle, {
+				handle: grampsEvent.handle,
+				id: grampsEvent.id,
+				type: grampsEvent.type,
+				date: formatGrampsDate(grampsEvent.date),
+				placeName,
+				description: grampsEvent.description,
+				personHandles
+			});
+		}
+
+		logger.info('parse', `Parsed ${persons.size} persons, ${places.size} places, and ${events.size} events from Gramps XML`);
 
 		return {
 			persons,
+			places,
+			events,
 			header: {
 				source: database.header?.createdBy,
 				version: database.header?.version

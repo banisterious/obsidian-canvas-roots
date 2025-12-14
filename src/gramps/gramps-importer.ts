@@ -5,9 +5,10 @@
  */
 
 import { App, Notice, TFile, normalizePath } from 'obsidian';
-import { GrampsParser, ParsedGrampsData, ParsedGrampsPerson } from './gramps-parser';
+import { GrampsParser, ParsedGrampsData, ParsedGrampsPerson, ParsedGrampsPlace, ParsedGrampsEvent } from './gramps-parser';
 import { GrampsValidationResult } from './gramps-types';
 import { createPersonNote, PersonData } from '../core/person-note-writer';
+import { createPlaceNote, PlaceData } from '../core/place-note-writer';
 import { generateCrId } from '../core/uuid';
 import { getErrorMessage } from '../core/error-utils';
 import { getLogger } from '../core/logging';
@@ -23,6 +24,14 @@ export interface GrampsImportOptions {
 	fileName?: string;
 	/** Property aliases for writing custom property names (user property → canonical) */
 	propertyAliases?: Record<string, string>;
+	/** Whether to create place notes (default: false) */
+	createPlaceNotes?: boolean;
+	/** Folder for place notes (default: same as peopleFolder) */
+	placesFolder?: string;
+	/** Whether to create event notes (default: false) */
+	createEventNotes?: boolean;
+	/** Folder for event notes */
+	eventsFolder?: string;
 }
 
 /**
@@ -38,6 +47,10 @@ export interface GrampsImportResult {
 	validation?: GrampsValidationResult;
 	fileName?: string;
 	malformedDataCount?: number;
+	placesImported?: number;
+	placeNotesCreated?: number;
+	eventsImported?: number;
+	eventNotesCreated?: number;
 }
 
 /**
@@ -57,6 +70,8 @@ export class GrampsImporter {
 	analyzeFile(content: string): {
 		individualCount: number;
 		familyCount: number;
+		placeCount: number;
+		eventCount: number;
 		componentCount: number;
 	} {
 		const data = GrampsParser.parse(content);
@@ -116,9 +131,17 @@ export class GrampsImporter {
 			}
 		}
 
+		// Count places
+		const placeCount = data.places.size;
+
+		// Count events
+		const eventCount = data.events.size;
+
 		return {
 			individualCount,
 			familyCount,
+			placeCount,
+			eventCount,
 			componentCount
 		};
 	}
@@ -138,7 +161,11 @@ export class GrampsImporter {
 			notesSkipped: 0,
 			errors: [],
 			fileName: options.fileName,
-			malformedDataCount: 0
+			malformedDataCount: 0,
+			placesImported: 0,
+			placeNotesCreated: 0,
+			eventsImported: 0,
+			eventNotesCreated: 0
 		};
 
 		try {
@@ -166,14 +193,40 @@ export class GrampsImporter {
 			new Notice(`Parsed ${grampsData.persons.size} individuals`);
 			logger.info('importFile', `Starting import of ${grampsData.persons.size} persons`);
 
-			// Create person notes
-			new Notice('Creating person notes...');
-
-			// Ensure people folder exists
+			// Ensure folders exist
 			await this.ensureFolderExists(options.peopleFolder);
 
 			// Create mapping of Gramps handles to cr_ids
 			const grampsToCrId = new Map<string, string>();
+			// Mapping from place name to wikilink (for linking in person notes)
+			const placeNameToWikilink = new Map<string, string>();
+
+			// Create place notes FIRST if requested (so we can link to them from person notes)
+			if (options.createPlaceNotes && grampsData.places.size > 0) {
+				new Notice(`Creating ${grampsData.places.size} place notes...`);
+				const placesFolder = options.placesFolder || options.peopleFolder;
+				await this.ensureFolderExists(placesFolder);
+
+				for (const [handle, place] of grampsData.places) {
+					try {
+						const placeCrId = await this.importPlace(place, placesFolder, options);
+						result.placesImported = (result.placesImported || 0) + 1;
+						result.placeNotesCreated = (result.placeNotesCreated || 0) + 1;
+
+						// Store mapping from place name to wikilink for use in person notes
+						if (place.name) {
+							placeNameToWikilink.set(place.name, `[[${place.name}]]`);
+						}
+					} catch (error: unknown) {
+						result.errors.push(
+							`Failed to import place ${place.name || handle}: ${getErrorMessage(error)}`
+						);
+					}
+				}
+			}
+
+			// Create person notes
+			new Notice('Creating person notes...');
 
 			// First pass: Create all person notes
 			for (const [handle, person] of grampsData.persons) {
@@ -182,7 +235,8 @@ export class GrampsImporter {
 						person,
 						grampsData,
 						options,
-						grampsToCrId
+						grampsToCrId,
+						placeNameToWikilink
 					);
 
 					grampsToCrId.set(handle, crId);
@@ -220,8 +274,42 @@ export class GrampsImporter {
 				}
 			}
 
+			// Create event notes if requested
+			if (options.createEventNotes && grampsData.events.size > 0) {
+				new Notice(`Creating ${grampsData.events.size} event notes...`);
+				const eventsFolder = options.eventsFolder || 'Canvas Roots/Events';
+				await this.ensureFolderExists(eventsFolder);
+
+				for (const [handle, event] of grampsData.events) {
+					try {
+						await this.importEvent(
+							event,
+							grampsData,
+							grampsToCrId,
+							placeNameToWikilink,
+							eventsFolder,
+							options
+						);
+						result.eventsImported = (result.eventsImported || 0) + 1;
+						result.eventNotesCreated = (result.eventNotesCreated || 0) + 1;
+					} catch (error: unknown) {
+						result.errors.push(
+							`Failed to import event ${event.type || handle}: ${getErrorMessage(error)}`
+						);
+					}
+				}
+			}
+
 			// Enhanced import complete notice
 			let importMessage = `Import complete: ${result.notesCreated} people imported`;
+
+			if (result.placeNotesCreated && result.placeNotesCreated > 0) {
+				importMessage += `, ${result.placeNotesCreated} places`;
+			}
+
+			if (result.eventNotesCreated && result.eventNotesCreated > 0) {
+				importMessage += `, ${result.eventNotesCreated} events`;
+			}
 
 			if (result.malformedDataCount && result.malformedDataCount > 0) {
 				importMessage += `. ${result.malformedDataCount} had missing/invalid data`;
@@ -253,9 +341,18 @@ export class GrampsImporter {
 		person: ParsedGrampsPerson,
 		grampsData: ParsedGrampsData,
 		options: GrampsImportOptions,
-		grampsToCrId: Map<string, string>
+		grampsToCrId: Map<string, string>,
+		placeNameToWikilink: Map<string, string>
 	): Promise<string> {
 		const crId = generateCrId();
+
+		// Convert place names to wikilinks if place notes were created
+		const birthPlaceValue = person.birthPlace
+			? (placeNameToWikilink.get(person.birthPlace) || person.birthPlace)
+			: undefined;
+		const deathPlaceValue = person.deathPlace
+			? (placeNameToWikilink.get(person.deathPlace) || person.deathPlace)
+			: undefined;
 
 		// Convert Gramps person to PersonData
 		const personData: PersonData = {
@@ -263,8 +360,8 @@ export class GrampsImporter {
 			crId: crId,
 			birthDate: person.birthDate,
 			deathDate: person.deathDate,
-			birthPlace: person.birthPlace,
-			deathPlace: person.deathPlace,
+			birthPlace: birthPlaceValue,
+			deathPlace: deathPlaceValue,
 			occupation: person.occupation,
 			sex: person.gender === 'M' ? 'male' : person.gender === 'F' ? 'female' : undefined
 		};
@@ -452,5 +549,242 @@ export class GrampsImporter {
 		if (!folder) {
 			await this.app.vault.createFolder(normalizedPath);
 		}
+	}
+
+	/**
+	 * Import a single place
+	 */
+	private async importPlace(
+		place: ParsedGrampsPlace,
+		placesFolder: string,
+		options: GrampsImportOptions
+	): Promise<string> {
+		const crId = generateCrId();
+
+		// Convert Gramps place to PlaceData
+		const placeData: PlaceData = {
+			name: place.name || `Unknown Place (${place.id || place.handle})`,
+			crId: crId,
+			// Map Gramps place type to Canvas Roots place type if possible
+			placeType: this.mapGrampsPlaceType(place.type)
+		};
+
+		// Write place note using the createPlaceNote function
+		await createPlaceNote(this.app, placeData, {
+			directory: placesFolder,
+			propertyAliases: options.propertyAliases
+		});
+
+		return crId;
+	}
+
+	/**
+	 * Map Gramps place type to Canvas Roots place type
+	 */
+	private mapGrampsPlaceType(grampsType?: string): string | undefined {
+		if (!grampsType) return undefined;
+
+		// Common Gramps place types mapped to Canvas Roots equivalents
+		const typeMap: Record<string, string> = {
+			'country': 'country',
+			'state': 'state',
+			'province': 'province',
+			'county': 'county',
+			'city': 'city',
+			'town': 'town',
+			'village': 'village',
+			'parish': 'parish',
+			'municipality': 'municipality',
+			'region': 'region',
+			'district': 'district',
+			'borough': 'borough',
+			'address': 'address',
+			'building': 'building',
+			'farm': 'farm',
+			'street': 'street',
+			'neighborhood': 'neighborhood',
+			'cemetery': 'cemetery',
+			'church': 'church'
+		};
+
+		const normalized = grampsType.toLowerCase();
+		return typeMap[normalized] || grampsType.toLowerCase();
+	}
+
+	/**
+	 * Import a single event
+	 */
+	private async importEvent(
+		event: ParsedGrampsEvent,
+		grampsData: ParsedGrampsData,
+		grampsToCrId: Map<string, string>,
+		placeNameToWikilink: Map<string, string>,
+		eventsFolder: string,
+		options: GrampsImportOptions
+	): Promise<string> {
+		const crId = generateCrId();
+
+		// Map Gramps event type to Canvas Roots event type
+		const eventType = this.mapGrampsEventType(event.type);
+
+		// Get person names for the title
+		const personNames: string[] = [];
+		const personWikilinks: string[] = [];
+		for (const personHandle of event.personHandles) {
+			const person = grampsData.persons.get(personHandle);
+			if (person) {
+				personNames.push(person.name || 'Unknown');
+				personWikilinks.push(`[[${person.name || 'Unknown'}]]`);
+			}
+		}
+
+		// Generate event title
+		const eventTypeLabel = this.getEventTypeLabel(eventType);
+		const title = personNames.length > 0
+			? `${eventTypeLabel} of ${personNames.join(' and ')}`
+			: `${eventTypeLabel} (${event.id || event.handle})`;
+
+		// Resolve place to wikilink if available
+		const placeValue = event.placeName
+			? (placeNameToWikilink.get(event.placeName) || event.placeName)
+			: undefined;
+
+		// Build frontmatter
+		const aliases = options.propertyAliases || {};
+		const prop = (canonical: string) => this.getWriteProperty(canonical, aliases);
+
+		const frontmatterLines: string[] = [
+			'---',
+			`${prop('cr_type')}: event`,
+			`${prop('cr_id')}: ${crId}`,
+			`${prop('title')}: "${title.replace(/"/g, '\\"')}"`,
+			`${prop('event_type')}: ${eventType}`,
+			`${prop('date_precision')}: ${event.date ? 'exact' : 'unknown'}`
+		];
+
+		if (event.date) {
+			frontmatterLines.push(`${prop('date')}: ${event.date}`);
+		}
+
+		// Add person references
+		if (personWikilinks.length === 1) {
+			frontmatterLines.push(`${prop('person')}: "${personWikilinks[0]}"`);
+		} else if (personWikilinks.length > 1) {
+			frontmatterLines.push(`${prop('persons')}:`);
+			for (const p of personWikilinks) {
+				frontmatterLines.push(`  - "${p}"`);
+			}
+		}
+
+		if (placeValue) {
+			// Check if it's already a wikilink
+			const placeLink = placeValue.startsWith('[[') ? placeValue : `[[${placeValue}]]`;
+			frontmatterLines.push(`${prop('place')}: "${placeLink}"`);
+		}
+
+		if (event.description) {
+			frontmatterLines.push(`${prop('description')}: "${event.description.replace(/"/g, '\\"')}"`);
+		}
+
+		frontmatterLines.push('---');
+
+		// Build note body
+		const body = `\n# ${title}\n\n${event.description || ''}\n`;
+		const content = frontmatterLines.join('\n') + body;
+
+		// Create file
+		const fileName = this.slugify(title) + '.md';
+		const filePath = normalizePath(`${eventsFolder}/${fileName}`);
+
+		// Check if file already exists and add suffix if needed
+		let finalPath = filePath;
+		let counter = 1;
+		while (this.app.vault.getAbstractFileByPath(finalPath)) {
+			const baseName = this.slugify(title);
+			finalPath = normalizePath(`${eventsFolder}/${baseName}-${counter}.md`);
+			counter++;
+		}
+
+		await this.app.vault.create(finalPath, content);
+
+		return crId;
+	}
+
+	/**
+	 * Map Gramps event type to Canvas Roots event type
+	 */
+	private mapGrampsEventType(grampsType?: string): string {
+		if (!grampsType) return 'custom';
+
+		const typeMap: Record<string, string> = {
+			'birth': 'birth',
+			'death': 'death',
+			'marriage': 'marriage',
+			'divorce': 'divorce',
+			'burial': 'burial',
+			'baptism': 'baptism',
+			'christening': 'baptism',
+			'confirmation': 'confirmation',
+			'ordination': 'ordination',
+			'residence': 'residence',
+			'occupation': 'occupation',
+			'military service': 'military',
+			'military': 'military',
+			'immigration': 'immigration',
+			'emigration': 'immigration',
+			'naturalization': 'immigration',
+			'education': 'education',
+			'graduation': 'education'
+		};
+
+		const normalized = grampsType.toLowerCase();
+		return typeMap[normalized] || 'custom';
+	}
+
+	/**
+	 * Get display label for event type
+	 */
+	private getEventTypeLabel(eventType: string): string {
+		const labels: Record<string, string> = {
+			'birth': 'Birth',
+			'death': 'Death',
+			'marriage': 'Marriage',
+			'divorce': 'Divorce',
+			'burial': 'Burial',
+			'baptism': 'Baptism',
+			'confirmation': 'Confirmation',
+			'ordination': 'Ordination',
+			'residence': 'Residence',
+			'occupation': 'Occupation',
+			'military': 'Military Service',
+			'immigration': 'Immigration',
+			'education': 'Education',
+			'custom': 'Event'
+		};
+		return labels[eventType] || eventType.charAt(0).toUpperCase() + eventType.slice(1);
+	}
+
+	/**
+	 * Get property name to write, respecting aliases
+	 */
+	private getWriteProperty(canonical: string, aliases: Record<string, string>): string {
+		for (const [userProp, canonicalProp] of Object.entries(aliases)) {
+			if (canonicalProp === canonical) {
+				return userProp;
+			}
+		}
+		return canonical;
+	}
+
+	/**
+	 * Convert string to URL-friendly slug
+	 */
+	private slugify(text: string): string {
+		return text
+			.toLowerCase()
+			.replace(/[^\w\s-]/g, '')
+			.replace(/\s+/g, '-')
+			.replace(/-+/g, '-')
+			.trim();
 	}
 }
