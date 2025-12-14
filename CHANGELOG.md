@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **cr_id prefix bug in context menu** - Fixed "Add essential place properties" and "Add essential event properties" context menu actions incorrectly adding `place_` or `event_` prefixes to generated cr_id values. The cr_type field already identifies the note type, so cr_id should be a plain UUID format.
+
 ---
 
 ## [0.12.0] - 2025-12-14
