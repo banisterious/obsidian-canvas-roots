@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-13 21:52:03 UTC
+ * - Generated: 2025-12-14 00:00:56 UTC
  * - Components: 30 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -600,7 +600,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 5771 lines, 105.59 KB */
+/* Component Size: 5855 lines, 107.19 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -3506,6 +3506,90 @@ settings:
   font-family: var(--font-monospace);
 }
 
+/* Variation option container for expandable details */
+.crc-variation-option-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Clickable count link */
+.crc-variation-count-link {
+  cursor: pointer;
+  color: var(--text-accent);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+  margin-right: 4px;
+}
+
+.crc-variation-count-link:hover {
+  color: var(--text-accent-hover);
+  text-decoration-style: solid;
+}
+
+.crc-variation-count-link.crc-expanded {
+  color: var(--text-accent-hover);
+}
+
+/* Reference type breakdown */
+.crc-variation-types {
+  font-size: 11px;
+}
+
+/* Expandable details panel */
+.crc-variation-details {
+  margin: 8px 0 4px 24px;
+  padding: 8px 12px;
+  background: var(--background-primary);
+  border-radius: var(--radius-s);
+  border: 1px solid var(--background-modifier-border);
+  font-size: var(--font-ui-small);
+}
+
+.crc-variation-details-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crc-variation-details-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.crc-variation-details-link {
+  color: var(--text-accent);
+  cursor: pointer;
+  text-decoration: none;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crc-variation-details-link:hover {
+  text-decoration: underline;
+}
+
+.crc-variation-details-type {
+  flex-shrink: 0;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Impact section field type breakdown */
+.crc-impact-types {
+  margin-top: 4px;
+  font-size: 11px;
+}
+
 /* ==========================================================================
    MERGE DUPLICATE PLACES MODAL
    ========================================================================== */
@@ -5889,7 +5973,7 @@ settings:
   display: flex;
   flex-direction: column;
   max-height: calc(80vh - 40px);
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .cr-bulk-geocode-description {
@@ -17025,11 +17109,11 @@ body.wide-timeline .view-content {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-13 21:52:03 UTC
+ * Build completed: 2025-12-14 00:00:56 UTC
  * Components processed: 30
- * Total lines: 16732
- * Total size: 329.84 KB
- * Build duration: 0.03 seconds
+ * Total lines: 16816
+ * Total size: 331.45 KB
+ * Build duration: 0.04 seconds
  *
  * Component breakdown:
  * - variables.css: 48 lines, 1.33 KB
@@ -17040,7 +17124,7 @@ body.wide-timeline .view-content {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 129 lines, 3.33 KB
- * - modals.css: 5771 lines, 105.59 KB
+ * - modals.css: 5855 lines, 107.19 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

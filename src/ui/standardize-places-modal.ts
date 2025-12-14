@@ -6,6 +6,8 @@
 import { App, Modal, Notice, TFile } from 'obsidian';
 import { createLucideIcon } from './lucide-icons';
 import { PlaceGraphService } from '../core/place-graph';
+import { FamilyGraphService, PersonNode } from '../core/family-graph';
+import { PlaceReference, PlaceReferenceType } from '../models/place';
 
 interface PlaceVariationGroup {
 	/** All variations found (including the suggested canonical) */
@@ -27,6 +29,7 @@ interface StandardizePlacesOptions {
  */
 export class StandardizePlacesModal extends Modal {
 	private placeService: PlaceGraphService;
+	private familyGraph: FamilyGraphService;
 	private variationGroups: PlaceVariationGroup[];
 	private selectedGroups: Map<PlaceVariationGroup, string>; // group -> chosen canonical
 	private appliedGroups: Set<PlaceVariationGroup>; // groups that have been applied
@@ -43,6 +46,7 @@ export class StandardizePlacesModal extends Modal {
 	) {
 		super(app);
 		this.placeService = new PlaceGraphService(app);
+		this.familyGraph = new FamilyGraphService(app);
 		this.variationGroups = variationGroups;
 		this.selectedGroups = new Map();
 		this.appliedGroups = new Set();
@@ -213,7 +217,8 @@ export class StandardizePlacesModal extends Modal {
 			const groupIndex = this.variationGroups.indexOf(group);
 
 			for (const variation of group.variations) {
-				const optionEl = variationsEl.createDiv({ cls: 'crc-variation-option' });
+				const optionContainer = variationsEl.createDiv({ cls: 'crc-variation-option-container' });
+				const optionEl = optionContainer.createDiv({ cls: 'crc-variation-option' });
 
 				const radioId = `variation-${groupIndex}-${group.variations.indexOf(variation)}`;
 				const radio = optionEl.createEl('input', {
@@ -239,18 +244,47 @@ export class StandardizePlacesModal extends Modal {
 				// Show reference count and linked status
 				const references = this.getVariationReferences(variation);
 				const isLinked = this.isVariationLinked(variation);
+				const typeCounts = this.getReferenceTypeCounts(references);
 
 				const meta = label.createEl('span', { cls: 'crc-variation-meta' });
-				meta.createEl('span', {
-					text: ` (${references.length})`,
-					cls: 'crc-text--muted'
+
+				// Clickable count that expands to show affected notes
+				const countEl = meta.createEl('span', {
+					text: `(${references.length})`,
+					cls: 'crc-variation-count-link'
 				});
+				countEl.title = 'Click to show affected notes';
+
+				// Reference type breakdown (e.g., "birth: 2, death: 1")
+				if (typeCounts.size > 0) {
+					const typeBreakdown: string[] = [];
+					for (const [type, count] of typeCounts) {
+						typeBreakdown.push(`${this.formatReferenceType(type)}: ${count}`);
+					}
+					meta.createEl('span', {
+						text: ` ${typeBreakdown.join(', ')}`,
+						cls: 'crc-text--muted crc-variation-types'
+					});
+				}
+
 				if (isLinked) {
 					meta.createEl('span', {
 						text: ' ✓ linked',
 						cls: 'crc-text--success'
 					});
 				}
+
+				// Expandable details panel (hidden by default)
+				const detailsEl = optionContainer.createDiv({ cls: 'crc-variation-details crc-hidden' });
+				this.renderVariationDetails(detailsEl, references);
+
+				// Toggle details on count click
+				countEl.addEventListener('click', (e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					detailsEl.toggleClass('crc-hidden', !detailsEl.hasClass('crc-hidden'));
+					countEl.toggleClass('crc-expanded', !detailsEl.hasClass('crc-hidden'));
+				});
 			}
 
 			// Custom name option
@@ -305,24 +339,29 @@ export class StandardizePlacesModal extends Modal {
 	/**
 	 * Calculate the impact of standardizing a group
 	 */
-	private calculateGroupImpact(group: PlaceVariationGroup): { totalRefs: number; fileCount: number; filesAffected: Set<string> } {
+	private calculateGroupImpact(group: PlaceVariationGroup): {
+		totalRefs: number;
+		fileCount: number;
+		filesAffected: Set<string>;
+		typeCounts: Map<PlaceReferenceType, number>;
+	} {
 		const canonical = this.selectedGroups.get(group) || group.canonical;
 		const variationsToUpdate = group.variations.filter(v => v !== canonical);
 
 		let totalRefs = 0;
 		const filesAffected = new Set<string>();
+		const typeCounts = new Map<PlaceReferenceType, number>();
 
 		for (const variation of variationsToUpdate) {
 			const refs = this.getVariationReferences(variation);
 			totalRefs += refs.length;
-			// Note: getVariationReferences returns personId, which maps to file paths
-			// For a more accurate file count, we'd need to track unique files
 			for (const ref of refs) {
 				filesAffected.add(ref.personId);
+				typeCounts.set(ref.referenceType, (typeCounts.get(ref.referenceType) || 0) + 1);
 			}
 		}
 
-		return { totalRefs, fileCount: filesAffected.size, filesAffected };
+		return { totalRefs, fileCount: filesAffected.size, filesAffected, typeCounts };
 	}
 
 	/**
@@ -340,10 +379,24 @@ export class StandardizePlacesModal extends Modal {
 
 		const impact = this.calculateGroupImpact(group);
 
-		// Update button label
-		if (applyBtn && !applyBtn.disabled) {
-			applyBtn.textContent = `Standardize (${impact.totalRefs})`;
-			applyBtn.title = `Update ${impact.totalRefs} reference${impact.totalRefs !== 1 ? 's' : ''} in ${impact.fileCount} file${impact.fileCount !== 1 ? 's' : ''}`;
+		// Update button label and state based on impact
+		if (applyBtn) {
+			// Check if this group was already applied
+			const wasApplied = this.appliedGroups.has(group);
+
+			if (impact.totalRefs === 0 && !wasApplied) {
+				// Nothing to change - disable the button
+				applyBtn.disabled = true;
+				applyBtn.textContent = 'Nothing to change';
+				applyBtn.title = 'All references already use the selected name';
+				applyBtn.removeClass('crc-btn--success');
+			} else if (!wasApplied) {
+				// Enable and update label
+				applyBtn.disabled = false;
+				applyBtn.textContent = `Standardize (${impact.totalRefs})`;
+				applyBtn.title = `Update ${impact.totalRefs} reference${impact.totalRefs !== 1 ? 's' : ''} in ${impact.fileCount} file${impact.fileCount !== 1 ? 's' : ''}`;
+			}
+			// If wasApplied, leave button in its "Done" state
 		}
 
 		if (impact.totalRefs === 0) {
@@ -369,6 +422,18 @@ export class StandardizePlacesModal extends Modal {
 				text: ` → "${canonical}"`,
 				cls: 'crc-text--accent'
 			});
+
+			// Show field type breakdown
+			if (impact.typeCounts.size > 0) {
+				const typeBreakdown: string[] = [];
+				for (const [type, count] of impact.typeCounts) {
+					typeBreakdown.push(`${count} ${this.formatReferenceType(type)}`);
+				}
+				impactEl.createEl('div', {
+					text: `Fields: ${typeBreakdown.join(', ')}`,
+					cls: 'crc-text--muted crc-impact-types'
+				});
+			}
 		}
 	}
 
@@ -425,10 +490,53 @@ export class StandardizePlacesModal extends Modal {
 	/**
 	 * Get references for a specific variation
 	 */
-	private getVariationReferences(variation: string): Array<{ personId: string }> {
+	private getVariationReferences(variation: string): PlaceReference[] {
 		this.placeService.ensureCacheLoaded();
 		const allRefs = this.placeService.getPlaceReferences();
 		return allRefs.filter(ref => ref.rawValue === variation);
+	}
+
+	/**
+	 * Get a person's display name from their cr_id
+	 */
+	private getPersonName(personId: string): string {
+		const person = this.familyGraph.getPersonByCrId(personId);
+		if (person) {
+			return person.name || person.file.basename;
+		}
+		return personId;
+	}
+
+	/**
+	 * Get a person node from their cr_id
+	 */
+	private getPerson(personId: string): PersonNode | undefined {
+		this.familyGraph.ensureCacheLoaded();
+		return this.familyGraph.getPersonByCrId(personId);
+	}
+
+	/**
+	 * Format reference type for display
+	 */
+	private formatReferenceType(type: PlaceReferenceType): string {
+		switch (type) {
+			case 'birth': return 'birth';
+			case 'death': return 'death';
+			case 'burial': return 'burial';
+			case 'marriage': return 'marriage';
+			default: return type;
+		}
+	}
+
+	/**
+	 * Get reference type counts for a variation
+	 */
+	private getReferenceTypeCounts(references: PlaceReference[]): Map<PlaceReferenceType, number> {
+		const counts = new Map<PlaceReferenceType, number>();
+		for (const ref of references) {
+			counts.set(ref.referenceType, (counts.get(ref.referenceType) || 0) + 1);
+		}
+		return counts;
 	}
 
 	/**
@@ -438,6 +546,45 @@ export class StandardizePlacesModal extends Modal {
 		this.placeService.ensureCacheLoaded();
 		const place = this.placeService.getPlaceByName(variation);
 		return place !== undefined;
+	}
+
+	/**
+	 * Render the expandable details panel showing affected notes
+	 */
+	private renderVariationDetails(container: HTMLElement, references: PlaceReference[]): void {
+		if (references.length === 0) {
+			container.createEl('span', {
+				text: 'No references found',
+				cls: 'crc-text--muted'
+			});
+			return;
+		}
+
+		const list = container.createEl('ul', { cls: 'crc-variation-details-list' });
+
+		for (const ref of references) {
+			const person = this.getPerson(ref.personId);
+			const li = list.createEl('li', { cls: 'crc-variation-details-item' });
+
+			// Person name as clickable link
+			const personName = person ? (person.name || person.file.basename) : ref.personId;
+			const link = li.createEl('a', {
+				text: personName,
+				cls: 'crc-variation-details-link'
+			});
+			link.addEventListener('click', (e) => {
+				e.preventDefault();
+				if (person) {
+					void this.app.workspace.getLeaf('window').openFile(person.file);
+				}
+			});
+
+			// Field type badge
+			li.createEl('span', {
+				text: this.formatReferenceType(ref.referenceType),
+				cls: 'crc-badge crc-badge--small crc-variation-details-type'
+			});
+		}
 	}
 
 	/**
@@ -624,10 +771,34 @@ export function findPlaceNameVariations(app: App): PlaceVariationGroup[] {
 		}
 	}
 
-	// Sort groups by total count (most references first)
-	groups.sort((a, b) => b.totalCount - a.totalCount);
+	// Filter out groups where there are no actual references to standardize
+	// The totalCount from getReferencedPlaces() may not match actual rawValue references
+	// because it resolves place IDs to display names. We need to verify actual refs exist.
+	const allRefs = placeService.getPlaceReferences();
+	const actionableGroups = groups.filter(g => {
+		// Check if any variation has actual references by rawValue
+		for (const variation of g.variations) {
+			const refs = allRefs.filter(ref => ref.rawValue === variation);
+			if (refs.length > 0) {
+				return true;
+			}
+		}
+		return false;
+	});
 
-	return groups;
+	// Recalculate totalCount based on actual rawValue references
+	for (const group of actionableGroups) {
+		let actualTotal = 0;
+		for (const variation of group.variations) {
+			actualTotal += allRefs.filter(ref => ref.rawValue === variation).length;
+		}
+		group.totalCount = actualTotal;
+	}
+
+	// Sort groups by total count (most references first)
+	actionableGroups.sort((a, b) => b.totalCount - a.totalCount);
+
+	return actionableGroups;
 }
 
 /**
