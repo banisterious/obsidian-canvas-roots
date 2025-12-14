@@ -132,20 +132,37 @@ views:
       formula.full_lifespan: Average
   - type: table
     name: Living members
+    visibleProperties:
+      - formula.display_name
+      - formula.birth_display
+      - formula.age_now
+      - note.${father}
+      - note.${mother}
+      - note.${spouse}
+      - note.${child}
     filters:
       and:
         - note.${cr_id}
-        - "!note.${died}"
+        - ${died}.isEmpty()
     order:
       - ${born}
     summaries:
       formula.age_now: Average
   - type: table
     name: Deceased members
+    visibleProperties:
+      - formula.display_name
+      - formula.birth_display
+      - formula.death_display
+      - formula.full_lifespan
+      - note.${father}
+      - note.${mother}
+      - note.${spouse}
+      - note.${child}
     filters:
       and:
         - note.${cr_id}
-        - note.${died}
+        - "!${died}.isEmpty()"
     order:
       - ${died}
     summaries:
@@ -419,20 +436,37 @@ views:
       formula.full_lifespan: Average
   - type: table
     name: Living members
+    visibleProperties:
+      - formula.display_name
+      - formula.birth_display
+      - formula.age_now
+      - note.father
+      - note.mother
+      - note.spouse
+      - note.child
     filters:
       and:
         - note.cr_id
-        - "!note.died"
+        - died.isEmpty()
     order:
       - born
     summaries:
       formula.age_now: Average
   - type: table
     name: Deceased members
+    visibleProperties:
+      - formula.display_name
+      - formula.birth_display
+      - formula.death_display
+      - formula.full_lifespan
+      - note.father
+      - note.mother
+      - note.spouse
+      - note.child
     filters:
       and:
         - note.cr_id
-        - note.died
+        - "!died.isEmpty()"
     order:
       - died
     summaries:
