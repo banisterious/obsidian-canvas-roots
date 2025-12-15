@@ -559,21 +559,21 @@ Users can convert live code blocks to static markdown for:
 
 Code blocks accept optional parameters:
 
-```
+~~~markdown
 ```cr-timeline
 sort: chronological | reverse
 include: birth, death, marriage, residence
 exclude: occupation
 limit: 10
 ```
-```
+~~~
 
-```
+~~~markdown
 ```cr-relationships
 type: immediate | extended | all
 include: parents, spouse, children, siblings
 ```
-```
+~~~
 
 ---
 
