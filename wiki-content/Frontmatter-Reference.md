@@ -423,6 +423,7 @@ Source notes document evidence and citations for genealogical research. Each sou
 |----------|------|-------------|---------|
 | `title` | `string` | Descriptive title of the source | `"1900 US Census - Smith Family"` |
 | `source_type` | `string` | Type of source (see types below) | `"census"` |
+| `author` | `string` | Author or creator of the source | `"State Archives"` |
 | `source_date` | `string` | Date of the original document | `"1900-06-01"` |
 | `source_date_accessed` | `string` | When the source was accessed | `"2024-03-15"` |
 
@@ -445,7 +446,8 @@ Canvas Roots includes built-in source types organized by category. Custom types 
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `source_repository` | `string` | Archive or website where source is held | `"Ancestry.com"` |
+| `repository` | `string` | Archive or website where source is held (short form) | `"Ancestry.com"` |
+| `source_repository` | `string` | Archive or website where source is held (long form, also supported) | `"Ancestry.com"` |
 | `source_repository_url` | `string` | Direct URL to the online source | `"https://..."` |
 | `collection` | `string` | Record group or collection name | `"1900 United States Federal Census"` |
 | `location` | `string` | Geographic location of the record | `"New York, Kings County, Brooklyn"` |

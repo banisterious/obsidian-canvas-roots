@@ -9381,6 +9381,7 @@ export class ControlCenterModal extends Modal {
 
 			createStat('Individuals', analysis.individualCount);
 			createStat('Relationships', analysis.familyCount);
+			createStat('Sources', analysis.sourceCount);
 			createStat('Places', analysis.placeCount);
 			createStat('Events', analysis.eventCount);
 			createStat('Family groups', analysis.componentCount);
@@ -9392,43 +9393,49 @@ export class ControlCenterModal extends Modal {
 			});
 
 			// Import options
+			let createSourceNotes = analysis.sourceCount > 0;
 			let createPlaceNotes = analysis.placeCount > 0;
 			let createEventNotes = analysis.eventCount > 0;
+			const sourcesFolder = this.plugin.settings.sourcesFolder || 'Canvas Roots/Sources';
 			const placesFolder = this.plugin.settings.placesFolder || 'Canvas Roots/Places';
 			const eventsFolder = this.plugin.settings.eventsFolder || 'Canvas Roots/Events';
 
-			const optionsContainer = analysisContainer.createDiv({ cls: 'crc-mt-4' });
+			const optionsSection = analysisContainer.createDiv({ cls: 'crc-mt-4' });
+
+			if (analysis.sourceCount > 0) {
+				new Setting(optionsSection)
+					.setName(`Create source notes (${analysis.sourceCount.toLocaleString()} found)`)
+					.setDesc(`Citations and references for genealogical records → ${sourcesFolder}/`)
+					.addToggle(toggle => toggle
+						.setValue(createSourceNotes)
+						.onChange(value => {
+							createSourceNotes = value;
+						})
+					);
+			}
 
 			if (analysis.placeCount > 0) {
-				const placeCheckbox = optionsContainer.createEl('label', {
-					cls: 'crc-checkbox-label'
-				});
-				const checkbox = placeCheckbox.createEl('input', {
-					type: 'checkbox'
-				});
-				checkbox.checked = createPlaceNotes;
-				checkbox.addEventListener('change', () => {
-					createPlaceNotes = checkbox.checked;
-				});
-				placeCheckbox.createSpan({
-					text: ` Create place notes (${analysis.placeCount} places → ${placesFolder}/)`
-				});
+				new Setting(optionsSection)
+					.setName(`Create place notes (${analysis.placeCount.toLocaleString()} found)`)
+					.setDesc(`Locations with parent/child hierarchy → ${placesFolder}/`)
+					.addToggle(toggle => toggle
+						.setValue(createPlaceNotes)
+						.onChange(value => {
+							createPlaceNotes = value;
+						})
+					);
 			}
 
 			if (analysis.eventCount > 0) {
-				const eventCheckbox = optionsContainer.createEl('label', {
-					cls: 'crc-checkbox-label'
-				});
-				const checkbox = eventCheckbox.createEl('input', {
-					type: 'checkbox'
-				});
-				checkbox.checked = createEventNotes;
-				checkbox.addEventListener('change', () => {
-					createEventNotes = checkbox.checked;
-				});
-				eventCheckbox.createSpan({
-					text: ` Create event notes (${analysis.eventCount} events → ${eventsFolder}/)`
-				});
+				new Setting(optionsSection)
+					.setName(`Create event notes (${analysis.eventCount.toLocaleString()} found)`)
+					.setDesc(`Births, deaths, marriages, and other life events → ${eventsFolder}/`)
+					.addToggle(toggle => toggle
+						.setValue(createEventNotes)
+						.onChange(value => {
+							createEventNotes = value;
+						})
+					);
 			}
 
 			// Import button
@@ -9438,7 +9445,16 @@ export class ControlCenterModal extends Modal {
 			});
 
 			importBtn.addEventListener('click', () => {
-				void this.handleGrampsImport(file, targetFolder, createPlaceNotes, placesFolder, createEventNotes, eventsFolder);
+				void this.handleGrampsImport(
+					file,
+					targetFolder,
+					createSourceNotes,
+					sourcesFolder,
+					createPlaceNotes,
+					placesFolder,
+					createEventNotes,
+					eventsFolder
+				);
 			});
 
 		} catch (error: unknown) {
@@ -9456,11 +9472,22 @@ export class ControlCenterModal extends Modal {
 	private async handleGrampsImport(
 		file: File,
 		destFolder: string,
+		createSourceNotes: boolean = true,
+		sourcesFolder?: string,
 		createPlaceNotes: boolean = false,
 		placesFolder?: string,
 		createEventNotes: boolean = false,
 		eventsFolder?: string
 	): Promise<void> {
+		// Show progress modal (reuse GEDCOM modal, update title after open)
+		const progressModal = new GedcomImportProgressModal(this.app);
+		progressModal.open();
+		// Update title for Gramps
+		const title = progressModal.contentEl.querySelector('.crc-modal-title');
+		if (title) {
+			title.textContent = 'Importing Gramps';
+		}
+
 		try {
 			// Read file with automatic gzip decompression for .gramps files
 			const content = await readFileWithDecompression(file);
@@ -9472,12 +9499,36 @@ export class ControlCenterModal extends Modal {
 				peopleFolder: destFolder,
 				overwriteExisting: false,
 				fileName: file.name,
+				createSourceNotes,
+				sourcesFolder,
 				createPlaceNotes,
 				placesFolder,
 				createEventNotes,
 				eventsFolder,
-				propertyAliases: this.plugin.settings.propertyAliases
+				propertyAliases: this.plugin.settings.propertyAliases,
+				onProgress: (progress) => {
+					progressModal.updateProgress({
+						phase: progress.phase,
+						current: progress.current,
+						total: progress.total,
+						message: progress.message
+					});
+					// Update running stats based on phase
+					if (progress.phase === 'places' && progress.current > 0) {
+						progressModal.updateStats({ places: progress.current });
+					} else if (progress.phase === 'sources' && progress.current > 0) {
+						progressModal.updateStats({ sources: progress.current });
+					} else if (progress.phase === 'people' && progress.current > 0) {
+						progressModal.updateStats({ people: progress.current });
+					} else if (progress.phase === 'events' && progress.current > 0) {
+						progressModal.updateStats({ events: progress.current });
+					}
+				}
 			});
+
+			// Mark progress as complete and close modal after a brief delay
+			progressModal.markComplete();
+			setTimeout(() => progressModal.close(), 1500);
 
 			// Show results notification
 			this.showGrampsImportResults(result);
@@ -9493,6 +9544,7 @@ export class ControlCenterModal extends Modal {
 			}
 
 		} catch (error: unknown) {
+			progressModal.close();
 			const errorMsg = getErrorMessage(error);
 			logger.error('gramps', `Gramps import failed: ${errorMsg}`);
 			new Notice(`Import failed: ${errorMsg}`);

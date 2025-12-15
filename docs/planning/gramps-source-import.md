@@ -1,8 +1,13 @@
 # Gramps Source Import
 
+## Status
+
+**Phase 1:** ✅ Complete (2025-12-15)
+**Phase 2:** ✅ Complete (2025-12-15)
+
 ## Overview
 
-**Priority:** 📋 Medium — Complete Gramps migration support
+**Priority:** ✅ Complete
 
 **Summary:** Import source and citation records from Gramps XML files, creating Canvas Roots source notes with full metadata and linking citations to person/event notes. This completes the Gramps migration path by handling the remaining entity type not currently imported.
 
@@ -131,9 +136,18 @@ Gramps sources don't have explicit types. Infer from title/author patterns:
 
 ## Implementation Phases
 
-### Phase 1: Core Import
+### Phase 1: Core Import ✅
+
+**Status:** Complete (2025-12-15)
 
 **Goal:** Import sources and link citations to events/persons.
+
+**Implemented:**
+- Source and citation type definitions in `gramps-types.ts`
+- Parser methods for sources, citations, and notes in `gramps-parser.ts`
+- Source import phase in `gramps-importer.ts` with citation-to-source linking
+- Progress modal integration (reuses GEDCOM modal with updated title)
+- Import options UI toggle for source notes
 
 #### 1.1 Type Definitions
 
@@ -298,7 +312,15 @@ interface GrampsImportOptions {
 
 ---
 
-### Phase 2: Extended Features (Future)
+### Phase 2: Extended Features ✅
+
+**Status:** Complete (2025-12-15)
+
+**Implemented:**
+- Repository support (2.1): Parses `<repositories>` and `<reporef>` elements, stores `repository`, `repository_type`, and `source_medium` on source notes
+- Media references (2.2): Parses `<objref>` elements, stores handles in `gramps_media_refs` frontmatter for manual resolution via Source Media Gallery
+- Source property aliases (2.3): Added `CANONICAL_SOURCE_PROPERTIES` and `SOURCE_PROPERTY_METADATA` to property alias service, integrated into Preferences UI
+- Gramps ID preservation (2.4): Stores `gramps_handle` and `gramps_id` on source notes for re-import scenarios
 
 #### 2.1 Repository Support
 

@@ -16,6 +16,28 @@ import { getLogger } from '../core/logging';
 const logger = getLogger('GrampsImporter');
 
 /**
+ * Import progress phases for Gramps
+ */
+export type GrampsImportPhase =
+	| 'validating'
+	| 'parsing'
+	| 'places'
+	| 'sources'
+	| 'people'
+	| 'events'
+	| 'complete';
+
+/**
+ * Progress callback for Gramps import
+ */
+export interface GrampsImportProgress {
+	phase: GrampsImportPhase;
+	current: number;
+	total: number;
+	message?: string;
+}
+
+/**
  * Gramps import options
  */
 export interface GrampsImportOptions {
@@ -36,6 +58,8 @@ export interface GrampsImportOptions {
 	createSourceNotes?: boolean;
 	/** Folder for source notes */
 	sourcesFolder?: string;
+	/** Progress callback */
+	onProgress?: (progress: GrampsImportProgress) => void;
 }
 
 /**
@@ -78,6 +102,7 @@ export class GrampsImporter {
 		familyCount: number;
 		placeCount: number;
 		eventCount: number;
+		sourceCount: number;
 		componentCount: number;
 	} {
 		const data = GrampsParser.parse(content);
@@ -143,11 +168,15 @@ export class GrampsImporter {
 		// Count events
 		const eventCount = data.events.size;
 
+		// Count sources
+		const sourceCount = data.sources.size;
+
 		return {
 			individualCount,
 			familyCount,
 			placeCount,
 			eventCount,
+			sourceCount,
 			componentCount
 		};
 	}
@@ -176,9 +205,16 @@ export class GrampsImporter {
 			sourceNotesCreated: 0
 		};
 
+		// Helper to report progress
+		const reportProgress = (phase: GrampsImportPhase, current: number, total: number, message?: string) => {
+			if (options.onProgress) {
+				options.onProgress({ phase, current, total, message });
+			}
+		};
+
 		try {
 			// Validate Gramps XML first
-			new Notice('Validating Gramps XML file…');
+			reportProgress('validating', 0, 1, 'Validating Gramps XML file…');
 			const validation = GrampsParser.validate(content);
 			result.validation = validation;
 
@@ -193,12 +229,13 @@ export class GrampsImporter {
 			if (validation.warnings.length > 0) {
 				new Notice(`Found ${validation.warnings.length} warning(s) - import will continue`);
 			}
+			reportProgress('validating', 1, 1, 'Validation complete');
 
 			// Parse Gramps XML
-			new Notice('Parsing Gramps XML file…');
+			reportProgress('parsing', 0, 1, 'Parsing Gramps XML file…');
 			const grampsData = GrampsParser.parse(content);
+			reportProgress('parsing', 1, 1, `Parsed ${grampsData.persons.size} individuals`);
 
-			new Notice(`Parsed ${grampsData.persons.size} individuals`);
 			logger.info('importFile', `Starting import of ${grampsData.persons.size} persons`);
 
 			// Ensure folders exist
@@ -211,10 +248,12 @@ export class GrampsImporter {
 
 			// Create place notes FIRST if requested (so we can link to them from person notes)
 			if (options.createPlaceNotes && grampsData.places.size > 0) {
-				new Notice(`Creating ${grampsData.places.size} place notes...`);
+				const placesTotal = grampsData.places.size;
+				reportProgress('places', 0, placesTotal, `Creating ${placesTotal} place notes...`);
 				const placesFolder = options.placesFolder || options.peopleFolder;
 				await this.ensureFolderExists(placesFolder);
 
+				let placeIndex = 0;
 				for (const [handle, place] of grampsData.places) {
 					try {
 						const placeCrId = await this.importPlace(place, placesFolder, options);
@@ -230,6 +269,8 @@ export class GrampsImporter {
 							`Failed to import place ${place.name || handle}: ${getErrorMessage(error)}`
 						);
 					}
+					placeIndex++;
+					reportProgress('places', placeIndex, placesTotal);
 				}
 			}
 
@@ -240,10 +281,12 @@ export class GrampsImporter {
 			// Create source notes if requested (default: true)
 			const shouldCreateSources = options.createSourceNotes !== false;
 			if (shouldCreateSources && grampsData.sources.size > 0) {
-				new Notice(`Creating ${grampsData.sources.size} source notes...`);
+				const sourcesTotal = grampsData.sources.size;
+				reportProgress('sources', 0, sourcesTotal, `Creating ${sourcesTotal} source notes...`);
 				const sourcesFolder = options.sourcesFolder || 'Canvas Roots/Sources';
 				await this.ensureFolderExists(sourcesFolder);
 
+				let sourceIndex = 0;
 				for (const [handle, source] of grampsData.sources) {
 					try {
 						const { crId, wikilink } = await this.importSource(
@@ -260,6 +303,8 @@ export class GrampsImporter {
 							`Failed to import source ${source.title || handle}: ${getErrorMessage(error)}`
 						);
 					}
+					sourceIndex++;
+					reportProgress('sources', sourceIndex, sourcesTotal);
 				}
 			}
 
@@ -275,9 +320,11 @@ export class GrampsImporter {
 			}
 
 			// Create person notes
-			new Notice('Creating person notes...');
+			const peopleTotal = grampsData.persons.size;
+			reportProgress('people', 0, peopleTotal, 'Creating person notes...');
 
 			// First pass: Create all person notes
+			let personIndex = 0;
 			for (const [handle, person] of grampsData.persons) {
 				try {
 					const crId = await this.importPerson(
@@ -304,10 +351,12 @@ export class GrampsImporter {
 						`Failed to import ${person.name}: ${getErrorMessage(error)}`
 					);
 				}
+				personIndex++;
+				reportProgress('people', personIndex, peopleTotal);
 			}
 
 			// Second pass: Update relationships now that all cr_ids are known
-			new Notice('Updating relationships...');
+			// Note: This is a quick pass, no separate progress phase needed
 			for (const [, person] of grampsData.persons) {
 				try {
 					await this.updateRelationships(
@@ -325,10 +374,12 @@ export class GrampsImporter {
 
 			// Create event notes if requested
 			if (options.createEventNotes && grampsData.events.size > 0) {
-				new Notice(`Creating ${grampsData.events.size} event notes...`);
+				const eventsTotal = grampsData.events.size;
+				reportProgress('events', 0, eventsTotal, `Creating ${eventsTotal} event notes...`);
 				const eventsFolder = options.eventsFolder || 'Canvas Roots/Events';
 				await this.ensureFolderExists(eventsFolder);
 
+				let eventIndex = 0;
 				for (const [handle, event] of grampsData.events) {
 					try {
 						await this.importEvent(
@@ -347,8 +398,13 @@ export class GrampsImporter {
 							`Failed to import event ${event.type || handle}: ${getErrorMessage(error)}`
 						);
 					}
+					eventIndex++;
+					reportProgress('events', eventIndex, eventsTotal);
 				}
 			}
+
+			// Mark import as complete
+			reportProgress('complete', 1, 1, 'Import complete');
 
 			// Enhanced import complete notice
 			let importMessage = `Import complete: ${result.notesCreated} people imported`;

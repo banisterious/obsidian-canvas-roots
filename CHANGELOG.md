@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [0.12.6] - 2025-12-15
+
+### Added
+
+- **Gramps source import** - Gramps XML import now creates source notes from `<sources>` and `<citations>` elements. Sources are linked to events via citation references. Includes repository metadata (`repository`, `repository_type`, `source_medium`), media reference handles for manual resolution (`gramps_media_refs`), and Gramps ID preservation (`gramps_handle`, `gramps_id`) for re-import scenarios.
+
+- **Source property aliases** - Added source properties to the property alias system. Users can now customize property names for source notes (e.g., `creator` instead of `author`, `archive` instead of `repository`). Configure in Preferences → Property aliases → Source properties.
+
+- **Gramps import progress indicator** - Gramps XML import now shows a progress modal with phase indicators and running statistics, matching the GEDCOM import experience.
+
+- **Gramps import UI toggles** - Import options now use Obsidian-style toggles for "Create source notes", "Create place notes", and "Create event notes" with descriptions and destination folders.
 
 ### Fixed
 
