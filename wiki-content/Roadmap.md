@@ -11,8 +11,7 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Calendarium Integration](#calendarium-integration) ⚡ High
   - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard) 📋 Medium
   - [Configurable Normalization](#configurable-normalization) 📋 Medium
-  - [Reports & Print Export](#reports--print-export) 📋 Medium
-  - [Statistics Dashboard](#statistics-dashboard) 📋 Medium
+  - [Statistics & Reports](#statistics--reports) 📋 Medium
   - [Dynamic Note Content](#dynamic-note-content) 📋 Medium
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
   - [Step & Adoptive Parent Support](#step--adoptive-parent-support) 💡 Low
@@ -235,136 +234,49 @@ See [Sex/Gender Identity Expansion Planning Document](https://github.com/baniste
 
 ---
 
-### Reports & Print Export
+### Statistics & Reports
 
-**Priority:** 📋 Medium — Tangible output for sharing and research documentation
+**Priority:** 📋 Medium — Insights dashboard with formatted report generation
 
-**Summary:** Generate structured reports and print-ready outputs for genealogists, writers, worldbuilders, and historians. Reports are saved as Markdown notes with wikilinks for seamless integration with Obsidian's linking and search.
-
-**User Personas:**
-- **Genealogists:** Family Group Sheets, Ahnentafel reports, source bibliographies
-- **Writers & Worldbuilders:** Character sheets, cast lists, faction rosters, age audits
-- **Historians:** Prosopography reports, cohort analysis, evidence matrices
-
----
-
-#### Report Types
-
-**Genealogy Reports (v1 Priority):**
-
-| Report | Description |
-|--------|-------------|
-| **Family Group Sheet** | Single family unit: couple + children with dates, places, sources |
-| **Individual Summary** | All known facts for one person with source citations |
-| **Ahnentafel Report** | Numbered ancestor list (1=subject, 2=father, 3=mother, etc.) |
-| **Register Report** | Descendants with genealogical numbering (NGSQ style) |
-| **Pedigree Chart** | Ancestor tree, 4-5 generations per page |
-| **Descendant Chart** | All descendants of an ancestor |
-
-**Worldbuilding Reports:**
-
-| Report | Description |
-|--------|-------------|
-| **Character Sheet** | Single character with relationships, events, affiliations |
-| **Cast List** | All characters filtered by universe/collection/faction |
-| **Organization Roster** | Members of a faction/guild/house with roles and dates |
-| **Faction Timeline** | Events filtered by group tag |
-| **Age Audit** | Characters' ages at key story dates (catch anachronisms) |
-| **Lifespan Overlap** | Which characters could have met? Matrix of overlapping lifetimes |
-
-**Historian Reports:**
-
-| Report | Description |
-|--------|-------------|
-| **Source Bibliography** | All sources with full citations, grouped by type |
-| **Evidence Matrix** | Facts vs. sources grid showing which sources support which claims |
-| **Cohort Analysis** | People sharing characteristics (occupation, location, time period) |
-| **Prosopography** | Collective biography of a defined group |
-
-**Creative Writing Reports:**
-
-| Report | Description |
-|--------|-------------|
-| **Character Arc** | Single character's journey: events, relationships formed/lost |
-| **Scene Outline** | Events organized by chapter/book with POV, setting, participants |
-| **POV Coverage** | Which events are witnessed by which POV characters |
-| **Subplot Timeline** | Events filtered by group tag with arc status and intersections |
-| **Appearances by Book** | Character presence across volumes in a series |
-
----
-
-#### Output Formats
-
-| Format | Description | Use Case |
-|--------|-------------|----------|
-| **Markdown** | Note with wikilinks, embeddable | Primary format, Obsidian-native |
-| **PDF** | Print-ready via browser print | Sharing with family, archival |
-| **Dataview Query** | Live query instead of static snapshot | Dynamic reports that auto-update |
-
-**PDF Approach:** Reports generate Markdown with print-optimized CSS. Users print via browser (Ctrl/Cmd+P) for PDF. Power users can use Pandoc for advanced formatting.
-
----
-
-#### UI & Workflow
-
-**Reports Tab:** New Control Center tab for report generation.
-
-**Report Modal:**
-1. Select report type
-2. Configure scope (person, collection, date range, place filter)
-3. Preview report
-4. Generate as Markdown note or copy to clipboard
-
-**Scope & Filtering:**
-- Filter by person (ancestors/descendants of X)
-- Filter by collection or universe
-- Filter by date range
-- Filter by place (events at location)
-- Privacy toggle (anonymize living persons)
-
----
-
-#### v1 Priorities
-
-The first implementation will focus on:
-1. **Family Group Sheet** — Most requested, good template for other reports
-2. **Individual Summary** — Useful for all personas
-3. **Ahnentafel Report** — Standard genealogy output
-
----
-
-#### Future Report Types
-
-These reports are under consideration for later phases:
-
-| Report | Description |
-|--------|-------------|
-| **Hourglass Chart** | Ancestors + descendants from a focal person |
-| **Fan Chart** | Circular ancestor display |
-| **Surname Report** | All people sharing a surname |
-| **Place Report** | All events/people at a location |
-| **Research Log** | Sources consulted, findings, next steps |
-| **Conflicting Evidence** | Facts with contradictory sources |
-| **Gaps Report** | Missing vital records by generation |
-
-See [Reports Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/reports.md) for implementation details and output examples.
-
----
-
-### Statistics Dashboard
-
-**Priority:** 📋 Medium — At-a-glance insights into your data
-
-**Summary:** A dedicated Statistics tab in the Control Center providing quantitative insights across all entity types. Designed for genealogists tracking research progress, worldbuilders auditing consistency, and historians analyzing patterns.
+**Summary:** A unified statistics and reporting system with a shared data layer. The Statistics Dashboard provides at-a-glance metrics, while Reports generate formatted output from the same underlying data. This architecture ensures consistency and avoids duplicate computation.
 
 **User Personas:**
-- **Genealogists:** Track completeness, identify under-researched branches, spot data gaps
-- **Worldbuilders:** Audit character demographics, detect timeline inconsistencies
-- **Historians:** Analyze cohort patterns, geographic distributions, temporal clustering
+- **Genealogists:** Track research completeness, generate Family Group Sheets, identify gaps
+- **Writers & Worldbuilders:** Audit character demographics, generate cast lists, catch anachronisms
+- **Historians:** Analyze cohort patterns, generate prosopography reports, track source coverage
 
 ---
 
-#### Core Statistics (v1)
+#### Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│              StatisticsService                       │
+│  (computes all metrics, caches results)             │
+├─────────────────────────────────────────────────────┤
+│  - entityCounts()      - qualityMetrics()           │
+│  - completenessScores() - demographicAnalysis()     │
+│  - topLists(category)   - sourceCoverage()          │
+└─────────────────────────────────────────────────────┘
+           │                          │
+           ▼                          ▼
+┌─────────────────────┐    ┌─────────────────────────┐
+│  Statistics Tab     │    │  Reports Generator      │
+│  (dashboard view)   │    │  (formatted output)     │
+└─────────────────────┘    └─────────────────────────┘
+```
+
+**Key Benefits:**
+- Single source of truth for all metrics
+- Dashboard provides immediate value and acts as "preview"
+- Reports become formatted views of existing data
+- Drill-down from dashboard metrics to detailed reports
+
+---
+
+#### Statistics Dashboard (Phase 1)
+
+**New Control Center tab** providing quantitative insights across all entity types.
 
 **Entity Overview:**
 
@@ -393,9 +305,63 @@ See [Reports Planning Document](https://github.com/banisterious/obsidian-canvas-
 | **Missing vitals** | People missing birth or death dates |
 | **Duplicate candidates** | Potential duplicates by name similarity |
 
+**Dashboard UI:**
+- Summary cards at top (entity counts, completeness %)
+- Expandable sections by category
+- Charts for distributions (bar charts, pie charts)
+- **Drill-down links**: Click any metric → opens filtered report or entity list
+
 ---
 
-#### Extended Statistics (v2)
+#### Reports (Phase 2)
+
+**Reports Tab** in Control Center for generating formatted output.
+
+**Report Types:**
+
+| Category | Reports |
+|----------|---------|
+| **Genealogy** | Family Group Sheet, Individual Summary, Ahnentafel, Register Report, Pedigree Chart |
+| **Worldbuilding** | Character Sheet, Cast List, Organization Roster, Age Audit, Lifespan Overlap |
+| **Research** | Source Bibliography, Evidence Matrix, Gaps Report, Cohort Analysis |
+| **Creative Writing** | Character Arc, Scene Outline, POV Coverage, Subplot Timeline |
+
+**Output Formats:**
+
+| Format | Description |
+|--------|-------------|
+| **Markdown** | Note with wikilinks, embeddable in vault |
+| **PDF** | Print-ready via browser print (Ctrl/Cmd+P) |
+| **Dataview Query** | Live query that auto-updates |
+
+**Report Modal Workflow:**
+1. Select report type (or click from dashboard metric)
+2. Configure scope (person, collection, date range, place)
+3. Preview report
+4. Generate as Markdown note or copy to clipboard
+
+---
+
+#### Dashboard → Report Integration
+
+The dashboard and reports share filtering and link directly:
+
+| Dashboard Metric | Linked Report |
+|------------------|---------------|
+| Missing vitals count | Gaps Report (filtered list) |
+| Completeness % | Individual Summary (for specific person) |
+| Top surnames | Surname Report (all people with that name) |
+| Unsourced facts | Evidence Matrix (show gaps) |
+| Top locations | Place Report (events at location) |
+
+**Example Flow:**
+1. Dashboard shows "Missing Vitals: 45 people"
+2. Click → Opens Gaps Report pre-filtered to those 45 people
+3. Click person → Opens Individual Summary for that person
+
+---
+
+#### Extended Statistics (Phase 3)
 
 **Demographic Analysis:**
 
@@ -425,42 +391,48 @@ See [Reports Planning Document](https://github.com/banisterious/obsidian-canvas-
 
 **User-Defined Property Statistics:**
 
-Canvas Roots supports [user-defined schemas](Release-History#schema-validation-v063) with custom properties. v2 statistics will aggregate these:
+For [user-defined schemas](Release-History#schema-validation-v063):
 
 | Feature | Description |
 |---------|-------------|
-| **Enum distributions** | For any schema-defined enum property, show value counts |
-| **Numeric aggregates** | For numeric properties, show min/max/average/sum |
-| **Boolean counts** | For boolean properties, show true/false counts |
-| **Property coverage** | % of entities with each custom property populated |
-
-**Example:** If you define a `nobility_rank` enum with values `king`, `duke`, `baron`, `commoner`, the dashboard shows the distribution across your characters.
+| **Enum distributions** | Value counts for schema-defined enums |
+| **Numeric aggregates** | Min/max/average/sum for numeric properties |
+| **Property coverage** | % of entities with each property populated |
 
 ---
 
-#### UI Design
+#### Scope & Filtering
 
-**Statistics Tab:** New Control Center tab between Events and Import/Export.
+Shared filtering controls used by both dashboard and reports:
 
-**Dashboard Layout:**
-- Summary cards at top (entity counts, completeness %)
-- Expandable sections by category (Demographics, Quality, Sources, etc.)
-- Charts where appropriate (bar charts for distributions, line for trends)
-- Drill-down links to filtered entity lists
-
-**Filtering:**
-- Scope by collection/universe
-- Scope by date range
-- Scope by folder (main tree vs staging)
+- Filter by collection or universe
+- Filter by date range
+- Filter by folder (main tree vs staging)
+- Filter by person (ancestors/descendants of X)
+- Privacy toggle (anonymize living persons)
 
 ---
 
-#### v1 Priorities
+#### Implementation Phases
 
-1. **Entity counts** — Basic counts by type
-2. **Completeness scores** — Birth/death/source coverage
-3. **Top lists** — Surnames, locations, occupations, sources
-4. **Quality metrics** — Unsourced, orphans, missing vitals
+| Phase | Deliverable | Description |
+|-------|-------------|-------------|
+| **Phase 1** | Statistics Dashboard | Entity counts, completeness, top lists, quality metrics |
+| **Phase 2** | Reports Generator | Family Group Sheet, Individual Summary, Gaps Report |
+| **Phase 3** | Extended Statistics | Demographics, source coverage, worldbuilding metrics |
+| **Phase 4** | Additional Reports | Full report catalog, Dataview integration |
+
+**Phase 1 Priorities:**
+1. `StatisticsService` with caching
+2. Statistics Tab UI with summary cards
+3. Basic drill-down to entity lists
+
+**Phase 2 Priorities:**
+1. Report templates (Family Group Sheet, Individual Summary, Ahnentafel)
+2. Report Modal with scope configuration
+3. Markdown generation with wikilinks
+
+See [Reports Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/reports.md) for output examples.
 
 ---
 
