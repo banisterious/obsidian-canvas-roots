@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-15 22:44:10 UTC
+ * - Generated: 2025-12-15 23:06:39 UTC
  * - Components: 31 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -7377,7 +7377,7 @@ settings:
    COMPONENT: FAMILY-CHART-VIEW.CSS
    ========================================================================== */
 
-/* Component Size: 694 lines, 16.14 KB */
+/* Component Size: 721 lines, 16.69 KB */
 
 /**
  * Family Chart View Styles
@@ -7554,8 +7554,35 @@ settings:
   line-height: 1.5;
 }
 
+.cr-fcv-empty-state__instructions {
+  margin-bottom: var(--size-4-4);
+  text-align: left;
+}
+
+.cr-fcv-empty-state__instructions p {
+  margin-bottom: var(--size-4-2);
+}
+
+.cr-fcv-empty-state__instructions ul {
+  margin: 0;
+  padding-left: var(--size-4-6);
+}
+
+.cr-fcv-empty-state__instructions li {
+  margin-bottom: var(--size-4-1);
+  line-height: 1.5;
+}
+
 .cr-fcv-empty-state button {
   margin-top: var(--size-4-2);
+}
+
+.cr-fcv-empty-state__hint {
+  margin-top: var(--size-4-4);
+  padding: var(--size-4-2) var(--size-4-3);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-s);
+  max-width: 400px;
 }
 
 /* ============================================================
@@ -18351,10 +18378,10 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-15 22:44:10 UTC
+ * Build completed: 2025-12-15 23:06:39 UTC
  * Components processed: 31
- * Total lines: 18049
- * Total size: 357.87 KB
+ * Total lines: 18076
+ * Total size: 358.42 KB
  * Build duration: 0.03 seconds
  *
  * Component breakdown:
@@ -18373,7 +18400,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - find-on-canvas.css: 114 lines, 1.97 KB
  * - folder-scan.css: 155 lines, 2.56 KB
  * - relationship-calculator.css: 302 lines, 5.21 KB
- * - family-chart-view.css: 694 lines, 16.14 KB
+ * - family-chart-view.css: 721 lines, 16.69 KB
  * - data-quality.css: 1318 lines, 26 KB
  * - relationships.css: 517 lines, 9.76 KB
  * - canvas-navigation.css: 683 lines, 14.64 KB

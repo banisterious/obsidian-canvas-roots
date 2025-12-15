@@ -6085,10 +6085,22 @@ export default class CanvasRootsPlugin extends Plugin {
 		const leaves = workspace.getLeavesOfType(VIEW_TYPE_FAMILY_CHART);
 		let isNewLeaf = false;
 
-		if (leaves.length > 0 && !forceNew) {
-			// A leaf with our view already exists, use that
-			leaf = leaves[0];
-		} else {
+		// Check if we should reuse an existing leaf
+		// Only reuse if one exists, we're not forcing new, AND we have a root person to show
+		// (without a root person, opening existing view would show stale data)
+		if (leaves.length > 0 && !forceNew && rootPersonId) {
+			// Find an existing leaf, preferring one in main workspace if useMainWorkspace is true
+			if (useMainWorkspace) {
+				// Try to find a leaf in main workspace first
+				const mainLeaf = leaves.find(l => l.getRoot() === workspace.rootSplit);
+				leaf = mainLeaf || leaves[0];
+			} else {
+				leaf = leaves[0];
+			}
+		}
+
+		// If no suitable existing leaf or if we need a new one
+		if (!leaf) {
 			// Create a new leaf based on placement preference
 			if (useMainWorkspace) {
 				// Open in main workspace as a new tab

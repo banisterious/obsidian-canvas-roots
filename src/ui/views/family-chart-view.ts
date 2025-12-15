@@ -300,14 +300,27 @@ export class FamilyChartView extends ItemView {
 		this.chartContainerEl.empty();
 		const emptyState = this.chartContainerEl.createDiv({ cls: 'cr-fcv-empty-state' });
 
-		emptyState.createEl('h3', { text: 'No family selected' });
-		emptyState.createEl('p', { text: 'Open a person note and use the command "Open in family chart" to view their family tree.' });
+		emptyState.createEl('h3', { text: 'No person selected' });
+
+		const instructions = emptyState.createDiv({ cls: 'cr-fcv-empty-state__instructions' });
+		instructions.createEl('p', { text: 'To view a family chart:' });
+
+		const list = instructions.createEl('ul');
+		list.createEl('li', { text: 'Click "Select a person" below, or' });
+		list.createEl('li', { text: 'Open a person note (with cr_id property) and run "Open family chart"' });
 
 		const selectBtn = emptyState.createEl('button', {
 			text: 'Select a person',
 			cls: 'mod-cta'
 		});
 		selectBtn.addEventListener('click', () => { void this.promptSelectPerson(); });
+
+		// Add hint about cr_id requirement
+		const hint = emptyState.createDiv({ cls: 'cr-fcv-empty-state__hint' });
+		hint.createEl('small', {
+			text: 'Tip: Person notes need a cr_id property to appear in the chart.',
+			cls: 'mod-muted'
+		});
 	}
 
 	/**
@@ -621,7 +634,8 @@ export class FamilyChartView extends ItemView {
 	private fitToView(): void {
 		if (this.f3Chart) {
 			this.f3Chart.updateTree({ tree_position: 'fit' });
-			this.updateZoomLevelDisplay();
+			// Delay display update to allow fit animation to complete
+			setTimeout(() => this.updateZoomLevelDisplay(), 300);
 		}
 	}
 
@@ -633,6 +647,13 @@ export class FamilyChartView extends ItemView {
 
 		const svg = this.f3Chart.svg;
 		if (svg) {
+			// Get current zoom to validate before zooming
+			const currentTransform = f3.handlers.getCurrentZoom(svg);
+			if (!currentTransform || !isFinite(currentTransform.k)) {
+				logger.warn('zoom', 'Invalid zoom state, resetting to fit');
+				this.fitToView();
+				return;
+			}
 			f3.handlers.manualZoom({ amount: 0.2, svg, transition_time: 200 });
 			this.updateZoomLevelDisplay();
 		}
@@ -646,6 +667,18 @@ export class FamilyChartView extends ItemView {
 
 		const svg = this.f3Chart.svg;
 		if (svg) {
+			// Get current zoom to validate before zooming
+			const currentTransform = f3.handlers.getCurrentZoom(svg);
+			if (!currentTransform || !isFinite(currentTransform.k)) {
+				logger.warn('zoom', 'Invalid zoom state, resetting to fit');
+				this.fitToView();
+				return;
+			}
+			// Prevent zooming out too far (minimum 10% zoom)
+			if (currentTransform.k <= 0.1) {
+				logger.debug('zoom', 'Already at minimum zoom level');
+				return;
+			}
 			f3.handlers.manualZoom({ amount: -0.2, svg, transition_time: 200 });
 			this.updateZoomLevelDisplay();
 		}
@@ -662,6 +695,14 @@ export class FamilyChartView extends ItemView {
 			// Delay slightly to allow zoom transition to complete
 			setTimeout(() => {
 				const transform = f3.handlers.getCurrentZoom(svg);
+				// Guard against NaN or invalid transform
+				if (!transform || !isFinite(transform.k)) {
+					logger.warn('zoom', 'Invalid zoom transform', { transform });
+					if (this.zoomLevelEl) {
+						this.zoomLevelEl.textContent = '100%';
+					}
+					return;
+				}
 				const percentage = Math.round(transform.k * 100);
 				if (this.zoomLevelEl) {
 					this.zoomLevelEl.textContent = `${percentage}%`;

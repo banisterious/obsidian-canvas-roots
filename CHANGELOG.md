@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.12.8] - 2025-12-15
+
+### Added
+
+- **Dynamic content blocks** - New `canvas-roots-timeline` and `canvas-roots-relationships` code blocks that render live, computed content in person notes. Timeline shows chronological events; relationships shows family members with wikilinks. Blocks can be frozen to static markdown via toolbar button.
+
+- **Insert dynamic blocks** - Context menu actions and command palette command to insert dynamic blocks into existing person notes. Includes bulk insert for folders with progress indicator.
+
+- **Dynamic blocks toggle in Create Person modal** - Option to include dynamic blocks when creating new person notes.
+
+- **Dynamic blocks toggle in import wizards** - Option to include dynamic blocks in person notes during GEDCOM/Gramps/CSV import.
+
+### Fixed
+
+- **Family Chart zoom buttons causing NaN%** - Fixed issue where clicking zoom in/out buttons could show "NaN%" and cause the chart to vanish. Added validation to detect invalid zoom state and reset to fit view if needed.
+
+- **Family Chart showing wrong person** - Fixed "Open family chart" command showing a previously loaded person instead of the current note. Now correctly opens with the current note's person, or shows a person picker if no cr_id is found.
+
+- **Family Chart opening in sidebar** - Fixed issue where the chart could open in the sidebar instead of the main workspace. The chart now prefers opening in the main workspace when launched from a person note.
+
+---
+
 ## [0.12.7] - 2025-12-15
 
 ### Added
@@ -30,8 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Gramps XML import for compressed .gramps files** - Added support for importing gzip-compressed `.gramps` files exported from Gramps 6.x. The importer now automatically detects and decompresses gzip-compressed files. Previously, importing `.gramps` files would fail with "file does not appear to be a valid Gramps XML file" because the compressed binary data was not recognized as XML.
 
 - **Family Chart "child has more than 1 parent" error** - Fixed crash when opening Family Chart after importing data with parent-child relationship inconsistencies. The chart now validates bidirectional relationships, only including children who explicitly reference the parent back. This handles cases where a parent's `child` field lists someone who doesn't list them as father/mother.
-
-- **Family Chart showing wrong person** - Fixed "Open family chart" command showing a previously loaded person instead of the current note. The command now uses the active note's cr_id when available and properly respects property aliases.
 
 - **Family Chart refresh delay** - Removed unnecessary 2-second delay when chart updates from live note changes.
 
