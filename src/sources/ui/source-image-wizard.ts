@@ -137,7 +137,7 @@ export class SourceImageWizardModal extends Modal {
 	}
 
 	onOpen(): void {
-		const { contentEl, titleEl, modalEl } = this;
+		const { titleEl, modalEl } = this;
 		titleEl.setText('Import source images');
 		modalEl.addClass('cr-image-wizard');
 
@@ -368,7 +368,7 @@ export class SourceImageWizardModal extends Modal {
 
 		// Assign group IDs to files
 		let groupIndex = 0;
-		for (const [baseName, files] of this.multiPartGroups) {
+		for (const [_baseName, files] of this.multiPartGroups) {
 			const groupId = `group-${groupIndex++}`;
 			for (const filename of files) {
 				const info = this.filteredFiles.find((f) => f.file.name === filename);
@@ -1028,7 +1028,7 @@ export class SourceImageWizardModal extends Modal {
 		const totalGroups = groups.size;
 		let processed = 0;
 
-		for (const [groupKey, files] of groups) {
+		for (const [_groupKey, files] of groups) {
 			try {
 				const result = await this.createSourceForGroup(files);
 				this.executionResults.push(result);

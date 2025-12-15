@@ -5,7 +5,7 @@
  */
 
 import { App, Notice, TFile, normalizePath } from 'obsidian';
-import { GrampsParser, ParsedGrampsData, ParsedGrampsPerson, ParsedGrampsPlace, ParsedGrampsEvent, ParsedGrampsSource, ParsedGrampsCitation } from './gramps-parser';
+import { GrampsParser, ParsedGrampsData, ParsedGrampsPerson, ParsedGrampsPlace, ParsedGrampsEvent, ParsedGrampsSource } from './gramps-parser';
 import { GrampsValidationResult } from './gramps-types';
 import { createPersonNote, PersonData } from '../core/person-note-writer';
 import { createPlaceNote, PlaceData } from '../core/place-note-writer';
@@ -256,7 +256,7 @@ export class GrampsImporter {
 				let placeIndex = 0;
 				for (const [handle, place] of grampsData.places) {
 					try {
-						const placeCrId = await this.importPlace(place, placesFolder, options);
+						await this.importPlace(place, placesFolder, options);
 						result.placesImported = (result.placesImported || 0) + 1;
 						result.placeNotesCreated = (result.placeNotesCreated || 0) + 1;
 
@@ -828,9 +828,8 @@ export class GrampsImporter {
 	/**
 	 * Infer source type from title and author
 	 */
-	private inferSourceType(title: string, author?: string): string {
+	private inferSourceType(title: string, _author?: string): string {
 		const lowerTitle = title.toLowerCase();
-		const lowerAuthor = (author || '').toLowerCase();
 
 		// Check for common patterns
 		if (lowerTitle.includes('census')) return 'census';
