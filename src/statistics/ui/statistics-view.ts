@@ -10,6 +10,9 @@ import type CanvasRootsPlugin from '../../../main';
 import { StatisticsService } from '../services/statistics-service';
 import type { StatisticsData, StatisticsViewState, TopListItem } from '../types/statistics-types';
 import { VIEW_TYPE_STATISTICS, SECTION_IDS } from '../constants/statistics-constants';
+import { REPORT_METADATA } from '../../reports/types/report-types';
+import type { ReportType } from '../../reports/types/report-types';
+import { ReportGeneratorModal } from '../../reports/ui/report-generator-modal';
 
 /**
  * Statistics Dashboard workspace view
@@ -228,6 +231,11 @@ export class StatisticsView extends ItemView {
 				.map(([name, count]) => ({ name, count }))
 				.sort((a, b) => b.count - a.count);
 			return this.buildTopListContent(items);
+		});
+
+		// Reports section
+		this.buildSection(sectionsContainer, SECTION_IDS.REPORTS, 'Generate reports', 'file-text', () => {
+			return this.buildReportsContent();
 		});
 	}
 
@@ -459,6 +467,46 @@ export class StatisticsView extends ItemView {
 		if (unknown > 0) {
 			const unknownBar = bar.createDiv({ cls: 'cr-sv-gender-bar-segment cr-sv-gender-unknown' });
 			unknownBar.style.width = `${(unknown / total) * 100}%`;
+		}
+
+		return content;
+	}
+
+	/**
+	 * Build reports section content
+	 */
+	private buildReportsContent(): HTMLElement {
+		const content = document.createElement('div');
+		content.addClass('cr-sv-reports');
+
+		const description = content.createDiv({ cls: 'cr-sv-reports-desc crc-text-muted' });
+		description.setText('Generate formatted reports from your genealogy data.');
+
+		const cardsGrid = content.createDiv({ cls: 'cr-sv-reports-grid' });
+
+		// Create a card for each report type
+		for (const [type, metadata] of Object.entries(REPORT_METADATA)) {
+			const card = cardsGrid.createDiv({ cls: 'cr-sv-report-card' });
+
+			const cardHeader = card.createDiv({ cls: 'cr-sv-report-card-header' });
+			const iconEl = cardHeader.createSpan({ cls: 'cr-sv-report-card-icon' });
+			setIcon(iconEl, metadata.icon);
+			cardHeader.createSpan({ cls: 'cr-sv-report-card-title', text: metadata.name });
+
+			card.createDiv({ cls: 'cr-sv-report-card-desc crc-text-muted', text: metadata.description });
+
+			const cardActions = card.createDiv({ cls: 'cr-sv-report-card-actions' });
+			const generateBtn = cardActions.createEl('button', {
+				cls: 'mod-cta',
+				text: 'Generate'
+			});
+
+			generateBtn.addEventListener('click', () => {
+				const modal = new ReportGeneratorModal(this.app, this.plugin, {
+					reportType: type as ReportType
+				});
+				modal.open();
+			});
 		}
 
 		return content;

@@ -649,3 +649,121 @@
 .cr-sv-empty-state h3 {
   margin: 0 0 var(--size-4-2);
 }
+
+/* =============================================================================
+   REPORTS SECTION (Statistics View)
+   ============================================================================= */
+
+.cr-sv-reports {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-3);
+}
+
+.cr-sv-reports-desc {
+  font-size: var(--font-ui-small);
+}
+
+.cr-sv-reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--size-4-3);
+}
+
+.cr-sv-report-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--size-4-3);
+  background-color: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  transition: border-color 0.15s ease;
+}
+
+.cr-sv-report-card:hover {
+  border-color: var(--text-accent);
+}
+
+.cr-sv-report-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-4-2);
+}
+
+.cr-sv-report-card-icon {
+  color: var(--text-accent);
+}
+
+.cr-sv-report-card-title {
+  font-weight: var(--font-medium);
+}
+
+.cr-sv-report-card-desc {
+  font-size: var(--font-ui-small);
+  margin-bottom: var(--size-4-3);
+  flex: 1;
+}
+
+.cr-sv-report-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* =============================================================================
+   REPORT GENERATOR MODAL
+   ============================================================================= */
+
+.cr-report-modal {
+  max-width: 500px;
+}
+
+.cr-report-modal__header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-4-4);
+  padding-bottom: var(--size-4-3);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-report-modal__header h2 {
+  margin: 0;
+  font-size: var(--font-ui-large);
+}
+
+.cr-report-modal__options {
+  margin-bottom: var(--size-4-4);
+}
+
+.cr-report-modal__desc {
+  margin-bottom: var(--size-4-3);
+  padding: var(--size-4-2);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+}
+
+.cr-report-modal__person {
+  margin-bottom: var(--size-4-2);
+}
+
+.cr-report-modal__output {
+  margin-bottom: var(--size-4-4);
+  padding-top: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.cr-report-modal__output h3 {
+  margin: 0 0 var(--size-4-2);
+  font-size: var(--font-ui-medium);
+}
+
+.cr-report-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--size-4-2);
+  padding-top: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}

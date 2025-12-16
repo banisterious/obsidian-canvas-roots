@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-16 15:03:03 UTC
+ * - Generated: 2025-12-16 15:25:02 UTC
  * - Components: 32 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -17865,7 +17865,7 @@ body:has(.cr-media-linker) .suggestion-container {
    COMPONENT: STATISTICS.CSS
    ========================================================================== */
 
-/* Component Size: 652 lines, 12.13 KB */
+/* Component Size: 770 lines, 14.67 KB */
 
 /**
  * Statistics Tab & View Styles
@@ -18519,6 +18519,124 @@ body:has(.cr-media-linker) .suggestion-container {
   margin: 0 0 var(--size-4-2);
 }
 
+/* =============================================================================
+   REPORTS SECTION (Statistics View)
+   ============================================================================= */
+
+.cr-sv-reports {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-3);
+}
+
+.cr-sv-reports-desc {
+  font-size: var(--font-ui-small);
+}
+
+.cr-sv-reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--size-4-3);
+}
+
+.cr-sv-report-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--size-4-3);
+  background-color: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  transition: border-color 0.15s ease;
+}
+
+.cr-sv-report-card:hover {
+  border-color: var(--text-accent);
+}
+
+.cr-sv-report-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-4-2);
+}
+
+.cr-sv-report-card-icon {
+  color: var(--text-accent);
+}
+
+.cr-sv-report-card-title {
+  font-weight: var(--font-medium);
+}
+
+.cr-sv-report-card-desc {
+  font-size: var(--font-ui-small);
+  margin-bottom: var(--size-4-3);
+  flex: 1;
+}
+
+.cr-sv-report-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* =============================================================================
+   REPORT GENERATOR MODAL
+   ============================================================================= */
+
+.cr-report-modal {
+  max-width: 500px;
+}
+
+.cr-report-modal__header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-bottom: var(--size-4-4);
+  padding-bottom: var(--size-4-3);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-report-modal__header h2 {
+  margin: 0;
+  font-size: var(--font-ui-large);
+}
+
+.cr-report-modal__options {
+  margin-bottom: var(--size-4-4);
+}
+
+.cr-report-modal__desc {
+  margin-bottom: var(--size-4-3);
+  padding: var(--size-4-2);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+}
+
+.cr-report-modal__person {
+  margin-bottom: var(--size-4-2);
+}
+
+.cr-report-modal__output {
+  margin-bottom: var(--size-4-4);
+  padding-top: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.cr-report-modal__output h3 {
+  margin: 0 0 var(--size-4-2);
+  font-size: var(--font-ui-medium);
+}
+
+.cr-report-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--size-4-2);
+  padding-top: var(--size-4-3);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
 
 /* End of statistics.css */
 
@@ -19039,10 +19157,10 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-16 15:03:03 UTC
+ * Build completed: 2025-12-16 15:25:02 UTC
  * Components processed: 32
- * Total lines: 18728
- * Total size: 370.54 KB
+ * Total lines: 18846
+ * Total size: 373.09 KB
  * Build duration: 0.03 seconds
  *
  * Component breakdown:
@@ -19072,7 +19190,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - timeline-callouts.css: 319 lines, 10.4 KB
  * - organizations.css: 245 lines, 4.36 KB
  * - sources.css: 2664 lines, 54.11 KB
- * - statistics.css: 652 lines, 12.13 KB
+ * - statistics.css: 770 lines, 14.67 KB
  * - preferences.css: 242 lines, 5.29 KB
  * - dynamic-content.css: 189 lines, 3.98 KB
  * - animations.css: 16 lines, 0.18 KB
