@@ -29,6 +29,7 @@ import { RelationshipHistoryService, RelationshipHistoryData, formatChangeDescri
 import { RelationshipHistoryModal } from './src/ui/relationship-history-modal';
 import { FamilyChartView, VIEW_TYPE_FAMILY_CHART } from './src/ui/views/family-chart-view';
 import { MapView, VIEW_TYPE_MAP } from './src/maps/map-view';
+import { StatisticsView, VIEW_TYPE_STATISTICS } from './src/statistics';
 import { TreePreviewRenderer } from './src/ui/tree-preview';
 import { FolderFilterService } from './src/core/folder-filter';
 import { SplitWizardModal } from './src/ui/split-wizard-modal';
@@ -209,6 +210,12 @@ export default class CanvasRootsPlugin extends Plugin {
 			(leaf) => new MapView(leaf, this)
 		);
 
+		// Register statistics view
+		this.registerView(
+			VIEW_TYPE_STATISTICS,
+			(leaf) => new StatisticsView(leaf, this)
+		);
+
 		// Register dynamic content code block processors
 		const timelineProcessor = new TimelineProcessor(this);
 		this.registerMarkdownCodeBlockProcessor(
@@ -233,6 +240,15 @@ export default class CanvasRootsPlugin extends Plugin {
 			name: 'Open control center',
 			callback: () => {
 				new ControlCenterModal(this.app, this).open();
+			}
+		});
+
+		// Add command: Open Statistics Dashboard
+		this.addCommand({
+			id: 'open-statistics-dashboard',
+			name: 'Open statistics dashboard',
+			callback: () => {
+				void this.activateStatisticsView();
 			}
 		});
 
@@ -6179,6 +6195,29 @@ export default class CanvasRootsPlugin extends Plugin {
 				}, 100);
 			}
 		}
+	}
+
+	/**
+	 * Activate the Statistics Dashboard view
+	 */
+	async activateStatisticsView(): Promise<void> {
+		const { workspace } = this.app;
+
+		// Check if there's already a statistics view open
+		const leaves = workspace.getLeavesOfType(VIEW_TYPE_STATISTICS);
+		if (leaves.length > 0) {
+			// Reveal the existing view
+			void workspace.revealLeaf(leaves[0]);
+			return;
+		}
+
+		// Create a new view
+		const leaf = workspace.getLeaf('tab');
+		await leaf.setViewState({
+			type: VIEW_TYPE_STATISTICS,
+			active: true
+		});
+		void workspace.revealLeaf(leaf);
 	}
 
 	/**

@@ -110,7 +110,9 @@ export type LucideIconName =
 	| 'help-circle' // Help/unknown
 	// Data enhancement
 	| 'sparkles' // Enhancement/magic
-	| 'plus-circle'; // Add/create new
+	| 'plus-circle' // Add/create new
+	// Statistics
+	| 'briefcase'; // Occupation/work
 
 /**
  * Tab configuration for Control Center navigation
@@ -203,6 +205,12 @@ export const TAB_CONFIGS: TabConfig[] = [
 		name: 'Data quality',
 		icon: 'shield-check',
 		description: 'Analyze data quality and find issues'
+	},
+	{
+		id: 'statistics',
+		name: 'Statistics',
+		icon: 'bar-chart-2',
+		description: 'Vault statistics, data completeness, and quality metrics'
 	},
 	{
 		id: 'tree-generation',

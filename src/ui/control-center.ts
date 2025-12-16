@@ -46,6 +46,7 @@ import type { SchemaNote, ValidationResult, ValidationSummary } from '../schemas
 import { renderRelationshipsTab } from '../relationships';
 import { renderEventsTab } from '../dates';
 import { renderOrganizationsTab } from '../organizations';
+import { renderStatisticsTab } from '../statistics';
 import { renderPersonTimeline, createTimelineSummary } from '../events/ui/person-timeline';
 import { AddPersonTypePreviewModal } from './add-person-type-modal';
 import { renderFamilyTimeline, getFamilyTimelineSummary } from '../events/ui/family-timeline';
@@ -301,6 +302,9 @@ export class ControlCenterModal extends Modal {
 				break;
 			case 'data-quality':
 				this.showDataQualityTab();
+				break;
+			case 'statistics':
+				this.showStatisticsTab();
 				break;
 			case 'places':
 				void this.showPlacesTab();
@@ -8109,6 +8113,19 @@ export class ControlCenterModal extends Modal {
 	private showOrganizationsTab(): void {
 		const container = this.contentContainer;
 		renderOrganizationsTab(
+			container,
+			this.plugin,
+			(options) => this.createCard(options),
+			(tabId) => this.switchTab(tabId)
+		);
+	}
+
+	/**
+	 * Show Statistics tab with vault statistics and data quality metrics
+	 */
+	private showStatisticsTab(): void {
+		const container = this.contentContainer;
+		renderStatisticsTab(
 			container,
 			this.plugin,
 			(options) => this.createCard(options),

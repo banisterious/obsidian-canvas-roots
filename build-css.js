@@ -52,6 +52,7 @@ const CONFIG = {
     'timeline-callouts.css', // Timeline callout styles for markdown export
     'organizations.css', // Organizations tab
     'sources.css',       // Sources tab
+    'statistics.css',    // Statistics tab and view
     'preferences.css',   // Preferences tab
     'dynamic-content.css', // Dynamic content blocks (timeline, relationships)
     'animations.css',    // Keyframes and transitions
