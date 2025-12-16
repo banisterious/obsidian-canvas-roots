@@ -22,6 +22,7 @@
 ### Tools & Features
 - [Context Menus](Context-Menus)
 - [Dynamic Note Content](Dynamic-Note-Content)
+- [Statistics & Reports](Statistics-And-Reports)
 - [Relationship Tools](Relationship-Tools)
 - [Custom Relationships](Custom-Relationships)
 - [Organization Notes](Organization-Notes)

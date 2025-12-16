@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.12.x](#v012x)
+  - [Statistics & Reports](#statistics--reports-v0129)
   - [Dynamic Note Content](#dynamic-note-content-v0128)
   - [Gramps Source Import](#gramps-source-import-v0126)
   - [Bulk Source-Image Linking](#bulk-source-image-linking-v0125)
@@ -44,6 +45,78 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.12.x
+
+### Statistics & Reports (v0.12.9)
+
+Comprehensive statistics dashboard and report generation system for analyzing vault data and generating formatted genealogical reports.
+
+**Problem Solved:**
+- No centralized view of vault statistics (entity counts, completeness, quality)
+- No way to generate standard genealogical reports (Family Group Sheets, Pedigree Charts)
+- Data quality issues were scattered and hard to track
+
+**Statistics Dashboard:**
+
+| Section | Description |
+|---------|-------------|
+| **Entity overview** | Counts for people, events, sources, places, organizations, canvases |
+| **Data completeness** | Progress bars for birth dates, death dates, sources, parents, spouses |
+| **Data quality** | Clickable issues with drill-down to affected records |
+| **Gender distribution** | Visual breakdown with bar chart |
+| **Top lists** | Surnames, locations, occupations, sources with drill-down |
+| **Extended statistics** | Longevity, family size, marriage patterns, migration, source coverage, timeline density |
+
+**Data Quality Drill-Down:**
+
+| Issue Type | Severity | Description |
+|------------|----------|-------------|
+| **Date inconsistencies** | Error | Birth after death, age over 120 |
+| **Missing birth dates** | Warning | People without birth date |
+| **Missing death dates** | Warning | With birth but no death (excluding living) |
+| **Orphaned people** | Warning | No relationships at all |
+| **Incomplete parents** | Warning | Only one parent linked |
+| **Unsourced events** | Info | Events without sources |
+| **Places without coordinates** | Info | Missing lat/long |
+
+Click any issue to expand and see affected records. Click a person chip to open their note. Right-click for context menu. Ctrl+hover for preview.
+
+**Report Types:**
+
+| Report | Description |
+|--------|-------------|
+| **Family Group Sheet** | Single family unit with parents, marriage, children |
+| **Individual Summary** | Complete record of one person |
+| **Ahnentafel Report** | Numbered ancestor list |
+| **Gaps Report** | Analysis of missing data |
+| **Register Report** | NGSQ-style descendant numbering |
+| **Pedigree Chart** | ASCII ancestor tree |
+| **Descendant Chart** | ASCII descendant tree |
+
+**Report Options:**
+- Select root person
+- Configure generation depth (2-10)
+- Toggle details, spouses, sources
+- Output as new note or clipboard
+
+**Extended Statistics:**
+
+| Analysis | Description |
+|----------|-------------|
+| **Longevity** | Average lifespan by decade and location |
+| **Family size** | Children per family with distribution |
+| **Marriage patterns** | Age at marriage by sex, remarriage rates |
+| **Migration** | Birth-to-death location changes, top routes |
+| **Source coverage** | Coverage by generation depth |
+| **Timeline density** | Events per decade with gap detection |
+
+**Access Points:**
+- Control Center → Statistics tab → "Open Statistics Dashboard"
+- Command palette: "Canvas Roots: Open Statistics Dashboard"
+- Reports section in Statistics Dashboard
+
+See [Statistics & Reports](Statistics-And-Reports) for detailed usage documentation.
+
+---
 
 ### Dynamic Note Content (v0.12.8)
 
