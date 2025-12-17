@@ -155,6 +155,28 @@ stepfather_id_2: abc-111-def-222
 
 3. **Legend for relationship types**
 
+### Phase 4: Statistics & Reports
+
+**Goal:** Extend statistics to distinguish between parent types.
+
+**Changes:**
+
+1. **Data Completeness breakdown**
+   - Keep existing `withFather`/`withMother` (any parent type)
+   - Add breakdown: biological vs. step vs. adoptive coverage
+
+2. **New quality metrics**
+   - `biologicallyOrphaned` — No biological parents but may have step/adoptive
+   - Useful for distinguishing adoption cases from missing data
+
+3. **Family complexity insights**
+   - Count of people with multiple parent types (blended families)
+   - Useful for understanding family structure complexity
+
+4. **Update Statistics View UI**
+   - Show parent type breakdown in expandable subsection
+   - Update drill-down lists to filter by parent type
+
 ---
 
 ## GEDCOM Pedigree Types
@@ -296,6 +318,15 @@ adoptive_mother_id: 'Adoptive mother ID',
 | `src/canvas/tree-builder.ts` | Support non-biological edges |
 | `src/canvas/canvas-exporter.ts` | Edge styling by relationship type |
 | `styles.css` | Edge style classes (dashed/dotted for step/adoptive) |
+
+### Statistics & Reports
+
+| File | Changes |
+|------|---------|
+| `src/statistics/types/statistics-types.ts` | Add parent type breakdown to CompletenessScores, add biologicallyOrphaned to QualityMetrics |
+| `src/statistics/services/statistics-service.ts` | Compute parent type breakdown, add blended family metrics |
+| `src/statistics/ui/statistics-view.ts` | Show parent type breakdown in Completeness section |
+| `src/core/vault-stats.ts` | Count step/adoptive parent relationships |
 
 ### Documentation
 

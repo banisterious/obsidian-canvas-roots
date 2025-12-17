@@ -3733,6 +3733,26 @@ export class ControlCenterModal extends Modal {
 				toggle.setValue(true);
 			});
 
+		// Include step-parents toggle
+		let stepParentToggle: ToggleComponent;
+		new Setting(configContent)
+			.setName('Include step-parents')
+			.setDesc('Show step-parent relationships with dashed lines')
+			.addToggle(toggle => {
+				stepParentToggle = toggle;
+				toggle.setValue(false);
+			});
+
+		// Include adoptive parents toggle
+		let adoptiveParentToggle: ToggleComponent;
+		new Setting(configContent)
+			.setName('Include adoptive parents')
+			.setDesc('Show adoptive parent relationships with dotted lines')
+			.addToggle(toggle => {
+				adoptiveParentToggle = toggle;
+				toggle.setValue(false);
+			});
+
 		// Collection filter dropdown
 		let collectionSelect: HTMLSelectElement;
 		const graphService = this.plugin.createFamilyGraphService();
@@ -4067,6 +4087,8 @@ export class ControlCenterModal extends Modal {
 						treeType: typeSelect.value as 'ancestors' | 'descendants' | 'full',
 						maxGenerations: parseInt(genSlider.value) || 0,
 						includeSpouses: spouseToggle.getValue(),
+						includeStepParents: stepParentToggle.getValue(),
+						includeAdoptiveParents: adoptiveParentToggle.getValue(),
 						collectionFilter: collectionSelect.value || undefined,
 						placeFilter: placeFilterInput.value.trim() ? {
 							placeName: placeFilterInput.value.trim(),
@@ -4414,6 +4436,8 @@ export class ControlCenterModal extends Modal {
 					typeSelect.value as 'ancestors' | 'descendants' | 'full',
 					parseInt(genSlider.value) || 0,
 					spouseToggle.getValue(),
+					stepParentToggle.getValue(),
+					adoptiveParentToggle.getValue(),
 					dirSelect.value as 'vertical' | 'horizontal',
 					parseInt(spacingXInput.value),
 					parseInt(spacingYInput.value),
@@ -4438,6 +4462,8 @@ export class ControlCenterModal extends Modal {
 		treeType: 'ancestors' | 'descendants' | 'full',
 		maxGenerations: number,
 		includeSpouses: boolean,
+		includeStepParents: boolean,
+		includeAdoptiveParents: boolean,
 		direction: 'vertical' | 'horizontal',
 		spacingX: number,
 		spacingY: number,
@@ -4462,6 +4488,8 @@ export class ControlCenterModal extends Modal {
 				treeType,
 				maxGenerations: maxGenerations || undefined,
 				includeSpouses,
+				includeStepParents,
+				includeAdoptiveParents,
 				collectionFilter,
 				placeFilter
 			};

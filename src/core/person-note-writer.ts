@@ -45,6 +45,16 @@ export interface PersonData {
 	spouseName?: string[];  // Spouse(s) name for wikilink display
 	childCrId?: string[];   // Children's cr_ids for reliable resolution
 	childName?: string[];   // Children's names for wikilink display
+	// Step-parent relationships
+	stepfatherCrId?: string[];   // Step-father(s) cr_id
+	stepfatherName?: string[];   // Step-father(s) name for wikilink display
+	stepmotherCrId?: string[];   // Step-mother(s) cr_id
+	stepmotherName?: string[];   // Step-mother(s) name for wikilink display
+	// Adoptive parent relationships
+	adoptiveFatherCrId?: string; // Adoptive father's cr_id
+	adoptiveFatherName?: string; // Adoptive father's name for wikilink display
+	adoptiveMotherCrId?: string; // Adoptive mother's cr_id
+	adoptiveMotherName?: string; // Adoptive mother's name for wikilink display
 }
 
 /**
@@ -228,6 +238,72 @@ export async function createPersonNote(
 				frontmatter[prop('children_id')] = person.childCrId;
 			}
 			logger.debug('children', `Added (id only): ${JSON.stringify(person.childCrId)}`);
+		}
+	}
+
+	// Step-father relationship(s) (dual storage)
+	if (person.stepfatherCrId && person.stepfatherCrId.length > 0) {
+		if (person.stepfatherName && person.stepfatherName.length === person.stepfatherCrId.length) {
+			if (person.stepfatherName.length === 1) {
+				frontmatter[prop('stepfather')] = `"[[${person.stepfatherName[0]}]]"`;
+				frontmatter[prop('stepfather_id')] = person.stepfatherCrId[0];
+			} else {
+				frontmatter[prop('stepfather')] = person.stepfatherName.map(s => `"[[${s}]]"`);
+				frontmatter[prop('stepfather_id')] = person.stepfatherCrId;
+			}
+			logger.debug('stepfather', `Added (dual): wikilinks=${JSON.stringify(person.stepfatherName)}, ids=${JSON.stringify(person.stepfatherCrId)}`);
+		} else {
+			if (person.stepfatherCrId.length === 1) {
+				frontmatter[prop('stepfather_id')] = person.stepfatherCrId[0];
+			} else {
+				frontmatter[prop('stepfather_id')] = person.stepfatherCrId;
+			}
+			logger.debug('stepfather', `Added (id only): ${JSON.stringify(person.stepfatherCrId)}`);
+		}
+	}
+
+	// Step-mother relationship(s) (dual storage)
+	if (person.stepmotherCrId && person.stepmotherCrId.length > 0) {
+		if (person.stepmotherName && person.stepmotherName.length === person.stepmotherCrId.length) {
+			if (person.stepmotherName.length === 1) {
+				frontmatter[prop('stepmother')] = `"[[${person.stepmotherName[0]}]]"`;
+				frontmatter[prop('stepmother_id')] = person.stepmotherCrId[0];
+			} else {
+				frontmatter[prop('stepmother')] = person.stepmotherName.map(s => `"[[${s}]]"`);
+				frontmatter[prop('stepmother_id')] = person.stepmotherCrId;
+			}
+			logger.debug('stepmother', `Added (dual): wikilinks=${JSON.stringify(person.stepmotherName)}, ids=${JSON.stringify(person.stepmotherCrId)}`);
+		} else {
+			if (person.stepmotherCrId.length === 1) {
+				frontmatter[prop('stepmother_id')] = person.stepmotherCrId[0];
+			} else {
+				frontmatter[prop('stepmother_id')] = person.stepmotherCrId;
+			}
+			logger.debug('stepmother', `Added (id only): ${JSON.stringify(person.stepmotherCrId)}`);
+		}
+	}
+
+	// Adoptive father relationship (dual storage)
+	if (person.adoptiveFatherCrId) {
+		if (person.adoptiveFatherName) {
+			frontmatter[prop('adoptive_father')] = `"[[${person.adoptiveFatherName}]]"`;
+			frontmatter[prop('adoptive_father_id')] = person.adoptiveFatherCrId;
+			logger.debug('adoptive_father', `Added (dual): wikilink=${person.adoptiveFatherName}, id=${person.adoptiveFatherCrId}`);
+		} else {
+			frontmatter[prop('adoptive_father_id')] = person.adoptiveFatherCrId;
+			logger.debug('adoptive_father', `Added (id only): ${person.adoptiveFatherCrId}`);
+		}
+	}
+
+	// Adoptive mother relationship (dual storage)
+	if (person.adoptiveMotherCrId) {
+		if (person.adoptiveMotherName) {
+			frontmatter[prop('adoptive_mother')] = `"[[${person.adoptiveMotherName}]]"`;
+			frontmatter[prop('adoptive_mother_id')] = person.adoptiveMotherCrId;
+			logger.debug('adoptive_mother', `Added (dual): wikilink=${person.adoptiveMotherName}, id=${person.adoptiveMotherCrId}`);
+		} else {
+			frontmatter[prop('adoptive_mother_id')] = person.adoptiveMotherCrId;
+			logger.debug('adoptive_mother', `Added (id only): ${person.adoptiveMotherCrId}`);
 		}
 	}
 

@@ -1292,3 +1292,68 @@
   border-color: var(--text-accent);
   text-decoration: none;
 }
+
+/* =============================================================================
+   PARENT TYPE BREAKDOWN
+   ============================================================================= */
+
+.cr-sv-parent-breakdown {
+  margin-top: var(--size-4-3);
+  padding-top: var(--size-4-3);
+  border-top: 1px dashed var(--background-modifier-border);
+}
+
+.cr-sv-subsection-title {
+  margin: 0 0 var(--size-4-2) 0;
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+}
+
+.cr-sv-parent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--size-4-1) var(--size-4-4);
+}
+
+.cr-sv-parent-count-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-ui-small);
+}
+
+.cr-sv-parent-label {
+  color: var(--text-normal);
+}
+
+.cr-sv-parent-label.cr-sv-parent-step {
+  color: var(--color-cyan);
+}
+
+.cr-sv-parent-label.cr-sv-parent-adoptive {
+  color: var(--color-blue);
+}
+
+.cr-sv-parent-count {
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+}
+
+/* Quality info insights (blended families) */
+.cr-sv-quality-info--insight {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-2);
+  padding: var(--size-4-2) var(--size-4-3);
+  background-color: var(--background-secondary-alt);
+  border-radius: var(--radius-s);
+  border-left: 3px solid var(--color-cyan);
+  font-size: var(--font-ui-small);
+}
+
+.cr-sv-quality-info-icon {
+  flex-shrink: 0;
+  color: var(--color-cyan);
+}

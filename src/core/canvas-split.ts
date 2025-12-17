@@ -3116,6 +3116,12 @@ export class CanvasSplitService {
 						? person.fatherCrId : undefined,
 					motherCrId: person.motherCrId && includedCrIds.has(person.motherCrId)
 						? person.motherCrId : undefined,
+					stepfatherCrIds: person.stepfatherCrIds.filter(id => includedCrIds.has(id)),
+					stepmotherCrIds: person.stepmotherCrIds.filter(id => includedCrIds.has(id)),
+					adoptiveFatherCrId: person.adoptiveFatherCrId && includedCrIds.has(person.adoptiveFatherCrId)
+						? person.adoptiveFatherCrId : undefined,
+					adoptiveMotherCrId: person.adoptiveMotherCrId && includedCrIds.has(person.adoptiveMotherCrId)
+						? person.adoptiveMotherCrId : undefined,
 					spouseCrIds: person.spouseCrIds.filter(id => includedCrIds.has(id)),
 					childrenCrIds: person.childrenCrIds.filter(id => includedCrIds.has(id))
 				};

@@ -441,6 +441,49 @@ export class StatisticsView extends ItemView {
 		createProgressRow('With mother', completeness.withMother);
 		createProgressRow('With spouse', completeness.withSpouse);
 
+		// Parent type breakdown subsection (if data exists)
+		if (completeness.parentTypeBreakdown) {
+			const breakdown = completeness.parentTypeBreakdown;
+			const hasStepOrAdoptive = breakdown.stepFather > 0 ||
+				breakdown.stepMother > 0 ||
+				breakdown.adoptiveFather > 0 ||
+				breakdown.adoptiveMother > 0;
+
+			if (hasStepOrAdoptive) {
+				const breakdownSection = content.createDiv({ cls: 'cr-sv-parent-breakdown' });
+				breakdownSection.createEl('h5', {
+					text: 'Parent type breakdown',
+					cls: 'cr-sv-subsection-title'
+				});
+
+				const grid = breakdownSection.createDiv({ cls: 'cr-sv-parent-grid' });
+
+				const createCountRow = (label: string, count: number, colorClass?: string) => {
+					const row = grid.createDiv({ cls: 'cr-sv-parent-count-row' });
+					const labelEl = row.createSpan({ cls: 'cr-sv-parent-label' });
+					if (colorClass) labelEl.addClass(colorClass);
+					labelEl.setText(label);
+					row.createSpan({ cls: 'cr-sv-parent-count', text: String(count) });
+				};
+
+				// Biological (always shown)
+				createCountRow('Biological father', breakdown.biologicalFather);
+				createCountRow('Biological mother', breakdown.biologicalMother);
+
+				// Step-parents (only if any)
+				if (breakdown.stepFather > 0 || breakdown.stepMother > 0) {
+					createCountRow('Step-father', breakdown.stepFather, 'cr-sv-parent-step');
+					createCountRow('Step-mother', breakdown.stepMother, 'cr-sv-parent-step');
+				}
+
+				// Adoptive parents (only if any)
+				if (breakdown.adoptiveFather > 0 || breakdown.adoptiveMother > 0) {
+					createCountRow('Adoptive father', breakdown.adoptiveFather, 'cr-sv-parent-adoptive');
+					createCountRow('Adoptive mother', breakdown.adoptiveMother, 'cr-sv-parent-adoptive');
+				}
+			}
+		}
+
 		return content;
 	}
 
@@ -527,6 +570,25 @@ export class StatisticsView extends ItemView {
 		if (quality.livingPeople > 0) {
 			const info = content.createDiv({ cls: 'cr-sv-quality-info crc-text-muted' });
 			info.createSpan({ text: `${formatNumber(quality.livingPeople)} people marked as living` });
+		}
+
+		// Blended family insights (informational)
+		if (quality.biologicallyOrphaned && quality.biologicallyOrphaned > 0) {
+			const info = content.createDiv({ cls: 'cr-sv-quality-info cr-sv-quality-info--insight' });
+			const iconEl = info.createSpan({ cls: 'cr-sv-quality-info-icon' });
+			setIcon(iconEl, 'heart');
+			info.createSpan({
+				text: `${formatNumber(quality.biologicallyOrphaned)} people with non-biological parents only (adoption/step)`
+			});
+		}
+
+		if (quality.blendedFamilyCount && quality.blendedFamilyCount > 0) {
+			const info = content.createDiv({ cls: 'cr-sv-quality-info cr-sv-quality-info--insight' });
+			const iconEl = info.createSpan({ cls: 'cr-sv-quality-info-icon' });
+			setIcon(iconEl, 'users');
+			info.createSpan({
+				text: `${formatNumber(quality.blendedFamilyCount)} people in blended families (bio + step/adoptive parents)`
+			});
 		}
 
 		return content;

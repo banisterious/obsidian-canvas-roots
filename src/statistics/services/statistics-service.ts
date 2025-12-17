@@ -261,13 +261,54 @@ export class StatisticsService {
 			return Math.round((value / total) * 100);
 		};
 
+		// Compute parent type breakdown
+		const parentTypeBreakdown = this.computeParentTypeBreakdown();
+
 		return {
 			withBirthDate: analytics.dataCompleteness.birthDatePercent,
 			withDeathDate: analytics.dataCompleteness.deathDatePercent,
 			withSources: this.computeSourcedPercent(),
 			withFather: safePercent(vaultStats.people.peopleWithFather, totalPeople),
 			withMother: safePercent(vaultStats.people.peopleWithMother, totalPeople),
-			withSpouse: safePercent(vaultStats.people.peopleWithSpouse, totalPeople)
+			withSpouse: safePercent(vaultStats.people.peopleWithSpouse, totalPeople),
+			parentTypeBreakdown
+		};
+	}
+
+	/**
+	 * Compute parent type breakdown (counts by relationship type)
+	 */
+	private computeParentTypeBreakdown(): import('../types/statistics-types').ParentTypeBreakdown {
+		const people = this.getFamilyGraphService().getAllPeople();
+
+		let biologicalFather = 0;
+		let biologicalMother = 0;
+		let stepFather = 0;
+		let stepMother = 0;
+		let adoptiveFather = 0;
+		let adoptiveMother = 0;
+
+		for (const person of people) {
+			// Biological parents
+			if (person.fatherCrId) biologicalFather++;
+			if (person.motherCrId) biologicalMother++;
+
+			// Step-parents
+			if (person.stepfatherCrIds && person.stepfatherCrIds.length > 0) stepFather++;
+			if (person.stepmotherCrIds && person.stepmotherCrIds.length > 0) stepMother++;
+
+			// Adoptive parents
+			if (person.adoptiveFatherCrId) adoptiveFather++;
+			if (person.adoptiveMotherCrId) adoptiveMother++;
+		}
+
+		return {
+			biologicalFather,
+			biologicalMother,
+			stepFather,
+			stepMother,
+			adoptiveFather,
+			adoptiveMother
 		};
 	}
 
@@ -320,6 +361,28 @@ export class StatisticsService {
 			}
 		}
 
+		// Biologically orphaned: no biological parents but may have step/adoptive
+		let biologicallyOrphaned = 0;
+		let blendedFamilyCount = 0;
+
+		for (const person of people) {
+			const hasBiologicalFather = !!person.fatherCrId;
+			const hasBiologicalMother = !!person.motherCrId;
+			const hasStepParent = (person.stepfatherCrIds?.length ?? 0) > 0 ||
+				(person.stepmotherCrIds?.length ?? 0) > 0;
+			const hasAdoptiveParent = !!person.adoptiveFatherCrId || !!person.adoptiveMotherCrId;
+
+			// Biologically orphaned: no biological parents but has step or adoptive
+			if (!hasBiologicalFather && !hasBiologicalMother && (hasStepParent || hasAdoptiveParent)) {
+				biologicallyOrphaned++;
+			}
+
+			// Blended family: has both biological and step/adoptive parents
+			if ((hasBiologicalFather || hasBiologicalMother) && (hasStepParent || hasAdoptiveParent)) {
+				blendedFamilyCount++;
+			}
+		}
+
 		return {
 			missingBirthDate: totalPeople - vaultStats.people.peopleWithBirthDate,
 			missingDeathDate: Math.max(0, missingDeathDate),
@@ -328,7 +391,9 @@ export class StatisticsService {
 			unsourcedEvents: this.countUnsourcedEvents(),
 			placesWithoutCoordinates: vaultStats.places.totalPlaces - vaultStats.places.placesWithCoordinates,
 			incompleteParents,
-			dateInconsistencies
+			dateInconsistencies,
+			biologicallyOrphaned,
+			blendedFamilyCount
 		};
 	}
 

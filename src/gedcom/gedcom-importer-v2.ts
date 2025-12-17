@@ -14,7 +14,8 @@ import {
 	GedcomEvent,
 	GedcomSource,
 	GedcomImportOptionsV2,
-	GedcomImportResultV2
+	GedcomImportResultV2,
+	PedigreeType
 } from './gedcom-types';
 import { createPersonNote, PersonData } from '../core/person-note-writer';
 import { generateCrId } from '../core/uuid';
@@ -513,7 +514,7 @@ export class GedcomImporterV2 {
 			(personData as unknown as Record<string, unknown>)[propName] = value;
 		}
 
-		// Add relationship references
+		// Add relationship references (biological parents)
 		if (individual.fatherRef) {
 			personData.fatherCrId = individual.fatherRef;
 			const father = gedcomData.individuals.get(individual.fatherRef);
@@ -528,6 +529,26 @@ export class GedcomImporterV2 {
 				personData.motherName = mother.name || 'Unknown';
 			}
 		}
+
+		// Extract step/adoptive parent references from familyAsChildRefs
+		const stepAdoptiveParents = this.extractStepAdoptiveParents(individual, gedcomData);
+		if (stepAdoptiveParents.stepfatherRefs.length > 0) {
+			personData.stepfatherCrId = stepAdoptiveParents.stepfatherRefs;
+			personData.stepfatherName = stepAdoptiveParents.stepfatherNames;
+		}
+		if (stepAdoptiveParents.stepmotherRefs.length > 0) {
+			personData.stepmotherCrId = stepAdoptiveParents.stepmotherRefs;
+			personData.stepmotherName = stepAdoptiveParents.stepmotherNames;
+		}
+		if (stepAdoptiveParents.adoptiveFatherRef) {
+			personData.adoptiveFatherCrId = stepAdoptiveParents.adoptiveFatherRef;
+			personData.adoptiveFatherName = stepAdoptiveParents.adoptiveFatherName;
+		}
+		if (stepAdoptiveParents.adoptiveMotherRef) {
+			personData.adoptiveMotherCrId = stepAdoptiveParents.adoptiveMotherRef;
+			personData.adoptiveMotherName = stepAdoptiveParents.adoptiveMotherName;
+		}
+
 		if (individual.spouseRefs.length > 0) {
 			personData.spouseCrId = individual.spouseRefs;
 			personData.spouseName = individual.spouseRefs.map(ref => {
@@ -618,6 +639,33 @@ export class GedcomImporterV2 {
 			}
 		}
 
+		// Collect step/adoptive parent references from familyAsChildRefs
+		const stepAdoptiveParents = this.extractStepAdoptiveParents(individual, gedcomData);
+		for (const stepfatherRef of stepAdoptiveParents.stepfatherRefs) {
+			const stepfatherCrId = gedcomToCrId.get(stepfatherRef);
+			if (stepfatherCrId && !replacements.some(r => r.from === stepfatherRef)) {
+				replacements.push({ from: stepfatherRef, to: stepfatherCrId });
+			}
+		}
+		for (const stepmotherRef of stepAdoptiveParents.stepmotherRefs) {
+			const stepmotherCrId = gedcomToCrId.get(stepmotherRef);
+			if (stepmotherCrId && !replacements.some(r => r.from === stepmotherRef)) {
+				replacements.push({ from: stepmotherRef, to: stepmotherCrId });
+			}
+		}
+		if (stepAdoptiveParents.adoptiveFatherRef) {
+			const adoptiveFatherCrId = gedcomToCrId.get(stepAdoptiveParents.adoptiveFatherRef);
+			if (adoptiveFatherCrId && !replacements.some(r => r.from === stepAdoptiveParents.adoptiveFatherRef)) {
+				replacements.push({ from: stepAdoptiveParents.adoptiveFatherRef, to: adoptiveFatherCrId });
+			}
+		}
+		if (stepAdoptiveParents.adoptiveMotherRef) {
+			const adoptiveMotherCrId = gedcomToCrId.get(stepAdoptiveParents.adoptiveMotherRef);
+			if (adoptiveMotherCrId && !replacements.some(r => r.from === stepAdoptiveParents.adoptiveMotherRef)) {
+				replacements.push({ from: stepAdoptiveParents.adoptiveMotherRef, to: adoptiveMotherCrId });
+			}
+		}
+
 		// Collect child references from families where this person is a parent
 		for (const family of gedcomData.families.values()) {
 			if (family.husbandRef === individual.id || family.wifeRef === individual.id) {
@@ -645,8 +693,9 @@ export class GedcomImporterV2 {
 			const escapedFrom = from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 			// Replace in property values - use word boundary to prevent partial matches
 			// Match the ID only when followed by end of line, comma, bracket, or whitespace
+			// Include step/adoptive parent property names
 			updatedContent = updatedContent.replace(
-				new RegExp(`(father_id|mother_id|spouse_id|children_id):\\s*${escapedFrom}(?=\\s*$|\\s*,|\\s*\\]|\\s*\\n)`, 'gm'),
+				new RegExp(`(father_id|mother_id|spouse_id|children_id|stepfather_id|stepmother_id|adoptive_father_id|adoptive_mother_id):\\s*${escapedFrom}(?=\\s*$|\\s*,|\\s*\\]|\\s*\\n)`, 'gm'),
 				`$1: ${to}`
 			);
 			// Replace in array format (YAML list items)
@@ -999,6 +1048,88 @@ export class GedcomImporterV2 {
 		} else if (!(folder instanceof TFolder)) {
 			throw new Error(`Path exists but is not a folder: ${normalizedPath}`);
 		}
+	}
+
+	// ============================================================================
+	// Private: Step/Adoptive Parent Extraction
+	// ============================================================================
+
+	/**
+	 * Extract step-parent and adoptive parent references from familyAsChildRefs.
+	 * Looks up the family records to find husband/wife and categorizes by pedigree type.
+	 */
+	private extractStepAdoptiveParents(
+		individual: GedcomIndividualV2,
+		gedcomData: GedcomDataV2
+	): {
+		stepfatherRefs: string[];
+		stepfatherNames: string[];
+		stepmotherRefs: string[];
+		stepmotherNames: string[];
+		adoptiveFatherRef?: string;
+		adoptiveFatherName?: string;
+		adoptiveMotherRef?: string;
+		adoptiveMotherName?: string;
+	} {
+		const result = {
+			stepfatherRefs: [] as string[],
+			stepfatherNames: [] as string[],
+			stepmotherRefs: [] as string[],
+			stepmotherNames: [] as string[],
+			adoptiveFatherRef: undefined as string | undefined,
+			adoptiveFatherName: undefined as string | undefined,
+			adoptiveMotherRef: undefined as string | undefined,
+			adoptiveMotherName: undefined as string | undefined
+		};
+
+		// Skip if no familyAsChildRefs
+		if (!individual.familyAsChildRefs || individual.familyAsChildRefs.length === 0) {
+			return result;
+		}
+
+		for (const famcRef of individual.familyAsChildRefs) {
+			// Skip biological relationships - those are handled via fatherRef/motherRef
+			if (famcRef.pedigree === 'birth') {
+				continue;
+			}
+
+			const family = gedcomData.families.get(famcRef.familyRef);
+			if (!family) {
+				continue;
+			}
+
+			// Get parent references and names from the family
+			const husbandRef = family.husbandRef;
+			const wifeRef = family.wifeRef;
+			const husband = husbandRef ? gedcomData.individuals.get(husbandRef) : undefined;
+			const wife = wifeRef ? gedcomData.individuals.get(wifeRef) : undefined;
+
+			if (famcRef.pedigree === 'step') {
+				// Step-parents (can have multiple)
+				// Exclude biological parents - only add true step-parents
+				if (husbandRef && !result.stepfatherRefs.includes(husbandRef) && husbandRef !== individual.fatherRef) {
+					result.stepfatherRefs.push(husbandRef);
+					result.stepfatherNames.push(husband?.name || 'Unknown');
+				}
+				if (wifeRef && !result.stepmotherRefs.includes(wifeRef) && wifeRef !== individual.motherRef) {
+					result.stepmotherRefs.push(wifeRef);
+					result.stepmotherNames.push(wife?.name || 'Unknown');
+				}
+			} else if (famcRef.pedigree === 'adop') {
+				// Adoptive parents (typically one set)
+				if (husbandRef && !result.adoptiveFatherRef) {
+					result.adoptiveFatherRef = husbandRef;
+					result.adoptiveFatherName = husband?.name || 'Unknown';
+				}
+				if (wifeRef && !result.adoptiveMotherRef) {
+					result.adoptiveMotherRef = wifeRef;
+					result.adoptiveMotherName = wife?.name || 'Unknown';
+				}
+			}
+			// Note: 'foster' pedigree is not yet supported in frontmatter fields
+		}
+
+		return result;
 	}
 
 	// ============================================================================

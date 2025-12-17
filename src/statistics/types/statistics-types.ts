@@ -19,6 +19,24 @@ export interface EntityCounts {
 }
 
 /**
+ * Parent type breakdown for completeness scores
+ */
+export interface ParentTypeBreakdown {
+	/** People with biological father */
+	biologicalFather: number;
+	/** People with biological mother */
+	biologicalMother: number;
+	/** People with step-father */
+	stepFather: number;
+	/** People with step-mother */
+	stepMother: number;
+	/** People with adoptive father */
+	adoptiveFather: number;
+	/** People with adoptive mother */
+	adoptiveMother: number;
+}
+
+/**
  * Data completeness scores as percentages (0-100)
  */
 export interface CompletenessScores {
@@ -28,12 +46,14 @@ export interface CompletenessScores {
 	withDeathDate: number;
 	/** Percentage of people with at least one source citation */
 	withSources: number;
-	/** Percentage of people with father */
+	/** Percentage of people with father (any type) */
 	withFather: number;
-	/** Percentage of people with mother */
+	/** Percentage of people with mother (any type) */
 	withMother: number;
 	/** Percentage of people with spouse */
 	withSpouse: number;
+	/** Parent type breakdown (counts, not percentages) */
+	parentTypeBreakdown?: ParentTypeBreakdown;
 }
 
 /**
@@ -56,6 +76,10 @@ export interface QualityMetrics {
 	incompleteParents: number;
 	/** People with date inconsistencies (birth after death, child born before parent, etc.) */
 	dateInconsistencies: number;
+	/** People with no biological parents but may have step/adoptive parents */
+	biologicallyOrphaned?: number;
+	/** People with multiple parent types (blended families) */
+	blendedFamilyCount?: number;
 }
 
 /**

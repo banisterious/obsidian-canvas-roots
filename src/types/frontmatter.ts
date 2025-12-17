@@ -14,10 +14,22 @@ import type { SourcedFacts } from '../sources/types/source-types';
 export interface PersonFrontmatter {
 	cr_id?: string;
 	name?: string;
+	// Biological parents
 	father?: string;
 	father_id?: string;
 	mother?: string;
 	mother_id?: string;
+	// Step-parents (can be arrays for multiple step-parents)
+	stepfather?: string | string[];
+	stepfather_id?: string | string[];
+	stepmother?: string | string[];
+	stepmother_id?: string | string[];
+	// Adoptive parents
+	adoptive_father?: string;
+	adoptive_father_id?: string;
+	adoptive_mother?: string;
+	adoptive_mother_id?: string;
+	// Spouses and children
 	spouse?: string | string[];
 	spouse_id?: string;
 	children?: string | string[];

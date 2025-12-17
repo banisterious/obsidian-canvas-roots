@@ -508,14 +508,29 @@ export class FamilyChartView extends ItemView {
 			gender = 'F';
 		}
 
-		// Build parents array from father and mother, filtering to only valid IDs
-		// (prevents family-chart crash when referenced person is outside folder filter)
+		// Build parents array - family-chart library allows max 2 parents per person
+		// Priority: biological parents first, then adoptive if no biological
+		// Step-parents are not included (would require separate representation)
+		// Filter to only valid IDs (prevents family-chart crash when referenced person is outside folder filter)
 		const parents: string[] = [];
+
+		// Try biological parents first
 		if (person.fatherCrId && validIds.has(person.fatherCrId)) {
 			parents.push(person.fatherCrId);
 		}
 		if (person.motherCrId && validIds.has(person.motherCrId)) {
 			parents.push(person.motherCrId);
+		}
+
+		// If no biological parents, use adoptive parents instead
+		// This ensures adopted children appear connected to their adoptive family
+		if (parents.length === 0) {
+			if (person.adoptiveFatherCrId && validIds.has(person.adoptiveFatherCrId)) {
+				parents.push(person.adoptiveFatherCrId);
+			}
+			if (person.adoptiveMotherCrId && validIds.has(person.adoptiveMotherCrId)) {
+				parents.push(person.adoptiveMotherCrId);
+			}
 		}
 
 		// Filter spouses to only valid IDs
@@ -525,12 +540,24 @@ export class FamilyChartView extends ItemView {
 		// family-chart requires strict bidirectional relationships: if parent lists child,
 		// the child MUST list the parent back, otherwise family-chart throws
 		// "child has more than 1 parent" error during tree construction
+		// Include biological and adoptive children (matching the parent logic above)
 		const children = (person.childrenCrIds || []).filter(childId => {
 			if (!validIds.has(childId)) return false;
 			// Use the pre-built map for O(1) lookup instead of service call
 			const childPerson = peopleMap.get(childId);
 			if (!childPerson) return false;
-			return childPerson.fatherCrId === person.crId || childPerson.motherCrId === person.crId;
+			// Check biological parent relationship
+			if (childPerson.fatherCrId === person.crId || childPerson.motherCrId === person.crId) {
+				return true;
+			}
+			// Check adoptive parent relationship (only if child has no biological parents)
+			// This matches the parent logic: adoptive parents only used when no biological parents
+			if (!childPerson.fatherCrId && !childPerson.motherCrId) {
+				if (childPerson.adoptiveFatherCrId === person.crId || childPerson.adoptiveMotherCrId === person.crId) {
+					return true;
+				}
+			}
+			return false;
 		});
 
 		return {

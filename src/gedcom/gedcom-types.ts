@@ -224,6 +224,52 @@ export interface GedcomSource {
 }
 
 // ============================================================================
+// Pedigree Types
+// ============================================================================
+
+/**
+ * GEDCOM pedigree linkage type (PEDI tag values)
+ * Indicates the relationship type between a child and family
+ */
+export type PedigreeType = 'birth' | 'adop' | 'step' | 'foster';
+
+/**
+ * Family reference with pedigree type for FAMC records
+ * Tracks how a person is linked to a family (biological, adopted, step, foster)
+ */
+export interface FamilyAsChildRef {
+	/** GEDCOM family ID (e.g., 'F1') */
+	familyRef: string;
+	/** Pedigree linkage type - defaults to 'birth' if not specified */
+	pedigree: PedigreeType;
+}
+
+/**
+ * Map GEDCOM PEDI tag values to PedigreeType
+ */
+export const GEDCOM_PEDIGREE_MAP: Record<string, PedigreeType> = {
+	birth: 'birth',
+	adop: 'adop',
+	adopted: 'adop',
+	step: 'step',
+	foster: 'foster',
+	// Some software uses these variations
+	natural: 'birth',
+	biological: 'birth'
+};
+
+/**
+ * Get pedigree type from GEDCOM PEDI value
+ * @param pediValue Raw PEDI tag value from GEDCOM
+ * @returns Normalized PedigreeType, defaults to 'birth' if not recognized
+ */
+export function getPedigreeType(pediValue?: string): PedigreeType {
+	if (!pediValue) return 'birth';
+	const normalized = pediValue.toLowerCase().trim();
+	return GEDCOM_PEDIGREE_MAP[normalized] || 'birth';
+}
+
+// ============================================================================
 // Extended Individual Interface
 // ============================================================================
 
@@ -248,7 +294,10 @@ export interface GedcomIndividualV2 {
 	fatherRef?: string;
 	motherRef?: string;
 	spouseRefs: string[];
+	/** @deprecated Use familyAsChildRefs instead */
 	familyAsChildRef?: string;
+	/** Family references where this person is a child, with pedigree type */
+	familyAsChildRefs: FamilyAsChildRef[];
 	familyAsSpouseRefs: string[];
 
 	// NEW: All events for this individual

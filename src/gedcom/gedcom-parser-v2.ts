@@ -12,13 +12,15 @@ import {
 	GedcomSource,
 	GedcomEvent,
 	GedcomSourceCitation,
+	FamilyAsChildRef,
 	isIndividualEventTag,
 	isFamilyEventTag,
 	isAttributeTag,
 	getEventTypeFromTag,
 	getPropertyFromAttributeTag,
 	parseDatePrecision,
-	parseDateRange
+	parseDateRange,
+	getPedigreeType
 } from './gedcom-types';
 import { GedcomParser, GedcomParseError, GedcomValidationResult } from './gedcom-parser';
 
@@ -74,6 +76,7 @@ export class GedcomParserV2 {
 		let currentSource: GedcomSource | null = null;
 		let currentEvent: GedcomEvent | null = null;
 		let currentCitation: GedcomSourceCitation | null = null;
+		let currentFamcRef: FamilyAsChildRef | undefined = undefined;
 		let contextStack: string[] = [];
 
 		for (const line of lines) {
@@ -88,6 +91,7 @@ export class GedcomParserV2 {
 				currentSource = null;
 				currentEvent = null;
 				currentCitation = null;
+				currentFamcRef = undefined;
 				contextStack = [];
 
 				if (line.tag === 'HEAD') {
@@ -126,10 +130,12 @@ export class GedcomParserV2 {
 							currentIndividual,
 							currentEvent,
 							currentCitation,
-							contextStack
+							contextStack,
+							currentFamcRef
 						);
 						currentEvent = result.currentEvent;
 						currentCitation = result.currentCitation;
+						currentFamcRef = result.currentFamcRef;
 					}
 					break;
 
@@ -205,6 +211,7 @@ export class GedcomParserV2 {
 			id,
 			name: '',
 			spouseRefs: [],
+			familyAsChildRefs: [],
 			familyAsSpouseRefs: [],
 			events: [],
 			attributes: {}
@@ -296,8 +303,13 @@ export class GedcomParserV2 {
 		individual: GedcomIndividualV2,
 		currentEvent: GedcomEvent | null,
 		currentCitation: GedcomSourceCitation | null,
-		contextStack: string[]
-	): { currentEvent: GedcomEvent | null; currentCitation: GedcomSourceCitation | null } {
+		contextStack: string[],
+		currentFamcRef?: FamilyAsChildRef
+	): {
+		currentEvent: GedcomEvent | null;
+		currentCitation: GedcomSourceCitation | null;
+		currentFamcRef?: FamilyAsChildRef;
+	} {
 		const tag = line.tag;
 		const value = line.value;
 		const level = line.level;
@@ -320,7 +332,7 @@ export class GedcomParserV2 {
 				if (value) {
 					currentEvent.description = value;
 				}
-				return { currentEvent, currentCitation };
+				return { currentEvent, currentCitation, currentFamcRef: undefined };
 			}
 
 			// Check if this is an attribute tag
@@ -329,7 +341,7 @@ export class GedcomParserV2 {
 				if (propName && value) {
 					individual.attributes[propName] = value;
 				}
-				return { currentEvent, currentCitation };
+				return { currentEvent, currentCitation, currentFamcRef: undefined };
 			}
 
 			// Basic individual fields
@@ -340,20 +352,41 @@ export class GedcomParserV2 {
 				case 'SEX':
 					individual.sex = value === 'M' ? 'M' : value === 'F' ? 'F' : 'U';
 					break;
-				case 'FAMC':
-					individual.familyAsChildRef = value.replace(/@/g, '');
-					break;
+				case 'FAMC': {
+					// Start a new FAMC record - default pedigree is 'birth'
+					const familyRef = value.replace(/@/g, '');
+					currentFamcRef = { familyRef, pedigree: 'birth' };
+					individual.familyAsChildRefs.push(currentFamcRef);
+					// Keep deprecated field for backward compatibility (first biological family only)
+					if (!individual.familyAsChildRef) {
+						individual.familyAsChildRef = familyRef;
+					}
+					return { currentEvent, currentCitation, currentFamcRef };
+				}
 				case 'FAMS':
 					individual.familyAsSpouseRefs.push(value.replace(/@/g, ''));
 					break;
 			}
 
-			return { currentEvent, currentCitation };
+			return { currentEvent, currentCitation, currentFamcRef: undefined };
 		}
 
-		// Level 2: Sub-tags under events or NAME
+		// Level 2: Sub-tags under events, NAME, or FAMC
 		if (level === 2) {
 			currentCitation = null;
+
+			// PEDI tag under FAMC - update the pedigree type
+			if (tag === 'PEDI' && currentFamcRef) {
+				currentFamcRef.pedigree = getPedigreeType(value);
+				// Update deprecated familyAsChildRef - only keep first biological family
+				if (currentFamcRef.pedigree !== 'birth' && individual.familyAsChildRef === currentFamcRef.familyRef) {
+					// This was set as biological but is actually step/adopted/foster
+					// Find the first actual biological family or clear it
+					const firstBiological = individual.familyAsChildRefs.find(f => f.pedigree === 'birth' && f !== currentFamcRef);
+					individual.familyAsChildRef = firstBiological?.familyRef;
+				}
+				return { currentEvent, currentCitation, currentFamcRef };
+			}
 
 			// Under an event
 			if (currentEvent) {
@@ -426,7 +459,7 @@ export class GedcomParserV2 {
 				}
 			}
 
-			return { currentEvent, currentCitation };
+			return { currentEvent, currentCitation, currentFamcRef };
 		}
 
 		// Level 3: Sub-tags under source citations
@@ -445,7 +478,7 @@ export class GedcomParserV2 {
 			}
 		}
 
-		return { currentEvent, currentCitation };
+		return { currentEvent, currentCitation, currentFamcRef };
 	}
 
 	// ============================================================================
@@ -608,16 +641,27 @@ export class GedcomParserV2 {
 
 	private static linkFamilies(data: GedcomDataV2): void {
 		for (const family of data.families.values()) {
-			// Link parents to children
+			// Link parents to children - but only set fatherRef/motherRef for biological relationships
 			for (const childRef of family.childRefs) {
 				const child = data.individuals.get(childRef);
 				if (child) {
-					if (family.husbandRef) {
-						child.fatherRef = family.husbandRef;
+					// Find the pedigree type for this child's relationship to this family
+					const famcRef = child.familyAsChildRefs.find(f => f.familyRef === family.id);
+					const pedigree = famcRef?.pedigree || 'birth'; // Default to birth if not specified
+
+					// Only set fatherRef/motherRef for biological parents
+					if (pedigree === 'birth') {
+						if (family.husbandRef) {
+							child.fatherRef = family.husbandRef;
+						}
+						if (family.wifeRef) {
+							child.motherRef = family.wifeRef;
+						}
 					}
-					if (family.wifeRef) {
-						child.motherRef = family.wifeRef;
-					}
+					// Note: Step-parents, adoptive parents, and foster parents are tracked
+					// via the familyAsChildRefs array with their pedigree type.
+					// The importer (gedcom-importer-v2.ts) will use this to write to
+					// the appropriate frontmatter fields (stepfather_id, adoptive_mother_id, etc.)
 				}
 			}
 

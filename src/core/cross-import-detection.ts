@@ -362,6 +362,10 @@ export class CrossImportDetectionService {
 			deathDate: fm.died,
 			fatherCrId: this.extractCrId(fm.father),
 			motherCrId: this.extractCrId(fm.mother),
+			stepfatherCrIds: this.extractCrIds(fm.stepfather),
+			stepmotherCrIds: this.extractCrIds(fm.stepmother),
+			adoptiveFatherCrId: this.extractCrId(fm.adoptive_father),
+			adoptiveMotherCrId: this.extractCrId(fm.adoptive_mother),
 			spouseCrIds: this.extractCrIds(fm.spouse),
 			childrenCrIds: this.extractCrIds(fm.children),
 			collection: fm.collection

@@ -26,13 +26,24 @@ export const CANONICAL_PERSON_PROPERTIES = [
 	// Places
 	'birth_place',
 	'death_place',
-	// Relationships
+	// Biological parent relationships
 	'father',
 	'father_id',
 	'mother',
 	'mother_id',
 	'parents',       // Array of parent links (alternative to father/mother)
 	'parents_id',    // Array of parent cr_ids
+	// Step-parent relationships
+	'stepfather',
+	'stepfather_id',
+	'stepmother',
+	'stepmother_id',
+	// Adoptive parent relationships
+	'adoptive_father',
+	'adoptive_father_id',
+	'adoptive_mother',
+	'adoptive_mother_id',
+	// Spouse and child relationships
 	'spouse',
 	'spouse_id',
 	'partners',      // Array of partner/spouse links (alternative to spouse)
@@ -156,6 +167,14 @@ export const CANONICAL_PROPERTY_LABELS: Record<string, string> = {
 	mother_id: 'Mother ID',
 	parents: 'Parents (array)',
 	parents_id: 'Parents ID (array)',
+	stepfather: 'Stepfather',
+	stepfather_id: 'Stepfather ID',
+	stepmother: 'Stepmother',
+	stepmother_id: 'Stepmother ID',
+	adoptive_father: 'Adoptive father',
+	adoptive_father_id: 'Adoptive father ID',
+	adoptive_mother: 'Adoptive mother',
+	adoptive_mother_id: 'Adoptive mother ID',
 	spouse: 'Spouse',
 	spouse_id: 'Spouse ID',
 	partners: 'Partners (array)',
@@ -349,6 +368,64 @@ export const PERSON_PROPERTY_METADATA: PropertyMetadata[] = [
 		description: 'Array of parent CR IDs',
 		category: 'person',
 		commonAliases: ['parent_ids']
+	},
+	// Step-parent relationships
+	{
+		canonical: 'stepfather',
+		label: 'Stepfather',
+		description: 'Link to stepfather\'s note',
+		category: 'person',
+		commonAliases: ['step_father', 'step-father']
+	},
+	{
+		canonical: 'stepfather_id',
+		label: 'Stepfather ID',
+		description: 'CR ID of stepfather',
+		category: 'person',
+		commonAliases: ['step_father_id', 'stepfather_cr_id']
+	},
+	{
+		canonical: 'stepmother',
+		label: 'Stepmother',
+		description: 'Link to stepmother\'s note',
+		category: 'person',
+		commonAliases: ['step_mother', 'step-mother']
+	},
+	{
+		canonical: 'stepmother_id',
+		label: 'Stepmother ID',
+		description: 'CR ID of stepmother',
+		category: 'person',
+		commonAliases: ['step_mother_id', 'stepmother_cr_id']
+	},
+	// Adoptive parent relationships
+	{
+		canonical: 'adoptive_father',
+		label: 'Adoptive father',
+		description: 'Link to adoptive father\'s note',
+		category: 'person',
+		commonAliases: ['adopted_father', 'adoptivefather']
+	},
+	{
+		canonical: 'adoptive_father_id',
+		label: 'Adoptive father ID',
+		description: 'CR ID of adoptive father',
+		category: 'person',
+		commonAliases: ['adopted_father_id', 'adoptive_father_cr_id']
+	},
+	{
+		canonical: 'adoptive_mother',
+		label: 'Adoptive mother',
+		description: 'Link to adoptive mother\'s note',
+		category: 'person',
+		commonAliases: ['adopted_mother', 'adoptivemother']
+	},
+	{
+		canonical: 'adoptive_mother_id',
+		label: 'Adoptive mother ID',
+		description: 'CR ID of adoptive mother',
+		category: 'person',
+		commonAliases: ['adopted_mother_id', 'adoptive_mother_cr_id']
 	},
 	{
 		canonical: 'spouse',

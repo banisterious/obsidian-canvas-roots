@@ -17,6 +17,7 @@ import type { StyleOverrides } from './canvas-style-overrides';
 import { mergeStyleSettings } from './canvas-style-overrides';
 import type { CanvasNavigationMetadata } from './canvas-navigation';
 import type { RelationshipTypeDefinition } from '../relationships';
+import { getDefaultRelationshipType } from '../relationships/constants/default-relationship-types';
 
 const logger = getLogger('CanvasGenerator');
 
@@ -36,7 +37,23 @@ interface CanvasNode {
 }
 
 /**
+ * Advanced Canvas style attributes for edges
+ * These are only used when Advanced Canvas plugin is installed
+ * @see https://github.com/Developer-Mike/obsidian-advanced-canvas
+ */
+interface AdvancedCanvasEdgeStyles {
+	/** Line path style */
+	path?: 'solid' | 'dotted' | 'short-dashed' | 'long-dashed';
+	/** Arrow head style */
+	arrow?: 'triangle' | 'triangle-outline' | 'thin-triangle' | 'halved-triangle' |
+		'diamond' | 'diamond-outline' | 'circle' | 'circle-outline' | 'blunt';
+	/** Path routing method */
+	pathfindingMethod?: 'bezier' | 'direct' | 'square' | 'a-star';
+}
+
+/**
  * Obsidian Canvas edge (JSON Canvas 1.0 spec compliant)
+ * Extended with optional Advanced Canvas styleAttributes
  */
 interface CanvasEdge {
 	id: string;
@@ -48,6 +65,8 @@ interface CanvasEdge {
 	toEnd?: 'none' | 'arrow';
 	color?: string;
 	label?: string;
+	/** Advanced Canvas style attributes (ignored by vanilla Obsidian) */
+	styleAttributes?: AdvancedCanvasEdgeStyles;
 }
 
 /**
@@ -603,7 +622,13 @@ export class CanvasGenerator {
 			}
 
 			if (edge.type === 'relationship' && !options.showRelationshipEdges) {
-				continue; // Skip custom relationship edges when setting is disabled
+				// Always show step/adoptive parent edges - they're core family relationships
+				// Only skip user-defined custom relationship edges when setting is disabled
+				const isFamilyRelationship = edge.relationshipTypeId === 'step_parent' ||
+					edge.relationshipTypeId === 'adoptive_parent';
+				if (!isFamilyRelationship) {
+					continue; // Skip custom relationship edges when setting is disabled
+				}
 			}
 
 			// Determine edge sides based on direction and relationship
@@ -611,8 +636,13 @@ export class CanvasGenerator {
 			let fromSide: 'top' | 'right' | 'bottom' | 'left';
 			let toSide: 'top' | 'right' | 'bottom' | 'left';
 
+			// Step/adoptive parent edges should be oriented like parent edges
+			const isParentLikeEdge = edge.type === 'parent' ||
+				edge.relationshipTypeId === 'step_parent' ||
+				edge.relationshipTypeId === 'adoptive_parent';
+
 			if (options.direction === 'vertical') {
-				if (edge.type === 'parent') {
+				if (isParentLikeEdge) {
 					// Parent-child relationships: always vertical (top-bottom)
 					fromSide = 'bottom';
 					toSide = 'top';
@@ -629,7 +659,7 @@ export class CanvasGenerator {
 				}
 			} else {
 				// Horizontal layout
-				if (edge.type === 'parent') {
+				if (isParentLikeEdge) {
 					// Parent-child: horizontal
 					fromSide = 'right';
 					toSide = 'left';
@@ -657,15 +687,19 @@ export class CanvasGenerator {
 			}
 			const [fromEnd, toEnd] = this.getArrowEndpoints(arrowStyle);
 
-			// Determine edge color based on relationship type and settings
+			// Determine edge color and line style based on relationship type and settings
 			let edgeColor: string | undefined;
+			let lineStyle: 'solid' | 'dashed' | 'dotted' | undefined;
 			if (edge.type === 'parent') {
 				edgeColor = options.parentChildEdgeColor === 'none' ? undefined : options.parentChildEdgeColor;
 			} else if (edge.type === 'relationship') {
-				// Custom relationships use their defined color
-				if (edge.relationshipTypeId && options.relationshipTypes) {
-					const relType = options.relationshipTypes.get(edge.relationshipTypeId);
+				// Relationships use their defined color and line style
+				if (edge.relationshipTypeId) {
+					// Try custom types first, then fall back to built-in defaults
+					const relType = options.relationshipTypes?.get(edge.relationshipTypeId) ??
+						getDefaultRelationshipType(edge.relationshipTypeId);
 					edgeColor = relType?.color;
+					lineStyle = relType?.lineStyle;
 				}
 			} else {
 				edgeColor = options.spouseEdgeColor === 'none' ? undefined : options.spouseEdgeColor;
@@ -688,6 +722,15 @@ export class CanvasGenerator {
 				edgeLabel = this.getEdgeLabel(edge.type);
 			}
 
+			// Build Advanced Canvas styleAttributes if line style is not solid
+			// These attributes are ignored by vanilla Obsidian but used by Advanced Canvas plugin
+			let styleAttributes: AdvancedCanvasEdgeStyles | undefined;
+			if (lineStyle && lineStyle !== 'solid') {
+				// Map our lineStyle values to Advanced Canvas path values
+				const pathStyle = lineStyle === 'dashed' ? 'short-dashed' : lineStyle;
+				styleAttributes = { path: pathStyle };
+			}
+
 			edges.push({
 				id: this.generateId(),
 				fromNode: fromCanvasId,
@@ -697,7 +740,8 @@ export class CanvasGenerator {
 				toSide,
 				toEnd,
 				color: edgeColor,
-				label: edgeLabel
+				label: edgeLabel,
+				styleAttributes
 			});
 		}
 

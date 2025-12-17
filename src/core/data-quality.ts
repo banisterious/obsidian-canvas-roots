@@ -1257,56 +1257,72 @@ export class DataQualityService {
 							let currentValue: string | undefined = undefined;
 
 							if (shouldBeFather && childFatherId !== person.crId) {
-								// Check if current father also claims this child - if so, it's a conflict
-								const currentFather = childFatherId ? crIdMap.get(childFatherId) : undefined;
-								const currentFatherClaimsChild = currentFather?.childrenCrIds.includes(child.crId);
-								if (currentFatherClaimsChild && currentFather && currentFather.crId !== person.crId) {
-									// Both people claim this child - record as conflict for manual resolution
-									// Only record once per child - use a consistent key to deduplicate
-									const conflictKey = `father:${child.crId}`;
-									if (!seenConflicts.has(conflictKey)) {
-										seenConflicts.add(conflictKey);
-										inconsistencies.push({
-											type: 'conflicting-parent-claim',
-											person: currentFather,  // Current father (listed in child's father_id)
-											relatedPerson: child,
-											field: 'father_id',
-											description: `${child.name || child.file.basename} has conflicting father claims: ${currentFather.name} (in father_id) vs ${person.name} (in children_id)`,
-											conflictingPerson: person,  // The other claimant
-											conflictType: 'father'
-										});
+								// Check if this person is listed as a step-father or adoptive father of the child
+								// If so, this is not a conflict - they're a non-biological parent
+								const isStepOrAdoptiveFather = child.stepfatherCrIds.includes(person.crId) ||
+									child.adoptiveFatherCrId === person.crId;
+
+								if (!isStepOrAdoptiveFather) {
+									// Check if current father also claims this child - if so, it's a conflict
+									const currentFather = childFatherId ? crIdMap.get(childFatherId) : undefined;
+									const currentFatherClaimsChild = currentFather?.childrenCrIds.includes(child.crId);
+									if (currentFatherClaimsChild && currentFather && currentFather.crId !== person.crId) {
+										// Both people claim this child - record as conflict for manual resolution
+										// Only record once per child - use a consistent key to deduplicate
+										const conflictKey = `father:${child.crId}`;
+										if (!seenConflicts.has(conflictKey)) {
+											seenConflicts.add(conflictKey);
+											inconsistencies.push({
+												type: 'conflicting-parent-claim',
+												person: currentFather,  // Current father (listed in child's father_id)
+												relatedPerson: child,
+												field: 'father_id',
+												description: `${child.name || child.file.basename} has conflicting father claims: ${currentFather.name} (in father_id) vs ${person.name} (in children_id)`,
+												conflictingPerson: person,  // The other claimant
+												conflictType: 'father'
+											});
+										}
+									} else if (!currentFatherClaimsChild) {
+										// Person is male, should be father, but child doesn't list them (or lists someone else who doesn't claim them)
+										shouldCreateInconsistency = true;
+										targetField = 'father_id';
+										currentValue = childFatherId;
 									}
-								} else if (!currentFatherClaimsChild) {
-									// Person is male, should be father, but child doesn't list them (or lists someone else who doesn't claim them)
-									shouldCreateInconsistency = true;
-									targetField = 'father_id';
-									currentValue = childFatherId;
 								}
+								// If person is a step/adoptive father, no action needed - relationship is correctly tracked
 							} else if (shouldBeMother && childMotherId !== person.crId) {
-								// Check if current mother also claims this child - if so, it's a conflict
-								const currentMother = childMotherId ? crIdMap.get(childMotherId) : undefined;
-								const currentMotherClaimsChild = currentMother?.childrenCrIds.includes(child.crId);
-								if (currentMotherClaimsChild && currentMother && currentMother.crId !== person.crId) {
-									// Both people claim this child - record as conflict for manual resolution
-									const conflictKey = `mother:${child.crId}`;
-									if (!seenConflicts.has(conflictKey)) {
-										seenConflicts.add(conflictKey);
-										inconsistencies.push({
-											type: 'conflicting-parent-claim',
-											person: currentMother,  // Current mother (listed in child's mother_id)
-											relatedPerson: child,
-											field: 'mother_id',
-											description: `${child.name || child.file.basename} has conflicting mother claims: ${currentMother.name} (in mother_id) vs ${person.name} (in children_id)`,
-											conflictingPerson: person,  // The other claimant
-											conflictType: 'mother'
-										});
+								// Check if this person is listed as a step-mother or adoptive mother of the child
+								// If so, this is not a conflict - they're a non-biological parent
+								const isStepOrAdoptiveMother = child.stepmotherCrIds.includes(person.crId) ||
+									child.adoptiveMotherCrId === person.crId;
+
+								if (!isStepOrAdoptiveMother) {
+									// Check if current mother also claims this child - if so, it's a conflict
+									const currentMother = childMotherId ? crIdMap.get(childMotherId) : undefined;
+									const currentMotherClaimsChild = currentMother?.childrenCrIds.includes(child.crId);
+									if (currentMotherClaimsChild && currentMother && currentMother.crId !== person.crId) {
+										// Both people claim this child - record as conflict for manual resolution
+										const conflictKey = `mother:${child.crId}`;
+										if (!seenConflicts.has(conflictKey)) {
+											seenConflicts.add(conflictKey);
+											inconsistencies.push({
+												type: 'conflicting-parent-claim',
+												person: currentMother,  // Current mother (listed in child's mother_id)
+												relatedPerson: child,
+												field: 'mother_id',
+												description: `${child.name || child.file.basename} has conflicting mother claims: ${currentMother.name} (in mother_id) vs ${person.name} (in children_id)`,
+												conflictingPerson: person,  // The other claimant
+												conflictType: 'mother'
+											});
+										}
+									} else if (!currentMotherClaimsChild) {
+										// Person is female, should be mother, but child doesn't list them (or lists someone else who doesn't claim them)
+										shouldCreateInconsistency = true;
+										targetField = 'mother_id';
+										currentValue = childMotherId;
 									}
-								} else if (!currentMotherClaimsChild) {
-									// Person is female, should be mother, but child doesn't list them (or lists someone else who doesn't claim them)
-									shouldCreateInconsistency = true;
-									targetField = 'mother_id';
-									currentValue = childMotherId;
 								}
+								// If person is a step/adoptive mother, no action needed - relationship is correctly tracked
 							}
 
 							if (shouldCreateInconsistency) {

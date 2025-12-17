@@ -31,9 +31,19 @@ export interface PersonNode {
 	sex?: string;
 	file: TFile;
 
-	// Relationships (as cr_ids)
+	// Biological parent relationships (as cr_ids)
 	fatherCrId?: string;
 	motherCrId?: string;
+
+	// Step-parent relationships (can have multiple step-parents)
+	stepfatherCrIds: string[];
+	stepmotherCrIds: string[];
+
+	// Adoptive parent relationships
+	adoptiveFatherCrId?: string;
+	adoptiveMotherCrId?: string;
+
+	// Spouse and child relationships
 	spouseCrIds: string[];
 	childrenCrIds: string[];
 
@@ -71,6 +81,12 @@ export interface TreeOptions {
 
 	/** Include spouses */
 	includeSpouses?: boolean;
+
+	/** Include step-parents in tree (default: false for ancestors, true for full) */
+	includeStepParents?: boolean;
+
+	/** Include adoptive parents in tree (default: false for ancestors, true for full) */
+	includeAdoptiveParents?: boolean;
 
 	/** Filter tree to only include people in this collection */
 	collectionFilter?: string;
@@ -647,6 +663,76 @@ export class FamilyGraphService {
 			}
 		}
 
+		// Add step-parents if enabled (with distinct edge type)
+		if (options.includeStepParents) {
+			// Step-fathers
+			for (const stepfatherCrId of node.stepfatherCrIds) {
+				const stepfather = this.personCache.get(stepfatherCrId);
+				if (stepfather && this.shouldIncludePerson(stepfather, options) && !nodes.has(stepfatherCrId)) {
+					nodes.set(stepfatherCrId, stepfather);
+					edges.push({
+						from: stepfather.crId,
+						to: node.crId,
+						type: 'relationship',
+						relationshipTypeId: 'step_parent',
+						relationshipLabel: 'Step-father'
+					});
+					// Don't recurse ancestors for step-parents (they're not blood relatives)
+				}
+			}
+
+			// Step-mothers
+			for (const stepmotherCrId of node.stepmotherCrIds) {
+				const stepmother = this.personCache.get(stepmotherCrId);
+				if (stepmother && this.shouldIncludePerson(stepmother, options) && !nodes.has(stepmotherCrId)) {
+					nodes.set(stepmotherCrId, stepmother);
+					edges.push({
+						from: stepmother.crId,
+						to: node.crId,
+						type: 'relationship',
+						relationshipTypeId: 'step_parent',
+						relationshipLabel: 'Step-mother'
+					});
+					// Don't recurse ancestors for step-parents (they're not blood relatives)
+				}
+			}
+		}
+
+		// Add adoptive parents if enabled (with distinct edge type)
+		if (options.includeAdoptiveParents) {
+			// Adoptive father
+			if (node.adoptiveFatherCrId) {
+				const adoptiveFather = this.personCache.get(node.adoptiveFatherCrId);
+				if (adoptiveFather && this.shouldIncludePerson(adoptiveFather, options) && !nodes.has(node.adoptiveFatherCrId)) {
+					nodes.set(node.adoptiveFatherCrId, adoptiveFather);
+					edges.push({
+						from: adoptiveFather.crId,
+						to: node.crId,
+						type: 'relationship',
+						relationshipTypeId: 'adoptive_parent',
+						relationshipLabel: 'Adoptive father'
+					});
+					// Don't recurse ancestors for adoptive parents (they're not blood relatives)
+				}
+			}
+
+			// Adoptive mother
+			if (node.adoptiveMotherCrId) {
+				const adoptiveMother = this.personCache.get(node.adoptiveMotherCrId);
+				if (adoptiveMother && this.shouldIncludePerson(adoptiveMother, options) && !nodes.has(node.adoptiveMotherCrId)) {
+					nodes.set(node.adoptiveMotherCrId, adoptiveMother);
+					edges.push({
+						from: adoptiveMother.crId,
+						to: node.crId,
+						type: 'relationship',
+						relationshipTypeId: 'adoptive_parent',
+						relationshipLabel: 'Adoptive mother'
+					});
+					// Don't recurse ancestors for adoptive parents (they're not blood relatives)
+				}
+			}
+		}
+
 		// Add spouse edges between parents
 		if (node.fatherCrId && node.motherCrId && options.includeSpouses) {
 			const father = this.personCache.get(node.fatherCrId);
@@ -718,6 +804,10 @@ export class FamilyGraphService {
 		const visited = new Set<string>();
 		const toProcess: string[] = [node.crId];
 
+		// For full trees, default to including step/adoptive parents unless explicitly disabled
+		const includeStepParents = options.includeStepParents !== false;
+		const includeAdoptiveParents = options.includeAdoptiveParents !== false;
+
 		// Process all connected people using breadth-first traversal
 		while (toProcess.length > 0) {
 			const currentCrId = toProcess.shift()!;
@@ -743,7 +833,7 @@ export class FamilyGraphService {
 
 			// Add edges and queue related people
 
-			// Parents
+			// Biological parents
 			if (currentPerson.fatherCrId) {
 				const father = this.personCache.get(currentPerson.fatherCrId);
 				if (father) {
@@ -757,6 +847,96 @@ export class FamilyGraphService {
 				if (mother) {
 					edges.push({ from: mother.crId, to: currentCrId, type: 'parent' });
 					toProcess.push(mother.crId);
+				}
+			}
+
+			// Step-parents (with distinct edge type, default enabled for full trees)
+			if (includeStepParents) {
+				// Step-fathers
+				for (const stepfatherCrId of currentPerson.stepfatherCrIds) {
+					const stepfather = this.personCache.get(stepfatherCrId);
+					if (stepfather && !visited.has(stepfatherCrId)) {
+						// Add relationship edge (avoid duplicates)
+						if (!edges.some(e =>
+							e.from === stepfatherCrId && e.to === currentCrId &&
+							e.relationshipTypeId === 'step_parent'
+						)) {
+							edges.push({
+								from: stepfatherCrId,
+								to: currentCrId,
+								type: 'relationship',
+								relationshipTypeId: 'step_parent',
+								relationshipLabel: 'Step-father'
+							});
+						}
+						toProcess.push(stepfatherCrId);
+					}
+				}
+
+				// Step-mothers
+				for (const stepmotherCrId of currentPerson.stepmotherCrIds) {
+					const stepmother = this.personCache.get(stepmotherCrId);
+					if (stepmother && !visited.has(stepmotherCrId)) {
+						// Add relationship edge (avoid duplicates)
+						if (!edges.some(e =>
+							e.from === stepmotherCrId && e.to === currentCrId &&
+							e.relationshipTypeId === 'step_parent'
+						)) {
+							edges.push({
+								from: stepmotherCrId,
+								to: currentCrId,
+								type: 'relationship',
+								relationshipTypeId: 'step_parent',
+								relationshipLabel: 'Step-mother'
+							});
+						}
+						toProcess.push(stepmotherCrId);
+					}
+				}
+			}
+
+			// Adoptive parents (with distinct edge type, default enabled for full trees)
+			if (includeAdoptiveParents) {
+				// Adoptive father
+				if (currentPerson.adoptiveFatherCrId) {
+					const adoptiveFather = this.personCache.get(currentPerson.adoptiveFatherCrId);
+					if (adoptiveFather && !visited.has(currentPerson.adoptiveFatherCrId)) {
+						// Add relationship edge (avoid duplicates)
+						if (!edges.some(e =>
+							e.from === currentPerson.adoptiveFatherCrId && e.to === currentCrId &&
+							e.relationshipTypeId === 'adoptive_parent'
+						)) {
+							edges.push({
+								from: currentPerson.adoptiveFatherCrId,
+								to: currentCrId,
+								type: 'relationship',
+								relationshipTypeId: 'adoptive_parent',
+								relationshipLabel: 'Adoptive father'
+							});
+						}
+						toProcess.push(currentPerson.adoptiveFatherCrId);
+					}
+				}
+
+				// Adoptive mother
+				if (currentPerson.adoptiveMotherCrId) {
+					const adoptiveMother = this.personCache.get(currentPerson.adoptiveMotherCrId);
+					if (adoptiveMother && !visited.has(currentPerson.adoptiveMotherCrId)) {
+						// Add relationship edge (avoid duplicates)
+						if (!edges.some(e =>
+							e.from === currentPerson.adoptiveMotherCrId && e.to === currentCrId &&
+							e.relationshipTypeId === 'adoptive_parent'
+						)) {
+							edges.push({
+								from: currentPerson.adoptiveMotherCrId,
+								to: currentCrId,
+								type: 'relationship',
+								relationshipTypeId: 'adoptive_parent',
+								relationshipLabel: 'Adoptive mother'
+							});
+						}
+						toProcess.push(currentPerson.adoptiveMotherCrId);
+					}
 				}
 			}
 
@@ -1032,6 +1212,24 @@ export class FamilyGraphService {
 			}
 		}
 
+		// Parse step-parent relationships (can be arrays for multiple step-parents)
+		const stepfatherIdValue = this.resolveProperty<string | string[]>(fm, 'stepfather_id');
+		const stepfatherValue = this.resolveProperty<string | string[]>(fm, 'stepfather');
+		const stepfatherCrIds = this.extractCrIdsFromField(stepfatherIdValue, stepfatherValue);
+
+		const stepmotherIdValue = this.resolveProperty<string | string[]>(fm, 'stepmother_id');
+		const stepmotherValue = this.resolveProperty<string | string[]>(fm, 'stepmother');
+		const stepmotherCrIds = this.extractCrIdsFromField(stepmotherIdValue, stepmotherValue);
+
+		// Parse adoptive parent relationships
+		const adoptiveFatherIdValue = this.resolveProperty<string>(fm, 'adoptive_father_id');
+		const adoptiveFatherValue = this.resolveProperty<string>(fm, 'adoptive_father');
+		const adoptiveFatherCrId = adoptiveFatherIdValue || this.extractCrIdFromWikilink(adoptiveFatherValue);
+
+		const adoptiveMotherIdValue = this.resolveProperty<string>(fm, 'adoptive_mother_id');
+		const adoptiveMotherValue = this.resolveProperty<string>(fm, 'adoptive_mother');
+		const adoptiveMotherCrId = adoptiveMotherIdValue || this.extractCrIdFromWikilink(adoptiveMotherValue);
+
 		// Parse spouse relationships
 		// Priority: 1) Enhanced flat indexed format (spouse1, spouse2...), 2) Legacy 'spouse_id' or 'spouse' fields
 		let spouseCrIds: string[] = [];
@@ -1130,8 +1328,16 @@ export class FamilyGraphService {
 			occupation,
 			sex,
 			file,
+			// Biological parents
 			fatherCrId: fatherCrId || undefined,
 			motherCrId: motherCrId || undefined,
+			// Step-parents
+			stepfatherCrIds,
+			stepmotherCrIds,
+			// Adoptive parents
+			adoptiveFatherCrId: adoptiveFatherCrId || undefined,
+			adoptiveMotherCrId: adoptiveMotherCrId || undefined,
+			// Spouses and children
 			spouseCrIds: [...new Set(spouseCrIds)], // Deduplicate to avoid family-chart issues
 			spouses, // Enhanced spouse relationships with metadata (if present)
 			childrenCrIds, // Now populated from frontmatter (deduplicated above)
@@ -1159,6 +1365,31 @@ export class FamilyGraphService {
 		// It's a wikilink - we can't extract cr_id from it, return null
 		// The _id field should be used instead for reliable resolution
 		return null;
+	}
+
+	/**
+	 * Extracts an array of cr_ids from _id and wikilink fields
+	 * Handles both single values and arrays
+	 */
+	private extractCrIdsFromField(idValue: string | string[] | undefined, wikilinkValue: string | string[] | undefined): string[] {
+		const result: string[] = [];
+
+		// Prefer _id field
+		if (idValue) {
+			const ids = Array.isArray(idValue) ? idValue : [idValue];
+			result.push(...ids.filter(id => id));
+		} else if (wikilinkValue) {
+			// Fallback to wikilink field
+			const values = Array.isArray(wikilinkValue) ? wikilinkValue : [wikilinkValue];
+			for (const v of values) {
+				const crId = this.extractCrIdFromWikilink(v);
+				if (crId) {
+					result.push(crId);
+				}
+			}
+		}
+
+		return [...new Set(result)]; // Deduplicate
 	}
 
 	/**

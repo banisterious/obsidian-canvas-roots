@@ -101,11 +101,31 @@ export const DEFAULT_RELATIONSHIP_TYPES: RelationshipTypeDefinition[] = [
 		builtIn: true
 	},
 	{
+		id: 'step_parent',
+		name: 'Step-parent',
+		category: 'legal',
+		color: '#14b8a6',
+		lineStyle: 'dashed',
+		inverse: 'step_child',
+		symmetric: false,
+		builtIn: true
+	},
+	{
+		id: 'step_child',
+		name: 'Step-child',
+		category: 'legal',
+		color: '#14b8a6',
+		lineStyle: 'dashed',
+		inverse: 'step_parent',
+		symmetric: false,
+		builtIn: true
+	},
+	{
 		id: 'adoptive_parent',
 		name: 'Adoptive parent',
 		category: 'legal',
 		color: '#06b6d4',
-		lineStyle: 'solid',
+		lineStyle: 'dotted',
 		inverse: 'adopted_child',
 		symmetric: false,
 		builtIn: true
@@ -115,7 +135,7 @@ export const DEFAULT_RELATIONSHIP_TYPES: RelationshipTypeDefinition[] = [
 		name: 'Adopted child',
 		category: 'legal',
 		color: '#06b6d4',
-		lineStyle: 'solid',
+		lineStyle: 'dotted',
 		inverse: 'adoptive_parent',
 		symmetric: false,
 		builtIn: true
