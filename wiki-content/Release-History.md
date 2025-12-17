@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.12.x](#v012x)
+  - [Step & Adoptive Parent Support](#step--adoptive-parent-support-v01210)
   - [Statistics & Reports](#statistics--reports-v0129)
   - [Dynamic Note Content](#dynamic-note-content-v0128)
   - [Gramps Source Import](#gramps-source-import-v0126)
@@ -45,6 +46,79 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.12.x
+
+### Step & Adoptive Parent Support (v0.12.10)
+
+Comprehensive support for non-biological parent relationships, improving GEDCOM import fidelity and enabling accurate representation of blended families.
+
+**Problem Solved:**
+- GEDCOM files with step-parent or adoptive relationships (via `PEDI` tags) were imported as primary parent claims, triggering false conflicts
+- No way to distinguish biological parents from step/adoptive parents in the data model
+- Canvas trees could not visualize non-biological parent relationships
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **GEDCOM PEDI parsing** | Parse `PEDI` tags (`birth`, `step`, `adop`, `foster`) from GEDCOM files |
+| **Dedicated frontmatter fields** | `stepfather_id`, `stepmother_id`, `adoptive_father_id`, `adoptive_mother_id` |
+| **Conflict detection** | Step/adoptive parents excluded from biological parent conflicts |
+| **Canvas visualization** | Step-parents shown with dashed lines, adoptive parents with dotted lines |
+| **Tree generation toggles** | "Include step-parents" and "Include adoptive parents" options |
+| **Create/Edit modal** | New section for manual entry of step/adoptive parents |
+| **Statistics breakdown** | Parent type breakdown in Data Completeness, blended family metrics |
+
+**New Frontmatter Fields:**
+
+```yaml
+# Biological parents (existing)
+father_id: abc-123-def-456
+mother_id: ghi-789-jkl-012
+
+# Step-parents (can have multiple)
+stepfather_id:
+  - mno-345-pqr-678
+  - abc-111-def-222
+stepmother_id: stu-901-vwx-234
+
+# Adoptive parents
+adoptive_father_id: yza-567-bcd-890
+adoptive_mother_id: efg-123-hij-456
+```
+
+**GEDCOM Pedigree Types:**
+
+| PEDI Value | Meaning | Canvas Roots Field |
+|------------|---------|-------------------|
+| `birth` | Biological | `father_id`, `mother_id` |
+| `adop` | Adopted | `adoptive_father_id`, `adoptive_mother_id` |
+| `step` | Step-child | `stepfather_id`, `stepmother_id` |
+| `foster` | Foster child | (stored but not specially handled) |
+| (absent) | Assumed biological | `father_id`, `mother_id` |
+
+**New Relationship Types:**
+
+| Type | Line Style | Color |
+|------|------------|-------|
+| `step_parent` / `step_child` | Dashed | Teal (#14b8a6) |
+| `adoptive_parent` / `adopted_child` | Dotted | Cyan (#06b6d4) |
+
+**Statistics Enhancements:**
+
+| Metric | Description |
+|--------|-------------|
+| **Parent type breakdown** | Counts of biological, step, and adoptive parents in Completeness section |
+| **Biologically orphaned** | People with no biological parents but have step/adoptive |
+| **Blended family count** | People with multiple parent types |
+
+**Tree Behavior:**
+- Ancestor trees: Step/adoptive parents included as leaf nodes (no ancestry recursion)
+- Full trees: Step/adoptive parents included by default, follow their connections
+- Both respect the include toggles in tree generation UI
+
+See [Step & Adoptive Parent Support Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/step-adoptive-parent-support.md) for implementation details.
+
+---
 
 ### Statistics & Reports (v0.12.9)
 
