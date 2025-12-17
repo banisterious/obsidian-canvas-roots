@@ -17,6 +17,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.12.10] - 2025-12-16
+
+### Added
+
+- **Step & adoptive parent support** - Comprehensive support for non-biological parent relationships, improving GEDCOM import fidelity and enabling accurate representation of blended families.
+
+- **GEDCOM pedigree parsing** - Parse `PEDI` tags (`birth`, `step`, `adop`, `foster`) from GEDCOM files. Step-parents and adoptive parents are imported to dedicated frontmatter fields. Biological parent conflicts are no longer triggered by step/adoptive relationships.
+
+- **Canvas tree visualization** - Step-parent relationships shown with dashed lines; adoptive parent relationships shown with dotted lines. New toggles in tree generation: "Include step-parents" and "Include adoptive parents". Relationship labels displayed on non-biological parent edges.
+
+- **Create/Edit Person modal** - New "Step & adoptive parents" section for manual entry of stepfather, stepmother, adoptive father, and adoptive mother.
+
+- **Statistics parent breakdown** - Parent type breakdown in Data Completeness section (biological vs. step vs. adoptive). New quality metrics: "Biologically orphaned" (no biological parents but has step/adoptive) and blended family insights showing count of people with multiple parent types.
+
+- **New frontmatter fields** - `stepfather_id`, `stepmother_id` (arrays for multiple), `adoptive_father_id`, `adoptive_mother_id` with corresponding property aliases.
+
+- **New relationship types** - Built-in `step_parent`, `step_child`, `adoptive_parent`, `adopted_child` relationship types with distinct line styles.
+
+---
+
 ## [0.12.9] - 2025-12-16
 
 ### Added

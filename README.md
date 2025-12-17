@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.12.9-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.12.10-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, writers, and world-builders.
 
@@ -30,7 +30,7 @@
 | Feature | Description |
 |---------|-------------|
 | **Full Entity Export** | Export people, events, sources, places, and custom relationships to all formats |
-| **GEDCOM 5.5.1** | Full round-trip import/export with validation, UUID preservation, and privacy protection |
+| **GEDCOM 5.5.1** | Full round-trip import/export with validation, UUID preservation, privacy protection, and PEDI tag parsing for step/adoptive parents |
 | **GEDCOM X** | Import/export with FamilySearch JSON format |
 | **Gramps XML** | Import/export for Gramps genealogy software |
 | **CSV/TSV** | Import/export for spreadsheet workflows with auto-detected column mapping |
@@ -85,6 +85,7 @@
 | **Relationship Calculator** | Find connections with proper genealogical terms (cousin, 2nd cousin once removed, etc.) |
 | **Relationship History** | Track all changes with timestamps and one-click undo |
 | **Custom Relationships** | Extended relationships beyond family (godparent, guardian, mentor, apprentice) with colored canvas edges |
+| **Step & Adoptive Parents** | Dedicated fields for step-parents and adoptive parents with distinct line styles on canvas trees |
 | **Fictional Date Systems** | Custom calendars and eras for world-building (Middle-earth, Westeros, Star Wars, or custom) |
 | **Organization Notes** | Track non-genealogical hierarchies: noble houses, guilds, corporations, military units, religious orders |
 | **Events & Timelines** | Document life events with person/family/place timelines, visual exports, groups/factions filtering, and sort order computation |
