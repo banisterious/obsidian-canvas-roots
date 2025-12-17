@@ -68,6 +68,16 @@
   border-top: none;
 }
 
+/* Secondary section headers (less prominent, for optional sections) */
+.crc-section-header--secondary {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 12px 0 6px 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--background-modifier-border);
+}
+
 /* Modal header with icon */
 .crc-modal-header {
   display: flex;

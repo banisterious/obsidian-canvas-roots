@@ -32,6 +32,11 @@ export class CreatePersonModal extends Modal {
 	private fatherField: RelationshipField = {};
 	private motherField: RelationshipField = {};
 	private spouseField: RelationshipField = {};
+	// Step and adoptive parents
+	private stepfatherField: RelationshipField = {};
+	private stepmotherField: RelationshipField = {};
+	private adoptiveFatherField: RelationshipField = {};
+	private adoptiveMotherField: RelationshipField = {};
 
 	// Edit mode properties
 	private editMode: boolean = false;
@@ -70,6 +75,15 @@ export class CreatePersonModal extends Modal {
 				spouseIds?: string[];
 				spouseNames?: string[];
 				collection?: string;
+				// Step and adoptive parents
+				stepfatherId?: string;
+				stepfatherName?: string;
+				stepmotherId?: string;
+				stepmotherName?: string;
+				adoptiveFatherId?: string;
+				adoptiveFatherName?: string;
+				adoptiveMotherId?: string;
+				adoptiveMotherName?: string;
 			};
 		}
 	) {
@@ -110,6 +124,19 @@ export class CreatePersonModal extends Modal {
 					crId: ep.spouseIds?.[0],
 					name: ep.spouseNames?.[0]
 				};
+			}
+			// Step and adoptive parents
+			if (ep.stepfatherId || ep.stepfatherName) {
+				this.stepfatherField = { crId: ep.stepfatherId, name: ep.stepfatherName };
+			}
+			if (ep.stepmotherId || ep.stepmotherName) {
+				this.stepmotherField = { crId: ep.stepmotherId, name: ep.stepmotherName };
+			}
+			if (ep.adoptiveFatherId || ep.adoptiveFatherName) {
+				this.adoptiveFatherField = { crId: ep.adoptiveFatherId, name: ep.adoptiveFatherName };
+			}
+			if (ep.adoptiveMotherId || ep.adoptiveMotherName) {
+				this.adoptiveMotherField = { crId: ep.adoptiveMotherId, name: ep.adoptiveMotherName };
 			}
 			// Get directory from file path
 			const pathParts = options.editFile.path.split('/');
@@ -242,6 +269,22 @@ export class CreatePersonModal extends Modal {
 
 		// Spouse relationship
 		this.createRelationshipField(relSection, 'Spouse', this.spouseField);
+
+		// Step and adoptive parents section
+		const stepAdoptSection = form.createDiv({ cls: 'crc-relationship-section' });
+		stepAdoptSection.createEl('h4', { text: 'Step & adoptive parents (optional)', cls: 'crc-section-header crc-section-header--secondary' });
+
+		// Step-father
+		this.createRelationshipField(stepAdoptSection, 'Step-father', this.stepfatherField);
+
+		// Step-mother
+		this.createRelationshipField(stepAdoptSection, 'Step-mother', this.stepmotherField);
+
+		// Adoptive father
+		this.createRelationshipField(stepAdoptSection, 'Adoptive father', this.adoptiveFatherField);
+
+		// Adoptive mother
+		this.createRelationshipField(stepAdoptSection, 'Adoptive mother', this.adoptiveMotherField);
 
 		// Collection - dropdown with existing + text for custom
 		const collectionSetting = new Setting(form)
@@ -468,6 +511,30 @@ export class CreatePersonModal extends Modal {
 				data.spouseName = [this.spouseField.name];
 			}
 
+			// Add step-father relationship
+			if (this.stepfatherField.crId && this.stepfatherField.name) {
+				data.stepfatherCrId = [this.stepfatherField.crId];
+				data.stepfatherName = [this.stepfatherField.name];
+			}
+
+			// Add step-mother relationship
+			if (this.stepmotherField.crId && this.stepmotherField.name) {
+				data.stepmotherCrId = [this.stepmotherField.crId];
+				data.stepmotherName = [this.stepmotherField.name];
+			}
+
+			// Add adoptive father relationship
+			if (this.adoptiveFatherField.crId && this.adoptiveFatherField.name) {
+				data.adoptiveFatherCrId = this.adoptiveFatherField.crId;
+				data.adoptiveFatherName = this.adoptiveFatherField.name;
+			}
+
+			// Add adoptive mother relationship
+			if (this.adoptiveMotherField.crId && this.adoptiveMotherField.name) {
+				data.adoptiveMotherCrId = this.adoptiveMotherField.crId;
+				data.adoptiveMotherName = this.adoptiveMotherField.name;
+			}
+
 			// Note: PersonData doesn't have a collection field yet
 			// This would need to be added to person-note-writer.ts if needed
 
@@ -547,6 +614,42 @@ export class CreatePersonModal extends Modal {
 				// Explicitly clear spouse if unlinked
 				data.spouseCrId = [];
 				data.spouseName = [];
+			}
+
+			// Add step-father relationship
+			if (this.stepfatherField.crId || this.stepfatherField.name) {
+				data.stepfatherCrId = this.stepfatherField.crId ? [this.stepfatherField.crId] : undefined;
+				data.stepfatherName = this.stepfatherField.name ? [this.stepfatherField.name] : undefined;
+			} else {
+				data.stepfatherCrId = [];
+				data.stepfatherName = [];
+			}
+
+			// Add step-mother relationship
+			if (this.stepmotherField.crId || this.stepmotherField.name) {
+				data.stepmotherCrId = this.stepmotherField.crId ? [this.stepmotherField.crId] : undefined;
+				data.stepmotherName = this.stepmotherField.name ? [this.stepmotherField.name] : undefined;
+			} else {
+				data.stepmotherCrId = [];
+				data.stepmotherName = [];
+			}
+
+			// Add adoptive father relationship
+			if (this.adoptiveFatherField.crId || this.adoptiveFatherField.name) {
+				data.adoptiveFatherCrId = this.adoptiveFatherField.crId;
+				data.adoptiveFatherName = this.adoptiveFatherField.name;
+			} else {
+				data.adoptiveFatherCrId = undefined;
+				data.adoptiveFatherName = undefined;
+			}
+
+			// Add adoptive mother relationship
+			if (this.adoptiveMotherField.crId || this.adoptiveMotherField.name) {
+				data.adoptiveMotherCrId = this.adoptiveMotherField.crId;
+				data.adoptiveMotherName = this.adoptiveMotherField.name;
+			} else {
+				data.adoptiveMotherCrId = undefined;
+				data.adoptiveMotherName = undefined;
 			}
 
 			await updatePersonNote(this.app, this.editingFile, data);
