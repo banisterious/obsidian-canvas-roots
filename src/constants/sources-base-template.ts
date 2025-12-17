@@ -10,15 +10,14 @@ export const SOURCES_BASE_TEMPLATE = `visibleProperties:
   - note.collection
   - note.location
 summaries:
-  total_sources: values.length
+  total_sources: 'values.length'
 filters:
-  or:
-    - note.type == "source"
-    - file.hasProperty("source_type")
+  and:
+    - 'cr_type == "source"'
 formulas:
-  display_name: title || file.name
-  has_media: if(media, "Yes", "No")
-  year_only: if(source_date, source_date.year, "")
+  display_name: 'title || file.name'
+  has_media: 'if(media, "Yes", "No")'
+  year_only: 'if(source_date, source_date.year, "")'
 properties:
   cr_id:
     displayName: ID
@@ -51,170 +50,152 @@ properties:
 views:
   - name: All Sources
     type: table
-    filter: {}
     order:
       - note.title
       - note.source_type
       - note.source_repository
       - note.source_date
       - note.confidence
-    sort:
-      - property: note.title
-        direction: asc
   - name: By Type
     type: table
-    filter: {}
-    group:
-      - property: note.source_type
-    sort:
-      - property: note.title
-        direction: asc
+    groupBy:
+      property: note.source_type
+      direction: ASC
+    order:
+      - note.title
   - name: By Repository
     type: table
-    filter: {}
-    group:
-      - property: note.source_repository
-    sort:
-      - property: note.title
-        direction: asc
+    groupBy:
+      property: note.source_repository
+      direction: ASC
+    order:
+      - note.title
   - name: By Confidence
     type: table
-    filter: {}
-    group:
-      - property: note.confidence
-    sort:
-      - property: note.title
-        direction: asc
+    groupBy:
+      property: note.confidence
+      direction: ASC
+    order:
+      - note.title
   - name: Vital Records
     type: table
-    filter:
-      note.source_type: vital_record
-    sort:
-      - property: note.source_date
-        direction: asc
+    filters:
+      and:
+        - 'source_type == "vital_record"'
+    order:
+      - note.source_date
   - name: Census Records
     type: table
-    filter:
-      note.source_type: census
-    sort:
-      - property: note.source_date
-        direction: asc
+    filters:
+      and:
+        - 'source_type == "census"'
+    order:
+      - note.source_date
   - name: Church Records
     type: table
-    filter:
+    filters:
       or:
-        - note.source_type: church_record
-        - note.source_type: parish_register
-    sort:
-      - property: note.source_date
-        direction: asc
+        - 'source_type == "church_record"'
+        - 'source_type == "parish_register"'
+    order:
+      - note.source_date
   - name: Legal Documents
     type: table
-    filter:
+    filters:
       or:
-        - note.source_type: will
-        - note.source_type: probate
-        - note.source_type: land_record
-        - note.source_type: court_record
-    sort:
-      - property: note.source_date
-        direction: asc
+        - 'source_type == "will"'
+        - 'source_type == "probate"'
+        - 'source_type == "land_record"'
+        - 'source_type == "court_record"'
+    order:
+      - note.source_date
   - name: Military Records
     type: table
-    filter:
-      note.source_type: military_record
-    sort:
-      - property: note.source_date
-        direction: asc
+    filters:
+      and:
+        - 'source_type == "military_record"'
+    order:
+      - note.source_date
   - name: Photos & Media
     type: table
-    filter:
+    filters:
       or:
-        - note.source_type: photograph
-        - note.source_type: newspaper
-    sort:
-      - property: note.source_date
-        direction: desc
+        - 'source_type == "photograph"'
+        - 'source_type == "newspaper"'
+    order:
+      - note.source_date
   - name: High Confidence
     type: table
-    filter:
-      note.confidence: high
-    sort:
-      - property: note.title
-        direction: asc
+    filters:
+      and:
+        - 'confidence == "high"'
+    order:
+      - note.title
   - name: Low Confidence
     type: table
-    filter:
+    filters:
       or:
-        - note.confidence: low
-        - note.confidence: unknown
-    sort:
-      - property: note.title
-        direction: asc
+        - 'confidence == "low"'
+        - 'confidence == "unknown"'
+    order:
+      - note.title
   - name: With Media
     type: table
-    filter:
-      note.media:
-        ne: null
-    sort:
-      - property: note.title
-        direction: asc
+    filters:
+      and:
+        - '!media.isEmpty()'
+    order:
+      - note.title
   - name: Missing Media
     type: table
-    filter:
-      note.media:
-        eq: null
-    sort:
-      - property: note.title
-        direction: asc
+    filters:
+      and:
+        - 'media.isEmpty()'
+    order:
+      - note.title
   - name: By Date
     type: table
-    filter:
-      note.source_date:
-        ne: null
-    sort:
-      - property: note.source_date
-        direction: asc
+    filters:
+      and:
+        - '!source_date.isEmpty()'
+    order:
+      - note.source_date
   - name: Recently Accessed
     type: table
-    filter:
-      note.source_date_accessed:
-        ne: null
-    sort:
-      - property: note.source_date_accessed
-        direction: desc
+    filters:
+      and:
+        - '!source_date_accessed.isEmpty()'
+    order:
+      - note.source_date_accessed
   - name: By Collection
     type: table
-    filter:
-      note.collection:
-        ne: null
-    group:
-      - property: note.collection
-    sort:
-      - property: note.title
-        direction: asc
+    filters:
+      and:
+        - '!collection.isEmpty()'
+    groupBy:
+      property: note.collection
+      direction: ASC
+    order:
+      - note.title
   - name: By Location
     type: table
-    filter:
-      note.location:
-        ne: null
-    group:
-      - property: note.location
-    sort:
-      - property: note.title
-        direction: asc
+    filters:
+      and:
+        - '!location.isEmpty()'
+    groupBy:
+      property: note.location
+      direction: ASC
+    order:
+      - note.title
   - name: Media Gallery
     type: cards
-    filter:
-      note.media:
-        ne: null
+    filters:
+      and:
+        - '!media.isEmpty()'
     image: note.media
     imageFit: contain
     order:
       - note.title
       - note.source_type
       - note.source_date
-    sort:
-      - property: note.source_date
-        direction: desc
 `;

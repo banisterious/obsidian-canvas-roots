@@ -87,20 +87,15 @@ export function generatePeopleBaseTemplate(aliasesOrOptions: PropertyAliases | P
   - note.ahnentafel
   - note.daboville
 summaries:
-  generation_span: if(values.length > 0, (values.max() - values.min()).years.floor(), 0)
+  generation_span: 'if(values.length > 0, (values.max() - values.min()).years.floor(), 0)'
 filters:
   and:
-    - file.hasProperty("${cr_id}")
-    - note.${cr_type} != "place"
-    - note.${cr_type} != "event"
-    - note.${cr_type} != "source"
-    - note.${cr_type} != "organization"
-    - note.${cr_type} != "map"
+    - '${cr_type} == "person"'
 formulas:
-  display_name: ${name} || file.name
-  age: if(${born}.isEmpty(), "Unknown", if(${died}.isEmpty() && (now() - ${born}).years.floor() < ${maxLivingAge}, (now() - ${born}).years.floor() + " years", if(${born} && !${died}.isEmpty(), (${died} - ${born}).years.floor() + " years", "Unknown")))
-  birth_display: if(${born}, ${born}.format("YYYY-MM-DD"), "")
-  death_display: if(${died}, ${died}.format("YYYY-MM-DD"), "")
+  display_name: '${name} || file.name'
+  age: 'if(${born}.isEmpty(), "Unknown", if(${died}.isEmpty() && (now() - ${born}).years.floor() < ${maxLivingAge}, (now() - ${born}).years.floor() + " years", if(${born} && !${died}.isEmpty(), (${died} - ${born}).years.floor() + " years", "Unknown")))'
+  birth_display: 'if(${born}, ${born}.format("YYYY-MM-DD"), "")'
+  death_display: 'if(${died}, ${died}.format("YYYY-MM-DD"), "")'
 properties:
   ${cr_id}:
     displayName: ID
@@ -145,7 +140,7 @@ views:
     name: All family members
     filters:
       and:
-        - note.${cr_id}
+        - '!${cr_id}.isEmpty()'
     order:
       - ${born}
       - file.name
@@ -161,9 +156,9 @@ views:
     name: Living members
     filters:
       and:
-        - note.${cr_id}
-        - ${died}.isEmpty()
-        - (now() - ${born}).years.floor() < ${maxLivingAge}
+        - '!${cr_id}.isEmpty()'
+        - '${died}.isEmpty()'
+        - '(now() - ${born}).years.floor() < ${maxLivingAge}'
     order:
       - ${born}
       - ${name}
@@ -173,8 +168,8 @@ views:
     name: Deceased members
     filters:
       and:
-        - note.${cr_id}
-        - "!${died}.isEmpty() || (now() - ${born}).years.floor() >= ${maxLivingAge}"
+        - '!${cr_id}.isEmpty()'
+        - '!${died}.isEmpty() || (now() - ${born}).years.floor() >= ${maxLivingAge}'
     order:
       - ${died}
       - ${name}
@@ -185,8 +180,8 @@ views:
     name: Recently added
     filters:
       and:
-        - note.${cr_id}
-        - file.ctime > now() - '30 days'
+        - '!${cr_id}.isEmpty()'
+        - 'file.ctime > now() - "30d"'
     order:
       - file.ctime
     limit: 20
@@ -194,141 +189,156 @@ views:
     name: Missing parents
     filters:
       and:
-        - note.${cr_id}
-        - "!note.${father} && !note.${mother}"
+        - '!${cr_id}.isEmpty()'
+        - '${father}.isEmpty() && ${mother}.isEmpty()'
     order:
       - file.name
   - type: table
     name: Incomplete data
     filters:
       and:
-        - note.${cr_id}
-        - "!note.${born} || !note.${name}"
+        - '!${cr_id}.isEmpty()'
+        - '${born}.isEmpty() || ${name}.isEmpty()'
     order:
       - file.name
   - type: table
     name: By collection
     filters:
       and:
-        - note.${cr_id}
-        - note.collection
+        - '!${cr_id}.isEmpty()'
+        - '!collection.isEmpty()'
+    groupBy:
+      property: note.collection
+      direction: ASC
     order:
       - collection
       - file.name
     summaries:
-      collection: Count
+      collection: Unique
       ${born}: Earliest
       ${died}: Latest
   - type: table
     name: By family group
     filters:
       and:
-        - note.${cr_id}
-        - note.group_name
+        - '!${cr_id}.isEmpty()'
+        - '!group_name.isEmpty()'
+    groupBy:
+      property: note.group_name
+      direction: ASC
     order:
       - group_name
       - file.name
     summaries:
-      group_name: Count
+      group_name: Unique
       ${born}: Earliest
       ${died}: Latest
   - type: table
     name: Unassigned collections
     filters:
       and:
-        - note.${cr_id}
-        - "!note.collection"
+        - '!${cr_id}.isEmpty()'
+        - 'collection.isEmpty()'
     order:
       - file.name
   - type: table
     name: Single parents
     filters:
       and:
-        - note.${cr_id}
-        - note.${child}
-        - "!note.${spouse}"
+        - '!${cr_id}.isEmpty()'
+        - '!${child}.isEmpty()'
+        - '${spouse}.isEmpty()'
     order:
       - file.name
     summaries:
-      ${child}: Count
+      ${child}: Filled
   - type: table
     name: Childless couples
     filters:
       and:
-        - note.${cr_id}
-        - note.${spouse}
-        - "!note.${child}"
+        - '!${cr_id}.isEmpty()'
+        - '!${spouse}.isEmpty()'
+        - '${child}.isEmpty()'
     order:
       - file.name
   - type: table
     name: Multiple marriages
     filters:
       and:
-        - note.${cr_id}
-        - note.${spouse}
+        - '!${cr_id}.isEmpty()'
+        - '!${spouse}.isEmpty()'
     order:
       - file.name
   - type: table
     name: Sibling groups
     filters:
       and:
-        - note.${cr_id}
-        - note.${father}
+        - '!${cr_id}.isEmpty()'
+        - '!${father}.isEmpty()'
+    groupBy:
+      property: note.${father}
+      direction: ASC
     order:
       - ${father}
       - ${mother}
       - ${born}
     summaries:
-      ${father}: Count
+      ${father}: Unique
   - type: table
     name: Root generation
     filters:
       and:
-        - note.${cr_id}
-        - "!note.${father} && !note.${mother}"
+        - '!${cr_id}.isEmpty()'
+        - '${father}.isEmpty() && ${mother}.isEmpty()'
     order:
       - ${born}
     summaries:
-      ${child}: Count
+      ${child}: Filled
   - type: table
     name: Marked root persons
     filters:
       and:
-        - note.${cr_id}
-        - note.root_person = true
+        - '!${cr_id}.isEmpty()'
+        - 'root_person == true'
     order:
       - ${born}
     summaries:
-      ${child}: Count
+      ${child}: Filled
   - type: table
     name: By lineage
     filters:
       and:
-        - note.${cr_id}
-        - note.lineage
+        - '!${cr_id}.isEmpty()'
+        - '!lineage.isEmpty()'
+    groupBy:
+      property: note.lineage
+      direction: ASC
     order:
       - lineage
       - generation
       - ${born}
     summaries:
-      lineage: Count
+      lineage: Unique
   - type: table
     name: By generation number
     filters:
       and:
-        - note.${cr_id}
-        - note.generation
+        - '!${cr_id}.isEmpty()'
+        - '!generation.isEmpty()'
+    groupBy:
+      property: note.generation
+      direction: ASC
     order:
       - generation
       - ${born}
     summaries:
-      generation: Count
+      generation: Unique
   - type: table
     name: Ahnentafel ordered
     filters:
       and:
-        - note.${cr_id}
-        - note.ahnentafel
+        - '!${cr_id}.isEmpty()'
+        - '!ahnentafel.isEmpty()'
     order:
       - ahnentafel
     summaries:
@@ -337,16 +347,16 @@ views:
     name: d'Aboville ordered
     filters:
       and:
-        - note.${cr_id}
-        - note.daboville
+        - '!${cr_id}.isEmpty()'
+        - '!daboville.isEmpty()'
     order:
       - daboville
   - type: table
     name: Without lineage
     filters:
       and:
-        - note.${cr_id}
-        - "!note.lineage"
+        - '!${cr_id}.isEmpty()'
+        - 'lineage.isEmpty()'
     order:
       - file.name
 `;
@@ -357,283 +367,4 @@ views:
  * Uses canonical property names (no aliases)
  * @deprecated Use generatePeopleBaseTemplate() instead
  */
-export const BASE_TEMPLATE = `visibleProperties:
-  - formula.display_name
-  - note.father
-  - note.mother
-  - note.spouse
-  - note.child
-  - formula.birth_display
-  - formula.death_display
-  - note.sex
-  - note.collection
-  - note.group_name
-  - note.root_person
-  - note.lineage
-  - note.generation
-  - note.ahnentafel
-  - note.daboville
-summaries:
-  generation_span: if(values.length > 0, (values.max() - values.min()).years.floor(), 0)
-filters:
-  and:
-    - file.hasProperty("cr_id")
-    - note.cr_type != "place"
-    - note.cr_type != "event"
-    - note.cr_type != "source"
-    - note.cr_type != "organization"
-    - note.cr_type != "map"
-formulas:
-  display_name: name || file.name
-  age: if(born.isEmpty(), "Unknown", if(died.isEmpty() && (now() - born).years.floor() < 125, (now() - born).years.floor() + " years", if(born && !died.isEmpty(), (died - born).years.floor() + " years", "Unknown")))
-  birth_display: if(born, born.format("YYYY-MM-DD"), "")
-  death_display: if(died, died.format("YYYY-MM-DD"), "")
-properties:
-  cr_id:
-    displayName: ID
-  formula.display_name:
-    displayName: Name
-  note.father:
-    displayName: Father
-  note.mother:
-    displayName: Mother
-  note.spouse:
-    displayName: Spouse(s)
-  note.child:
-    displayName: Children
-  formula.birth_display:
-    displayName: Born
-  formula.death_display:
-    displayName: Died
-  formula.age:
-    displayName: Age
-  note.sex:
-    displayName: Sex
-  note.collection:
-    displayName: Collection
-  note.group_name:
-    displayName: Group name
-  note.root_person:
-    displayName: Root person
-  note.lineage:
-    displayName: Lineage
-  note.generation:
-    displayName: Generation
-  note.ahnentafel:
-    displayName: Ahnentafel #
-  note.daboville:
-    displayName: d'Aboville #
-  note.henry:
-    displayName: Henry #
-  file.path:
-    displayName: Location
-views:
-  - type: table
-    name: All family members
-    filters:
-      and:
-        - note.cr_id
-    order:
-      - born
-      - file.name
-      - father
-      - mother
-      - spouse
-      - child
-    summaries:
-      born: Earliest
-      died: Latest
-      formula.age: Average
-  - type: table
-    name: Living members
-    filters:
-      and:
-        - note.cr_id
-        - died.isEmpty()
-        - (now() - born).years.floor() < 125
-    order:
-      - born
-      - name
-    summaries:
-      formula.age: Average
-  - type: table
-    name: Deceased members
-    filters:
-      and:
-        - note.cr_id
-        - "!died.isEmpty() || (now() - born).years.floor() >= 125"
-    order:
-      - died
-      - name
-    summaries:
-      formula.age: Average
-      died: Latest
-  - type: table
-    name: Recently added
-    filters:
-      and:
-        - note.cr_id
-        - file.ctime > now() - '30 days'
-    order:
-      - file.ctime
-    limit: 20
-  - type: table
-    name: Missing parents
-    filters:
-      and:
-        - note.cr_id
-        - "!note.father && !note.mother"
-    order:
-      - file.name
-  - type: table
-    name: Incomplete data
-    filters:
-      and:
-        - note.cr_id
-        - "!note.born || !note.name"
-    order:
-      - file.name
-  - type: table
-    name: By collection
-    filters:
-      and:
-        - note.cr_id
-        - note.collection
-    order:
-      - collection
-      - file.name
-    summaries:
-      collection: Count
-      born: Earliest
-      died: Latest
-  - type: table
-    name: By family group
-    filters:
-      and:
-        - note.cr_id
-        - note.group_name
-    order:
-      - group_name
-      - file.name
-    summaries:
-      group_name: Count
-      born: Earliest
-      died: Latest
-  - type: table
-    name: Unassigned collections
-    filters:
-      and:
-        - note.cr_id
-        - "!note.collection"
-    order:
-      - file.name
-  - type: table
-    name: Single parents
-    filters:
-      and:
-        - note.cr_id
-        - note.child
-        - "!note.spouse"
-    order:
-      - file.name
-    summaries:
-      child: Count
-  - type: table
-    name: Childless couples
-    filters:
-      and:
-        - note.cr_id
-        - note.spouse
-        - "!note.child"
-    order:
-      - file.name
-  - type: table
-    name: Multiple marriages
-    filters:
-      and:
-        - note.cr_id
-        - note.spouse
-    order:
-      - file.name
-  - type: table
-    name: Sibling groups
-    filters:
-      and:
-        - note.cr_id
-        - note.father
-    order:
-      - father
-      - mother
-      - born
-    summaries:
-      father: Count
-  - type: table
-    name: Root generation
-    filters:
-      and:
-        - note.cr_id
-        - "!note.father && !note.mother"
-    order:
-      - born
-    summaries:
-      child: Count
-  - type: table
-    name: Marked root persons
-    filters:
-      and:
-        - note.cr_id
-        - note.root_person = true
-    order:
-      - born
-    summaries:
-      child: Count
-  - type: table
-    name: By lineage
-    filters:
-      and:
-        - note.cr_id
-        - note.lineage
-    order:
-      - lineage
-      - generation
-      - born
-    summaries:
-      lineage: Count
-  - type: table
-    name: By generation number
-    filters:
-      and:
-        - note.cr_id
-        - note.generation
-    order:
-      - generation
-      - born
-    summaries:
-      generation: Count
-  - type: table
-    name: Ahnentafel ordered
-    filters:
-      and:
-        - note.cr_id
-        - note.ahnentafel
-    order:
-      - ahnentafel
-    summaries:
-      ahnentafel: Max
-  - type: table
-    name: d'Aboville ordered
-    filters:
-      and:
-        - note.cr_id
-        - note.daboville
-    order:
-      - daboville
-  - type: table
-    name: Without lineage
-    filters:
-      and:
-        - note.cr_id
-        - "!note.lineage"
-    order:
-      - file.name
-`;
+export const BASE_TEMPLATE = generatePeopleBaseTemplate();

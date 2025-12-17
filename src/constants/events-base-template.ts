@@ -48,6 +48,7 @@ export function generateEventsBaseTemplate(aliases: PropertyAliases = {}): strin
 	const is_canonical = getPropertyName('is_canonical', aliases);
 	const universe = getPropertyName('universe', aliases);
 	const cr_id = getPropertyName('cr_id', aliases);
+	const cr_type = getPropertyName('cr_type', aliases);
 
 	return `visibleProperties:
   - note.${title}
@@ -58,16 +59,15 @@ export function generateEventsBaseTemplate(aliases: PropertyAliases = {}): strin
   - note.${confidence}
   - note.${date_precision}
 summaries:
-  total_events: values.length
+  total_events: 'values.length'
 filters:
-  or:
-    - note.type == "event"
-    - file.hasProperty("${event_type}")
+  and:
+    - '${cr_type} == "event"'
 formulas:
-  display_name: ${title} || file.name
-  year_only: if(${date}, ${date}.year, "")
-  has_sources: if(${sources}, "Yes", "No")
-  is_dated: if(${date}, "Dated", "Relative only")
+  display_name: '${title} || file.name'
+  year_only: 'if(${date}, ${date}.year, "")'
+  has_sources: 'if(${sources}, "Yes", "No")'
+  is_dated: 'if(${date}, "Dated", "Relative only")'
 properties:
   ${cr_id}:
     displayName: ID
@@ -118,193 +118,173 @@ properties:
 views:
   - name: All Events
     type: table
-    filter: {}
     order:
       - note.${title}
       - note.${event_type}
       - note.${date}
       - note.${person}
       - note.${place}
-    sort:
-      - property: note.${date}
-        direction: asc
-      - property: note.${sort_order}
-        direction: asc
   - name: By Type
     type: table
-    filter: {}
-    group:
-      - property: note.${event_type}
-    sort:
-      - property: note.${date}
-        direction: asc
+    groupBy:
+      property: note.${event_type}
+      direction: ASC
+    order:
+      - file.name
+      - note.${date}
   - name: By Person
     type: table
-    filter:
-      note.${person}:
-        ne: null
-    group:
-      - property: note.${person}
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '!${person}.isEmpty()'
+    groupBy:
+      property: note.${person}
+      direction: ASC
+    order:
+      - note.${date}
   - name: By Place
     type: table
-    filter:
-      note.${place}:
-        ne: null
-    group:
-      - property: note.${place}
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '!${place}.isEmpty()'
+    groupBy:
+      property: note.${place}
+      direction: ASC
+    order:
+      - file.name
+      - note.${date}
   - name: By Confidence
     type: table
-    filter: {}
-    group:
-      - property: note.${confidence}
-    sort:
-      - property: note.${date}
-        direction: asc
+    groupBy:
+      property: note.${confidence}
+      direction: ASC
+    order:
+      - note.${date}
   - name: Vital Events
     type: table
-    filter:
+    filters:
       or:
-        - note.${event_type}: birth
-        - note.${event_type}: death
-        - note.${event_type}: marriage
-        - note.${event_type}: divorce
-    sort:
-      - property: note.${date}
-        direction: asc
+        - '${event_type} == "birth"'
+        - '${event_type} == "death"'
+        - '${event_type} == "marriage"'
+        - '${event_type} == "divorce"'
+    order:
+      - file.name
+      - note.${date}
   - name: Life Events
     type: table
-    filter:
+    filters:
       or:
-        - note.${event_type}: residence
-        - note.${event_type}: occupation
-        - note.${event_type}: military
-        - note.${event_type}: immigration
-        - note.${event_type}: education
-        - note.${event_type}: burial
-        - note.${event_type}: baptism
-        - note.${event_type}: confirmation
-        - note.${event_type}: ordination
-    sort:
-      - property: note.${date}
-        direction: asc
+        - '${event_type} == "residence"'
+        - '${event_type} == "occupation"'
+        - '${event_type} == "military"'
+        - '${event_type} == "immigration"'
+        - '${event_type} == "education"'
+        - '${event_type} == "burial"'
+        - '${event_type} == "baptism"'
+        - '${event_type} == "confirmation"'
+        - '${event_type} == "ordination"'
+    order:
+      - note.${date}
   - name: Narrative Events
     type: table
-    filter:
+    filters:
       or:
-        - note.${event_type}: anecdote
-        - note.${event_type}: lore_event
-        - note.${event_type}: plot_point
-        - note.${event_type}: flashback
-        - note.${event_type}: foreshadowing
-        - note.${event_type}: backstory
-        - note.${event_type}: climax
-        - note.${event_type}: resolution
-    sort:
-      - property: note.${date}
-        direction: asc
+        - '${event_type} == "anecdote"'
+        - '${event_type} == "lore_event"'
+        - '${event_type} == "plot_point"'
+        - '${event_type} == "flashback"'
+        - '${event_type} == "foreshadowing"'
+        - '${event_type} == "backstory"'
+        - '${event_type} == "climax"'
+        - '${event_type} == "resolution"'
+    order:
+      - note.${date}
   - name: High Confidence
     type: table
-    filter:
-      note.${confidence}: high
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '${confidence} == "high"'
+    order:
+      - note.${date}
   - name: Low Confidence
     type: table
-    filter:
+    filters:
       or:
-        - note.${confidence}: low
-        - note.${confidence}: unknown
-    sort:
-      - property: note.${date}
-        direction: asc
+        - '${confidence} == "low"'
+        - '${confidence} == "unknown"'
+    order:
+      - note.${date}
   - name: With Sources
     type: table
-    filter:
-      note.${sources}:
-        ne: null
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '!${sources}.isEmpty()'
+    order:
+      - note.${date}
   - name: Missing Sources
     type: table
-    filter:
-      note.${sources}:
-        eq: null
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '${sources}.isEmpty()'
+    order:
+      - note.${date}
   - name: Dated Events
     type: table
-    filter:
-      note.${date}:
-        ne: null
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '!${date}.isEmpty()'
+    order:
+      - note.${date}
   - name: Relative Ordering Only
     type: table
-    filter:
+    filters:
       and:
-        - note.${date}:
-            eq: null
-        - or:
-            - note.${before}:
-                ne: null
-            - note.${after}:
-                ne: null
-    sort:
-      - property: note.${sort_order}
-        direction: asc
+        - '${date}.isEmpty()'
+        - '!${before}.isEmpty() || !${after}.isEmpty()'
+    order:
+      - note.${sort_order}
   - name: Canonical Events
     type: table
-    filter:
-      note.${is_canonical}: true
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '${is_canonical} == true'
+    order:
+      - note.${date}
   - name: By Timeline
     type: table
-    filter:
-      note.${timeline}:
-        ne: null
-    group:
-      - property: note.${timeline}
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '!${timeline}.isEmpty()'
+    groupBy:
+      property: note.${timeline}
+      direction: ASC
+    order:
+      - note.${date}
   - name: By Universe
     type: table
-    filter:
-      note.${universe}:
-        ne: null
-    group:
-      - property: note.${universe}
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '!${universe}.isEmpty()'
+    groupBy:
+      property: note.${universe}
+      direction: ASC
+    order:
+      - note.${date}
   - name: By Group
     type: table
-    filter:
-      note.${groups}:
-        ne: null
-    group:
-      - property: note.${groups}
-    sort:
-      - property: note.${date}
-        direction: asc
+    filters:
+      and:
+        - '!${groups}.isEmpty()'
+    groupBy:
+      property: note.${groups}
+      direction: ASC
+    order:
+      - note.${date}
   - name: By Sort Order
     type: table
-    filter: {}
-    sort:
-      - property: note.${sort_order}
-        direction: asc
+    order:
+      - note.${sort_order}
 `;
 }
 

@@ -38,6 +38,7 @@ export function generatePlacesBaseTemplate(aliases: PropertyAliases = {}): strin
 	const collection = getPropertyName('collection', aliases);
 	const aliases_prop = getPropertyName('aliases', aliases);
 	const cr_id = getPropertyName('cr_id', aliases);
+	const cr_type = getPropertyName('cr_type', aliases);
 
 	return `visibleProperties:
   - note.${name}
@@ -49,15 +50,14 @@ export function generatePlacesBaseTemplate(aliases: PropertyAliases = {}): strin
   - note.${collection}
   - note.${aliases_prop}
 summaries:
-  total_places: values.length
+  total_places: 'values.length'
 filters:
-  or:
-    - file.hasProperty("${place_type}")
-    - note.type == "place"
+  and:
+    - '${cr_type} == "place"'
 formulas:
-  display_name: ${name} || file.name
-  has_coords: if(${coordinates}, "Yes", "No")
-  hierarchy_path: if(${parent_place}, ${parent_place} + " → " + ${name}, ${name})
+  display_name: '${name} || file.name'
+  has_coords: 'if(${coordinates}, "Yes", "No")'
+  hierarchy_path: 'if(${parent_place}, ${parent_place} + " → " + ${name}, ${name})'
 properties:
   ${cr_id}:
     displayName: ID
@@ -86,127 +86,113 @@ properties:
 views:
   - name: All Places
     type: table
-    filter: {}
     order:
       - note.${name}
       - note.${place_type}
       - note.${place_category}
       - note.${parent_place}
       - note.${coordinates}
-    sort:
-      - property: note.${name}
-        direction: asc
   - name: By Type
     type: table
-    filter: {}
-    group:
-      - property: note.${place_type}
-    sort:
-      - property: note.${name}
-        direction: asc
+    groupBy:
+      property: note.${place_type}
+      direction: ASC
+    order:
+      - note.${name}
   - name: By Category
     type: table
-    filter: {}
-    group:
-      - property: note.${place_category}
-    sort:
-      - property: note.${name}
-        direction: asc
+    groupBy:
+      property: note.${place_category}
+      direction: ASC
+    order:
+      - note.${name}
   - name: Countries
     type: table
-    filter:
-      note.${place_type}: country
-    sort:
-      - property: note.${name}
-        direction: asc
+    filters:
+      and:
+        - '${place_type} == "country"'
+    order:
+      - note.${name}
   - name: States/Provinces
     type: table
-    filter:
+    filters:
       or:
-        - note.${place_type}: state
-        - note.${place_type}: province
-    sort:
-      - property: note.${name}
-        direction: asc
+        - '${place_type} == "state"'
+        - '${place_type} == "province"'
+    order:
+      - note.${name}
   - name: Cities/Towns
     type: table
-    filter:
+    filters:
       or:
-        - note.${place_type}: city
-        - note.${place_type}: town
-        - note.${place_type}: village
-    sort:
-      - property: note.${name}
-        direction: asc
+        - '${place_type} == "city"'
+        - '${place_type} == "town"'
+        - '${place_type} == "village"'
+    order:
+      - note.${name}
   - name: Real Places
     type: table
-    filter:
-      note.${place_category}: real
-    sort:
-      - property: note.${name}
-        direction: asc
+    filters:
+      and:
+        - '${place_category} == "real"'
+    order:
+      - note.${name}
   - name: Historical Places
     type: table
-    filter:
-      note.${place_category}: historical
-    sort:
-      - property: note.${name}
-        direction: asc
+    filters:
+      and:
+        - '${place_category} == "historical"'
+    order:
+      - note.${name}
   - name: Fictional Places
     type: table
-    filter:
-      note.${place_category}: fictional
-    sort:
-      - property: note.${name}
-        direction: asc
+    filters:
+      and:
+        - '${place_category} == "fictional"'
+    order:
+      - note.${name}
   - name: By Universe
     type: table
-    filter:
-      note.${universe}:
-        ne: null
-    group:
-      - property: note.${universe}
-    sort:
-      - property: note.${name}
-        direction: asc
+    filters:
+      and:
+        - '!${universe}.isEmpty()'
+    groupBy:
+      property: note.${universe}
+      direction: ASC
+    order:
+      - note.${name}
   - name: With Coordinates
     type: table
-    filter:
-      note.${coordinates}:
-        ne: null
-    sort:
-      - property: note.${name}
-        direction: asc
+    filters:
+      and:
+        - '!${coordinates}.isEmpty()'
+    order:
+      - note.${name}
   - name: Missing Coordinates
     type: table
-    filter:
+    filters:
       and:
-        - note.${coordinates}:
-            eq: null
-        - or:
-            - note.${place_category}: real
-            - note.${place_category}: historical
-    sort:
-      - property: note.${name}
-        direction: asc
+        - '${coordinates}.isEmpty()'
+        - '${place_category} == "real" || ${place_category} == "historical"'
+    order:
+      - note.${name}
   - name: Orphan Places
     type: table
-    filter:
-      note.${parent_place}:
-        eq: null
-    sort:
-      - property: note.${name}
-        direction: asc
+    filters:
+      and:
+        - '${parent_place}.isEmpty()'
+    order:
+      - note.${name}
   - name: By Collection
     type: table
-    filter:
-      note.${collection}:
-        ne: null
-    group:
-      - property: note.${collection}
-    sort:
-      - property: note.${name}
-        direction: asc
+    filters:
+      and:
+        - '!${collection}.isEmpty()'
+    groupBy:
+      property: note.${collection}
+      direction: ASC
+    order:
+      - note.${name}
 `;
 }
 
