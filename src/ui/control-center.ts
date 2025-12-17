@@ -1752,6 +1752,61 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
+	 * Create an accordion section for the Tree Output two-panel layout
+	 */
+	private createAccordionSection(
+		container: HTMLElement,
+		title: string,
+		icon: LucideIconName,
+		defaultExpanded: boolean,
+		badge?: string,
+		renderContent?: (body: HTMLElement) => void
+	): { wrapper: HTMLElement; content: HTMLElement } {
+		const wrapper = container.createDiv({ cls: 'crc-accordion-section' });
+
+		const header = wrapper.createDiv({ cls: 'crc-accordion-header' });
+
+		// Chevron
+		const chevron = header.createSpan({ cls: 'crc-accordion-chevron' });
+		setLucideIcon(chevron, defaultExpanded ? 'chevron-down' : 'chevron-right', 14);
+		if (defaultExpanded) {
+			chevron.addClass('crc-accordion-chevron--expanded');
+		}
+
+		// Icon
+		const iconEl = header.createSpan({ cls: 'crc-accordion-icon' });
+		setLucideIcon(iconEl, icon, 16);
+
+		// Title
+		header.createSpan({ text: title, cls: 'crc-accordion-title' });
+
+		// Optional badge
+		if (badge) {
+			header.createSpan({ text: badge, cls: 'crc-accordion-badge' });
+		}
+
+		// Content
+		const content = wrapper.createDiv({
+			cls: defaultExpanded ? 'crc-accordion-content' : 'crc-accordion-content crc-accordion-content--collapsed'
+		});
+
+		// Render content if provided
+		if (renderContent) {
+			renderContent(content);
+		}
+
+		// Toggle handler
+		header.addEventListener('click', () => {
+			const isExpanded = !content.hasClass('crc-accordion-content--collapsed');
+			content.toggleClass('crc-accordion-content--collapsed', isExpanded);
+			chevron.toggleClass('crc-accordion-chevron--expanded', !isExpanded);
+			setLucideIcon(chevron, isExpanded ? 'chevron-right' : 'chevron-down', 14);
+		});
+
+		return { wrapper, content };
+	}
+
+	/**
 	 * Show People tab - combined statistics, actions, and person list
 	 */
 	private showPeopleTab(): void {
@@ -3652,7 +3707,10 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
-	 * Show Tree Output tab
+	 * Show Tree Output tab - Two-Panel Layout
+	 *
+	 * Left panel: Scrollable configuration with collapsible accordions
+	 * Right panel: Sticky preview area + generate section
 	 */
 	private showTreeGenerationTab(): void {
 		const container = this.contentContainer;
@@ -3662,11 +3720,11 @@ export class ControlCenterModal extends Modal {
 
 		// Intro text
 		container.createEl('p', {
-			text: 'Generate visual family trees and export to various formats. Start by selecting a root person and configuring tree options.',
+			text: 'Generate visual family trees and export to various formats.',
 			cls: 'crc-text-muted'
 		});
 
-		// Root Person Card
+		// Root Person Field (shared state)
 		const rootPersonField: RelationshipField = { name: '' };
 
 		// Check if we have a pending root person to pre-populate
@@ -3675,27 +3733,49 @@ export class ControlCenterModal extends Modal {
 			rootPersonField.crId = this.pendingRootPerson.crId;
 			rootPersonField.birthDate = this.pendingRootPerson.birthDate;
 			rootPersonField.deathDate = this.pendingRootPerson.deathDate;
-			// Clear pending after using it
 			this.pendingRootPerson = undefined;
 		}
 
-		this.createRootPersonCard(container, rootPersonField);
+		// =====================================================================
+		// TWO-PANEL CONTAINER
+		// =====================================================================
+		const twoPanelContainer = container.createDiv({ cls: 'crc-tree-output-container' });
 
-		// Configuration Card
-		const configCard = container.createDiv({ cls: 'crc-card' });
-		const configHeader = configCard.createDiv({ cls: 'crc-card__header' });
-		const configTitle = configHeader.createEl('h3', {
-			cls: 'crc-card__title',
-			text: 'Tree configuration'
-		});
-		const configIcon = createLucideIcon('settings', 20);
-		configTitle.prepend(configIcon);
+		// =====================================================================
+		// LEFT PANEL - Scrollable Configuration
+		// =====================================================================
+		const leftPanel = twoPanelContainer.createDiv({ cls: 'crc-tree-output-left' });
 
-		const configContent = configCard.createDiv({ cls: 'crc-card__content' });
+		// ----- Section 1: Root Person (expanded by default) -----
+		const rootPersonSection = this.createAccordionSection(
+			leftPanel,
+			'Root person',
+			'user',
+			true
+		);
+		this.buildRootPersonAccordionContent(rootPersonSection.content, rootPersonField);
+
+		// ----- Section 2: Tree Scope (expanded by default) -----
+		// Need to declare all config variables at this scope for later access
+		let typeSelect: HTMLSelectElement;
+		let genSlider: HTMLInputElement;
+		let spouseToggle: ToggleComponent;
+		let stepParentToggle: ToggleComponent;
+		let adoptiveParentToggle: ToggleComponent;
+		let collectionSelect: HTMLSelectElement;
+		let placeFilterInput: HTMLInputElement;
+		const placeFilterTypes: Set<'birth' | 'death' | 'marriage' | 'burial'> = new Set(['birth', 'death']);
+
+		const treeScopeSection = this.createAccordionSection(
+			leftPanel,
+			'Tree scope',
+			'git-branch',
+			true
+		);
+		const treeScopeContent = treeScopeSection.content;
 
 		// Tree type selection
-		let typeSelect: HTMLSelectElement;
-		new Setting(configContent)
+		new Setting(treeScopeContent)
 			.setName('Tree type')
 			.setDesc('Choose which relatives to include in the tree')
 			.addDropdown(dropdown => {
@@ -3708,8 +3788,7 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Max generations
-		let genSlider: HTMLInputElement;
-		new Setting(configContent)
+		new Setting(treeScopeContent)
 			.setName('Maximum generations')
 			.setDesc('Limit the depth of the tree. Set to 0 for unlimited (use with caution on large trees)')
 			.addSlider(slider => {
@@ -3725,8 +3804,7 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Include spouses toggle
-		let spouseToggle: ToggleComponent;
-		new Setting(configContent)
+		new Setting(treeScopeContent)
 			.setName('Include spouses in tree')
 			.addToggle(toggle => {
 				spouseToggle = toggle;
@@ -3734,8 +3812,7 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Include step-parents toggle
-		let stepParentToggle: ToggleComponent;
-		new Setting(configContent)
+		new Setting(treeScopeContent)
 			.setName('Include step-parents')
 			.setDesc('Show step-parent relationships with dashed lines')
 			.addToggle(toggle => {
@@ -3744,8 +3821,7 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Include adoptive parents toggle
-		let adoptiveParentToggle: ToggleComponent;
-		new Setting(configContent)
+		new Setting(treeScopeContent)
 			.setName('Include adoptive parents')
 			.setDesc('Show adoptive parent relationships with dotted lines')
 			.addToggle(toggle => {
@@ -3754,11 +3830,10 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Collection filter dropdown
-		let collectionSelect: HTMLSelectElement;
 		const graphService = this.plugin.createFamilyGraphService();
 		const userCollections = graphService.getUserCollections();
 
-		new Setting(configContent)
+		new Setting(treeScopeContent)
 			.setName('Filter by collection')
 			.setDesc('Limit tree to people in a specific collection (optional)')
 			.addDropdown(dropdown => {
@@ -3770,10 +3845,7 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Place filter input and type selection
-		let placeFilterInput: HTMLInputElement;
-		const placeFilterTypes: Set<'birth' | 'death' | 'marriage' | 'burial'> = new Set(['birth', 'death']);
-
-		new Setting(configContent)
+		new Setting(treeScopeContent)
 			.setName('Filter by place')
 			.setDesc('Limit tree to people associated with a specific place (optional)')
 			.addText(text => {
@@ -3782,7 +3854,7 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Place filter type checkboxes
-		const placeTypesSetting = new Setting(configContent)
+		const placeTypesSetting = new Setting(treeScopeContent)
 			.setName('Place filter types')
 			.setDesc('Which place fields to check when filtering');
 
@@ -3809,20 +3881,21 @@ export class ControlCenterModal extends Modal {
 			label.appendText(type.label);
 		}
 
-		// Layout Options Card
-		const layoutCard = container.createDiv({ cls: 'crc-card' });
-		const layoutHeader = layoutCard.createDiv({ cls: 'crc-card__header' });
-		const layoutTitle = layoutHeader.createEl('h3', {
-			cls: 'crc-card__title',
-			text: 'Layout options'
-		});
-		const layoutIcon = createLucideIcon('layout', 20);
-		layoutTitle.prepend(layoutIcon);
+		// ----- Section 3: Layout Options (collapsed by default) -----
+		let dirSelect: HTMLSelectElement;
+		let layoutTypeSelect: HTMLSelectElement;
+		let spacingXInput: HTMLInputElement;
+		let spacingYInput: HTMLInputElement;
 
-		const layoutContent = layoutCard.createDiv({ cls: 'crc-card__content' });
+		const layoutSection = this.createAccordionSection(
+			leftPanel,
+			'Layout options',
+			'layout',
+			false
+		);
+		const layoutContent = layoutSection.content;
 
 		// Direction selection
-		let dirSelect: HTMLSelectElement;
 		new Setting(layoutContent)
 			.setName('Tree direction')
 			.addDropdown(dropdown => {
@@ -3833,7 +3906,6 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Layout type selection
-		let layoutTypeSelect: HTMLSelectElement;
 		new Setting(layoutContent)
 			.setName('Layout algorithm')
 			.setDesc('Choose the layout style for your tree')
@@ -3848,7 +3920,6 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Horizontal spacing
-		let spacingXInput: HTMLInputElement;
 		new Setting(layoutContent)
 			.setName('Horizontal spacing')
 			.setDesc('Space between nodes horizontally (pixels). Default: 400')
@@ -3862,7 +3933,6 @@ export class ControlCenterModal extends Modal {
 			});
 
 		// Vertical spacing
-		let spacingYInput: HTMLInputElement;
 		new Setting(layoutContent)
 			.setName('Vertical spacing')
 			.setDesc('Space between nodes vertically (pixels). Default: 200')
@@ -3875,294 +3945,7 @@ export class ControlCenterModal extends Modal {
 				text.setValue('200');
 			});
 
-		// Tree Preview Card
-		const previewCard = container.createDiv({ cls: 'crc-card' });
-		const previewHeader = previewCard.createDiv({ cls: 'crc-card__header' });
-		const previewTitle = previewHeader.createEl('h3', {
-			cls: 'crc-card__title',
-			text: 'Tree preview'
-		});
-		const previewIcon = createLucideIcon('eye', 20);
-		previewTitle.prepend(previewIcon);
-
-		const previewContent = previewCard.createDiv({ cls: 'crc-card__content' });
-
-		// Description
-		previewContent.createEl('p', {
-			text: 'Preview your family tree layout before generating the canvas.',
-			cls: 'crc-text-muted crc-mb-3'
-		});
-
-		// Preview controls row
-		const previewControlsRow = previewContent.createDiv({ cls: 'crc-preview-controls crc-mb-3' });
-
-		// Generate preview button
-		const generatePreviewBtn = previewControlsRow.createEl('button', {
-			text: 'Generate preview',
-			cls: 'mod-cta'
-		});
-
-		// Zoom controls
-		const zoomControls = previewControlsRow.createDiv({ cls: 'crc-preview-zoom-controls' });
-		const zoomOutBtn = zoomControls.createEl('button', {
-			text: '−',
-			cls: 'crc-preview-zoom-btn',
-			attr: { 'aria-label': 'Zoom out' }
-		});
-		const resetViewBtn = zoomControls.createEl('button', {
-			text: 'Reset',
-			cls: 'crc-preview-zoom-btn',
-			attr: { 'aria-label': 'Reset view' }
-		});
-		const zoomInBtn = zoomControls.createEl('button', {
-			text: '+',
-			cls: 'crc-preview-zoom-btn',
-			attr: { 'aria-label': 'Zoom in' }
-		});
-
-		// Label toggle
-		const labelToggle = previewControlsRow.createDiv({ cls: 'crc-preview-label-toggle' });
-		const labelCheckbox = labelToggle.createEl('input', {
-			type: 'checkbox',
-			cls: 'crc-preview-checkbox',
-			attr: { id: 'preview-labels-toggle' }
-		});
-		labelCheckbox.checked = true;
-		labelToggle.createEl('label', {
-			text: 'Show labels',
-			attr: { for: 'preview-labels-toggle' }
-		});
-
-		// Color scheme selector
-		const colorSchemeControl = previewControlsRow.createDiv({ cls: 'crc-preview-color-scheme' });
-		colorSchemeControl.createEl('label', {
-			text: 'Color scheme:',
-			cls: 'crc-preview-color-scheme-label'
-		});
-		const colorSchemeSelect = colorSchemeControl.createEl('select', {
-			cls: 'crc-preview-color-scheme-select dropdown'
-		});
-
-		// Add color scheme options
-		const colorSchemes = [
-			{ value: 'sex', label: 'Sex' },
-			{ value: 'generation', label: 'Generation' },
-			{ value: 'monochrome', label: 'Monochrome' }
-		];
-
-		for (const scheme of colorSchemes) {
-			const option = colorSchemeSelect.createEl('option', {
-				text: scheme.label,
-				value: scheme.value
-			});
-			if (scheme.value === this.plugin.settings.nodeColorScheme) {
-				option.selected = true;
-			}
-		}
-
-		// Export button with dropdown
-		const exportControl = previewControlsRow.createDiv({ cls: 'crc-preview-export' });
-		const exportBtn = exportControl.createEl('button', {
-			text: 'Export',
-			cls: 'crc-preview-export-btn'
-		});
-
-		// Create dropdown menu (hidden by default)
-		const exportDropdown = exportControl.createDiv({ cls: 'crc-preview-export-dropdown cr-hidden' });
-
-		const exportPNG = exportDropdown.createEl('div', {
-			text: 'Export as PNG',
-			cls: 'crc-preview-export-option'
-		});
-
-		const exportSVG = exportDropdown.createEl('div', {
-			text: 'Export as SVG',
-			cls: 'crc-preview-export-option'
-		});
-
-		const exportPDF = exportDropdown.createEl('div', {
-			text: 'Export as PDF',
-			cls: 'crc-preview-export-option'
-		});
-
-		// Toggle dropdown on button click
-		exportBtn.addEventListener('click', (e) => {
-			e.stopPropagation();
-			exportDropdown.toggleClass('cr-hidden', !exportDropdown.hasClass('cr-hidden'));
-		});
-
-		// Close dropdown when clicking outside
-		document.addEventListener('click', () => {
-			exportDropdown.addClass('cr-hidden');
-		});
-
-		// Preview container
-		this.treePreviewContainer = previewContent.createDiv({
-			cls: 'crc-tree-preview-container'
-		});
-
-		// Initialize preview renderer
-		this.treePreviewRenderer = new TreePreviewRenderer(this.treePreviewContainer);
-		// Set initial color scheme from settings
-		this.treePreviewRenderer.setColorScheme(this.plugin.settings.nodeColorScheme);
-
-		// Wire up zoom controls
-		zoomInBtn.addEventListener('click', () => {
-			this.treePreviewRenderer?.zoomIn();
-		});
-
-		zoomOutBtn.addEventListener('click', () => {
-			this.treePreviewRenderer?.zoomOut();
-		});
-
-		resetViewBtn.addEventListener('click', () => {
-			this.treePreviewRenderer?.resetView();
-		});
-
-		// Wire up label toggle
-		labelCheckbox.addEventListener('change', () => {
-			this.treePreviewRenderer?.toggleLabels(labelCheckbox.checked);
-		});
-
-		// Wire up color scheme selector
-		colorSchemeSelect.addEventListener('change', () => {
-			const scheme = colorSchemeSelect.value as ColorScheme;
-			this.treePreviewRenderer?.setColorScheme(scheme);
-		});
-
-		// Wire up export options
-		exportPNG.addEventListener('click', () => {
-			void (async () => {
-				try {
-					await this.treePreviewRenderer?.exportAsPNG();
-					new Notice('Preview exported as PNG');
-					exportDropdown.addClass('cr-hidden');
-				} catch (err) {
-					new Notice('Failed to export preview: ' + (err as Error).message);
-				}
-			})();
-		});
-
-		exportSVG.addEventListener('click', () => {
-			try {
-				this.treePreviewRenderer?.exportAsSVG();
-				new Notice('Preview exported as SVG');
-				exportDropdown.addClass('cr-hidden');
-			} catch (err) {
-				new Notice('Failed to export preview: ' + (err as Error).message);
-			}
-		});
-
-		exportPDF.addEventListener('click', () => {
-			void (async () => {
-				try {
-					await this.treePreviewRenderer?.exportAsPDF();
-					new Notice('Preview exported as PDF');
-					exportDropdown.addClass('cr-hidden');
-				} catch (err) {
-					new Notice('Failed to export preview: ' + (err as Error).message);
-				}
-			})();
-		});
-
-		// Wire up preview button
-		generatePreviewBtn.addEventListener('click', () => {
-			void (async () => {
-				if (!rootPersonField.crId) {
-					new Notice('Please select a root person first');
-					return;
-				}
-
-				try {
-					generatePreviewBtn.disabled = true;
-					generatePreviewBtn.setText('Generating preview...');
-
-					// Yield to allow button state to render before expensive work
-					await new Promise(resolve => setTimeout(resolve, 50));
-
-					// Build family tree
-					const graphService = this.plugin.createFamilyGraphService();
-					const treeOptions: TreeOptions = {
-						rootCrId: rootPersonField.crId,
-						treeType: typeSelect.value as 'ancestors' | 'descendants' | 'full',
-						maxGenerations: parseInt(genSlider.value) || 0,
-						includeSpouses: spouseToggle.getValue(),
-						includeStepParents: stepParentToggle.getValue(),
-						includeAdoptiveParents: adoptiveParentToggle.getValue(),
-						collectionFilter: collectionSelect.value || undefined,
-						placeFilter: placeFilterInput.value.trim() ? {
-							placeName: placeFilterInput.value.trim(),
-							types: Array.from(placeFilterTypes)
-						} : undefined
-					};
-
-					const familyTree = graphService.generateTree(treeOptions);
-
-					if (!familyTree) {
-						new Notice('Failed to build family tree. Root person may not exist.');
-						return;
-					}
-
-					// Disable preview for large trees - the layout algorithm can freeze
-					const PREVIEW_LIMIT = 200;
-					const totalNodeCount = familyTree.nodes.size;
-
-					if (totalNodeCount > PREVIEW_LIMIT) {
-						new Notice(`Tree has ${totalNodeCount} people - too large for preview. Generate the canvas directly instead.`, 5000);
-						return;
-					}
-
-					// Build layout options
-					// Map tree type values (ancestors/descendants -> ancestor/descendant for layout engine)
-					const treeTypeValue: 'ancestor' | 'descendant' | 'full' = typeSelect.value === 'ancestors' ? 'ancestor' :
-						typeSelect.value === 'descendants' ? 'descendant' : 'full';
-
-					const layoutOptions = {
-						nodeSpacingX: parseInt(spacingXInput.value) || 400,
-						nodeSpacingY: parseInt(spacingYInput.value) || 200,
-						direction: dirSelect.value as 'vertical' | 'horizontal',
-						treeType: treeTypeValue,
-						layoutType: layoutTypeSelect.value as import('../settings').LayoutType,
-						nodeWidth: this.plugin.settings.defaultNodeWidth,
-						nodeHeight: this.plugin.settings.defaultNodeHeight
-					};
-
-					// Yield before layout calculation
-					await new Promise(resolve => setTimeout(resolve, 0));
-
-					// Render preview
-					this.treePreviewRenderer?.renderPreview(familyTree, layoutOptions);
-
-					new Notice(`Preview generated (${totalNodeCount} people)`);
-				} catch (error: unknown) {
-					console.error('Preview generation failed:', error);
-					new Notice('Failed to generate preview. See console for details.');
-				} finally {
-					generatePreviewBtn.disabled = false;
-					generatePreviewBtn.setText('Generate preview');
-				}
-			})();
-		});
-
-		// Style Customization Card
-		const styleCard = container.createDiv({ cls: 'crc-card' });
-		const styleHeader = styleCard.createDiv({ cls: 'crc-card__header' });
-		const styleTitle = styleHeader.createEl('h3', {
-			cls: 'crc-card__title',
-			text: 'Style customization (optional)'
-		});
-		const styleIcon = createLucideIcon('layout', 20);
-		styleTitle.prepend(styleIcon);
-
-		const styleContent = styleCard.createDiv({ cls: 'crc-card__content' });
-
-		// Add description
-		styleContent.createEl('p', {
-			text: 'Override global style settings for this canvas only. Leave options unchecked to use global settings.',
-			cls: 'setting-item-description'
-		});
-
-		// Style override toggles and controls
+		// ----- Section 4: Style Customization (collapsed by default) -----
 		let useCustomNodeColor = false;
 		let useCustomParentChildArrow = false;
 		let useCustomSpouseArrow = false;
@@ -4178,6 +3961,19 @@ export class ControlCenterModal extends Modal {
 		let customSpouseColorSelect: HTMLSelectElement;
 		let customSpouseEdgesToggle: ToggleComponent;
 		let customSpouseLabelsSelect: HTMLSelectElement;
+
+		const styleSection = this.createAccordionSection(
+			leftPanel,
+			'Style customization',
+			'sliders',
+			false
+		);
+		const styleContent = styleSection.content;
+
+		styleContent.createEl('p', {
+			text: 'Override global style settings for this canvas only. Leave options unchecked to use global settings.',
+			cls: 'setting-item-description crc-mb-2'
+		});
 
 		// Node color scheme override
 		new Setting(styleContent)
@@ -4319,71 +4115,25 @@ export class ControlCenterModal extends Modal {
 				customSpouseLabelsSelect.disabled = true;
 			});
 
-		// Export Tree Card
-		const exportCard = container.createDiv({ cls: 'crc-card' });
-		const exportHeader = exportCard.createDiv({ cls: 'crc-card__header' });
-		const exportTitle = exportHeader.createEl('h3', {
-			cls: 'crc-card__title',
-			text: 'Export tree'
-		});
-		const exportIcon = createLucideIcon('download', 20);
-		exportTitle.prepend(exportIcon);
-
-		const exportContent = exportCard.createDiv({ cls: 'crc-card__content' });
-
-		// Intro text
-		exportContent.createEl('p', {
-			text: 'Export an existing canvas to other formats.',
-			cls: 'crc-text-muted crc-mb-3'
-		});
-
-		// Excalidraw export section
-		exportContent.createEl('h4', {
-			text: 'Excalidraw export',
-			cls: 'crc-section-heading'
-		});
-
-		exportContent.createEl('p', {
-			text: 'To export a canvas to Excalidraw format, right-click on any Canvas Roots canvas file and select "Export to Excalidraw". The export creates an editable Excalidraw file that preserves your tree structure.',
-			cls: 'crc-text-muted crc-mb-3'
-		});
-
-		// Note about context menu
-		const contextMenuNote = exportContent.createDiv({ cls: 'crc-info-box' });
-		contextMenuNote.createEl('strong', { text: 'Quick access:' });
-		contextMenuNote.createEl('p', {
-			text: 'The fastest way to export is via the canvas file context menu. Just right-click any Canvas Roots canvas in your file explorer.',
-			cls: 'crc-mt-1'
-		});
-
-		// Recent Trees Card (collapsible)
+		// ----- Section 5: Recent Trees (collapsed by default) -----
 		const recentTrees = this.plugin.settings.recentTrees?.slice(0, 5) || [];
 		if (recentTrees.length > 0) {
-			const recentTreesCard = container.createDiv({ cls: 'crc-card' });
-			const recentTreesHeader = recentTreesCard.createDiv({ cls: 'crc-card__header' });
-			const recentTreesTitle = recentTreesHeader.createEl('h3', {
-				cls: 'crc-card__title',
-				text: 'Recent trees'
-			});
-			const recentTreesIcon = createLucideIcon('clock', 20);
-			recentTreesTitle.prepend(recentTreesIcon);
-
-			const recentTreesContent = recentTreesCard.createDiv({ cls: 'crc-card__content' });
-
-			recentTreesContent.createEl('p', {
-				cls: 'crc-form-help crc-mb-3',
-				text: 'Quickly re-open your recently generated family trees'
-			});
+			const recentSection = this.createAccordionSection(
+				leftPanel,
+				'Recent trees',
+				'clock',
+				false,
+				`${recentTrees.length}`
+			);
+			const recentContent = recentSection.content;
 
 			recentTrees.forEach((tree, index) => {
-				const treeBtn = recentTreesContent.createEl('button', {
+				const treeBtn = recentContent.createEl('button', {
 					cls: `crc-btn crc-btn--secondary crc-btn--block ${index > 0 ? 'crc-mt-2' : ''}`,
 					text: tree.canvasName.replace('.canvas', '')
 				});
 				const treeIcon = createLucideIcon('file', 16);
 				treeBtn.prepend(treeIcon);
-
-				// Add metadata badge
 				treeBtn.createSpan({
 					cls: 'crc-badge crc-ml-2',
 					text: `${tree.peopleCount} people`
@@ -4404,7 +4154,306 @@ export class ControlCenterModal extends Modal {
 			});
 		}
 
-		// Wire up the Generate button (in Root person card)
+		// =====================================================================
+		// RIGHT PANEL - Sticky Preview + Generate
+		// =====================================================================
+		const rightPanel = twoPanelContainer.createDiv({ cls: 'crc-tree-output-right' });
+
+		// ----- Preview Panel -----
+		const previewPanel = rightPanel.createDiv({ cls: 'crc-tree-preview-panel' });
+
+		// Preview container (SVG will go here)
+		this.treePreviewContainer = previewPanel.createDiv({
+			cls: 'crc-tree-preview-container'
+		});
+
+		// Initialize preview renderer
+		this.treePreviewRenderer = new TreePreviewRenderer(this.treePreviewContainer);
+		this.treePreviewRenderer.setColorScheme(this.plugin.settings.nodeColorScheme);
+
+		// Preview controls bar
+		const previewControlsRow = previewPanel.createDiv({ cls: 'crc-preview-controls-panel' });
+
+		// Generate preview button
+		const generatePreviewBtn = previewControlsRow.createEl('button', {
+			text: 'Generate preview',
+			cls: 'mod-cta'
+		});
+
+		// Zoom controls
+		const zoomControls = previewControlsRow.createDiv({ cls: 'crc-preview-zoom-controls' });
+		const zoomOutBtn = zoomControls.createEl('button', {
+			text: '−',
+			cls: 'crc-preview-zoom-btn',
+			attr: { 'aria-label': 'Zoom out' }
+		});
+		const resetViewBtn = zoomControls.createEl('button', {
+			text: 'Reset',
+			cls: 'crc-preview-zoom-btn',
+			attr: { 'aria-label': 'Reset view' }
+		});
+		const zoomInBtn = zoomControls.createEl('button', {
+			text: '+',
+			cls: 'crc-preview-zoom-btn',
+			attr: { 'aria-label': 'Zoom in' }
+		});
+
+		// Label toggle
+		const labelToggle = previewControlsRow.createDiv({ cls: 'crc-preview-label-toggle' });
+		const labelCheckbox = labelToggle.createEl('input', {
+			type: 'checkbox',
+			cls: 'crc-preview-checkbox',
+			attr: { id: 'preview-labels-toggle' }
+		});
+		labelCheckbox.checked = true;
+		labelToggle.createEl('label', {
+			text: 'Show labels',
+			attr: { for: 'preview-labels-toggle' }
+		});
+
+		// Color scheme selector
+		const colorSchemeControl = previewControlsRow.createDiv({ cls: 'crc-preview-color-scheme' });
+		colorSchemeControl.createEl('label', {
+			text: 'Color scheme:',
+			cls: 'crc-preview-color-scheme-label'
+		});
+		const colorSchemeSelect = colorSchemeControl.createEl('select', {
+			cls: 'crc-preview-color-scheme-select dropdown'
+		});
+
+		// Add color scheme options
+		const colorSchemes = [
+			{ value: 'sex', label: 'Sex' },
+			{ value: 'generation', label: 'Generation' },
+			{ value: 'monochrome', label: 'Monochrome' }
+		];
+
+		for (const scheme of colorSchemes) {
+			const option = colorSchemeSelect.createEl('option', {
+				text: scheme.label,
+				value: scheme.value
+			});
+			if (scheme.value === this.plugin.settings.nodeColorScheme) {
+				option.selected = true;
+			}
+		}
+
+		// Export button with dropdown
+		const exportControl = previewControlsRow.createDiv({ cls: 'crc-preview-export' });
+		const exportBtn = exportControl.createEl('button', {
+			text: 'Export',
+			cls: 'crc-preview-export-btn'
+		});
+
+		// Create dropdown menu (hidden by default)
+		const exportDropdown = exportControl.createDiv({ cls: 'crc-preview-export-dropdown cr-hidden' });
+
+		const exportPNG = exportDropdown.createEl('div', {
+			text: 'Export as PNG',
+			cls: 'crc-preview-export-option'
+		});
+
+		const exportSVG = exportDropdown.createEl('div', {
+			text: 'Export as SVG',
+			cls: 'crc-preview-export-option'
+		});
+
+		const exportPDF = exportDropdown.createEl('div', {
+			text: 'Export as PDF',
+			cls: 'crc-preview-export-option'
+		});
+
+		// Toggle dropdown on button click
+		exportBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			exportDropdown.toggleClass('cr-hidden', !exportDropdown.hasClass('cr-hidden'));
+		});
+
+		// Close dropdown when clicking outside
+		document.addEventListener('click', () => {
+			exportDropdown.addClass('cr-hidden');
+		});
+
+		// Wire up zoom controls
+		zoomInBtn.addEventListener('click', () => {
+			this.treePreviewRenderer?.zoomIn();
+		});
+
+		zoomOutBtn.addEventListener('click', () => {
+			this.treePreviewRenderer?.zoomOut();
+		});
+
+		resetViewBtn.addEventListener('click', () => {
+			this.treePreviewRenderer?.resetView();
+		});
+
+		// Wire up label toggle
+		labelCheckbox.addEventListener('change', () => {
+			this.treePreviewRenderer?.toggleLabels(labelCheckbox.checked);
+		});
+
+		// Wire up color scheme selector
+		colorSchemeSelect.addEventListener('change', () => {
+			const scheme = colorSchemeSelect.value as ColorScheme;
+			this.treePreviewRenderer?.setColorScheme(scheme);
+		});
+
+		// Wire up export options
+		exportPNG.addEventListener('click', () => {
+			void (async () => {
+				try {
+					await this.treePreviewRenderer?.exportAsPNG();
+					new Notice('Preview exported as PNG');
+					exportDropdown.addClass('cr-hidden');
+				} catch (err) {
+					new Notice('Failed to export preview: ' + (err as Error).message);
+				}
+			})();
+		});
+
+		exportSVG.addEventListener('click', () => {
+			try {
+				this.treePreviewRenderer?.exportAsSVG();
+				new Notice('Preview exported as SVG');
+				exportDropdown.addClass('cr-hidden');
+			} catch (err) {
+				new Notice('Failed to export preview: ' + (err as Error).message);
+			}
+		});
+
+		exportPDF.addEventListener('click', () => {
+			void (async () => {
+				try {
+					await this.treePreviewRenderer?.exportAsPDF();
+					new Notice('Preview exported as PDF');
+					exportDropdown.addClass('cr-hidden');
+				} catch (err) {
+					new Notice('Failed to export preview: ' + (err as Error).message);
+				}
+			})();
+		});
+
+		// Wire up preview button
+		generatePreviewBtn.addEventListener('click', () => {
+			void (async () => {
+				if (!rootPersonField.crId) {
+					new Notice('Please select a root person first');
+					return;
+				}
+
+				try {
+					generatePreviewBtn.disabled = true;
+					generatePreviewBtn.setText('Generating preview...');
+
+					// Yield to allow button state to render before expensive work
+					await new Promise(resolve => setTimeout(resolve, 50));
+
+					// Build family tree
+					const graphService = this.plugin.createFamilyGraphService();
+					const treeOptions: TreeOptions = {
+						rootCrId: rootPersonField.crId,
+						treeType: typeSelect.value as 'ancestors' | 'descendants' | 'full',
+						maxGenerations: parseInt(genSlider.value) || 0,
+						includeSpouses: spouseToggle.getValue(),
+						includeStepParents: stepParentToggle.getValue(),
+						includeAdoptiveParents: adoptiveParentToggle.getValue(),
+						collectionFilter: collectionSelect.value || undefined,
+						placeFilter: placeFilterInput.value.trim() ? {
+							placeName: placeFilterInput.value.trim(),
+							types: Array.from(placeFilterTypes)
+						} : undefined
+					};
+
+					const familyTree = graphService.generateTree(treeOptions);
+
+					if (!familyTree) {
+						new Notice('Failed to build family tree. Root person may not exist.');
+						return;
+					}
+
+					// Disable preview for large trees - the layout algorithm can freeze
+					const PREVIEW_LIMIT = 200;
+					const totalNodeCount = familyTree.nodes.size;
+
+					if (totalNodeCount > PREVIEW_LIMIT) {
+						new Notice(`Tree has ${totalNodeCount} people - too large for preview. Generate the canvas directly instead.`, 5000);
+						return;
+					}
+
+					// Build layout options
+					// Map tree type values (ancestors/descendants -> ancestor/descendant for layout engine)
+					const treeTypeValue: 'ancestor' | 'descendant' | 'full' = typeSelect.value === 'ancestors' ? 'ancestor' :
+						typeSelect.value === 'descendants' ? 'descendant' : 'full';
+
+					const layoutOptions = {
+						nodeSpacingX: parseInt(spacingXInput.value) || 400,
+						nodeSpacingY: parseInt(spacingYInput.value) || 200,
+						direction: dirSelect.value as 'vertical' | 'horizontal',
+						treeType: treeTypeValue,
+						layoutType: layoutTypeSelect.value as import('../settings').LayoutType,
+						nodeWidth: this.plugin.settings.defaultNodeWidth,
+						nodeHeight: this.plugin.settings.defaultNodeHeight
+					};
+
+					// Yield before layout calculation
+					await new Promise(resolve => setTimeout(resolve, 0));
+
+					// Render preview
+					this.treePreviewRenderer?.renderPreview(familyTree, layoutOptions);
+
+					new Notice(`Preview generated (${totalNodeCount} people)`);
+				} catch (error: unknown) {
+					console.error('Preview generation failed:', error);
+					new Notice('Failed to generate preview. See console for details.');
+				} finally {
+					generatePreviewBtn.disabled = false;
+					generatePreviewBtn.setText('Generate preview');
+				}
+			})();
+		});
+
+		// ----- Generate Panel (in right panel) -----
+		const generatePanel = rightPanel.createDiv({ cls: 'crc-tree-generate-panel' });
+
+		// Canvas name input
+		generatePanel.createEl('label', {
+			cls: 'crc-form-label',
+			text: 'Canvas name (optional)'
+		});
+		const canvasNameInput = generatePanel.createEl('input', {
+			cls: 'crc-form-input',
+			attr: {
+				type: 'text',
+				placeholder: 'Auto-generated from root person name'
+			}
+		});
+		this.treeCanvasNameInput = canvasNameInput;
+
+		// Generate buttons container
+		const generateButtons = generatePanel.createDiv({ cls: 'crc-tree-generate-buttons' });
+
+		// Primary generate button
+		const generateBtn = generateButtons.createEl('button', {
+			cls: 'mod-cta',
+			text: 'Generate family tree'
+		});
+		this.treeGenerateBtn = generateBtn;
+
+		// Generate all trees button (if multiple family groups)
+		const familyComponents = graphService.findAllFamilyComponents();
+		if (familyComponents.length > 1) {
+			const allTreesBtn = generateButtons.createEl('button', {
+				cls: 'crc-btn crc-btn--secondary',
+				text: `Generate all trees (${familyComponents.length} groups)`
+			});
+			allTreesBtn.addEventListener('click', () => {
+				void (async () => {
+					await this.openAndGenerateAllTrees();
+				})();
+			});
+		}
+
+		// Wire up the Generate button
 		this.treeGenerateBtn?.addEventListener('click', () => {
 			void (async () => {
 				// Build style overrides object (only include enabled overrides)
@@ -10936,6 +10985,259 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
+	 * Build root person accordion content for the two-panel Tree Output layout
+	 * Reuses the same logic as createRootPersonCard but without the card wrapper
+	 */
+	private buildRootPersonAccordionContent(container: HTMLElement, rootPersonField: RelationshipField): void {
+		// Selected person display (compact, hidden when empty)
+		const personDisplay = container.createDiv({ cls: 'crc-root-person-display crc-root-person-display--compact' });
+		if (!rootPersonField.crId) {
+			personDisplay.style.display = 'none';
+		}
+		this.updateRootPersonDisplayCompact(personDisplay, rootPersonField);
+
+		// Person browser section (inline, compact)
+		const browserSection = container.createDiv({ cls: 'crc-person-browser crc-person-browser--compact' });
+		const browserContent = browserSection.createDiv({ cls: 'crc-person-browser__content' });
+
+		// Load all people from vault
+		const allPeople: PersonInfo[] = [];
+		const files = this.app.vault.getMarkdownFiles();
+
+		for (const file of files) {
+			const personInfo = this.extractPersonInfoFromFile(file);
+			if (personInfo) {
+				allPeople.push(personInfo);
+			}
+		}
+
+		// Load family components
+		const graphService = this.plugin.createFamilyGraphService();
+		const familyComponents = graphService.findAllFamilyComponents();
+
+		// Build component map
+		const componentMap = new Map<string, number>();
+		familyComponents.forEach((component, index) => {
+			component.people.forEach(person => {
+				componentMap.set(person.crId, index);
+			});
+		});
+
+		// Search bar
+		const searchBar = browserContent.createDiv({ cls: 'crc-person-browser__search' });
+		const searchInput = searchBar.createEl('input', {
+			cls: 'crc-form-input',
+			attr: {
+				type: 'text',
+				placeholder: 'Search by name or ID...'
+			}
+		});
+
+		// All controls on one row: Sort, Living, Sex
+		const controlsBar = browserContent.createDiv({ cls: 'crc-person-browser__controls crc-person-browser__controls--inline' });
+
+		// Sort dropdown
+		const sortContainer = controlsBar.createDiv({ cls: 'crc-picker-filter' });
+		sortContainer.createSpan({ cls: 'crc-picker-filter__label', text: 'Sort:' });
+		const sortSelect = sortContainer.createEl('select', { cls: 'crc-form-select crc-form-select--small' });
+
+		type SortOption = 'name-asc' | 'name-desc' | 'birth-asc' | 'birth-desc' | 'recent';
+		let sortOption: SortOption = 'name-asc';
+
+		const sortOptions: Array<{ value: SortOption; label: string }> = [
+			{ value: 'name-asc', label: 'Name (A-Z)' },
+			{ value: 'name-desc', label: 'Name (Z-A)' },
+			{ value: 'birth-asc', label: 'Birth (oldest)' },
+			{ value: 'birth-desc', label: 'Birth (newest)' },
+			{ value: 'recent', label: 'Recent' }
+		];
+
+		sortOptions.forEach(opt => {
+			const option = sortSelect.createEl('option', { value: opt.value, text: opt.label });
+			if (opt.value === sortOption) {
+				option.selected = true;
+			}
+		});
+
+		// Filters
+		interface FilterOptions {
+			livingStatus: 'all' | 'living' | 'deceased';
+			hasBirthDate: 'all' | 'yes' | 'no';
+			sex: 'all' | 'M' | 'F';
+		}
+
+		const filters: FilterOptions = {
+			livingStatus: 'all',
+			hasBirthDate: 'all',
+			sex: 'all'
+		};
+
+		// Living status filter
+		const livingFilter = controlsBar.createDiv({ cls: 'crc-picker-filter' });
+		livingFilter.createSpan({ cls: 'crc-picker-filter__label', text: 'Living:' });
+		const livingSelect = livingFilter.createEl('select', { cls: 'crc-form-select crc-form-select--small' });
+		[
+			{ value: 'all', label: 'All' },
+			{ value: 'living', label: 'Living' },
+			{ value: 'deceased', label: 'Deceased' }
+		].forEach(opt => {
+			livingSelect.createEl('option', { value: opt.value, text: opt.label });
+		});
+
+		// Sex filter
+		const sexFilter = controlsBar.createDiv({ cls: 'crc-picker-filter' });
+		sexFilter.createSpan({ cls: 'crc-picker-filter__label', text: 'Sex:' });
+		const sexSelect = sexFilter.createEl('select', { cls: 'crc-form-select crc-form-select--small' });
+		[
+			{ value: 'all', label: 'All' },
+			{ value: 'M', label: 'Male' },
+			{ value: 'F', label: 'Female' }
+		].forEach(opt => {
+			sexSelect.createEl('option', { value: opt.value, text: opt.label });
+		});
+
+		// Results container
+		const resultsContainer = browserContent.createDiv({ cls: 'crc-picker-results' });
+
+		// Helper: Extract year from date string
+		const extractYear = (dateStr: string): number | null => {
+			const yearMatch = dateStr.match(/\b(\d{4})\b/);
+			return yearMatch ? parseInt(yearMatch[1], 10) : null;
+		};
+
+		// Render function
+		const renderResults = (): void => {
+			resultsContainer.empty();
+
+			// Filter people
+			let filteredPeople = allPeople.filter(person => {
+				// Search filter
+				const searchTerm = searchInput.value.toLowerCase().trim();
+				if (searchTerm) {
+					const nameMatch = person.name.toLowerCase().includes(searchTerm);
+					const idMatch = person.crId.toLowerCase().includes(searchTerm);
+					if (!nameMatch && !idMatch) return false;
+				}
+
+				// Living filter
+				if (filters.livingStatus === 'living' && person.deathDate) return false;
+				if (filters.livingStatus === 'deceased' && !person.deathDate) return false;
+
+				// Sex filter
+				if (filters.sex !== 'all' && person.sex !== filters.sex) return false;
+
+				return true;
+			});
+
+			// Sort people
+			filteredPeople.sort((a, b) => {
+				switch (sortOption) {
+					case 'name-asc':
+						return a.name.localeCompare(b.name);
+					case 'name-desc':
+						return b.name.localeCompare(a.name);
+					case 'birth-asc': {
+						const aYear = a.birthDate ? extractYear(a.birthDate) : null;
+						const bYear = b.birthDate ? extractYear(b.birthDate) : null;
+						if (!aYear && !bYear) return 0;
+						if (!aYear) return 1;
+						if (!bYear) return -1;
+						return aYear - bYear;
+					}
+					case 'birth-desc': {
+						const aYear = a.birthDate ? extractYear(a.birthDate) : null;
+						const bYear = b.birthDate ? extractYear(b.birthDate) : null;
+						if (!aYear && !bYear) return 0;
+						if (!aYear) return 1;
+						if (!bYear) return -1;
+						return bYear - aYear;
+					}
+					default:
+						return 0;
+				}
+			});
+
+			// Show results (limited to first 50 for performance)
+			const displayPeople = filteredPeople.slice(0, 50);
+
+			if (displayPeople.length === 0) {
+				resultsContainer.createDiv({
+					cls: 'crc-picker-empty',
+					text: 'No people found matching your criteria'
+				});
+				return;
+			}
+
+			displayPeople.forEach(person => {
+				const row = resultsContainer.createDiv({ cls: 'crc-picker-row' });
+
+				// Radio button
+				const radio = row.createEl('input', {
+					type: 'radio',
+					attr: { name: 'root-person-accordion' }
+				});
+
+				if (rootPersonField.crId === person.crId) {
+					radio.checked = true;
+				}
+
+				// Person info
+				const info = row.createDiv({ cls: 'crc-picker-row__info' });
+				info.createDiv({ cls: 'crc-picker-row__name', text: person.name });
+
+				const dates: string[] = [];
+				if (person.birthDate) dates.push(`b. ${person.birthDate}`);
+				if (person.deathDate) dates.push(`d. ${person.deathDate}`);
+				if (dates.length > 0) {
+					info.createDiv({ cls: 'crc-picker-row__dates', text: dates.join(' • ') });
+				}
+
+				// Click handler
+				const selectPerson = () => {
+					rootPersonField.name = person.name;
+					rootPersonField.crId = person.crId;
+					rootPersonField.birthDate = person.birthDate;
+					rootPersonField.deathDate = person.deathDate;
+					radio.checked = true;
+					this.updateRootPersonDisplayCompact(personDisplay, rootPersonField);
+				};
+
+				radio.addEventListener('change', selectPerson);
+				row.addEventListener('click', (e) => {
+					if (e.target !== radio) {
+						selectPerson();
+					}
+				});
+			});
+
+			if (filteredPeople.length > 50) {
+				resultsContainer.createDiv({
+					cls: 'crc-picker-more',
+					text: `Showing 50 of ${filteredPeople.length} results. Refine your search to see more.`
+				});
+			}
+		};
+
+		// Wire up event listeners
+		searchInput.addEventListener('input', renderResults);
+		sortSelect.addEventListener('change', () => {
+			sortOption = sortSelect.value as SortOption;
+			renderResults();
+		});
+		livingSelect.addEventListener('change', () => {
+			filters.livingStatus = livingSelect.value as FilterOptions['livingStatus'];
+			renderResults();
+		});
+		sexSelect.addEventListener('change', () => {
+			filters.sex = sexSelect.value as FilterOptions['sex'];
+			renderResults();
+		});
+
+		// Initial render
+		renderResults();
+	}
+
+	/**
 	 * Create root person card for tree generation with inline person browser
 	 */
 	private createRootPersonCard(container: HTMLElement, rootPersonField: RelationshipField): void {
@@ -11454,6 +11756,61 @@ export class ControlCenterModal extends Modal {
 					text: rootPersonField.crId
 				});
 			}
+		}
+	}
+
+	/**
+	 * Update root person display - compact version for accordion layout
+	 * Only shows the selected person, hidden when empty
+	 */
+	private updateRootPersonDisplayCompact(personDisplay: HTMLElement, rootPersonField: RelationshipField): void {
+		personDisplay.empty();
+
+		if (rootPersonField.crId) {
+			// Show the display
+			personDisplay.style.display = '';
+
+			// Selected person - compact inline display
+			const selectedPerson = personDisplay.createDiv({ cls: 'crc-root-person-selected crc-root-person-selected--compact' });
+
+			selectedPerson.createSpan({
+				cls: 'crc-root-person-selected__name',
+				text: rootPersonField.name
+			});
+
+			// Show birth/death dates if available
+			const hasDates = rootPersonField.birthDate || rootPersonField.deathDate;
+			if (hasDates) {
+				const dateText: string[] = [];
+				if (rootPersonField.birthDate) {
+					dateText.push(`b. ${rootPersonField.birthDate}`);
+				}
+				if (rootPersonField.deathDate) {
+					dateText.push(`d. ${rootPersonField.deathDate}`);
+				}
+				selectedPerson.createSpan({
+					cls: 'crc-root-person-selected__dates',
+					text: ` (${dateText.join(' • ')})`
+				});
+			}
+
+			// Clear button
+			const clearBtn = selectedPerson.createEl('button', {
+				cls: 'crc-root-person-clear clickable-icon',
+				attr: { 'aria-label': 'Clear selection' }
+			});
+			setIcon(clearBtn, 'x');
+			clearBtn.addEventListener('click', (e) => {
+				e.stopPropagation();
+				rootPersonField.name = '';
+				rootPersonField.crId = '';
+				rootPersonField.birthDate = undefined;
+				rootPersonField.deathDate = undefined;
+				this.updateRootPersonDisplayCompact(personDisplay, rootPersonField);
+			});
+		} else {
+			// Hide the display when no person selected
+			personDisplay.style.display = 'none';
 		}
 	}
 

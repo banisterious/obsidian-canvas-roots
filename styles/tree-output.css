@@ -1,0 +1,424 @@
+/* Tree Output Tab - Two-Panel Layout */
+
+/* Main two-panel container */
+.crc-tree-output-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--cr-spacing-lg);
+  min-height: 500px;
+}
+
+/* Left panel - scrollable configuration */
+.crc-tree-output-left {
+  overflow-y: auto;
+  padding-right: var(--cr-spacing-sm);
+}
+
+/* Right panel - preview and generate */
+.crc-tree-output-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cr-spacing-sm);
+}
+
+/* ========================================
+   Accordion Sections
+   ======================================== */
+
+.crc-accordion-section {
+  margin-bottom: var(--cr-spacing-sm);
+  background: var(--background-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-accordion-section:first-child {
+  margin-top: 0;
+}
+
+.crc-accordion-header {
+  display: flex;
+  align-items: center;
+  gap: var(--cr-spacing-sm);
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--background-modifier-border-hover);
+  transition: background-color var(--cr-transition-fast);
+}
+
+.crc-accordion-header:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-accordion-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  transition: transform var(--cr-transition-fast);
+}
+
+.crc-accordion-chevron--expanded {
+  transform: rotate(90deg);
+}
+
+.crc-accordion-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.crc-accordion-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-normal);
+  flex: 1;
+}
+
+.crc-accordion-badge {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--background-primary-alt);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.crc-accordion-content {
+  padding: 0 16px 16px;
+  animation: crc-accordion-slide-down 200ms ease-out;
+}
+
+.crc-accordion-content--collapsed {
+  display: none;
+}
+
+@keyframes crc-accordion-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* stylelint-disable-next-line selector-class-pattern -- Obsidian native class */
+.crc-accordion-content .setting-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding-top: 12px;
+  padding-bottom: 0;
+  border-top: none;
+}
+
+/* stylelint-disable-next-line selector-class-pattern -- Obsidian native class */
+.crc-accordion-content .setting-item:first-child {
+  padding-top: 8px;
+}
+
+/* stylelint-disable-next-line selector-class-pattern -- Obsidian native class */
+.crc-accordion-content .setting-item-info {
+  width: 100%;
+  max-width: none;
+  margin-right: 0;
+}
+
+/* stylelint-disable-next-line selector-class-pattern -- Obsidian native class */
+.crc-accordion-content .setting-item-name {
+  font-size: 13px;
+}
+
+/* stylelint-disable-next-line selector-class-pattern -- Obsidian native class */
+.crc-accordion-content .setting-item-description {
+  font-size: 11px;
+}
+
+/* stylelint-disable-next-line selector-class-pattern -- Obsidian native class */
+.crc-accordion-content .setting-item-control {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* Full-width dropdowns in accordions */
+/* stylelint-disable-next-line selector-class-pattern -- Obsidian native class */
+.crc-accordion-content .setting-item-control > select {
+  width: 100%;
+}
+
+/* ========================================
+   Right Panel - Preview Area
+   ======================================== */
+
+.crc-tree-preview-panel {
+  height: 350px; /* Fixed height to ensure generate panel is always visible */
+  display: flex;
+  flex-direction: column;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+  overflow: hidden;
+}
+
+.crc-tree-preview-panel .crc-tree-preview-container {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Preview controls - integrated into right panel */
+.crc-preview-controls-panel {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  background: var(--background-modifier-border-hover);
+  border-top: 1px solid var(--background-modifier-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.crc-preview-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crc-preview-controls-group--right {
+  margin-left: auto;
+}
+
+/* ========================================
+   Right Panel - Generate Section
+   ======================================== */
+
+.crc-tree-generate-panel {
+  flex-shrink: 0; /* Don't shrink the generate panel */
+  background: var(--background-secondary);
+  padding: var(--cr-spacing-sm) var(--cr-spacing-md);
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-tree-generate-panel .crc-form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.crc-tree-generate-panel .crc-form-input {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.crc-tree-generate-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* stylelint-disable-next-line selector-class-pattern -- Obsidian native class */
+.crc-tree-generate-buttons .mod-cta {
+  width: 100%;
+  justify-content: center;
+}
+
+.crc-tree-generate-buttons .crc-btn--secondary {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Node count indicator */
+.crc-node-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.crc-node-count-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ========================================
+   Responsive Layout
+   ======================================== */
+
+@media (max-width: 900px) {
+  .crc-tree-output-container {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: auto;
+  }
+
+  .crc-tree-output-right {
+    order: -1; /* Preview first on narrow screens */
+    height: auto;
+  }
+
+  .crc-tree-preview-panel {
+    min-height: 250px;
+    max-height: 350px;
+  }
+}
+
+/* ========================================
+   Root Person Card - Compact Layout
+   ======================================== */
+
+/* Compact person browser for accordion */
+.crc-person-browser--compact {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.crc-person-browser--compact .crc-person-browser__content {
+  gap: 8px;
+}
+
+/* Inline controls row - all filters on one line */
+.crc-person-browser__controls--inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 0;
+  border-bottom: none;
+}
+
+/* Compact selected person display */
+.crc-root-person-display--compact {
+  margin-bottom: 8px;
+}
+
+.crc-root-person-selected--compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.crc-root-person-selected--compact .crc-root-person-selected__name {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.crc-root-person-selected--compact .crc-root-person-selected__dates {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.crc-root-person-clear {
+  margin-left: auto;
+  padding: 2px;
+  color: var(--text-on-accent);
+  opacity: 0.7;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.crc-root-person-clear:hover {
+  opacity: 1;
+  background: rgb(255 255 255 / 15%);
+}
+
+/* Compact picker results */
+.crc-person-browser--compact .crc-picker-results {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+/* Picker row - single line with radio, name, dates */
+.crc-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.crc-picker-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-picker-row input[type="radio"] {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.crc-picker-row__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.crc-picker-row__name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-normal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crc-picker-row__dates {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.crc-picker-more {
+  padding: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ========================================
+   Place Filter Types - Compact Layout
+   ======================================== */
+
+.crc-place-filter-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.crc-place-filter-type {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.crc-place-filter-type input[type="checkbox"] {
+  margin: 0;
+}

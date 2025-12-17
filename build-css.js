@@ -54,6 +54,7 @@ const CONFIG = {
     'sources.css',       // Sources tab
     'statistics.css',    // Statistics tab and view
     'preferences.css',   // Preferences tab
+    'tree-output.css',   // Tree output two-panel layout
     'dynamic-content.css', // Dynamic content blocks (timeline, relationships)
     'animations.css',    // Keyframes and transitions
     'responsive.css',    // Responsive breakpoints

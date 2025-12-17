@@ -25,11 +25,21 @@
 }
 
 /* Progress rows for completeness */
+.cr-progress-row {
+  margin-bottom: var(--size-4-3);
+}
+
 .cr-progress-label {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+  gap: var(--size-4-2);
   margin-bottom: var(--size-4-1);
   font-size: var(--font-ui-small);
+}
+
+.cr-progress-label > span:first-child {
+  white-space: nowrap;
 }
 
 .cr-progress-percent {

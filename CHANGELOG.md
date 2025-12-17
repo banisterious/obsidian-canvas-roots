@@ -9,11 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.12.11] - 2025-12-17
+
+### Changed
+
+- **Tree Output tab two-panel layout** - Redesigned Tree Output tab with a two-panel layout: scrollable configuration accordions on the left, sticky preview and generate buttons on the right. Root person picker is now compact with inline radio buttons, names, and dates.
+
 ### Fixed
 
-- **Family Chart PNG/PDF export failing silently for large charts** - Charts exceeding browser canvas limits (16384px dimension or ~268M pixels) now show a persistent dismissable error message suggesting SVG export instead.
+- **Tree Output accordion labels truncating** - Fixed setting labels in accordion sections (like "Tree type") being cut off due to constrained flexbox layout.
 
-- **Family Chart SVG export missing button styling** - Exported SVG files now properly resolve CSS variables in the "Open note" buttons to actual colors, ensuring correct rendering in standalone viewers.
+- **Statistics tab label wrapping** - Fixed Data completeness card labels wrapping mid-word by adding proper whitespace handling.
 
 ---
 
