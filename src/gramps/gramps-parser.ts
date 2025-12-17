@@ -48,6 +48,12 @@ export interface ParsedGrampsPerson {
 	// Parent references (filled during relationship processing)
 	fatherRef?: string;
 	motherRef?: string;
+	// Step-parent references (filled during relationship processing)
+	stepfatherRefs: string[];
+	stepmotherRefs: string[];
+	// Adoptive parent references (filled during relationship processing)
+	adoptiveFatherRef?: string;
+	adoptiveMotherRef?: string;
 	// Spouse references (filled during relationship processing)
 	spouseRefs: string[];
 	// Marriage data per spouse
@@ -915,6 +921,8 @@ export class GrampsParser {
 			deathDate,
 			deathPlace,
 			occupation,
+			stepfatherRefs: [],
+			stepmotherRefs: [],
 			spouseRefs: [],
 			marriages: new Map()
 		};
@@ -948,15 +956,46 @@ export class GrampsParser {
 			const fatherHandle = family.father;
 			const motherHandle = family.mother;
 
-			// Set parent references for children
+			// Set parent references for children based on mrel/frel relationship types
 			for (const childRef of family.children) {
 				const child = persons.get(childRef.hlink);
 				if (child) {
+					// Handle father relationship based on frel type
 					if (fatherHandle && persons.has(fatherHandle)) {
-						child.fatherRef = fatherHandle;
+						const frel = childRef.frel;
+						if (frel === 'Stepchild') {
+							// Step-father (can have multiple)
+							if (!child.stepfatherRefs.includes(fatherHandle)) {
+								child.stepfatherRefs.push(fatherHandle);
+							}
+						} else if (frel === 'Adopted') {
+							// Adoptive father (typically one)
+							if (!child.adoptiveFatherRef) {
+								child.adoptiveFatherRef = fatherHandle;
+							}
+						} else {
+							// Birth or absent/unknown = biological father
+							child.fatherRef = fatherHandle;
+						}
 					}
+
+					// Handle mother relationship based on mrel type
 					if (motherHandle && persons.has(motherHandle)) {
-						child.motherRef = motherHandle;
+						const mrel = childRef.mrel;
+						if (mrel === 'Stepchild') {
+							// Step-mother (can have multiple)
+							if (!child.stepmotherRefs.includes(motherHandle)) {
+								child.stepmotherRefs.push(motherHandle);
+							}
+						} else if (mrel === 'Adopted') {
+							// Adoptive mother (typically one)
+							if (!child.adoptiveMotherRef) {
+								child.adoptiveMotherRef = motherHandle;
+							}
+						} else {
+							// Birth or absent/unknown = biological mother
+							child.motherRef = motherHandle;
+						}
 					}
 				}
 			}

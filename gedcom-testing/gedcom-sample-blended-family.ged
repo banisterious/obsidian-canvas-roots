@@ -1,0 +1,378 @@
+0 HEAD
+1 SOUR Canvas Roots Test
+2 VERS 1.0
+2 NAME Canvas Roots Blended Family Test
+1 DEST ANY
+1 DATE 16 DEC 2025
+1 SUBM @SUBM1@
+1 FILE gedcom-sample-blended-family.ged
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+1 NOTE This test file contains step-parent and adoptive parent relationships
+2 CONT to verify PEDI tag parsing in Canvas Roots GEDCOM import.
+0 @SUBM1@ SUBM
+1 NAME Canvas Roots Tester
+0 @I1@ INDI
+1 NAME John /Smith/
+2 GIVN John
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 15 MAR 1970
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F1@
+1 FAMS @F3@
+0 @I2@ INDI
+1 NAME Mary /Jones/
+2 GIVN Mary
+2 SURN Jones
+1 SEX F
+1 BIRT
+2 DATE 22 JUN 1972
+2 PLAC Chicago, Illinois, USA
+1 FAMS @F1@
+1 FAMS @F2@
+0 @I3@ INDI
+1 NAME Robert /Williams/
+2 GIVN Robert
+2 SURN Williams
+1 SEX M
+1 BIRT
+2 DATE 8 SEP 1968
+2 PLAC New York, New York, USA
+1 FAMS @F2@
+0 @I4@ INDI
+1 NAME Sarah /Brown/
+2 GIVN Sarah
+2 SURN Brown
+1 SEX F
+1 BIRT
+2 DATE 14 NOV 1975
+2 PLAC Denver, Colorado, USA
+1 FAMS @F3@
+0 @I5@ INDI
+1 NAME Emily /Smith/
+2 GIVN Emily
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 5 APR 1998
+2 PLAC Boston, Massachusetts, USA
+1 NOTE Emily is the biological child of John and Mary.
+2 CONT After the divorce, she lives with both parents in their new families.
+2 CONT Robert Williams becomes her stepfather, Sarah Brown becomes her stepmother.
+1 FAMC @F1@
+2 PEDI birth
+1 FAMC @F2@
+2 PEDI step
+1 FAMC @F3@
+2 PEDI step
+0 @I6@ INDI
+1 NAME Michael /Smith/
+2 GIVN Michael
+2 SURN Smith
+1 SEX M
+1 BIRT
+2 DATE 12 AUG 2000
+2 PLAC Boston, Massachusetts, USA
+1 NOTE Michael is the biological child of John and Mary.
+1 FAMC @F1@
+2 PEDI birth
+1 FAMC @F2@
+2 PEDI step
+1 FAMC @F3@
+2 PEDI step
+0 @I7@ INDI
+1 NAME David /Williams/
+2 GIVN David
+2 SURN Williams
+1 SEX M
+1 BIRT
+2 DATE 18 FEB 2005
+2 PLAC New York, New York, USA
+1 NOTE David is the biological child of Robert and Mary.
+1 FAMC @F2@
+2 PEDI birth
+0 @I8@ INDI
+1 NAME Lily /Smith/
+2 GIVN Lily
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 25 DEC 2008
+2 PLAC Denver, Colorado, USA
+1 NOTE Lily is the biological child of John and Sarah.
+1 FAMC @F3@
+2 PEDI birth
+0 @I9@ INDI
+1 NAME James /Chen/
+2 GIVN James
+2 SURN Chen
+1 SEX M
+1 BIRT
+2 DATE 3 JAN 2010
+2 PLAC Shanghai, China
+1 NOTE James was adopted by John and Sarah in 2012.
+1 FAMC @F3@
+2 PEDI adop
+0 @I10@ INDI
+1 NAME Thomas /Anderson/
+2 GIVN Thomas
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 20 JUL 1965
+2 PLAC Philadelphia, Pennsylvania, USA
+1 FAMS @F4@
+0 @I11@ INDI
+1 NAME Patricia /Davis/
+2 GIVN Patricia
+2 SURN Davis
+1 SEX F
+1 BIRT
+2 DATE 11 MAR 1968
+2 PLAC Miami, Florida, USA
+1 DEAT
+2 DATE 5 SEP 2010
+2 PLAC Miami, Florida, USA
+1 FAMS @F4@
+0 @I12@ INDI
+1 NAME Linda /Miller/
+2 GIVN Linda
+2 SURN Miller
+1 SEX F
+1 BIRT
+2 DATE 28 OCT 1970
+2 PLAC Atlanta, Georgia, USA
+1 FAMS @F5@
+0 @I13@ INDI
+1 NAME William /Anderson/
+2 GIVN William
+2 SURN Anderson
+1 SEX M
+1 BIRT
+2 DATE 7 APR 1995
+2 PLAC Philadelphia, Pennsylvania, USA
+1 NOTE William's biological mother Patricia died in 2010.
+2 CONT Thomas later married Linda, who became William's stepmother.
+1 FAMC @F4@
+2 PEDI birth
+1 FAMC @F5@
+2 PEDI step
+0 @I14@ INDI
+1 NAME Grace /Anderson/
+2 GIVN Grace
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 15 SEP 1997
+2 PLAC Philadelphia, Pennsylvania, USA
+1 NOTE Grace has a stepmother (Linda) after her mother Patricia passed away.
+1 FAMC @F4@
+2 PEDI birth
+1 FAMC @F5@
+2 PEDI step
+0 @I15@ INDI
+1 NAME Olivia /Anderson/
+2 GIVN Olivia
+2 SURN Anderson
+1 SEX F
+1 BIRT
+2 DATE 22 NOV 2015
+2 PLAC Atlanta, Georgia, USA
+1 NOTE Olivia is the biological child of Thomas and Linda.
+1 FAMC @F5@
+2 PEDI birth
+0 @I16@ INDI
+1 NAME George /Taylor/
+2 GIVN George
+2 SURN Taylor
+1 SEX M
+1 BIRT
+2 DATE 9 FEB 1960
+2 PLAC Los Angeles, California, USA
+1 FAMS @F6@
+0 @I17@ INDI
+1 NAME Elizabeth /Taylor/
+2 GIVN Elizabeth
+2 SURN Taylor
+1 SEX F
+1 BIRT
+2 DATE 17 MAY 1962
+2 PLAC San Francisco, California, USA
+1 FAMS @F6@
+0 @I18@ INDI
+1 NAME Sophia /Nguyen/
+2 GIVN Sophia
+2 SURN Nguyen
+1 SEX F
+1 BIRT
+2 DATE 14 AUG 2008
+2 PLAC Ho Chi Minh City, Vietnam
+1 NOTE Sophia was adopted by George and Elizabeth from Vietnam in 2010.
+1 FAMC @F6@
+2 PEDI adop
+0 @I19@ INDI
+1 NAME Alexander /Kim/
+2 GIVN Alexander
+2 SURN Kim
+1 SEX M
+1 BIRT
+2 DATE 3 DEC 2012
+2 PLAC Seoul, South Korea
+1 NOTE Alexander was adopted by George and Elizabeth from South Korea in 2014.
+1 FAMC @F6@
+2 PEDI adopted
+0 @I20@ INDI
+1 NAME Richard /Moore/
+2 GIVN Richard
+2 SURN Moore
+1 SEX M
+1 BIRT
+2 DATE 25 MAR 1955
+2 PLAC Seattle, Washington, USA
+1 FAMS @F7@
+1 FAMS @F8@
+0 @I21@ INDI
+1 NAME Jennifer /White/
+2 GIVN Jennifer
+2 SURN White
+1 SEX F
+1 BIRT
+2 DATE 8 JUL 1958
+2 PLAC Portland, Oregon, USA
+1 FAMS @F7@
+0 @I22@ INDI
+1 NAME Carol /Johnson/
+2 GIVN Carol
+2 SURN Johnson
+1 SEX F
+1 BIRT
+2 DATE 19 NOV 1962
+2 PLAC San Diego, California, USA
+1 FAMS @F8@
+0 @I23@ INDI
+1 NAME Daniel /Moore/
+2 GIVN Daniel
+2 SURN Moore
+1 SEX M
+1 BIRT
+2 DATE 4 OCT 1982
+2 PLAC Seattle, Washington, USA
+1 NOTE Daniel is Richard's biological son from first marriage.
+2 CONT Carol is his stepmother.
+1 FAMC @F7@
+2 PEDI birth
+1 FAMC @F8@
+2 PEDI step
+0 @I24@ INDI
+1 NAME Rachel /Moore/
+2 GIVN Rachel
+2 SURN Moore
+1 SEX F
+1 BIRT
+2 DATE 16 MAY 1985
+2 PLAC Seattle, Washington, USA
+1 NOTE Rachel is Richard's biological daughter from first marriage.
+2 CONT Carol is her stepmother.
+1 FAMC @F7@
+2 PEDI birth
+1 FAMC @F8@
+2 PEDI step
+0 @I25@ INDI
+1 NAME Hannah /Moore/
+2 GIVN Hannah
+2 SURN Moore
+1 SEX F
+1 BIRT
+2 DATE 12 JAN 1995
+2 PLAC San Diego, California, USA
+1 NOTE Hannah is the biological child of Richard and Carol.
+1 FAMC @F8@
+2 PEDI birth
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 MARR
+2 DATE 10 JUN 1995
+2 PLAC Boston, Massachusetts, USA
+1 DIV
+2 DATE 15 MAR 2008
+2 PLAC Boston, Massachusetts, USA
+1 NOTE John and Mary's first marriage - divorced in 2008
+1 CHIL @I5@
+1 CHIL @I6@
+0 @F2@ FAM
+1 HUSB @I3@
+1 WIFE @I2@
+1 MARR
+2 DATE 22 SEP 2009
+2 PLAC New York, New York, USA
+1 NOTE Mary's second marriage to Robert
+1 CHIL @I5@
+1 CHIL @I6@
+1 CHIL @I7@
+0 @F3@ FAM
+1 HUSB @I1@
+1 WIFE @I4@
+1 MARR
+2 DATE 5 APR 2010
+2 PLAC Denver, Colorado, USA
+1 NOTE John's second marriage to Sarah
+1 CHIL @I5@
+1 CHIL @I6@
+1 CHIL @I8@
+1 CHIL @I9@
+0 @F4@ FAM
+1 HUSB @I10@
+1 WIFE @I11@
+1 MARR
+2 DATE 14 FEB 1994
+2 PLAC Philadelphia, Pennsylvania, USA
+1 NOTE Thomas and Patricia - Patricia died in 2010
+1 CHIL @I13@
+1 CHIL @I14@
+0 @F5@ FAM
+1 HUSB @I10@
+1 WIFE @I12@
+1 MARR
+2 DATE 8 NOV 2012
+2 PLAC Atlanta, Georgia, USA
+1 NOTE Thomas's second marriage to Linda after Patricia's death
+1 CHIL @I13@
+1 CHIL @I14@
+1 CHIL @I15@
+0 @F6@ FAM
+1 HUSB @I16@
+1 WIFE @I17@
+1 MARR
+2 DATE 20 AUG 1985
+2 PLAC Los Angeles, California, USA
+1 NOTE George and Elizabeth - adoptive parents of Sophia and Alexander
+1 CHIL @I18@
+1 CHIL @I19@
+0 @F7@ FAM
+1 HUSB @I20@
+1 WIFE @I21@
+1 MARR
+2 DATE 3 MAR 1980
+2 PLAC Seattle, Washington, USA
+1 DIV
+2 DATE 18 JUN 1990
+2 PLAC Seattle, Washington, USA
+1 NOTE Richard's first marriage to Jennifer
+1 CHIL @I23@
+1 CHIL @I24@
+0 @F8@ FAM
+1 HUSB @I20@
+1 WIFE @I22@
+1 MARR
+2 DATE 12 DEC 1992
+2 PLAC San Diego, California, USA
+1 NOTE Richard's second marriage to Carol
+1 CHIL @I23@
+1 CHIL @I24@
+1 CHIL @I25@
+0 TRLR

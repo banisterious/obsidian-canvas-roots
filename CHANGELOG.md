@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **GEDCOM pedigree parsing** - Parse `PEDI` tags (`birth`, `step`, `adop`, `foster`) from GEDCOM files. Step-parents and adoptive parents are imported to dedicated frontmatter fields. Biological parent conflicts are no longer triggered by step/adoptive relationships.
 
+- **Gramps XML pedigree parsing** - Parse `mrel` and `frel` attributes from Gramps `<childref>` elements. Relationship types mapped: `Birth` → biological, `Stepchild` → step-parent, `Adopted` → adoptive parent. Uses the same dedicated frontmatter fields as GEDCOM import.
+
 - **Canvas tree visualization** - Step-parent relationships shown with dashed lines; adoptive parent relationships shown with dotted lines. New toggles in tree generation: "Include step-parents" and "Include adoptive parents". Relationship labels displayed on non-biological parent edges.
 
 - **Create/Edit Person modal** - New "Step & adoptive parents" section for manual entry of stepfather, stepmother, adoptive father, and adoptive mother.

@@ -510,6 +510,40 @@ export class GrampsImporter {
 			});
 		}
 
+		// Add step-parent references (from mrel/frel = 'Stepchild')
+		if (person.stepfatherRefs.length > 0) {
+			personData.stepfatherCrId = person.stepfatherRefs; // Temporary Gramps handles
+			personData.stepfatherName = person.stepfatherRefs.map(ref => {
+				const stepfather = grampsData.persons.get(ref);
+				return stepfather?.name || 'Unknown';
+			});
+		}
+
+		if (person.stepmotherRefs.length > 0) {
+			personData.stepmotherCrId = person.stepmotherRefs; // Temporary Gramps handles
+			personData.stepmotherName = person.stepmotherRefs.map(ref => {
+				const stepmother = grampsData.persons.get(ref);
+				return stepmother?.name || 'Unknown';
+			});
+		}
+
+		// Add adoptive parent references (from mrel/frel = 'Adopted')
+		if (person.adoptiveFatherRef) {
+			personData.adoptiveFatherCrId = person.adoptiveFatherRef; // Temporary Gramps handle
+			const adoptiveFather = grampsData.persons.get(person.adoptiveFatherRef);
+			if (adoptiveFather) {
+				personData.adoptiveFatherName = adoptiveFather.name || 'Unknown';
+			}
+		}
+
+		if (person.adoptiveMotherRef) {
+			personData.adoptiveMotherCrId = person.adoptiveMotherRef; // Temporary Gramps handle
+			const adoptiveMother = grampsData.persons.get(person.adoptiveMotherRef);
+			if (adoptiveMother) {
+				personData.adoptiveMotherName = adoptiveMother.name || 'Unknown';
+			}
+		}
+
 		// Find children (people who have this person as a parent)
 		const childRefs: string[] = [];
 		const childNames: string[] = [];
@@ -628,6 +662,66 @@ export class GrampsImporter {
 				updatedContent = updatedContent.replace(
 					new RegExp(` {2}- ${escapedRef}`, 'g'),
 					`  - ${childCrId}`
+				);
+			}
+		}
+
+		// Replace stepfather_id references with real cr_ids
+		if (person.stepfatherRefs.length > 0) {
+			for (const stepfatherRef of person.stepfatherRefs) {
+				const stepfatherCrId = grampsToCrId.get(stepfatherRef);
+				if (stepfatherCrId) {
+					const escapedRef = this.escapeRegex(stepfatherRef);
+					updatedContent = updatedContent.replace(
+						new RegExp(`stepfather_id: ${escapedRef}`, 'g'),
+						`stepfather_id: ${stepfatherCrId}`
+					);
+					updatedContent = updatedContent.replace(
+						new RegExp(` {2}- ${escapedRef}`, 'g'),
+						`  - ${stepfatherCrId}`
+					);
+				}
+			}
+		}
+
+		// Replace stepmother_id references with real cr_ids
+		if (person.stepmotherRefs.length > 0) {
+			for (const stepmotherRef of person.stepmotherRefs) {
+				const stepmotherCrId = grampsToCrId.get(stepmotherRef);
+				if (stepmotherCrId) {
+					const escapedRef = this.escapeRegex(stepmotherRef);
+					updatedContent = updatedContent.replace(
+						new RegExp(`stepmother_id: ${escapedRef}`, 'g'),
+						`stepmother_id: ${stepmotherCrId}`
+					);
+					updatedContent = updatedContent.replace(
+						new RegExp(` {2}- ${escapedRef}`, 'g'),
+						`  - ${stepmotherCrId}`
+					);
+				}
+			}
+		}
+
+		// Replace adoptive_father_id reference with real cr_id
+		if (person.adoptiveFatherRef) {
+			const adoptiveFatherCrId = grampsToCrId.get(person.adoptiveFatherRef);
+			if (adoptiveFatherCrId) {
+				const escapedRef = this.escapeRegex(person.adoptiveFatherRef);
+				updatedContent = updatedContent.replace(
+					new RegExp(`adoptive_father_id: ${escapedRef}`, 'g'),
+					`adoptive_father_id: ${adoptiveFatherCrId}`
+				);
+			}
+		}
+
+		// Replace adoptive_mother_id reference with real cr_id
+		if (person.adoptiveMotherRef) {
+			const adoptiveMotherCrId = grampsToCrId.get(person.adoptiveMotherRef);
+			if (adoptiveMotherCrId) {
+				const escapedRef = this.escapeRegex(person.adoptiveMotherRef);
+				updatedContent = updatedContent.replace(
+					new RegExp(`adoptive_mother_id: ${escapedRef}`, 'g'),
+					`adoptive_mother_id: ${adoptiveMotherCrId}`
 				);
 			}
 		}
