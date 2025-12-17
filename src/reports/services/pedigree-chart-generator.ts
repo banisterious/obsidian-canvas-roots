@@ -34,6 +34,7 @@ export class PedigreeChartGenerator {
 	 * Generate a Pedigree Chart
 	 */
 	async generate(options: PedigreeChartOptions): Promise<PedigreeChartResult> {
+		await Promise.resolve(); // Satisfy async requirement
 		logger.info('generate', 'Generating Pedigree Chart', {
 			rootPersonCrId: options.rootPersonCrId,
 			maxGenerations: options.maxGenerations
@@ -156,7 +157,6 @@ export class PedigreeChartGenerator {
 	 */
 	private buildTree(ancestors: Map<number, ReportPerson>, options: PedigreeChartOptions): string {
 		const lines: string[] = [];
-		const maxGen = options.maxGenerations;
 
 		// We'll build the tree generation by generation, right to left
 		// (oldest ancestors on the right, subject on the left)

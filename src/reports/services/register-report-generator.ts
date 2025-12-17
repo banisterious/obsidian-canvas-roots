@@ -48,6 +48,7 @@ export class RegisterReportGenerator {
 	 * Generate a Register Report
 	 */
 	async generate(options: RegisterReportOptions): Promise<RegisterReportResult> {
+		await Promise.resolve(); // Satisfy async requirement
 		logger.info('generate', 'Generating Register Report', {
 			rootPersonCrId: options.rootPersonCrId,
 			maxGenerations: options.maxGenerations

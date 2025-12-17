@@ -9,7 +9,6 @@ import { App, TFolder, normalizePath } from 'obsidian';
 import type { CanvasRootsSettings } from '../../settings';
 import type {
 	ReportType,
-	ReportOptions,
 	ReportResult,
 	FamilyGroupSheetOptions,
 	IndividualSummaryOptions,

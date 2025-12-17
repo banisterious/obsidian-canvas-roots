@@ -35,6 +35,7 @@ export class DescendantChartGenerator {
 	 * Generate a Descendant Chart
 	 */
 	async generate(options: DescendantChartOptions): Promise<DescendantChartResult> {
+		await Promise.resolve(); // Satisfy async requirement
 		logger.info('generate', 'Generating Descendant Chart', {
 			rootPersonCrId: options.rootPersonCrId,
 			maxGenerations: options.maxGenerations

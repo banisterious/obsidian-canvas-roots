@@ -9,8 +9,7 @@ import type { CanvasRootsSettings } from '../../settings';
 import type {
 	FamilyGroupSheetOptions,
 	FamilyGroupSheetResult,
-	ReportPerson,
-	ReportEvent
+	ReportPerson
 } from '../types/report-types';
 import { FamilyGraphService, PersonNode } from '../../core/family-graph';
 import { FolderFilterService } from '../../core/folder-filter';
@@ -34,6 +33,7 @@ export class FamilyGroupSheetGenerator {
 	 * Generate a Family Group Sheet report
 	 */
 	async generate(options: FamilyGroupSheetOptions): Promise<FamilyGroupSheetResult> {
+		await Promise.resolve(); // Satisfy async requirement
 		logger.info('generate', 'Generating Family Group Sheet', { personCrId: options.personCrId });
 
 		const warnings: string[] = [];

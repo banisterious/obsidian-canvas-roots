@@ -608,10 +608,12 @@ export class FamilyChartView extends ItemView {
 	 * instance for the click handler.
 	 */
 	private createOpenNoteButtonCallback(): (d: { data: { id: string } }) => void {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const view = this;
 
 		// Return a regular function so `this` is bound to the card element by family-chart
 		return function(this: SVGGElement, d: { data: { id: string } }) {
+			// eslint-disable-next-line @typescript-eslint/no-this-alias
 			const cardEl = this;
 			const personId = d.data.id;
 

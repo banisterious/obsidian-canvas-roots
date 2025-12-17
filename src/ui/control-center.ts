@@ -30,7 +30,7 @@ import { FolderFilterService } from '../core/folder-filter';
 import { StagingService, StagingSubfolderInfo } from '../core/staging-service';
 import { CrossImportDetectionService, CrossImportMatch } from '../core/cross-import-detection';
 import { MergeWizardModal } from './merge-wizard-modal';
-import { DataQualityService, DataQualityReport, DataQualityIssue, IssueSeverity, IssueCategory, NormalizationPreview, BatchOperationResult, BidirectionalInconsistency, ImpossibleDateIssue, SkippedGenderNote } from '../core/data-quality';
+import { DataQualityService, DataQualityReport, DataQualityIssue, IssueSeverity, IssueCategory, NormalizationPreview, BatchOperationResult, BidirectionalInconsistency, ImpossibleDateIssue } from '../core/data-quality';
 import { PlaceGraphService } from '../core/place-graph';
 import { CreatePlaceModal } from './create-place-modal';
 import { MigrationDiagramModal } from './migration-diagram-modal';
@@ -11132,7 +11132,7 @@ export class ControlCenterModal extends Modal {
 			resultsContainer.empty();
 
 			// Filter people
-			let filteredPeople = allPeople.filter(person => {
+			const filteredPeople = allPeople.filter(person => {
 				// Search filter
 				const searchTerm = searchInput.value.toLowerCase().trim();
 				if (searchTerm) {
@@ -12143,7 +12143,7 @@ export class ControlCenterModal extends Modal {
 			.addButton(btn => btn
 				.setButtonText('Preview')
 				.onClick(() => {
-					this.previewBatchOperation('dates', selectedScope, selectedFolder);
+					void this.previewBatchOperation('dates', selectedScope, selectedFolder);
 				})
 			)
 			.addButton(btn => btn

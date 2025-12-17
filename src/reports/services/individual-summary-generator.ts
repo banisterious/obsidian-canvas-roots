@@ -188,10 +188,11 @@ export class IndividualSummaryGenerator {
 	 * Get events associated with a person
 	 */
 	private async getPersonEvents(node: PersonNode, eventService: EventService): Promise<ReportEvent[]> {
+		await Promise.resolve(); // Satisfy async requirement
 		const events: ReportEvent[] = [];
 
 		// Get all events from vault
-		const allEvents = await eventService.getAllEvents();
+		const allEvents = eventService.getAllEvents();
 
 		// Filter events that reference this person
 		const personName = node.name;

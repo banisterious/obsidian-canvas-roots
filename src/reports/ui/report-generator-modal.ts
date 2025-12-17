@@ -4,7 +4,7 @@
  * Modal for configuring and generating genealogy reports.
  */
 
-import { App, Modal, Setting, Notice, DropdownComponent } from 'obsidian';
+import { App, Modal, Setting, Notice } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type {
 	ReportType,
@@ -194,7 +194,7 @@ export class ReportGeneratorModal extends Modal {
 			text: 'Generate report',
 			cls: 'mod-cta'
 		});
-		generateBtn.addEventListener('click', () => this.generateReport());
+		generateBtn.addEventListener('click', () => void this.generateReport());
 	}
 
 	onClose(): void {

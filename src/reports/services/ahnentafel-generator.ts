@@ -34,6 +34,7 @@ export class AhnentafelGenerator {
 	 * Generate an Ahnentafel report
 	 */
 	async generate(options: AhnentafelOptions): Promise<AhnentafelResult> {
+		await Promise.resolve(); // Satisfy async requirement
 		logger.info('generate', 'Generating Ahnentafel', {
 			rootPersonCrId: options.rootPersonCrId,
 			maxGenerations: options.maxGenerations

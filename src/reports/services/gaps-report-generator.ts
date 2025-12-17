@@ -33,6 +33,7 @@ export class GapsReportGenerator {
 	 * Generate a Gaps Report
 	 */
 	async generate(options: GapsReportOptions): Promise<GapsReportResult> {
+		await Promise.resolve(); // Satisfy async requirement
 		logger.info('generate', 'Generating Gaps Report', { scope: options.scope });
 
 		const warnings: string[] = [];

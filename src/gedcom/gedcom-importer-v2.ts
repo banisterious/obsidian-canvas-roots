@@ -14,8 +14,7 @@ import {
 	GedcomEvent,
 	GedcomSource,
 	GedcomImportOptionsV2,
-	GedcomImportResultV2,
-	PedigreeType
+	GedcomImportResultV2
 } from './gedcom-types';
 import { createPersonNote, PersonData } from '../core/person-note-writer';
 import { generateCrId } from '../core/uuid';
