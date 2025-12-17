@@ -14,9 +14,9 @@ Schema validation allows you to define data consistency rules for your person no
 - [Conditional Requirements](#conditional-requirements)
 - [Constraints](#constraints)
 - [Running Validation](#running-validation)
-- [Data Quality Integration](#data-quality-integration)
 - [Commands and Context Menu](#commands-and-context-menu)
 - [Examples](#examples)
+- [Data Quality Integration](#data-quality-integration)
 
 ---
 
@@ -484,8 +484,60 @@ applies_to_value: "People/Staging"
 
 ---
 
+## Data Quality Integration
+
+Schemas can protect custom property values from normalization operations.
+
+### Schema-Aware Sex Normalization
+
+The **"Normalize sex values"** operation in Data Quality can be configured to respect schemas with custom `sex` enum values. When **Schema-aware** mode is enabled in Preferences → Data Quality:
+
+- Person notes with an applicable schema defining a custom `sex` enum are skipped
+- Notes without such schemas are normalized to GEDCOM M/F as usual
+
+This allows worldbuilders to define custom biological sex values (e.g., for alien species) while genealogists maintain GEDCOM compatibility.
+
+**Example schema for custom sex values:**
+
+````
+---
+cr_type: schema
+cr_id: schema-alien-species
+name: Alien Species Schema
+description: Custom sex values for non-human species
+applies_to_type: universe
+applies_to_value: "Sci-Fi Universe"
+---
+
+# Alien Species Schema
+
+```json schema
+{
+  "requiredProperties": ["name", "species"],
+  "properties": {
+    "sex": {
+      "type": "enum",
+      "values": ["male", "female", "neuter", "hermaphrodite", "asexual"],
+      "description": "Biological sex for this species"
+    },
+    "species": {
+      "type": "string"
+    }
+  },
+  "constraints": []
+}
+```
+````
+
+With this schema in place and Schema-aware normalization enabled, person notes in the "Sci-Fi Universe" with sex values like "hermaphrodite" or "neuter" will be preserved when running "Normalize sex values".
+
+See [Data Quality - Normalization Modes](Data-Quality#normalization-modes) for configuration details.
+
+---
+
 ## See Also
 
 - [Frontmatter Reference](Frontmatter-Reference) - All frontmatter properties
 - [Data Management](Data-Management) - Managing your family data
 - [Import & Export](Import-Export) - Importing data that needs validation
+- [Data Quality](Data-Quality) - Batch operations and normalization
