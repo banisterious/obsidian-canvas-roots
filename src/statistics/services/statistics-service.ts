@@ -1417,7 +1417,7 @@ export class StatisticsService {
 	 * Extract year from a date string (supports various formats)
 	 */
 	private extractYear(dateStr: string | undefined): number | null {
-		if (!dateStr) return null;
+		if (!dateStr || typeof dateStr !== 'string') return null;
 
 		// Try to extract 4-digit year
 		const match = dateStr.match(/\b(\d{4})\b/);

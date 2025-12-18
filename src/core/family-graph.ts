@@ -1617,7 +1617,7 @@ export class FamilyGraphService {
 		// Calculate date ranges
 		const datesWithYears = allPeople
 			.map(p => p.birthDate || p.deathDate)
-			.filter((d): d is string => !!d)
+			.filter((d): d is string => !!d && typeof d === 'string')
 			.map(d => {
 				const match = d.match(/^(\d{4})/);
 				return match ? parseInt(match[1]) : null;
