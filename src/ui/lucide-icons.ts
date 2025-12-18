@@ -195,6 +195,12 @@ export const TAB_CONFIGS: TabConfig[] = [
 		description: 'Manage organizations and memberships'
 	},
 	{
+		id: 'universes',
+		name: 'Universes',
+		icon: 'globe',
+		description: 'Manage fictional universes and worlds'
+	},
+	{
 		id: 'collections',
 		name: 'Collections',
 		icon: 'folder',

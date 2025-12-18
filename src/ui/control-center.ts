@@ -71,6 +71,7 @@ import {
 	PROOF_CONFIDENCE_LABELS
 } from '../sources';
 import { isPersonNote } from '../utils/note-type-detection';
+import { UniverseService } from '../universes/services/universe-service';
 import type {
 	FactKey,
 	ResearchGapsSummary,
@@ -227,12 +228,31 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
+	 * Check if the Universes tab should be visible
+	 * Shows when universes exist or orphan universe references exist
+	 */
+	private shouldShowUniversesTab(): boolean {
+		const universeService = new UniverseService(this.plugin);
+		const universes = universeService.getAllUniverses();
+		const orphans = universeService.findOrphanUniverses();
+		return universes.length > 0 || orphans.length > 0;
+	}
+
+	/**
 	 * Create navigation list with all tabs
 	 */
 	private createNavigationList(container: HTMLElement): void {
 		const list = container.createEl('ul', { cls: 'crc-nav-list' });
 
+		// Check conditional visibility for universes tab
+		const showUniverses = this.shouldShowUniversesTab();
+
 		TAB_CONFIGS.forEach((tabConfig) => {
+			// Skip universes tab if no universes exist
+			if (tabConfig.id === 'universes' && !showUniverses) {
+				return;
+			}
+
 			const listItem = list.createEl('li', {
 				cls: `crc-nav-item ${tabConfig.id === this.activeTab ? 'crc-nav-item--active' : ''}`
 			});
@@ -323,6 +343,9 @@ export class ControlCenterModal extends Modal {
 				break;
 			case 'organizations':
 				void this.showOrganizationsTab();
+				break;
+			case 'universes':
+				this.showUniversesTab();
 				break;
 			case 'sources':
 				void this.showSourcesTab();
@@ -1546,7 +1569,116 @@ export class ControlCenterModal extends Modal {
 		container.appendChild(conceptsCard);
 
 		// =========================================================================
-		// Card 5: Common Tasks (Navigation Grid)
+		// Card 5: Fictional Universes
+		// =========================================================================
+		const universesCard = this.createCard({
+			title: 'Fictional universes',
+			icon: 'globe',
+			subtitle: 'For worldbuilders and fiction writers'
+		});
+		const universesContent = universesCard.querySelector('.crc-card__content') as HTMLElement;
+
+		// Check if universes exist
+		const universeService = new UniverseService(this.plugin);
+		const universes = universeService.getAllUniverses();
+		const hasUniverses = universes.length > 0;
+
+		if (hasUniverses) {
+			// Show universe summary
+			universesContent.createEl('p', {
+				text: `You have ${universes.length} universe${universes.length === 1 ? '' : 's'}:`,
+				cls: 'crc-mb-2'
+			});
+
+			const universeList = universesContent.createEl('ul', { cls: 'crc-universe-list crc-mb-3' });
+			// Show up to 3 universes
+			const displayUniverses = universes.slice(0, 3);
+			displayUniverses.forEach(universe => {
+				const counts = universeService.getEntityCountsForUniverse(universe.crId);
+				const countParts: string[] = [];
+				if (counts.people > 0) countParts.push(`${counts.people} people`);
+				if (counts.places > 0) countParts.push(`${counts.places} places`);
+				if (counts.events > 0) countParts.push(`${counts.events} events`);
+
+				const li = universeList.createEl('li');
+				const nameLink = li.createEl('a', {
+					text: universe.name,
+					cls: 'crc-link'
+				});
+				nameLink.addEventListener('click', async (e) => {
+					e.preventDefault();
+					this.close();
+					const leaf = this.app.workspace.getLeaf(false);
+					await leaf.openFile(universe.file);
+				});
+				if (countParts.length > 0) {
+					li.createSpan({
+						text: ` (${countParts.join(', ')})`,
+						cls: 'crc-text-muted'
+					});
+				}
+			});
+
+			if (universes.length > 3) {
+				universesContent.createEl('p', {
+					text: `...and ${universes.length - 3} more`,
+					cls: 'crc-text-muted crc-mb-3'
+				});
+			}
+
+			// Buttons
+			const btnRow = universesContent.createDiv({ cls: 'crc-btn-row' });
+			const createBtn = btnRow.createEl('button', {
+				text: 'Create universe',
+				cls: 'crc-btn crc-btn--primary'
+			});
+			createBtn.addEventListener('click', () => {
+				// TODO: Open Universe Setup Wizard when implemented
+				new Notice('Universe Setup Wizard coming soon!');
+			});
+
+			const manageBtn = btnRow.createEl('button', {
+				text: 'Manage universes',
+				cls: 'crc-btn crc-btn--secondary'
+			});
+			manageBtn.addEventListener('click', () => {
+				this.switchTab('universes');
+			});
+		} else {
+			// No universes - show explanation
+			universesContent.createEl('p', {
+				text: 'Universes help you organize fictional worlds. Create a universe to group related calendars, maps, places, and characters together.',
+				cls: 'crc-mb-3'
+			});
+
+			universesContent.createEl('p', {
+				text: 'No universes yet.',
+				cls: 'crc-text-muted crc-mb-3'
+			});
+
+			// Buttons
+			const btnRow = universesContent.createDiv({ cls: 'crc-btn-row' });
+			const createBtn = btnRow.createEl('button', {
+				text: 'Create universe',
+				cls: 'crc-btn crc-btn--primary'
+			});
+			createBtn.addEventListener('click', () => {
+				// TODO: Open Universe Setup Wizard when implemented
+				new Notice('Universe Setup Wizard coming soon!');
+			});
+
+			const learnLink = btnRow.createEl('a', {
+				text: 'Learn more about universes →',
+				href: `${WIKI_BASE}/Fictional-Worlds`,
+				cls: 'crc-link'
+			});
+			learnLink.setAttr('target', '_blank');
+		}
+
+		container.appendChild(universesCard);
+
+		// =========================================================================
+		// Card 6: Common Tasks (Navigation Grid)
 		// =========================================================================
 		const tasksCard = this.createCard({
 			title: 'Common tasks',
@@ -8276,6 +8408,196 @@ export class ControlCenterModal extends Modal {
 			(options) => this.createCard(options),
 			(tabId) => this.switchTab(tabId)
 		);
+	}
+
+	/**
+	 * Show Universes tab with universe management
+	 */
+	private showUniversesTab(): void {
+		const container = this.contentContainer;
+		const universeService = new UniverseService(this.plugin);
+		const universes = universeService.getAllUniverses();
+		const orphans = universeService.findOrphanUniverses();
+
+		// Header with create button
+		const headerCard = this.createCard({
+			title: 'Universes',
+			icon: 'globe',
+			subtitle: 'Manage fictional universes and worlds'
+		});
+		const headerContent = headerCard.querySelector('.crc-card__content') as HTMLElement;
+
+		const headerRow = headerContent.createDiv({ cls: 'crc-flex crc-justify-between crc-items-center crc-mb-3' });
+		headerRow.createEl('p', {
+			text: `${universes.length} universe${universes.length === 1 ? '' : 's'}`,
+			cls: 'crc-text-muted'
+		});
+		const createBtn = headerRow.createEl('button', {
+			text: 'Create universe',
+			cls: 'crc-btn crc-btn--primary'
+		});
+		createBtn.addEventListener('click', () => {
+			// TODO: Open Universe Setup Wizard
+			new Notice('Universe Setup Wizard coming soon!');
+		});
+
+		container.appendChild(headerCard);
+
+		// Universe list
+		if (universes.length > 0) {
+			const listCard = this.createCard({
+				title: 'Your universes',
+				icon: 'layers'
+			});
+			const listContent = listCard.querySelector('.crc-card__content') as HTMLElement;
+
+			universes.forEach(universe => {
+				const counts = universeService.getEntityCountsForUniverse(universe.crId);
+				const row = listContent.createDiv({ cls: 'crc-universe-row crc-mb-3' });
+
+				// Universe header
+				const rowHeader = row.createDiv({ cls: 'crc-flex crc-justify-between crc-items-center' });
+				const nameLink = rowHeader.createEl('a', {
+					text: universe.name,
+					cls: 'crc-link crc-text-lg'
+				});
+				nameLink.addEventListener('click', async (e) => {
+					e.preventDefault();
+					this.close();
+					const leaf = this.app.workspace.getLeaf(false);
+					await leaf.openFile(universe.file);
+				});
+
+				const editBtn = rowHeader.createEl('button', {
+					text: 'Edit',
+					cls: 'crc-btn crc-btn--small crc-btn--secondary'
+				});
+				editBtn.addEventListener('click', async () => {
+					this.close();
+					const leaf = this.app.workspace.getLeaf(false);
+					await leaf.openFile(universe.file);
+				});
+
+				// Description
+				if (universe.description) {
+					row.createEl('p', {
+						text: universe.description,
+						cls: 'crc-text-muted crc-mb-2'
+					});
+				}
+
+				// Entity counts
+				const countsRow = row.createDiv({ cls: 'crc-universe-counts' });
+				const countItems = [
+					{ label: 'People', count: counts.people, icon: 'users' },
+					{ label: 'Places', count: counts.places, icon: 'map-pin' },
+					{ label: 'Events', count: counts.events, icon: 'calendar' },
+					{ label: 'Organizations', count: counts.organizations, icon: 'building' },
+					{ label: 'Maps', count: counts.maps, icon: 'map' },
+					{ label: 'Calendars', count: counts.calendars, icon: 'clock' }
+				];
+
+				countItems.forEach(item => {
+					if (item.count > 0) {
+						const countEl = countsRow.createSpan({ cls: 'crc-universe-count' });
+						setLucideIcon(countEl, item.icon as LucideIconName, 14);
+						countEl.createSpan({ text: ` ${item.count}` });
+					}
+				});
+
+				// Status badge
+				if (universe.status && universe.status !== 'active') {
+					const badge = row.createSpan({
+						text: universe.status,
+						cls: `crc-badge crc-badge--${universe.status}`
+					});
+				}
+			});
+
+			container.appendChild(listCard);
+		}
+
+		// Orphan universes section
+		if (orphans.length > 0) {
+			const orphanCard = this.createCard({
+				title: 'Orphan universe values',
+				icon: 'alert-triangle',
+				subtitle: 'Universe references without matching notes'
+			});
+			const orphanContent = orphanCard.querySelector('.crc-card__content') as HTMLElement;
+
+			orphanContent.createEl('p', {
+				text: 'These universe values are used by entities but don\'t have corresponding universe notes. Create notes to enable full universe management.',
+				cls: 'crc-text-muted crc-mb-3'
+			});
+
+			orphans.forEach(orphan => {
+				const row = orphanContent.createDiv({ cls: 'crc-flex crc-justify-between crc-items-center crc-mb-2' });
+				row.createSpan({ text: `"${orphan.value}"`, cls: 'crc-code' });
+				row.createSpan({ text: `${orphan.entityCount} entities`, cls: 'crc-text-muted' });
+				const createNoteBtn = row.createEl('button', {
+					text: 'Create note',
+					cls: 'crc-btn crc-btn--small'
+				});
+				createNoteBtn.addEventListener('click', async () => {
+					try {
+						// Create universe from orphan value
+						const file = await universeService.createUniverse({
+							name: orphan.value.charAt(0).toUpperCase() + orphan.value.slice(1).replace(/-/g, ' ')
+						});
+						new Notice(`Created universe: ${orphan.value}`);
+						// Refresh the tab
+						this.showUniversesTab();
+					} catch (err) {
+						new Notice(`Failed to create universe: ${getErrorMessage(err)}`);
+					}
+				});
+			});
+
+			// Create all button
+			if (orphans.length > 1) {
+				const createAllBtn = orphanContent.createEl('button', {
+					text: 'Create all',
+					cls: 'crc-btn crc-btn--secondary crc-mt-3'
+				});
+				createAllBtn.addEventListener('click', async () => {
+					for (const orphan of orphans) {
+						try {
+							await universeService.createUniverse({
+								name: orphan.value.charAt(0).toUpperCase() + orphan.value.slice(1).replace(/-/g, ' ')
+							});
+						} catch (err) {
+							logger.error('createOrphanUniverse', `Failed: ${orphan.value}`, err);
+						}
+					}
+					new Notice(`Created ${orphans.length} universe notes`);
+					this.showUniversesTab();
+				});
+			}
+
+			container.appendChild(orphanCard);
+		}
+
+		// Empty state
+		if (universes.length === 0 && orphans.length === 0) {
+			const emptyCard = this.createCard({
+				title: 'No universes yet',
+				icon: 'globe'
+			});
+			const emptyContent = emptyCard.querySelector('.crc-card__content') as HTMLElement;
+			emptyContent.createEl('p', {
+				text: 'Create your first universe to start organizing fictional worlds with custom calendars, maps, and validation rules.',
+				cls: 'crc-mb-3'
+			});
+			const startBtn = emptyContent.createEl('button', {
+				text: 'Create universe',
+				cls: 'crc-btn crc-btn--primary'
+			});
+			startBtn.addEventListener('click', () => {
+				new Notice('Universe Setup Wizard coming soon!');
+			});
+			container.appendChild(emptyCard);
+		}
 	}
 
 	/**
