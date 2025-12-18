@@ -251,6 +251,11 @@ If you find this plugin useful, please consider supporting its development!
 - [FAQ](https://github.com/banisterious/obsidian-canvas-roots/wiki/FAQ) - Common questions
 - [Troubleshooting](https://github.com/banisterious/obsidian-canvas-roots/wiki/Troubleshooting) - Problem solving
 
+### For Worldbuilders
+- [Universe Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Universe-Notes) - Organize fictional worlds with metadata and linked resources
+- [Organization Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Organization-Notes) - Noble houses, guilds, military units, and hierarchies
+- [Fictional Date Systems](https://github.com/banisterious/obsidian-canvas-roots/wiki/Fictional-Date-Systems) - Custom calendars and eras
+
 ### Other Resources
 - [Changelog](CHANGELOG.md) - Version history
 - [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap) - Planned features
