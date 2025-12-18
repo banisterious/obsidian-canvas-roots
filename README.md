@@ -14,7 +14,7 @@
 
 ## Features
 
-### Tree Generation
+### [Tree Generation](https://github.com/banisterious/obsidian-canvas-roots/wiki/Tree-Generation)
 
 | Feature | Description |
 |---------|-------------|
@@ -25,7 +25,7 @@
 | **Multi-Family Detection** | Automatically detects disconnected family groups |
 | **Regenerate Canvas** | Update existing canvases with current data via right-click |
 
-### Import & Export
+### [Import & Export](https://github.com/banisterious/obsidian-canvas-roots/wiki/Import-Export)
 
 | Feature | Description |
 |---------|-------------|
@@ -39,7 +39,7 @@
 | **Selective Branch Export** | Export only ancestors or descendants of a specific person |
 | **Privacy-Aware Exports** | Optional anonymization of living persons in all export formats |
 
-### Interactive Family Chart
+### [Interactive Family Chart](https://github.com/banisterious/obsidian-canvas-roots/wiki/Interactive-Family-Chart)
 
 | Feature | Description |
 |---------|-------------|
@@ -49,7 +49,7 @@
 | **Multiple Color Schemes** | Gender, Generation, Collection, or Monochrome |
 | **Export Options** | High-quality PNG, SVG, or PDF with customizable filenames |
 
-### Data Management
+### [Data Management](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Management)
 
 | Feature | Description |
 |---------|-------------|
@@ -59,10 +59,10 @@
 | **Merge Wizard** | Field-level conflict resolution with automatic relationship reconciliation |
 | **Staging Workflow** | Isolated staging folder for safe import processing |
 | **Data Quality Tools** | Quality scores, 15+ issue types, batch normalization |
-| **Schema Validation** | User-defined schemas with required properties, type validation, enum constraints, and custom rules |
+| **[Schema Validation](https://github.com/banisterious/obsidian-canvas-roots/wiki/Schema-Validation)** | User-defined schemas with required properties, type validation, enum constraints, and custom rules |
 | **Generate Place Notes** | Batch create place notes from references in person/event notes with hierarchy linking |
 
-### Geographic Features
+### [Geographic Features](https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features)
 
 | Feature | Description |
 |---------|-------------|
@@ -86,10 +86,10 @@
 | **Relationship History** | Track all changes with timestamps and one-click undo |
 | **Custom Relationships** | Extended relationships beyond family (godparent, guardian, mentor, apprentice) with colored canvas edges |
 | **Step & Adoptive Parents** | Dedicated fields for step-parents and adoptive parents with distinct line styles on canvas trees |
-| **Fictional Date Systems** | Custom calendars and eras for world-building (Middle-earth, Westeros, Star Wars, or custom) |
-| **Organization Notes** | Track non-genealogical hierarchies: noble houses, guilds, corporations, military units, religious orders |
+| **[Fictional Date Systems](https://github.com/banisterious/obsidian-canvas-roots/wiki/Fictional-Date-Systems)** | Custom calendars and eras for world-building (Middle-earth, Westeros, Star Wars, or custom) |
+| **[Organization Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Organization-Notes)** | Track non-genealogical hierarchies: noble houses, guilds, corporations, military units, religious orders |
 | **[Universe Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Universe-Notes)** | First-class entities for organizing fictional worlds with metadata, linked calendars, maps, and validation schemas |
-| **Events & Timelines** | Document life events with person/family/place timelines, visual exports, groups/factions filtering, and sort order computation |
+| **[Events & Timelines](https://github.com/banisterious/obsidian-canvas-roots/wiki/Events-And-Timelines)** | Document life events with person/family/place timelines, visual exports, groups/factions filtering, and sort order computation |
 
 ### Statistics & Reports
 
@@ -101,7 +101,7 @@
 | **Extended Statistics** | Longevity analysis, family size patterns, marriage patterns, migration flows, timeline density |
 | **Genealogical Reports** | Family Group Sheet, Individual Summary, Ahnentafel, Gaps Report, Register Report, Pedigree/Descendant Charts |
 
-### Evidence & Sources
+### [Evidence & Sources](https://github.com/banisterious/obsidian-canvas-roots/wiki/Evidence-And-Sources)
 
 | Feature | Description |
 |---------|-------------|
@@ -131,9 +131,9 @@
 |---------|-------------|
 | **Calendarium Integration** | Import calendar definitions from [Calendarium](https://github.com/javalent/calendarium) for fictional dates |
 | **Type Customization** | Full type managers for events, sources, organizations, relationships, and places; create, edit, hide, and customize types and categories |
-| **Property Aliases** | Map custom property names to Canvas Roots fields without renaming frontmatter |
-| **Value Aliases** | Map custom property values (event types, gender, place categories) to Canvas Roots canonical values |
-| **Obsidian Bases** | Ready-to-use Base templates: People, Places, Events, Organizations, Sources, Universes; respects property aliases |
+| **[Property Aliases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration#property-aliases)** | Map custom property names to Canvas Roots fields without renaming frontmatter |
+| **[Value Aliases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration#value-aliases)** | Map custom property values (event types, gender, place categories) to Canvas Roots canonical values |
+| **[Obsidian Bases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Bases-Integration)** | Ready-to-use Base templates: People, Places, Events, Organizations, Sources, Universes; respects property aliases |
 | **Style Settings** | Customize colors via [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin |
 | **Context Menu Actions** | Right-click person notes, folders, and canvases for quick actions |
 | **YAML-First Data** | Compatible with Dataview, Bases, and other Obsidian tools |
