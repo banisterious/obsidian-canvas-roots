@@ -58,7 +58,7 @@
 | **Smart Duplicate Detection** | Fuzzy name matching and date proximity analysis |
 | **Merge Wizard** | Field-level conflict resolution with automatic relationship reconciliation |
 | **Staging Workflow** | Isolated staging folder for safe import processing |
-| **Data Quality Tools** | Quality scores, 15+ issue types, batch normalization |
+| **[Data Quality Tools](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Quality)** | Quality scores, 15+ issue types, batch normalization |
 | **[Schema Validation](https://github.com/banisterious/obsidian-canvas-roots/wiki/Schema-Validation)** | User-defined schemas with required properties, type validation, enum constraints, and custom rules |
 | **Generate Place Notes** | Batch create place notes from references in person/event notes with hierarchy linking |
 
@@ -84,14 +84,14 @@
 | **Lineage Tracking** | Track patrilineal, matrilineal, or all descendants |
 | **Relationship Calculator** | Find connections with proper genealogical terms (cousin, 2nd cousin once removed, etc.) |
 | **Relationship History** | Track all changes with timestamps and one-click undo |
-| **Custom Relationships** | Extended relationships beyond family (godparent, guardian, mentor, apprentice) with colored canvas edges |
+| **[Custom Relationships](https://github.com/banisterious/obsidian-canvas-roots/wiki/Custom-Relationships)** | Extended relationships beyond family (godparent, guardian, mentor, apprentice) with colored canvas edges |
 | **Step & Adoptive Parents** | Dedicated fields for step-parents and adoptive parents with distinct line styles on canvas trees |
 | **[Fictional Date Systems](https://github.com/banisterious/obsidian-canvas-roots/wiki/Fictional-Date-Systems)** | Custom calendars and eras for world-building (Middle-earth, Westeros, Star Wars, or custom) |
 | **[Organization Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Organization-Notes)** | Track non-genealogical hierarchies: noble houses, guilds, corporations, military units, religious orders |
 | **[Universe Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Universe-Notes)** | First-class entities for organizing fictional worlds with metadata, linked calendars, maps, and validation schemas |
 | **[Events & Timelines](https://github.com/banisterious/obsidian-canvas-roots/wiki/Events-And-Timelines)** | Document life events with person/family/place timelines, visual exports, groups/factions filtering, and sort order computation |
 
-### Statistics & Reports
+### [Statistics & Reports](https://github.com/banisterious/obsidian-canvas-roots/wiki/Statistics-And-Reports)
 
 | Feature | Description |
 |---------|-------------|
@@ -134,10 +134,10 @@
 | **[Property Aliases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration#property-aliases)** | Map custom property names to Canvas Roots fields without renaming frontmatter |
 | **[Value Aliases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration#value-aliases)** | Map custom property values (event types, gender, place categories) to Canvas Roots canonical values |
 | **[Obsidian Bases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Bases-Integration)** | Ready-to-use Base templates: People, Places, Events, Organizations, Sources, Universes; respects property aliases |
-| **Style Settings** | Customize colors via [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin |
-| **Context Menu Actions** | Right-click person notes, folders, and canvases for quick actions |
+| **[Style Settings](https://github.com/banisterious/obsidian-canvas-roots/wiki/Styling-And-Theming#style-settings-plugin)** | Customize colors via [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin |
+| **[Context Menu Actions](https://github.com/banisterious/obsidian-canvas-roots/wiki/Context-Menus)** | Right-click person notes, folders, and canvases for quick actions |
 | **YAML-First Data** | Compatible with Dataview, Bases, and other Obsidian tools |
-| **Privacy Protection** | Optional anonymization of living persons in exports |
+| **[Privacy Protection](https://github.com/banisterious/obsidian-canvas-roots/wiki/Privacy-And-Security)** | Optional anonymization of living persons in exports |
 
 ---
 
