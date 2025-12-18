@@ -128,7 +128,7 @@ See [Calendarium Integration Planning Document](https://github.com/banisterious/
 
 **Priority:** 📋 Medium — Guided onboarding for fictional worldbuilders
 
-**Summary:** A wizard that consolidates universe creation into a single guided flow. New users setting up fictional worlds currently must discover and navigate multiple disconnected features (date systems, custom maps, schemas). This wizard guides them through setting up all universe-related features in one place.
+**Summary:** A comprehensive universe management system that includes: (1) Universe as a first-class entity type for canonical registry, (2) a guided setup wizard for new worlds, (3) a Universes tab in Control Center (conditional visibility), and (4) a Universes section in Statistics for discovery.
 
 **Problem Statement:**
 
@@ -137,42 +137,89 @@ When setting up a new fictional world (e.g., Middle-earth, Westeros), users curr
 - Find the maps feature and create a custom map
 - Learn about schemas and create validation rules
 - Remember to use the same universe string everywhere
+- Hope they don't make typos that create duplicate "universes"
 
-These features are spread across different parts of the plugin with no guidance on how they connect.
+These features are spread across different parts of the plugin with no guidance on how they connect. The `universe` field is just a string—there's no validation, no autocomplete, and no central place to see "all my universes."
+
+**Solution: Universe as First-Class Entity**
+
+| Problem | Solution |
+|---------|----------|
+| Typos create duplicates | Autocomplete from universe notes |
+| No central overview | Universe notes + Universes tab |
+| Can't store metadata | Universe note holds description, author, genre, etc. |
+| No validation | Warn when `universe` field references non-existent universe |
+| No discoverability | Browse universe notes, Universes section in Statistics |
+
+**Universe Entity Schema:**
+
+```yaml
+cr_type: universe
+cr_id: middle-earth
+name: Middle-earth
+description: A fantasy world created by J.R.R. Tolkien
+author: J.R.R. Tolkien
+genre: fantasy
+status: active
+default_calendar: shire-reckoning
+default_map: middle-earth-map
+```
 
 **Wizard Flow:**
 
-| Step | Question | Action |
-|------|----------|--------|
-| 1 | Name your universe | Enter name and optional description |
-| 2 | Custom calendar? | Creates date system with universe pre-filled |
-| 3 | Custom map? | Creates map note with universe pre-filled |
-| 4 | Validation rules? | Creates schema scoped to universe |
-| 5 | Summary | Shows created entities with links |
+| Step | Description | Skippable |
+|------|-------------|-----------|
+| 1 | Create universe note (name, description, metadata) | No |
+| 2 | Custom calendar? → Creates date system linked to universe | Yes |
+| 3 | Custom map? → Creates map config linked to universe | Yes |
+| 4 | Validation rules? → Creates schema scoped to universe | Yes |
+| 5 | Summary → Shows universe note with links to created entities | No |
 
-Each step after the first is skippable.
+**UI Locations:**
 
-**Technical Approach:**
+| Location | Purpose |
+|----------|---------|
+| Statistics → Universes section | Always visible; discovery and overview |
+| Control Center → Universes tab | Conditional; appears when universes exist |
+| Command palette | "Create universe" command |
 
-- No new entity type required—wizard creates existing entity types with `universe` field pre-populated
-- Optional plain markdown note generated as landing page linking to created entities
-- Reuses existing creation modals/forms where possible
+**Conditional Tab Visibility:**
 
-**Entry Points:**
-- Control Center > Actions tab: "Create universe" button
+The Universes tab only appears when:
+- Any universe notes exist in the vault, OR
+- Any orphan universe strings exist (entities with `universe` field but no matching note)
+
+This keeps the UI clean for genealogists who never use fictional worlds.
 
 **Phased Implementation:**
 
-**Phase 1 — Core Wizard:**
-- Multi-step modal with progress indicator
-- Create date system, map, and schema with universe pre-filled
-- Summary page with links to created entities
+**Phase 1 — Universe Entity Type:**
+- Universe schema and types
+- UniverseService (CRUD, aggregation, orphan detection)
+- Property alias support
 
-**Phase 2 — Enhanced Features:**
-- Universe dashboard showing entity counts
+**Phase 2 — UI Integration:**
+- Statistics → Universes section
+- Control Center → Universes tab (conditional)
+- Autocomplete in entity creation modals
+
+**Phase 3 — Setup Wizard:**
+- Multi-step wizard modal
+- Integration with existing creation forms
+- Summary and entity linking
+
+**Phase 4 — Enhanced Features:**
+- Universe dashboard with entity counts
 - Universe-scoped filtering in quick switcher
+- Batch operations (move entities between universes)
 
-See [Universe Setup Wizard Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/universe-management.md) for implementation details.
+**Backward Compatibility:**
+
+- String-only `universe` values continue to function
+- Migration prompt: "We found 3 universes without notes. Create them?"
+- New entities default to linking via universe notes
+
+See [Universe Management Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/universe-management.md) for implementation details.
 
 ---
 
