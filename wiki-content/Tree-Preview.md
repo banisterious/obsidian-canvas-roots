@@ -2,6 +2,19 @@
 
 Before generating a canvas, you can preview your family tree layout using the interactive SVG preview feature. This is particularly useful for large trees (50+ people) where you want to verify the layout before committing to canvas generation.
 
+---
+
+## Table of Contents
+
+- [Accessing the Preview](#accessing-the-preview)
+- [Preview Controls](#preview-controls)
+- [Color Schemes](#color-schemes)
+- [Exporting the Preview](#exporting-the-preview)
+- [When to Use Preview](#when-to-use-preview)
+- [Next Steps](#next-steps)
+
+---
+
 ## Accessing the Preview
 
 1. Open Control Center → Tree Output tab

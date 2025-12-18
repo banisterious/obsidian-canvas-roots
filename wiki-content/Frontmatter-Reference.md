@@ -4,6 +4,21 @@ This document defines all frontmatter properties recognized by Canvas Roots for 
 
 ---
 
+## Table of Contents
+
+- [Note Type Detection](#note-type-detection)
+- [Data Model Overview](#data-model-overview)
+- [Person Note Properties](#person-note-properties)
+- [Place Note Properties](#place-note-properties)
+- [Event Note Properties](#event-note-properties)
+- [Source Note Properties](#source-note-properties)
+- [Organization Note Properties](#organization-note-properties)
+- [Map Note Properties](#map-note-properties)
+- [Universe Note Properties](#universe-note-properties)
+- [See Also](#see-also)
+
+---
+
 ## Note Type Detection
 
 Canvas Roots uses multiple methods to identify note types, checked in this order:

@@ -2,6 +2,18 @@
 
 This page covers how to customize the appearance of your family trees.
 
+---
+
+## Table of Contents
+
+- [Built-in Canvas Roots Styling](#built-in-canvas-roots-styling)
+- [Advanced Canvas Plugin](#advanced-canvas-plugin)
+- [Style Settings Plugin](#style-settings-plugin)
+- [CSS Customization](#css-customization)
+- [Theme Compatibility](#theme-compatibility)
+
+---
+
 ## Built-in Canvas Roots Styling
 
 Canvas Roots provides styling options within the JSON Canvas standard.

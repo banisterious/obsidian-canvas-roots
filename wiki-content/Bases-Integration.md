@@ -2,6 +2,27 @@
 
 Canvas Roots is designed to work seamlessly with [Obsidian Bases](https://help.obsidian.md/bases), the core plugin for managing structured data in table views.
 
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Available Base Templates](#available-base-templates)
+- [Why Use Bases with Canvas Roots?](#why-use-bases-with-canvas-roots)
+- [Quick Start](#quick-start)
+- [Property Reference](#property-reference)
+- [Example Views](#example-views)
+- [Advanced Formulas](#advanced-formulas)
+- [Best Practices](#best-practices)
+- [Places Base Template](#places-base-template)
+- [Organizations Base Template](#organizations-base-template)
+- [Troubleshooting](#troubleshooting)
+- [Integration with Canvas Roots Workflow](#integration-with-canvas-roots-workflow)
+- [Map View for Bases](#map-view-for-bases)
+- [Additional Resources](#additional-resources)
+
+---
+
 ## Overview
 
 **Bases** provides a table-based interface for viewing and editing note properties, making it ideal for managing genealogical data:

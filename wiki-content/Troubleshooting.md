@@ -2,6 +2,21 @@
 
 Solutions to common issues with Canvas Roots.
 
+---
+
+## Table of Contents
+
+- [Tree Generation](#tree-generation)
+- [Bidirectional Sync](#bidirectional-sync)
+- [Import/Export](#importexport)
+- [Map View](#map-view)
+- [Family Chart View](#family-chart-view)
+- [Excalidraw Export](#excalidraw-export)
+- [Performance Issues](#performance-issues)
+- [Getting More Help](#getting-more-help)
+
+---
+
 ## Tree Generation
 
 ### Tree not generating

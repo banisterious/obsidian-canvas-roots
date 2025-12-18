@@ -2,6 +2,23 @@
 
 Canvas Roots adds context menu actions throughout Obsidian. Right-click on files, folders, and canvases to access quick actions without opening the Control Center.
 
+---
+
+## Table of Contents
+
+- [Person Notes](#person-notes)
+- [Place Notes](#place-notes)
+- [Map Notes](#map-notes)
+- [Canvas Files](#canvas-files)
+- [Folders](#folders)
+- [Multiple Files](#multiple-files)
+- [Plain Markdown Files](#plain-markdown-files)
+- [Mobile vs Desktop](#mobile-vs-desktop)
+- [Control Center Context Menus](#control-center-context-menus)
+- [Tips](#tips)
+
+---
+
 ## Person Notes
 
 Right-click on any markdown file with a `cr_id` frontmatter property:

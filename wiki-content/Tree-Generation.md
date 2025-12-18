@@ -2,6 +2,20 @@
 
 This page covers how to generate family tree visualizations on the Obsidian Canvas.
 
+---
+
+## Table of Contents
+
+- [Step 1: Open Control Center](#step-1-open-control-center)
+- [Step 2: Navigate to Tree Generation Tab](#step-2-navigate-to-tree-generation-tab)
+- [Step 3: Select Root Person](#step-3-select-root-person)
+- [Step 4: Configure Tree Options](#step-4-configure-tree-options)
+- [Step 5: Generate](#step-5-generate)
+- [Layout Algorithms Explained](#layout-algorithms-explained)
+- [Next Steps](#next-steps)
+
+---
+
 ## Step 1: Open Control Center
 
 **Method 1: Command Palette**

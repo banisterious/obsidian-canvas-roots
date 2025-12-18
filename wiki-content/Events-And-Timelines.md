@@ -2,6 +2,25 @@
 
 Canvas Roots provides tools for documenting life events and visualizing them in chronological order. This feature supports both genealogists (who derive events from historical sources) and worldbuilders (who create canonical events directly).
 
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Event Notes](#event-notes)
+- [Person Timeline View](#person-timeline-view)
+- [Family Timeline View](#family-timeline-view)
+- [Place Timeline View](#place-timeline-view)
+- [Global Timeline](#global-timeline)
+- [Timeline Export](#timeline-export)
+- [Source Event Extraction](#source-event-extraction)
+- [Event Templates](#event-templates)
+- [Settings](#settings)
+- [Best Practices](#best-practices)
+- [Related Pages](#related-pages)
+
+---
+
 ## Overview
 
 The Events & Timelines features enable you to:

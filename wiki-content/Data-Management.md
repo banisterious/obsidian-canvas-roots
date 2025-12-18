@@ -2,6 +2,16 @@
 
 This page covers how to manage and organize your family data, including bidirectional sync, collections, and maintaining trees.
 
+---
+
+## Table of Contents
+
+- [Bidirectional Relationship Sync](#bidirectional-relationship-sync)
+- [Collections & Groups](#collections--groups)
+- [Maintaining Trees](#maintaining-trees)
+
+---
+
 ## Bidirectional Relationship Sync
 
 Canvas Roots automatically maintains **reciprocal relationships** across your family tree to ensure data consistency. When you create or delete a relationship in one person's note, the inverse relationship is automatically updated in the related person's note.

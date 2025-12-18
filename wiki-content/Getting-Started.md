@@ -2,6 +2,18 @@
 
 Canvas Roots transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas.
 
+---
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Basic Workflow](#basic-workflow)
+- [First Steps](#first-steps)
+- [Next Steps](#next-steps)
+
+---
+
 ## Prerequisites
 
 - Obsidian v1.7.2 or later

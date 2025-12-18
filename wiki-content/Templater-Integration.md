@@ -2,6 +2,20 @@
 
 Canvas Roots works well with the [Templater](https://github.com/SilentVoid13/Templater) plugin for creating person, place, event, and source notes with consistent formatting and unique identifiers.
 
+---
+
+## Table of Contents
+
+- [Why Use Templater?](#why-use-templater)
+- [The cr_id Format](#the-cr_id-format)
+- [Setting Up Templater](#setting-up-templater)
+- [Example Templates](#example-templates)
+- [Tips and Best Practices](#tips-and-best-practices)
+- [Troubleshooting](#troubleshooting)
+- [Related Documentation](#related-documentation)
+
+---
+
 ## Why Use Templater?
 
 While Canvas Roots provides a context menu action to "Add essential properties" to any note, templates offer advantages:

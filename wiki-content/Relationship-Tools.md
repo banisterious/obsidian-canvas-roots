@@ -2,6 +2,17 @@
 
 This page covers tools for analyzing and organizing family relationships: the relationship calculator, reference numbering systems, lineage tracking, and relationship history.
 
+---
+
+## Table of Contents
+
+- [Relationship Calculator](#relationship-calculator)
+- [Reference Numbering Systems](#reference-numbering-systems)
+- [Lineage Tracking](#lineage-tracking)
+- [Relationship History](#relationship-history)
+
+---
+
 ## Relationship Calculator
 
 Calculate the genealogical relationship between any two people in your family tree using proper genealogical terminology.

@@ -2,6 +2,20 @@
 
 Canvas Roots handles sensitive genealogical data including names, dates, relationships, and family history. This guide covers how to protect your family's privacy and secure your data.
 
+---
+
+## Table of Contents
+
+- [Data Storage Overview](#data-storage-overview)
+- [What Data is Stored](#what-data-is-stored)
+- [Network Privacy](#network-privacy)
+- [Privacy-Aware Export](#privacy-aware-export)
+- [Vault Security](#vault-security)
+- [Sharing Family Trees](#sharing-family-trees)
+- [Recommendations](#recommendations)
+
+---
+
 ## Data Storage Overview
 
 **All data stays local.** Canvas Roots does not:

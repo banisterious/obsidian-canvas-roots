@@ -4,6 +4,17 @@
 
 Canvas Roots transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees. Whether you're a genealogist tracing real ancestors, a novelist mapping fictional dynasties, or a researcher documenting historical figures—store your research in plain text, generate visual trees on demand, and explore your ancestry through interactive charts and maps.
 
+---
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Key Features](#key-features)
+- [Documentation](#documentation)
+- [Community & Support](#community--support)
+
+---
+
 ## Quick Start
 
 1. **[Get Started](Getting-Started)** - Installation and basic setup

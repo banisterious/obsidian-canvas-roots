@@ -2,6 +2,24 @@
 
 Organization Notes allow you to track non-genealogical hierarchies such as noble houses, guilds, corporations, military units, and religious orders. People can be members of organizations with roles and temporal membership data.
 
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Creating Organization Notes](#creating-organization-notes)
+- [Organization Properties](#organization-properties)
+- [Built-in Organization Types](#built-in-organization-types)
+- [Membership Properties](#membership-properties)
+- [Organizations Tab](#organizations-tab)
+- [Organizations Base Template](#organizations-base-template)
+- [Context Menu Actions](#context-menu-actions)
+- [Hierarchy Visualization](#hierarchy-visualization)
+- [Filtering by Organization](#filtering-by-organization)
+- [Related Documentation](#related-documentation)
+
+---
+
 ## Overview
 
 Organizations are a distinct note type separate from person notes. They support:

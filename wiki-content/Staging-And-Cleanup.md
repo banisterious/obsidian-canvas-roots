@@ -2,6 +2,17 @@
 
 This page covers tools for managing imported data quality: staging workflows, duplicate detection, and record merging.
 
+---
+
+## Table of Contents
+
+- [Smart Duplicate Detection](#smart-duplicate-detection)
+- [Merge Wizard](#merge-wizard)
+- [Staging Workflow](#staging-workflow)
+- [Data Quality Tools](#data-quality-tools)
+
+---
+
 ## Smart Duplicate Detection
 
 Find potential duplicate person records in your vault using intelligent matching algorithms. This helps maintain data quality, especially after importing data from multiple sources.

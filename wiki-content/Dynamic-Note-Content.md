@@ -2,6 +2,20 @@
 
 Canvas Roots can render live, computed content directly within person notes using special code blocks. These blocks automatically display data from your vault and update when you view the note.
 
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Block Types](#block-types)
+- [Rendered Output](#rendered-output)
+- [Freeze to Markdown](#freeze-to-markdown)
+- [Inserting Blocks](#inserting-blocks)
+- [Tips](#tips)
+- [Related Features](#related-features)
+
+---
+
 ## Overview
 
 Dynamic content blocks solve the problem of person notes containing only static frontmatter. With these blocks, you can see a person's complete timeline, family relationships, and more without leaving the note.

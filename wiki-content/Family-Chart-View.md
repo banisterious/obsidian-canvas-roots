@@ -2,6 +2,22 @@
 
 The Interactive Family Chart View is a persistent, interactive visualization panel for exploring and editing family trees in real-time. Unlike the static canvas exports, it provides a dynamic, explorable interface powered by the [family-chart](https://github.com/donatso/family-chart) library.
 
+---
+
+## Table of Contents
+
+- [Opening the Family Chart](#opening-the-family-chart)
+- [Navigation and Exploration](#navigation-and-exploration)
+- [Display Options](#display-options)
+- [Edit Mode](#edit-mode)
+- [Exporting the Chart](#exporting-the-chart)
+- [State Persistence](#state-persistence)
+- [Multiple Chart Views](#multiple-chart-views)
+- [Toolbar Reference](#toolbar-reference)
+- [Family Chart vs Canvas](#family-chart-vs-canvas)
+
+---
+
 ## Opening the Family Chart
 
 **Method 1: Command palette**

@@ -4,6 +4,21 @@ This page covers how to create person notes with relationship data that Canvas R
 
 > **Reference:** For a complete list of all supported properties, see the [Frontmatter Reference](Frontmatter-Reference).
 
+---
+
+## Table of Contents
+
+- [Quick Start: Adding Properties via Context Menu](#quick-start-adding-properties-via-context-menu)
+- [Individual Markdown Notes](#individual-markdown-notes)
+- [Example Person Note](#example-person-note)
+- [Multiple Spouse Support](#multiple-spouse-support)
+- [Wikilinks vs IDs](#wikilinks-vs-ids)
+- [Bulk Data Entry](#bulk-data-entry)
+- [Other Data Types](#other-data-types)
+- [Next Steps](#next-steps)
+
+---
+
 ## Quick Start: Adding Properties via Context Menu
 
 The fastest way to set up a person note is using the context menu:

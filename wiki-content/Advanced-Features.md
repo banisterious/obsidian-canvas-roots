@@ -2,6 +2,16 @@
 
 This page covers additional features: folder statistics, Excalidraw export, and the split canvas wizard.
 
+---
+
+## Table of Contents
+
+- [Folder Statistics](#folder-statistics)
+- [Excalidraw Export](#excalidraw-export)
+- [Split Canvas Wizard](#split-canvas-wizard)
+
+---
+
 ## Folder Statistics
 
 View comprehensive analytics about person notes in any folder.

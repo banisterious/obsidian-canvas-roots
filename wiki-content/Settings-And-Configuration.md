@@ -7,6 +7,16 @@ This page documents all Canvas Roots settings and configuration options. Setting
 
 ---
 
+## Table of Contents
+
+- [Control Center Overview](#control-center-overview)
+- [Setting Categories](#setting-categories)
+- [Property Aliases](#property-aliases)
+- [Value Aliases](#value-aliases)
+- [Settings Reference](#settings-reference)
+
+---
+
 ## Control Center Overview
 
 The Control Center (`Cmd/Ctrl+Shift+F`) is the main hub for Canvas Roots features. It has a tabbed interface:

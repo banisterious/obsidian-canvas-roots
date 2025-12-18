@@ -2,6 +2,28 @@
 
 Canvas Roots provides comprehensive place-based features for tracking where people were born, died, married, and lived. These features support both real-world genealogy and world-building with fictional places.
 
+---
+
+## Table of Contents
+
+- [Interactive Map View](#interactive-map-view)
+- [Maps Tab (Control Center)](#maps-tab-control-center)
+- [Place Notes](#place-notes)
+- [Life Events Array](#life-events-array)
+- [Journey Paths (Route Visualization)](#journey-paths-route-visualization)
+- [Place Statistics](#place-statistics)
+- [Data Quality Card](#data-quality-card)
+- [Place Visualizations](#place-visualizations)
+- [Merge Duplicate Places](#merge-duplicate-places)
+- [Place-Based Tree Filtering](#place-based-tree-filtering)
+- [Geocoding Lookup](#geocoding-lookup)
+- [Custom Place Types](#custom-place-types)
+- [Map Image Alignment (Edit Mode)](#map-image-alignment-edit-mode)
+- [Using Obsidian Maps Alongside Canvas Roots](#using-obsidian-maps-alongside-canvas-roots)
+- [Settings](#settings)
+
+---
+
 ## Interactive Map View
 
 The Map View provides a Leaflet.js-powered interactive map for visualizing where your family members lived, traveled, and died.
