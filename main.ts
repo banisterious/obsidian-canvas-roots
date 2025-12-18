@@ -46,6 +46,7 @@ import { CreateEventModal } from './src/events/ui/create-event-modal';
 import { isPlaceNote, isSourceNote, isEventNote, isMapNote, isSchemaNote, isUniverseNote } from './src/utils/note-type-detection';
 import { GeocodingService } from './src/maps/services/geocoding-service';
 import { TimelineProcessor, RelationshipsProcessor } from './src/dynamic-content';
+import { UniverseService, EditUniverseModal } from './src/universes';
 
 const logger = getLogger('CanvasRootsPlugin');
 
@@ -1301,6 +1302,15 @@ export default class CanvasRootsPlugin extends Plugin {
 												await this.addEssentialSourceProperties([file]);
 											});
 									});
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential universe properties')
+											.setIcon('globe')
+											.onClick(async () => {
+												await this.addEssentialUniverseProperties([file]);
+											});
+									});
 								});
 
 								// Add cr_id only
@@ -1465,6 +1475,15 @@ export default class CanvasRootsPlugin extends Plugin {
 												await this.addEssentialSourceProperties([file]);
 											});
 									});
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential universe properties')
+											.setIcon('globe')
+											.onClick(async () => {
+												await this.addEssentialUniverseProperties([file]);
+											});
+									});
 								});
 
 								// Add cr_id only
@@ -1545,7 +1564,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						}
 					}
 					// Person notes with cr_id get full person options
-					else if (hasCrId && !isPlace && !isSource && !isEvent) {
+					else if (hasCrId && !isPlace && !isSource && !isEvent && !isUniverse) {
 						menu.addSeparator();
 
 						if (useSubmenu) {
@@ -2029,6 +2048,15 @@ export default class CanvasRootsPlugin extends Plugin {
 											.setIcon('archive')
 											.onClick(async () => {
 												await this.addEssentialSourceProperties([file]);
+											});
+									});
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential universe properties')
+											.setIcon('globe')
+											.onClick(async () => {
+												await this.addEssentialUniverseProperties([file]);
 											});
 									});
 								});
@@ -2585,6 +2613,15 @@ export default class CanvasRootsPlugin extends Plugin {
 												await this.addEssentialEventProperties([file]);
 											});
 									});
+
+									propsSubmenu.addItem((propItem) => {
+										propItem
+											.setTitle('Add essential universe properties')
+											.setIcon('globe')
+											.onClick(async () => {
+												await this.addEssentialUniverseProperties([file]);
+											});
+									});
 								});
 
 								// Add cr_id only
@@ -2637,6 +2674,15 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
+									.setTitle('Canvas Roots: Add essential universe properties')
+									.setIcon('globe')
+									.onClick(async () => {
+										await this.addEssentialUniverseProperties([file]);
+									});
+							});
+
+							menu.addItem((item) => {
+								item
 									.setTitle('Canvas Roots: Add cr_id')
 									.setIcon('key')
 									.onClick(async () => {
@@ -2674,6 +2720,16 @@ export default class CanvasRootsPlugin extends Plugin {
 										.onClick(() => {
 											const modal = new ControlCenterModal(this.app, this);
 											modal.openToTab('universes');
+										});
+								});
+
+								// Edit universe
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Edit universe')
+										.setIcon('edit')
+										.onClick(() => {
+											this.openEditUniverseModal(file);
 										});
 								});
 
@@ -2733,6 +2789,15 @@ export default class CanvasRootsPlugin extends Plugin {
 									.onClick(() => {
 										const modal = new ControlCenterModal(this.app, this);
 										modal.openToTab('universes');
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Edit universe')
+									.setIcon('edit')
+									.onClick(() => {
+										this.openEditUniverseModal(file);
 									});
 							});
 
@@ -2853,6 +2918,18 @@ export default class CanvasRootsPlugin extends Plugin {
 									});
 							});
 
+							// Universes folder actions
+							submenu.addItem((subItem) => {
+								subItem
+									.setTitle('Set as universes folder')
+									.setIcon('globe')
+									.onClick(async () => {
+										this.settings.universesFolder = file.path;
+										await this.saveSettings();
+										new Notice(`Universes folder set to: ${file.path}`);
+									});
+							});
+
 							submenu.addSeparator();
 
 							// Add essential properties submenu
@@ -2903,6 +2980,17 @@ export default class CanvasRootsPlugin extends Plugin {
 											const files = this.app.vault.getMarkdownFiles()
 												.filter(f => f.path.startsWith(file.path + '/'));
 											await this.addEssentialMapProperties(files);
+										});
+								});
+
+								propsSubmenu.addItem((propItem) => {
+									propItem
+										.setTitle('Add essential universe properties')
+										.setIcon('globe')
+										.onClick(async () => {
+											const files = this.app.vault.getMarkdownFiles()
+												.filter(f => f.path.startsWith(file.path + '/'));
+											await this.addEssentialUniverseProperties(files);
 										});
 								});
 							});
@@ -3085,6 +3173,18 @@ export default class CanvasRootsPlugin extends Plugin {
 								});
 						});
 
+						// Universes folder actions (mobile)
+						menu.addItem((item) => {
+							item
+								.setTitle('Canvas Roots: Set as universes folder')
+								.setIcon('globe')
+								.onClick(async () => {
+									this.settings.universesFolder = file.path;
+									await this.saveSettings();
+									new Notice(`Universes folder set to: ${file.path}`);
+								});
+						});
+
 						// Essential properties (mobile)
 						menu.addItem((item) => {
 							item
@@ -3127,6 +3227,17 @@ export default class CanvasRootsPlugin extends Plugin {
 									const files = this.app.vault.getMarkdownFiles()
 										.filter(f => f.path.startsWith(file.path + '/'));
 									await this.addEssentialMapProperties(files);
+								});
+						});
+
+						menu.addItem((item) => {
+							item
+								.setTitle('Canvas Roots: Add essential universe properties')
+								.setIcon('globe')
+								.onClick(async () => {
+									const files = this.app.vault.getMarkdownFiles()
+										.filter(f => f.path.startsWith(file.path + '/'));
+									await this.addEssentialUniverseProperties(files);
 								});
 						});
 
@@ -4047,6 +4158,37 @@ export default class CanvasRootsPlugin extends Plugin {
 			editFile: file,
 			onUpdated: () => {
 				new Notice('Event updated');
+			}
+		}).open();
+	}
+
+	/**
+	 * Open the universe edit modal for a universe note
+	 */
+	private openEditUniverseModal(file: TFile): void {
+		const cache = this.app.metadataCache.getFileCache(file);
+		const fm = cache?.frontmatter;
+
+		if (!fm?.cr_id) {
+			new Notice('Universe note does not have a cr_id');
+			return;
+		}
+
+		// Get universe from service
+		const universeService = new UniverseService(this);
+		const universe = universeService.getUniverseByFile(file);
+
+		if (!universe) {
+			new Notice('Could not find universe data');
+			return;
+		}
+
+		// Open the edit modal
+		new EditUniverseModal(this.app, this, {
+			universe,
+			file,
+			onUpdated: () => {
+				new Notice('Universe updated');
 			}
 		}).open();
 	}
@@ -5349,62 +5491,46 @@ export default class CanvasRootsPlugin extends Plugin {
 	private async addEssentialUniverseProperties(files: TFile[]) {
 		try {
 			let processedCount = 0;
-			let skippedCount = 0;
 			let errorCount = 0;
 
 			for (const file of files) {
 				try {
-					let propertiesAdded = false;
-
 					await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
 						// cr_type: Must be "universe"
-						if (frontmatter.cr_type !== 'universe') {
-							frontmatter.cr_type = 'universe';
-							propertiesAdded = true;
-						}
+						frontmatter.cr_type = 'universe';
 
 						// cr_id: Generate if missing
 						if (!frontmatter.cr_id) {
 							frontmatter.cr_id = generateCrId();
-							propertiesAdded = true;
 						}
 
 						// name: Use filename if missing
 						if (!frontmatter.name) {
 							frontmatter.name = file.basename;
-							propertiesAdded = true;
 						}
 
 						// description: Add empty if missing
-						if (!frontmatter.description) {
+						if (frontmatter.description === undefined) {
 							frontmatter.description = '';
-							propertiesAdded = true;
 						}
 
 						// status: Default to 'active' if missing
 						if (!frontmatter.status) {
 							frontmatter.status = 'active';
-							propertiesAdded = true;
 						}
 
 						// author: Add empty if missing
-						if (!frontmatter.author) {
+						if (frontmatter.author === undefined) {
 							frontmatter.author = '';
-							propertiesAdded = true;
 						}
 
 						// genre: Add empty if missing
-						if (!frontmatter.genre) {
+						if (frontmatter.genre === undefined) {
 							frontmatter.genre = '';
-							propertiesAdded = true;
 						}
 					});
 
-					if (propertiesAdded) {
-						processedCount++;
-					} else {
-						skippedCount++;
-					}
+					processedCount++;
 
 				} catch (error: unknown) {
 					console.error(`Error processing ${file.path}:`, error);
@@ -5416,15 +5542,12 @@ export default class CanvasRootsPlugin extends Plugin {
 			if (files.length === 1) {
 				if (processedCount === 1) {
 					new Notice('Added essential universe properties');
-				} else if (skippedCount === 1) {
-					new Notice('File already has all essential universe properties');
 				} else {
 					new Notice('Failed to add essential universe properties');
 				}
 			} else {
 				const parts = [];
 				if (processedCount > 0) parts.push(`${processedCount} updated`);
-				if (skippedCount > 0) parts.push(`${skippedCount} already complete`);
 				if (errorCount > 0) parts.push(`${errorCount} errors`);
 				new Notice(`Essential universe properties: ${parts.join(', ')}`);
 			}

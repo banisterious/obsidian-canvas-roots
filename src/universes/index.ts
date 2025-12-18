@@ -8,3 +8,5 @@
 
 export * from './types';
 export * from './services';
+export { EditUniverseModal } from './ui/edit-universe-modal';
+export { UniverseWizardModal } from './ui/universe-wizard';
