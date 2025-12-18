@@ -349,7 +349,7 @@ Sidebar shows:
 #### **Obsidian Bases Integration**
 
 ```yaml
-# In family-members.base template
+# In people.base template
 properties:
   collection:
     displayName: "Collection"

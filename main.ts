@@ -5721,7 +5721,7 @@ export default class CanvasRootsPlugin extends Plugin {
 			// Determine the target path - use basesFolder if configured, otherwise use context folder
 			const targetFolder = this.settings.basesFolder || (folder ? folder.path : '');
 			const folderPath = targetFolder ? targetFolder + '/' : '';
-			const defaultPath = folderPath + 'family-members.base';
+			const defaultPath = folderPath + 'people.base';
 
 			// Create the bases folder if it doesn't exist
 			if (this.settings.basesFolder && !this.app.vault.getAbstractFileByPath(this.settings.basesFolder)) {

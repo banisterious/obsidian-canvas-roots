@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Code quality improvements** - Fixed 71 ESLint errors/warnings including inline style assignments (now using CSS classes), type safety issues, unused directives, and deprecated API usage.
 
+- **People base filename** - Changed default filename from `family-members.base` to `people.base` to match the button label and be consistent with other base filenames.
+
 ---
 
 ## [0.12.14] - 2025-12-17
