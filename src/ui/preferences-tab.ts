@@ -776,6 +776,15 @@ function renderFolderLocationsCard(
 		(v) => { plugin.settings.schemasFolder = v; }
 	);
 
+	// Universes folder
+	createFolderSetting(
+		'Universes folder',
+		'Default folder for universe notes (fictional worlds)',
+		'Canvas Roots/Universes',
+		() => plugin.settings.universesFolder,
+		(v) => { plugin.settings.universesFolder = v; }
+	);
+
 	// Canvases folder
 	createFolderSetting(
 		'Canvases folder',

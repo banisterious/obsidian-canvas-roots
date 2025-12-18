@@ -35,6 +35,7 @@ export const SECTION_IDS = {
 	SOURCES_BY_CONFIDENCE: 'sources-by-confidence',
 	PLACES_BY_CATEGORY: 'places-by-category',
 	GENDER_DISTRIBUTION: 'gender-distribution',
+	UNIVERSES: 'universes',
 	REPORTS: 'reports',
 	// Phase 3: Extended Statistics
 	LONGEVITY: 'longevity',

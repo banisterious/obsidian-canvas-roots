@@ -15,6 +15,7 @@ export interface EntityCounts {
 	places: number;
 	sources: number;
 	organizations: number;
+	universes: number;
 	canvases: number;
 }
 
@@ -477,4 +478,33 @@ export interface ExtendedStatistics {
 	migration: MigrationAnalysis;
 	sourceCoverage: SourceCoverageAnalysis;
 	timelineDensity: TimelineDensityAnalysis;
+}
+
+// =============================================================================
+// Universe Statistics Types
+// =============================================================================
+
+/**
+ * Entity counts for a universe
+ */
+export interface UniverseEntityCounts {
+	people: number;
+	events: number;
+	places: number;
+	organizations: number;
+	maps: number;
+	calendars: number;
+	schemas: number;
+}
+
+/**
+ * Universe with entity counts for statistics display
+ */
+export interface UniverseWithEntityCounts {
+	crId: string;
+	name: string;
+	description?: string;
+	status: string;
+	file: TFile;
+	entityCounts: UniverseEntityCounts;
 }

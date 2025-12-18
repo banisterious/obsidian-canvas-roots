@@ -21,13 +21,14 @@ export function renderStatisticsTab(
 	container: HTMLElement,
 	plugin: CanvasRootsPlugin,
 	createCard: (options: { title: string; icon?: LucideIconName; subtitle?: string }) => HTMLElement,
-	showTab: (tabId: string) => void
+	showTab: (tabId: string) => void,
+	closeModal?: () => void
 ): void {
 	const service = new StatisticsService(plugin.app, plugin.settings);
 	const stats = service.getAllStatistics();
 
 	// Actions card (at top for discoverability)
-	renderActionsCard(container, plugin, createCard);
+	renderActionsCard(container, plugin, createCard, closeModal);
 
 	// Overview card with entity counts
 	renderOverviewCard(container, stats, createCard);
@@ -292,7 +293,8 @@ function renderTopListsCard(
 function renderActionsCard(
 	container: HTMLElement,
 	plugin: CanvasRootsPlugin,
-	createCard: (options: { title: string; icon?: LucideIconName }) => HTMLElement
+	createCard: (options: { title: string; icon?: LucideIconName }) => HTMLElement,
+	closeModal?: () => void
 ): void {
 	const card = createCard({
 		title: 'Actions',
@@ -307,6 +309,7 @@ function renderActionsCard(
 			.setButtonText('Open dashboard')
 			.setCta()
 			.onClick(() => {
+				closeModal?.();
 				void plugin.app.workspace.getLeaf('tab').setViewState({
 					type: VIEW_TYPE_STATISTICS,
 					active: true

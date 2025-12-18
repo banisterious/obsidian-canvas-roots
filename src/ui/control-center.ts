@@ -852,6 +852,7 @@ export class ControlCenterModal extends Modal {
 		const link = statsLink.createEl('a', { text: 'View full statistics →', cls: 'crc-text-muted' });
 		link.addEventListener('click', (e) => {
 			e.preventDefault();
+			this.close();
 			void this.plugin.activateStatisticsView();
 		});
 
@@ -930,6 +931,7 @@ export class ControlCenterModal extends Modal {
 		const mapsLink = mapsStatsLink.createEl('a', { text: 'View full statistics →', cls: 'crc-text-muted' });
 		mapsLink.addEventListener('click', (e) => {
 			e.preventDefault();
+			this.close();
 			void this.plugin.activateStatisticsView();
 		});
 
@@ -2274,6 +2276,7 @@ export class ControlCenterModal extends Modal {
 		const link = statsLink.createEl('a', { text: 'View full statistics →', cls: 'crc-text-muted' });
 		link.addEventListener('click', (e) => {
 			e.preventDefault();
+			this.close();
 			void this.plugin.activateStatisticsView();
 		});
 	}
@@ -7213,6 +7216,7 @@ export class ControlCenterModal extends Modal {
 		const link = statsLink.createEl('a', { text: 'View full statistics →', cls: 'crc-text-muted' });
 		link.addEventListener('click', (e) => {
 			e.preventDefault();
+			this.close();
 			void this.plugin.activateStatisticsView();
 		});
 	}
@@ -8511,11 +8515,20 @@ export class ControlCenterModal extends Modal {
 
 				// Status badge
 				if (universe.status && universe.status !== 'active') {
-					const badge = row.createSpan({
+					row.createSpan({
 						text: universe.status,
 						cls: `crc-badge crc-badge--${universe.status}`
 					});
 				}
+			});
+
+			// View full statistics link
+			const statsLink = listContent.createDiv({ cls: 'cr-stats-link' });
+			const link = statsLink.createEl('a', { text: 'View full statistics →', cls: 'crc-text-muted' });
+			link.addEventListener('click', (e) => {
+				e.preventDefault();
+				this.close();
+				void this.plugin.activateStatisticsView();
 			});
 
 			container.appendChild(listCard);
@@ -8615,7 +8628,8 @@ export class ControlCenterModal extends Modal {
 			container,
 			this.plugin,
 			(options) => this.createCard(options),
-			(tabId) => this.switchTab(tabId)
+			(tabId) => this.switchTab(tabId),
+			() => this.close()
 		);
 	}
 

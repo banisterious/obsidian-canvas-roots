@@ -42,7 +42,9 @@ import type {
 	GenerationSourceStats,
 	TimelineDensityAnalysis,
 	DecadeEventCount,
-	TimelineGap
+	TimelineGap,
+	// Universe types
+	UniverseWithEntityCounts
 } from '../types/statistics-types';
 import { DEFAULT_TOP_LIST_LIMIT, CACHE_DEBOUNCE_MS, getGenerationLabel } from '../constants/statistics-constants';
 
@@ -221,17 +223,18 @@ export class StatisticsService {
 	 * Compute entity counts
 	 */
 	private computeEntityCounts(vaultStats: ReturnType<VaultStatsService['collectStats']>, peopleCount: number): EntityCounts {
-		// Get organization count
+		// Get organization and universe counts
 		let orgCount = 0;
+		let universeCount = 0;
 		try {
-			if (!this.organizationService) {
-				// OrganizationService needs the plugin, but we can count manually
-				const files = this.app.vault.getMarkdownFiles();
-				for (const file of files) {
-					const cache = this.app.metadataCache.getFileCache(file);
-					if (cache?.frontmatter?.cr_type === 'organization') {
-						orgCount++;
-					}
+			const files = this.app.vault.getMarkdownFiles();
+			for (const file of files) {
+				const cache = this.app.metadataCache.getFileCache(file);
+				if (cache?.frontmatter?.cr_type === 'organization') {
+					orgCount++;
+				}
+				if (cache?.frontmatter?.cr_type === 'universe') {
+					universeCount++;
 				}
 			}
 		} catch {
@@ -244,6 +247,7 @@ export class StatisticsService {
 			places: vaultStats.places.totalPlaces,
 			sources: vaultStats.sources.totalSources,
 			organizations: orgCount,
+			universes: universeCount,
 			canvases: vaultStats.canvases.totalCanvases
 		};
 	}
@@ -1584,6 +1588,87 @@ export class StatisticsService {
 		}
 
 		return gaps;
+	}
+
+	// =========================================================================
+	// Universe Statistics
+	// =========================================================================
+
+	/**
+	 * Get all universes with their entity counts
+	 */
+	getUniversesWithCounts(): UniverseWithEntityCounts[] {
+		const universes: UniverseWithEntityCounts[] = [];
+		const files = this.app.vault.getMarkdownFiles();
+
+		// First pass: find all universe notes
+		for (const file of files) {
+			const cache = this.app.metadataCache.getFileCache(file);
+			if (cache?.frontmatter?.cr_type === 'universe') {
+				const fm = cache.frontmatter;
+				universes.push({
+					crId: fm.cr_id as string,
+					name: (fm.name as string) || file.basename,
+					description: fm.description as string | undefined,
+					status: (fm.status as string) || 'active',
+					file,
+					entityCounts: {
+						people: 0,
+						events: 0,
+						places: 0,
+						organizations: 0,
+						maps: 0,
+						calendars: 0,
+						schemas: 0
+					}
+				});
+			}
+		}
+
+		// Build lookup map for universe crIds and names
+		const universeMap = new Map<string, UniverseWithEntityCounts>();
+		for (const universe of universes) {
+			universeMap.set(universe.crId, universe);
+			universeMap.set(universe.name.toLowerCase(), universe);
+		}
+
+		// Second pass: count entities per universe
+		for (const file of files) {
+			const cache = this.app.metadataCache.getFileCache(file);
+			const fm = cache?.frontmatter;
+			if (!fm?.universe) continue;
+
+			const universeRef = String(fm.universe);
+			const universe = universeMap.get(universeRef) || universeMap.get(universeRef.toLowerCase());
+			if (!universe) continue;
+
+			const crType = fm.cr_type;
+			switch (crType) {
+				case 'person':
+					universe.entityCounts.people++;
+					break;
+				case 'event':
+					universe.entityCounts.events++;
+					break;
+				case 'place':
+					universe.entityCounts.places++;
+					break;
+				case 'organization':
+					universe.entityCounts.organizations++;
+					break;
+				case 'map':
+					universe.entityCounts.maps++;
+					break;
+				case 'calendar':
+					universe.entityCounts.calendars++;
+					break;
+				case 'schema':
+					universe.entityCounts.schemas++;
+					break;
+			}
+		}
+
+		return universes.sort((a, b) => a.name.localeCompare(b.name));
 	}
 }
 

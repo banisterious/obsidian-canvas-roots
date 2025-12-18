@@ -20,7 +20,8 @@ import type {
 	MarriagePatternAnalysis,
 	MigrationAnalysis,
 	SourceCoverageAnalysis,
-	TimelineDensityAnalysis
+	TimelineDensityAnalysis,
+	UniverseWithEntityCounts
 } from '../types/statistics-types';
 import { VIEW_TYPE_STATISTICS, SECTION_IDS } from '../constants/statistics-constants';
 import { REPORT_METADATA } from '../../reports/types/report-types';
@@ -281,6 +282,11 @@ export class StatisticsView extends ItemView {
 			return this.buildTopListContent(items, 'generic');
 		});
 
+		// Universes section
+		this.buildSection(sectionsContainer, SECTION_IDS.UNIVERSES, 'Universes', 'globe', () => {
+			return this.buildUniversesContent();
+		});
+
 		// === Extended Statistics (Phase 3) ===
 
 		// Longevity Analysis section
@@ -387,6 +393,7 @@ export class StatisticsView extends ItemView {
 		createEntityRow('Places', this.stats.entityCounts.places, 'map-pin');
 		createEntityRow('Sources', this.stats.entityCounts.sources, 'archive');
 		createEntityRow('Organizations', this.stats.entityCounts.organizations, 'building');
+		createEntityRow('Universes', this.stats.entityCounts.universes, 'globe');
 		createEntityRow('Canvases', this.stats.entityCounts.canvases, 'file');
 
 		// Date range
@@ -839,6 +846,107 @@ export class StatisticsView extends ItemView {
 		if (unknown > 0) {
 			const unknownBar = bar.createDiv({ cls: 'cr-sv-confidence-bar-segment cr-sv-confidence-unknown' });
 			unknownBar.style.width = `${(unknown / total) * 100}%`;
+		}
+
+		return content;
+	}
+
+	/**
+	 * Build universes section content
+	 */
+	private buildUniversesContent(): HTMLElement {
+		const content = document.createElement('div');
+		content.addClass('cr-sv-universes');
+
+		if (!this.service) {
+			content.createSpan({ cls: 'crc-text-muted', text: 'Service not available' });
+			return content;
+		}
+
+		const universes: UniverseWithEntityCounts[] = this.service.getUniversesWithCounts();
+
+		if (universes.length === 0) {
+			content.createSpan({ cls: 'crc-text-muted', text: 'No universes found' });
+			return content;
+		}
+
+		// Create a card for each universe
+		const grid = content.createDiv({ cls: 'cr-sv-universes-grid' });
+
+		for (const universe of universes) {
+			const card = grid.createDiv({ cls: 'cr-sv-universe-card' });
+
+			// Card header with clickable name
+			const header = card.createDiv({ cls: 'cr-sv-universe-header' });
+			const iconEl = header.createSpan({ cls: 'cr-sv-universe-icon' });
+			setIcon(iconEl, 'globe');
+
+			const nameLink = header.createEl('a', {
+				text: universe.name,
+				cls: 'cr-sv-universe-name internal-link',
+				attr: { 'data-href': universe.file.path }
+			});
+			nameLink.addEventListener('click', (e) => {
+				e.preventDefault();
+				void this.app.workspace.getLeaf('tab').openFile(universe.file);
+			});
+			nameLink.addEventListener('contextmenu', (e) => {
+				e.preventDefault();
+				this.showPersonContextMenu(e, universe.file);
+			});
+			nameLink.addEventListener('mouseover', (e) => {
+				this.triggerHoverPreview(e, universe.file, nameLink);
+			});
+
+			// Status badge
+			if (universe.status !== 'active') {
+				header.createSpan({
+					cls: `cr-sv-universe-status cr-sv-universe-status--${universe.status}`,
+					text: universe.status
+				});
+			}
+
+			// Description (if available)
+			if (universe.description) {
+				card.createDiv({
+					cls: 'cr-sv-universe-description crc-text-muted',
+					text: universe.description.length > 100
+						? universe.description.substring(0, 100) + '...'
+						: universe.description
+				});
+			}
+
+			// Entity counts
+			const counts = universe.entityCounts;
+			const totalEntities = counts.people + counts.events + counts.places +
+				counts.organizations + counts.maps + counts.calendars + counts.schemas;
+
+			if (totalEntities > 0) {
+				const countsContainer = card.createDiv({ cls: 'cr-sv-universe-counts' });
+
+				const addCountItem = (label: string, count: number, icon: string) => {
+					if (count > 0) {
+						const item = countsContainer.createDiv({ cls: 'cr-sv-universe-count-item' });
+						const itemIcon = item.createSpan({ cls: 'cr-sv-universe-count-icon' });
+						setIcon(itemIcon, icon);
+						item.createSpan({ cls: 'cr-sv-universe-count-value', text: formatNumber(count) });
+						item.createSpan({ cls: 'cr-sv-universe-count-label', text: label });
+					}
+				};
+
+				addCountItem('People', counts.people, 'users');
+				addCountItem('Events', counts.events, 'calendar');
+				addCountItem('Places', counts.places, 'map-pin');
+				addCountItem('Organizations', counts.organizations, 'building');
+				addCountItem('Maps', counts.maps, 'map');
+				addCountItem('Calendars', counts.calendars, 'calendar-days');
+				addCountItem('Schemas', counts.schemas, 'clipboard-check');
+			} else {
+				card.createDiv({
+					cls: 'cr-sv-universe-empty crc-text-muted',
+					text: 'No entities yet'
+				});
+			}
 		}
 
 		return content;
