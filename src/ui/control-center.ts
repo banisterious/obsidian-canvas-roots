@@ -72,6 +72,7 @@ import {
 } from '../sources';
 import { isPersonNote } from '../utils/note-type-detection';
 import { UniverseService } from '../universes/services/universe-service';
+import { UniverseWizardModal } from '../universes/ui/universe-wizard';
 import type {
 	FactKey,
 	ResearchGapsSummary,
@@ -1633,8 +1634,9 @@ export class ControlCenterModal extends Modal {
 				cls: 'crc-btn crc-btn--primary'
 			});
 			createBtn.addEventListener('click', () => {
-				// TODO: Open Universe Setup Wizard when implemented
-				new Notice('Universe Setup Wizard coming soon!');
+				new UniverseWizardModal(this.plugin, {
+					onComplete: () => this.switchTab('universes')
+				}).open();
 			});
 
 			const manageBtn = btnRow.createEl('button', {
@@ -1663,8 +1665,9 @@ export class ControlCenterModal extends Modal {
 				cls: 'crc-btn crc-btn--primary'
 			});
 			createBtn.addEventListener('click', () => {
-				// TODO: Open Universe Setup Wizard when implemented
-				new Notice('Universe Setup Wizard coming soon!');
+				new UniverseWizardModal(this.plugin, {
+					onComplete: () => this.switchTab('universes')
+				}).open();
 			});
 
 			const learnLink = btnRow.createEl('a', {
@@ -8437,8 +8440,9 @@ export class ControlCenterModal extends Modal {
 			cls: 'crc-btn crc-btn--primary'
 		});
 		createBtn.addEventListener('click', () => {
-			// TODO: Open Universe Setup Wizard
-			new Notice('Universe Setup Wizard coming soon!');
+			new UniverseWizardModal(this.plugin, {
+				onComplete: () => this.showUniversesTab()
+			}).open();
 		});
 
 		container.appendChild(headerCard);
@@ -8594,7 +8598,9 @@ export class ControlCenterModal extends Modal {
 				cls: 'crc-btn crc-btn--primary'
 			});
 			startBtn.addEventListener('click', () => {
-				new Notice('Universe Setup Wizard coming soon!');
+				new UniverseWizardModal(this.plugin, {
+					onComplete: () => this.showUniversesTab()
+				}).open();
 			});
 			container.appendChild(emptyCard);
 		}

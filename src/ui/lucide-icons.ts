@@ -28,6 +28,7 @@ export type LucideIconName =
 	| 'alert-triangle' // Error
 	| 'info'           // Information
 	| 'chevron-right'  // Navigation
+	| 'chevron-left'   // Navigation back
 	| 'chevron-down'   // Dropdown
 	| 'plus'           // Add/create
 	| 'minus'          // Remove

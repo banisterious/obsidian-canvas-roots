@@ -5,11 +5,12 @@
  * vault statistics, data completeness, and quality metrics.
  */
 
-import { setIcon, Setting, Notice } from 'obsidian';
+import { setIcon, Setting } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { LucideIconName } from '../../ui/lucide-icons';
 import { StatisticsService } from '../services/statistics-service';
 import { UniverseService } from '../../universes/services/universe-service';
+import { UniverseWizardModal } from '../../universes/ui/universe-wizard';
 import type { StatisticsData, TopListItem } from '../types/statistics-types';
 import { VIEW_TYPE_STATISTICS } from '../constants/statistics-constants';
 
@@ -389,7 +390,9 @@ function renderUniversesCard(
 			cls: 'crc-btn crc-btn--secondary'
 		});
 		createBtn.addEventListener('click', () => {
-			new Notice('Universe Setup Wizard coming soon!');
+			new UniverseWizardModal(plugin, {
+				onComplete: () => showTab('universes')
+			}).open();
 		});
 
 		// Manage link
@@ -413,7 +416,9 @@ function renderUniversesCard(
 			cls: 'crc-btn crc-btn--primary'
 		});
 		createBtn.addEventListener('click', () => {
-			new Notice('Universe Setup Wizard coming soon!');
+			new UniverseWizardModal(plugin, {
+				onComplete: () => showTab('universes')
+			}).open();
 		});
 	}
 

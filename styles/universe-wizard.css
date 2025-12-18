@@ -1,0 +1,620 @@
+/* ==========================================================================
+   UNIVERSE SETUP WIZARD
+   ========================================================================== */
+
+/* Modal sizing */
+.cr-universe-wizard {
+  max-width: 650px;
+  width: 650px;
+}
+
+.cr-universe-wizard .modal-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+
+.cr-universe-wizard .cr-wizard-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Header */
+.cr-wizard-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cr-wizard-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.cr-wizard-title svg {
+  color: var(--text-accent);
+}
+
+/* ==========================================================================
+   PROGRESS INDICATOR
+   ========================================================================== */
+
+.cr-wizard-progress {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-wizard-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.cr-wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.cr-wizard-step--active {
+  opacity: 1;
+}
+
+.cr-wizard-step--completed {
+  opacity: 0.8;
+}
+
+.cr-wizard-step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--background-modifier-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.cr-wizard-step--active .cr-wizard-step-number {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.cr-wizard-step--completed .cr-wizard-step-number {
+  background: var(--color-green);
+  color: white;
+}
+
+.cr-wizard-step--completed .cr-wizard-step-number svg {
+  width: 14px;
+  height: 14px;
+}
+
+.cr-wizard-step-info {
+  display: none;
+}
+
+.cr-wizard-step--active .cr-wizard-step-info {
+  display: block;
+}
+
+.cr-wizard-step-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.cr-wizard-connector {
+  width: 24px;
+  height: 2px;
+  background: var(--background-modifier-border);
+  margin: 0 4px;
+}
+
+.cr-wizard-connector--completed {
+  background: var(--color-green);
+}
+
+/* ==========================================================================
+   STEP CONTENT
+   ========================================================================== */
+
+.cr-wizard-content {
+  min-height: 300px;
+}
+
+.cr-wizard-step-header {
+  margin-bottom: 16px;
+}
+
+.cr-wizard-step-heading {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.cr-wizard-step-counter {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.cr-wizard-step-desc {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--text-normal);
+}
+
+.cr-wizard-step-hint {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.cr-wizard-step-content {
+  margin-bottom: 16px;
+}
+
+/* Form styles */
+.cr-wizard-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cr-wizard-form .setting-item {
+  border-top: none;
+  padding-top: 8px;
+}
+
+.cr-wizard-form .setting-item:first-child {
+  padding-top: 0;
+}
+
+/* Collapsible details section */
+.cr-wizard-details {
+  margin-top: 16px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+}
+
+.cr-wizard-details-header {
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border-radius: 6px 6px 0 0;
+}
+
+.cr-wizard-details-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.cr-wizard-details-toggle:hover {
+  color: var(--text-normal);
+}
+
+.cr-wizard-details-toggle svg {
+  flex-shrink: 0;
+}
+
+.cr-wizard-details-content {
+  padding: 12px;
+}
+
+.cr-wizard-details-content.cr-hidden {
+  display: none;
+}
+
+/* Subsection headers */
+.cr-wizard-subsection {
+  margin: 16px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.cr-wizard-hint {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.cr-wizard-empty {
+  margin: 8px 0;
+  padding: 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ==========================================================================
+   ERA TABLE
+   ========================================================================== */
+
+.cr-wizard-eras {
+  margin-bottom: 12px;
+}
+
+.cr-wizard-era-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.cr-wizard-era-table th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-wizard-era-table td {
+  padding: 6px 8px;
+  vertical-align: middle;
+}
+
+.cr-wizard-era-table tr:hover {
+  background: var(--background-secondary-alt);
+}
+
+.cr-wizard-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 13px;
+}
+
+.cr-wizard-input:focus {
+  border-color: var(--interactive-accent);
+  outline: none;
+}
+
+.cr-wizard-input--short {
+  width: 80px;
+}
+
+/* ==========================================================================
+   REQUIRED PROPERTIES
+   ========================================================================== */
+
+.cr-wizard-props {
+  margin-bottom: 12px;
+}
+
+.cr-wizard-prop-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cr-wizard-prop-row .cr-wizard-input {
+  flex: 1;
+}
+
+/* ==========================================================================
+   NAVIGATION
+   ========================================================================== */
+
+.cr-wizard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--background-modifier-border);
+  margin-top: 16px;
+}
+
+.cr-wizard-nav-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* Button styles */
+.cr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+}
+
+.cr-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.cr-btn--primary {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+.cr-btn--primary:hover {
+  background: var(--interactive-accent-hover);
+  border-color: var(--interactive-accent-hover);
+}
+
+.cr-btn--secondary {
+  background: var(--background-secondary);
+  color: var(--text-normal);
+}
+
+.cr-btn--small {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.cr-btn--icon {
+  padding: 6px;
+  min-width: 28px;
+  justify-content: center;
+}
+
+.cr-btn--danger {
+  color: var(--text-error);
+}
+
+.cr-btn--danger:hover {
+  background: var(--background-modifier-error);
+}
+
+.cr-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   SUMMARY STEP
+   ========================================================================== */
+
+.cr-wizard-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cr-wizard-summary-card {
+  padding: 12px 16px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.cr-wizard-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-normal);
+  margin-bottom: 8px;
+}
+
+.cr-wizard-summary-header svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-accent);
+}
+
+.cr-wizard-summary-item {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 2px 0;
+}
+
+.cr-wizard-summary-item--desc {
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.cr-wizard-summary-item--skipped {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* ==========================================================================
+   SUCCESS STATE
+   ========================================================================== */
+
+.cr-wizard-success {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.cr-wizard-success-icon {
+  margin-bottom: 16px;
+  color: var(--color-green);
+}
+
+.cr-wizard-success-icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+.cr-wizard-success h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.cr-wizard-success-name {
+  margin: 0 0 24px;
+  font-size: 16px;
+  color: var(--text-accent);
+  font-weight: 500;
+}
+
+.cr-wizard-success-entities {
+  text-align: left;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+}
+
+.cr-wizard-success-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.cr-wizard-success-entities ul,
+.cr-wizard-next-steps ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--text-normal);
+}
+
+.cr-wizard-success-entities li,
+.cr-wizard-next-steps li {
+  padding: 4px 0;
+}
+
+.cr-wizard-skipped {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.cr-wizard-next-steps {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.cr-wizard-success-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   IMAGE PICKER MODAL
+   ========================================================================== */
+
+.cr-image-picker-modal {
+  max-width: 500px;
+  width: 500px;
+}
+
+.cr-image-picker-modal .modal-content {
+  padding: 16px;
+}
+
+.cr-image-picker-modal h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.cr-search-container {
+  margin-bottom: 12px;
+}
+
+.cr-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 14px;
+}
+
+.cr-search-input:focus {
+  border-color: var(--interactive-accent);
+  outline: none;
+}
+
+.cr-file-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+}
+
+.cr-file-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-file-item:last-child {
+  border-bottom: none;
+}
+
+.cr-file-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.cr-file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.cr-file-path {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.cr-no-results,
+.cr-more-results {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Utility classes */
+.cr-hidden {
+  display: none !important;
+}
+
+.cr-mt-2 {
+  margin-top: 8px;
+}
+
+.cr-mt-3 {
+  margin-top: 12px;
+}

@@ -53,6 +53,7 @@ const CONFIG = {
     'organizations.css', // Organizations tab
     'sources.css',       // Sources tab
     'statistics.css',    // Statistics tab and view
+    'universe-wizard.css', // Universe setup wizard modal
     'preferences.css',   // Preferences tab
     'tree-output.css',   // Tree output two-panel layout
     'dynamic-content.css', // Dynamic content blocks (timeline, relationships)
