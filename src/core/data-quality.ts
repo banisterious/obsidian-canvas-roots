@@ -907,17 +907,34 @@ export class DataQualityService {
 	/**
 	 * Parse a year from a date string
 	 */
-	private parseYear(dateStr?: string): number | null {
+	private parseYear(dateStr?: string | number | unknown): number | null {
 		if (!dateStr) return null;
 
+		// Handle number directly (e.g., year as number)
+		if (typeof dateStr === 'number') {
+			return dateStr;
+		}
+
+		// Convert to string if needed
+		let str: string;
+		if (typeof dateStr === 'string') {
+			str = dateStr;
+		} else {
+			// Try to convert to string
+			str = String(dateStr);
+			if (str === '[object Object]' || str === 'undefined' || str === 'null') {
+				return null;
+			}
+		}
+
 		// Try YYYY-MM-DD format
-		const isoMatch = dateStr.match(/^(\d{4})/);
+		const isoMatch = str.match(/^(\d{4})/);
 		if (isoMatch) {
 			return parseInt(isoMatch[1], 10);
 		}
 
 		// Try various formats with year
-		const yearMatch = dateStr.match(/\b(\d{4})\b/);
+		const yearMatch = str.match(/\b(\d{4})\b/);
 		if (yearMatch) {
 			return parseInt(yearMatch[1], 10);
 		}
@@ -928,7 +945,15 @@ export class DataQualityService {
 	/**
 	 * Check if a date is in standard format
 	 */
-	private isStandardDateFormat(dateStr: string): boolean {
+	private isStandardDateFormat(dateStr: string | number | unknown): boolean {
+		// Handle non-string values
+		if (typeof dateStr === 'number') {
+			// A plain year number is considered standard
+			return dateStr >= 1 && dateStr <= 9999;
+		}
+		if (typeof dateStr !== 'string') {
+			return false;
+		}
 		// YYYY-MM-DD
 		if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return true;
 		// YYYY-MM
