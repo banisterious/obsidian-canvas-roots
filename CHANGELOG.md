@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Family Chart info panel not resetting** - Fixed bug where the info panel continued showing the previous person's details when switching root person via context menu.
 
+- **Reference numbers prompt after all imports** - Fixed inconsistency where GEDCOM 5.5.1 and CSV imports did not offer to assign reference numbers after import. All import types (GEDCOM, GEDCOM X, Gramps, CSV) now consistently show the "Assign reference numbers" prompt after successful imports.
+
 ---
 
 ## [0.13.0] - 2025-12-18
