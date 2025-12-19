@@ -6,8 +6,8 @@ Currently, security updates are provided for the latest release version only.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.7.x   | :white_check_mark: |
-| < 0.7   | :x:                |
+| 0.11.x  | :white_check_mark: |
+| < 0.11  | :x:                |
 
 ## Data Privacy and Personally Identifiable Information (PII)
 
@@ -80,8 +80,8 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
    - **Never** share your vault publicly without sanitizing PII first
    - Be extremely cautious about who has access to your vault
    - Consider using separate vaults for sensitive genealogical data vs. other notes
-   - **Use the built-in obfuscation feature** (§5.6 of specification) when sharing Canvas screenshots or GEDCOM exports
-   - The obfuscation feature protects PII while preserving family tree structure for demonstrations and collaboration
+   - **Use privacy protection** when exporting GEDCOM files for sharing
+   - Privacy protection replaces living persons' names with placeholders while preserving tree structure
 
 3. **Cloud Sync and Backup**
    - Understand that cloud sync services (Obsidian Sync, Dropbox, etc.) will sync all PII
@@ -99,9 +99,8 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
    - GEDCOM files contain extensive PII about living and deceased individuals
    - Treat GEDCOM files with the same security as financial documents
    - Be cautious when importing GEDCOM files from untrusted sources
-   - **Use the export obfuscation feature** when sharing GEDCOM files publicly or with collaborators
-   - Obfuscation levels range from minimal (dates only) to full (all PII anonymized)
-   - Optionally generate a secure mapping file to reverse obfuscation later
+   - **Enable privacy protection** when exporting GEDCOM files for sharing
+   - Living persons can be anonymized or excluded entirely from exports
 
 ### For Professional Genealogists
 
@@ -118,12 +117,11 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
    - Document your data handling procedures
 
 3. **Data Anonymization**
-   - **Use the built-in obfuscation feature** for professional demonstrations and client presentations
-   - Choose appropriate obfuscation levels: Minimal, Standard, or Full based on sharing context
-   - Canvas obfuscation mode provides temporary display anonymization for screenshots
-   - Export obfuscation creates shareable GEDCOM files while preserving structure
-   - Store obfuscation mapping files securely and separately from obfuscated exports
-   - Use fictional data for public examples when obfuscation is insufficient
+   - **Enable privacy protection** for professional demonstrations and client presentations
+   - Configure the age threshold to determine who is considered living
+   - Choose display formats: "Living", "Private", initials, or exclude entirely
+   - Export privacy protection creates shareable files while preserving tree structure
+   - Use fictional data for public examples when privacy protection is insufficient
 
 ## Security Best Practices for Users
 
@@ -152,7 +150,7 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
 
 1. **No Built-in Encryption**: The plugin does not encrypt data (relies on Obsidian/OS)
 2. **No Access Controls**: Anyone with vault access can view all data
-3. **No Audit Logging**: The plugin does not log data access
+3. **No Audit Logging**: The plugin does not log data access (but see Log Export Privacy below)
 4. **Privacy Protection is Opt-in**: Users must manually enable privacy protection in settings
 5. **Canvas Display Not Protected**: Privacy settings apply to exports only; canvas displays full data
 
@@ -215,37 +213,52 @@ If you suspect your vault containing family data has been compromised:
 
 ## Privacy and Obfuscation Features
 
-Canvas Roots includes comprehensive data obfuscation capabilities designed to protect PII:
+Canvas Roots includes privacy protection capabilities designed to protect PII:
 
-### Living Person Protection (Implemented)
+### Living Person Protection
+
 - **Automatic detection**: Persons without death dates born within a configurable threshold (default: 100 years) are considered living
 - **Display formats**: Choose how protected persons appear: "Living", "Private", initials, or hidden
-- **Export protection**: Living persons can be automatically protected in GEDCOM, GEDCOM X, and Gramps XML exports
-- **Per-person override**: Mark individuals as living/deceased with the `cr_living` frontmatter property
+- **Export protection**: Living persons can be automatically protected in GEDCOM, GEDCOM X, Gramps XML, and CSV exports
+- **Per-person override** (planned): Mark individuals as living/deceased with the `cr_living` frontmatter property
 
-### Export Privacy (Implemented)
+### Export Privacy
+
 - **Privacy-aware exports**: GEDCOM, GEDCOM X, Gramps XML, and CSV exports respect privacy settings
 - **Configurable threshold**: Set the age threshold for automatic living person detection
 - **Structure preservation**: Family relationships maintained even when names are protected
 - **Multiple formats**: Privacy protection works across all export formats
 
+### Log Export Privacy
+
+When sharing logs for debugging or support, PII is automatically protected:
+
+- **Obfuscation enabled by default**: Log exports replace personal data with placeholders
+- **What gets obfuscated**: Names → `[NAME-1]`, dates → `[DATE]`, years → `[YEAR]`, file paths → `/[FILE].md`, UUIDs → `[ID]`
+- **Configurable**: Can be disabled in Settings → Logging when debugging privately
+- **Non-destructive**: Original log data remains intact; obfuscation applies only to exports
+
 ### Canvas Obfuscation (Planned)
+
 - **Temporary display mode**: Toggle obfuscation for screenshots/presentations
 - **Visual indicators**: Clear indication when obfuscation is active
 - **Non-destructive**: Original notes remain unchanged
 - **Configurable levels**: Match export privacy settings
 
 ### Use Cases
+
 - **GDPR Compliance**: Share historical research while protecting living EU residents' data
 - **Public Genealogy**: Share complete historical trees while protecting recent generations
 - **Professional Demonstrations**: Show family tree structures without exposing client PII
 - **Educational Materials**: Create teaching examples protecting all living individuals
 - **Collaborative Research**: Share tree structure with researchers who need patterns, not names
+- **Bug Reports**: Share logs publicly without exposing family data
 
 ## Future Security Enhancements
 
 Additional planned improvements:
 
+- `cr_living` frontmatter property for manual living/deceased override
 - Canvas obfuscation mode for screenshots/presentations
 - Optional encryption for cr_id values
 - Audit logging capabilities
