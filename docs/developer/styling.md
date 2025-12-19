@@ -16,6 +16,7 @@ This document covers the Canvas Roots CSS architecture, build system, and custom
 - [Style Settings Integration](#style-settings-integration)
 - [Component Files](#component-files)
 - [Theme Compatibility](#theme-compatibility)
+- [Mobile Styling](#mobile-styling)
 - [Development Workflow](#development-workflow)
 
 ---
@@ -287,6 +288,95 @@ Canvas Roots maintains compatibility with Obsidian themes by:
 | `--text-faint` | Faint text (disabled, etc.) |
 | `--interactive-accent` | Accent/primary color |
 | `--interactive-accent-hover` | Accent hover state |
+
+---
+
+## Mobile Styling
+
+Canvas Roots provides basic mobile support for Obsidian on tablets and phones. The mobile styling approach uses two complementary strategies.
+
+### JavaScript-Applied Classes
+
+The primary mobile styling is in `modals.css` and uses classes applied via JavaScript when `Platform.isMobile` is detected:
+
+```css
+/* Full-screen modal on mobile */
+.crc-mobile-mode {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  border-radius: 0;
+}
+
+/* Slide-in drawer navigation */
+.crc-drawer.crc-drawer--mobile {
+  position: fixed !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.3s ease !important;
+}
+
+.crc-drawer.crc-drawer--mobile.crc-drawer--open {
+  transform: translateX(0) !important;
+}
+```
+
+**Mobile-specific adjustments:**
+
+| Element | Mobile Behavior |
+|---------|-----------------|
+| Modals | Full-screen, no border radius |
+| Navigation drawer | Slide-in from left with backdrop |
+| Tables | Horizontal scroll with `-webkit-overflow-scrolling: touch` |
+| Form inputs | 16px font size to prevent iOS zoom on focus |
+| Header actions | Reduced padding and font size |
+| Cards | Adjusted padding (12px vs 16px) |
+
+### Media Query Breakpoints
+
+Component files use standard CSS media queries for responsive adjustments:
+
+```css
+/* responsive.css - global breakpoint */
+@media (max-width: 768px) {
+  :root {
+    --cr-node-width: 150px;
+    --cr-node-height: 80px;
+  }
+}
+
+/* Component-specific breakpoints */
+@media (max-width: 600px) {
+  .cr-fcv-toolbar {
+    flex-wrap: wrap;
+  }
+  .cr-fcv-label {
+    display: none;
+  }
+}
+```
+
+**Files with responsive styles:**
+
+| File | Breakpoint | Purpose |
+|------|------------|---------|
+| `responsive.css` | 768px | Global node dimension adjustments |
+| `family-chart-view.css` | 600px, 800px | Toolbar wrapping, label hiding |
+| `map-view.css` | 600px, 768px | Map controls and overlays |
+| `events.css` | 600px | Timeline layout adjustments |
+| `sources.css` | 500px | Media gallery grid |
+| `tree-output.css` | 900px | Two-panel layout collapse |
+| `relationship-calculator.css` | 500px | Calculator layout |
+
+### Adding Mobile Styles
+
+When adding new mobile styles:
+
+1. **For Control Center modals**: Add to the `.crc-mobile-mode` section in `modals.css`
+2. **For view components**: Add `@media` queries at the end of the component file
+3. **Use Obsidian's classes**: Check for `.is-mobile`, `.is-phone`, `.is-tablet` on `body` if needed
+4. **Touch targets**: Ensure tappable elements are at least 44px × 44px
+5. **Font size**: Use minimum 16px for inputs to prevent iOS zoom
 
 ---
 
