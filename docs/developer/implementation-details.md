@@ -44,6 +44,10 @@ This document covers technical implementation specifics for Canvas Roots feature
   - [Block Types](#block-types)
   - [Freeze to Markdown](#freeze-to-markdown)
   - [Insertion Methods](#insertion-methods)
+- [Templater Integration](#templater-integration)
+  - [Template Snippets Modal](#template-snippets-modal)
+  - [Property Alias Support](#property-alias-support)
+  - [Template Types](#template-types)
 - [Privacy and Gender Identity Protection](#privacy-and-gender-identity-protection)
   - [Sex vs Gender Data Model](#sex-vs-gender-data-model)
   - [Living Person Privacy](#living-person-privacy)
@@ -1581,6 +1585,109 @@ sort: chronological
 - Blocks inserted after frontmatter delimiter (`---`)
 - Existing blocks detected to avoid duplicates
 - Bulk insert shows progress modal with count
+
+---
+
+## Templater Integration
+
+Canvas Roots provides copyable Templater-compatible templates for all note types, accessible via a modal in the Control Center. This complements the built-in "Create Person/Place/Event" modals with templates for users who prefer Templater workflows.
+
+### Template Snippets Modal
+
+The `TemplateSnippetsModal` (`src/ui/template-snippets-modal.ts`) displays copyable templates organized by note type:
+
+```typescript
+export type TemplateType = 'person' | 'place' | 'source' | 'organization' | 'proof' | 'event';
+```
+
+**Access points:**
+- Control Center → each tab's header has a "Templater templates" button
+- Opens modal pre-selected to the relevant tab (e.g., People tab → Person templates)
+
+**Modal features:**
+- Tab-based navigation between template types
+- Multiple template variants per type (basic, full, with prompts)
+- One-click copy to clipboard with visual feedback
+- Templater variable reference table
+- Links to frontmatter schema and wiki documentation
+
+### Property Alias Support
+
+Templates dynamically use the user's configured property aliases:
+
+```typescript
+// Get the property name to use in templates
+function getPropertyName(canonical: string, aliases: PropertyAliases): string {
+  for (const [userProp, canonicalProp] of Object.entries(aliases)) {
+    if (canonicalProp === canonical) {
+      return userProp;  // Return user's custom name
+    }
+  }
+  return canonical;  // Fall back to canonical name
+}
+
+// Usage in template generation
+const p = (canonical: string) => getPropertyName(canonical, this.propertyAliases);
+
+// Template output respects aliases
+template: `---
+${p('cr_type')}: person
+${p('cr_id')}: <% tp.date.now("YYYYMMDDHHmmss") %>
+${p('name')}: "<% tp.file.title %>"
+${p('born')}:
+---`
+```
+
+If the user has configured `birthdate` as an alias for `born`, the template will use `birthdate:` instead.
+
+### Template Types
+
+**Person templates (3 variants):**
+- Basic: Essential fields only
+- Full: All relationship and place fields
+- With prompts: Interactive Templater prompts for key data
+
+**Place templates (5 variants):**
+- Basic: Minimal real-world location
+- With coordinates: Includes lat/long fields
+- Historical: For places that no longer exist
+- Fictional: For world-building with custom coordinates
+- Full: All available fields
+
+**Source templates (4 variants):**
+- Basic: Minimal source documentation
+- Census: Pre-structured for census records
+- Vital record: For birth/death/marriage certificates
+- Full: Complete source metadata
+
+**Organization templates (4 variants):**
+- Basic: Any organization type
+- Noble house: For feudal houses and dynasties
+- Military unit: For armies and regiments
+- Full: All organization fields
+
+**Event templates (7 variants):**
+- Basic: Minimal life event
+- Birth/Marriage/Death: Pre-configured vital events
+- Narrative: For world-builders (anecdote, plot point, etc.)
+- Relative-ordered: Events without dates, using before/after links
+- Full: All event fields
+
+**Proof summary templates (3 variants):**
+- Basic: Minimal genealogical conclusion
+- With evidence: Pre-structured evidence entries
+- Conflict resolution: For documenting conflicting evidence
+
+**Templater syntax used:**
+
+| Syntax | Purpose |
+|--------|---------|
+| `<% tp.date.now("YYYYMMDDHHmmss") %>` | Timestamp-based cr_id |
+| `<% tp.file.title %>` | Note filename for name field |
+| `<% tp.date.now("YYYY-MM-DD") %>` | Today's date |
+| `<% tp.file.cursor() %>` | Cursor placement after insertion |
+| `<% tp.system.prompt("?") %>` | User input prompt |
+| `<% tp.system.suggester([labels], [values]) %>` | Selection dialog |
 
 ---
 
