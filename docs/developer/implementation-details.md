@@ -25,6 +25,11 @@ This document covers technical implementation specifics for Canvas Roots feature
   - [Value Aliases](#value-aliases)
   - [Built-in Synonyms](#built-in-synonyms)
   - [Integration Points](#integration-points)
+- [Statistics and Reports System](#statistics-and-reports-system)
+  - [Statistics Architecture](#statistics-architecture)
+  - [Metrics Computed](#metrics-computed)
+  - [Report Types](#report-types)
+  - [UI Integration](#ui-integration)
 - [Privacy and Gender Identity Protection](#privacy-and-gender-identity-protection)
   - [Sex vs Gender Data Model](#sex-vs-gender-data-model)
   - [Living Person Privacy](#living-person-privacy)
@@ -830,6 +835,169 @@ The alias system is used throughout the plugin:
 **Settings UI** (`src/settings.ts`):
 - Property alias editor with add/remove functionality
 - Value alias configuration per field type
+
+---
+
+## Statistics and Reports System
+
+The statistics and reports system provides vault-wide analytics and genealogical document generation.
+
+### Statistics Architecture
+
+```
+src/statistics/
+├── services/
+│   └── statistics-service.ts    # Core computation (1,681 lines)
+├── types/
+│   └── statistics-types.ts      # Type definitions
+├── constants/
+│   └── statistics-constants.ts  # Section IDs, limits
+└── ui/
+    ├── statistics-tab.ts        # Control Center tab
+    └── statistics-view.ts       # Workspace dashboard
+
+src/reports/
+├── services/
+│   ├── report-generation-service.ts  # Orchestration
+│   └── *-generator.ts               # 7 report generators
+├── types/
+│   └── report-types.ts
+└── ui/
+    └── report-generator-modal.ts
+```
+
+**StatisticsService** is the central computation point:
+- Caching with 1-second debounced invalidation
+- Lazy initialization of dependent services
+- Drill-down methods for UI navigation
+
+**Data sources:**
+- `VaultStatsService` - Iterates markdown files, checks `cr_type` frontmatter
+- `FamilyGraphService` - Family relationships, person cache, analytics
+- Direct file iteration for statistics not in existing services
+
+### Metrics Computed
+
+**Entity Counts:**
+```typescript
+interface EntityCounts {
+  people: number;
+  events: number;
+  places: number;
+  sources: number;
+  organizations: number;
+  universes: number;
+  canvases: number;
+}
+```
+
+**Data Completeness (percentages):**
+- Birth/death dates coverage
+- Source attachment rate
+- Father/mother/spouse link rates
+- Parent type breakdown (biological, step, adoptive)
+
+**Quality Metrics (issue counts):**
+- Missing birth/death dates
+- Orphaned people (no relationships)
+- Living people (birth but no death)
+- Incomplete parents (only one linked)
+- Date inconsistencies (birth after death, age > 120)
+- Blended families (mixed parent types)
+
+**Top Lists (frequency analysis):**
+- Surnames - extracted from last name
+- Locations - birth/death places combined
+- Occupations - from `occupation` field
+- Sources - citation counts
+
+**Distribution Analysis:**
+- Gender/sex breakdown (M/F/X/U)
+- Event types by count
+- Source types and confidence levels
+- Place categories
+
+**Extended Statistics (Phase 3):**
+- **Longevity** - Average/median/min/max lifespan, grouped by birth decade and location
+- **Family size** - Children per family, distribution buckets (1-2, 3-4, 5-6, 7+)
+- **Marriage patterns** - Marriage age by sex, remarriage rates
+- **Migration** - Top routes, destinations, origins, migration rate
+- **Source coverage** - Overall and by generation
+- **Timeline density** - Events by decade, gap detection
+
+**Drill-down methods** for navigating to specific people:
+```typescript
+getPeopleBySurname(surname: string): PersonRef[]
+getPeopleByLocation(location: string): PersonRef[]
+getPeopleWithMissingBirthDate(): PersonRef[]
+getOrphanedPeople(): PersonRef[]
+getPeopleWithDateInconsistencies(): PersonRef[]
+```
+
+### Report Types
+
+Seven report generators output Markdown files:
+
+| Report | Description | Key Options |
+|--------|-------------|-------------|
+| Family Group Sheet | Couple + spouses + children with vitals | `includeChildren`, `includeSpouseDetails`, `includeSources` |
+| Individual Summary | One person's complete profile | `personCrId` |
+| Ahnentafel | Numbered ancestor list (Sosa-Stradonitz) | `maxGenerations`, `includeDetails` |
+| Gaps Report | Missing data and research opportunities | `scope`, `fieldsToCheck`, `maxItemsPerCategory` |
+| Register Report | Descendant list with NGSQ numbering | `includeSpouses` |
+| Pedigree Chart | Ancestor tree (markdown formatted) | `maxGenerations` |
+| Descendant Chart | Descendant tree (markdown formatted) | `maxGenerations` |
+
+**Report output structure:**
+```typescript
+interface ReportResult {
+  success: boolean;
+  content: string;              // Markdown content
+  suggestedFilename: string;    // e.g., "Family-Smith-1850-1920.md"
+  stats: {
+    peopleCount: number;
+    eventsCount: number;
+    sourcesCount: number;
+    generationsCount?: number;
+  };
+  warnings: string[];           // Data quality warnings
+}
+```
+
+**Output methods:**
+- `vault` - Save to configured reports folder
+- `download` - Browser download
+
+### UI Integration
+
+**Control Center Statistics Tab:**
+- Actions card with report generation shortcuts
+- Overview card with entity counts and date range
+- Data completeness with progress bars
+- Quality alerts highlighting problematic data
+- Top lists with expandable drill-downs
+
+**Statistics Workspace View** (`VIEW_TYPE_STATISTICS`):
+- Auto-refresh on vault changes
+- Expandable/collapsible sections with state persistence
+- Direct links to notes from drill-down lists
+- Mobile-responsive layout
+
+**Section organization:**
+```typescript
+// Managed via SECTION_IDS constants
+OVERVIEW, COMPLETENESS, QUALITY,
+TOP_SURNAMES, TOP_LOCATIONS, TOP_OCCUPATIONS, TOP_SOURCES,
+EVENTS_BY_TYPE, SOURCES_BY_TYPE, SOURCES_BY_CONFIDENCE,
+PLACES_BY_CATEGORY, GENDER_DISTRIBUTION, UNIVERSES,
+LONGEVITY, FAMILY_SIZE, MARRIAGE_PATTERNS, MIGRATION,
+SOURCE_COVERAGE_GEN, TIMELINE_DENSITY, REPORTS
+```
+
+**Additional statistics UI:**
+- Folder statistics modal (context menu on folders)
+- Tree statistics modal (context menu on canvas files)
+- Export statistics service (pre-export counts with privacy adjustment)
 
 ---
 
