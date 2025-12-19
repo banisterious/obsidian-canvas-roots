@@ -62,6 +62,33 @@ Seven primary entity types plus three system types:
 
 **System types:** Schema (validation), Proof_summary (research), Timeline-export
 
+```mermaid
+graph TB
+    subgraph "Core Entities"
+        Person[Person<br/>Genealogical records]
+        Place[Place<br/>Locations]
+        Event[Event<br/>Timeline events]
+        Source[Source<br/>Evidence]
+        Organization[Organization<br/>Groups]
+    end
+
+    subgraph "World-Building"
+        Universe[Universe<br/>Fictional worlds]
+        Map[Map<br/>Custom image maps]
+    end
+
+    subgraph "System Types"
+        Schema[Schema]
+        Proof[Proof_summary]
+        Timeline[Timeline-export]
+    end
+
+    Universe --> Map
+    Universe -.-> Place
+    Universe -.-> Organization
+    Universe -.-> Event
+```
+
 ### Type Detection
 
 Notes are identified by frontmatter properties with configurable priority:
@@ -241,6 +268,29 @@ memberships:
 ### Cross-References Between Types
 
 The entity system uses wikilinks for Obsidian integration plus `_id` fields for reliable resolution:
+
+```mermaid
+erDiagram
+    Person ||--o{ Person : "father/mother/spouse/children"
+    Person }o--o{ Place : "birth_place/death_place"
+    Person }o--o{ Source : "sourced_facts"
+    Person }o--o{ Organization : "memberships"
+
+    Event }o--|| Person : "person/persons"
+    Event }o--o| Place : "place"
+    Event }o--o{ Source : "sources"
+    Event }o--o| Universe : "universe"
+
+    Place ||--o{ Place : "parent_place"
+    Place }o--o| Universe : "universe"
+
+    Organization ||--o{ Organization : "parent_org"
+    Organization }o--o| Place : "seat"
+    Organization }o--o| Universe : "universe"
+
+    Universe ||--o{ Map : "default_map"
+    Map }o--|| Universe : "universe"
+```
 
 | From | To | Properties |
 |------|-----|------------|
