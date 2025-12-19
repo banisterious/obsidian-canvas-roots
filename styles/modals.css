@@ -5969,3 +5969,116 @@
 .crc-action-btn__label {
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   Reference Numbers Modal
+   ========================================================================== */
+
+.cr-ref-numbers-modal {
+  max-width: 480px;
+}
+
+.cr-ref-numbers-preview {
+  background: var(--background-secondary);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.cr-ref-numbers-preview strong {
+  color: var(--text-normal);
+}
+
+.cr-numbering-system-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.cr-numbering-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.cr-numbering-btn:hover {
+  background: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+}
+
+.cr-numbering-btn-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.cr-numbering-btn:hover .cr-numbering-btn-icon {
+  color: var(--interactive-accent);
+}
+
+.cr-numbering-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cr-numbering-btn-label {
+  display: block;
+  font-weight: 500;
+  color: var(--text-normal);
+  font-size: 14px;
+}
+
+.cr-numbering-btn-desc {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.cr-ref-numbers-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.cr-ref-numbers-skip {
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.cr-ref-numbers-skip:hover {
+  color: var(--text-normal);
+  text-decoration: underline;
+}
+
+.cr-ref-numbers-learn-more {
+  font-size: 13px;
+  color: var(--text-accent);
+  text-decoration: none;
+}
+
+.cr-ref-numbers-learn-more:hover {
+  text-decoration: underline;
+}

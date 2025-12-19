@@ -71,37 +71,95 @@ Click **Copy result** to copy the relationship description for use in notes or d
 
 Canvas Roots supports standard genealogical numbering systems for organizing and referencing individuals in your family tree.
 
+### Why Use Reference Numbers?
+
+Reference numbers solve common genealogy challenges:
+
+- **Disambiguate common names** — When you have multiple "John Smith" entries, reference numbers provide unique identifiers
+- **Standard citation format** — Other genealogists recognize these systems, making it easier to share and publish research
+- **Cross-reference notes** — Link research notes, sources, and documents to specific individuals
+- **Navigate large trees** — Quickly locate someone by their number rather than searching by name
+
+### Choosing a System
+
+| System | Best For | Limitations |
+|--------|----------|-------------|
+| **Ahnentafel** | Pedigree charts, ancestor research | Only works for ancestors, not descendants |
+| **d'Aboville** | Descendant reports, family histories | Numbers get long in deep trees (1.2.3.4.5) |
+| **Henry** | Compact descendant reports | Uses letters after 9 children, can be confusing |
+| **Generation** | Understanding relative positions | Not a citation standard; multiple people share numbers |
+
+**Quick guide:**
+- Researching your ancestors? → **Ahnentafel** with yourself as root
+- Documenting a family line? → **d'Aboville** with earliest known ancestor as root
+- Need compact numbers? → **Henry** (same use case as d'Aboville)
+- Just want to see generational distance? → **Generation**
+
 ### Supported Systems
 
-**Ahnentafel (Ancestor Numbering):**
+**Ahnentafel (Ancestor Numbering)**
+
 The Ahnentafel system assigns numbers to ancestors starting from a reference person:
-- Person = 1
-- Father = 2, Mother = 3
-- Paternal grandfather = 4, Paternal grandmother = 5
-- Maternal grandfather = 6, Maternal grandmother = 7
-- Pattern: Father = 2N, Mother = 2N+1
 
-**d'Aboville (Descendant Numbering with Dots):**
-Numbers descendants using dot notation:
-- Root person = 1
-- Children = 1.1, 1.2, 1.3
-- Grandchildren = 1.1.1, 1.1.2, 1.2.1
-- Each dot level represents a generation
+| Number | Person |
+|--------|--------|
+| 1 | Self (root person) |
+| 2 | Father |
+| 3 | Mother |
+| 4 | Paternal grandfather |
+| 5 | Paternal grandmother |
+| 6 | Maternal grandfather |
+| 7 | Maternal grandmother |
 
-**Henry System (Compact Descendant Numbering):**
-Similar to d'Aboville but without dots:
-- Root person = 1
-- Children = 11, 12, 13
-- Grandchildren = 111, 112, 121
-- More compact but less readable for large numbers
+**Pattern:** For any person *n*, their father is *2n* and their mother is *2n+1*.
 
-**Generation Numbering:**
-Assigns relative generation depth from a reference person:
-- Reference person = 0
-- Parents = -1, Grandparents = -2
-- Children = +1, Grandchildren = +2
+**d'Aboville (Descendant Numbering with Dots)**
+
+Numbers descendants using dot notation showing the lineage path:
+
+| Number | Person |
+|--------|--------|
+| 1 | Root ancestor |
+| 1.1 | First child |
+| 1.2 | Second child |
+| 1.1.1 | First child's first child |
+| 1.2.3 | Second child's third child |
+
+Each dot represents a generation. The number shows birth order among siblings.
+
+**Henry System (Compact Descendant Numbering)**
+
+Similar to d'Aboville but without dots for more compact display:
+
+| Number | Person |
+|--------|--------|
+| 1 | Root ancestor |
+| 11 | First child |
+| 12 | Second child |
+| 111 | First child's first child |
+| 123 | Second child's third child |
+
+For families with more than 9 children, letters are used (A=10, B=11, etc.).
+
+**Generation Numbering**
+
+Shows generational distance from a reference person:
+
+| Number | Relationship |
+|--------|--------------|
+| 0 | Root person (self) |
+| −1 | Parents |
+| −2 | Grandparents |
+| +1 | Children |
+| +2 | Grandchildren |
+
+Note: Multiple people share the same generation number (all grandparents are −2).
 
 ### Assigning Reference Numbers
+
+**After Import:**
+
+When you import GEDCOM, Gramps, or CSV data, you'll be prompted to assign reference numbers. Choose a system and select the root person.
 
 **Via Command Palette:**
 1. Press `Ctrl/Cmd + P`
@@ -122,6 +180,8 @@ Reference numbers are stored in frontmatter properties:
 - `daboville`: d'Aboville number (e.g., "1.2.3")
 - `henry`: Henry system number (e.g., "123")
 - `generation`: Generation depth number
+
+You can have multiple numbering systems assigned simultaneously — they don't conflict.
 
 ### Clearing Reference Numbers
 

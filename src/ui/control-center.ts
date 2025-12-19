@@ -5839,12 +5839,17 @@ export class ControlCenterModal extends Modal {
 	 * Prompt user to assign reference numbers after GEDCOM import
 	 */
 	private promptAssignReferenceNumbersAfterImport(): void {
+		// Get person count for preview
+		const graphService = this.plugin.createFamilyGraphService();
+		const allPeople = graphService.getAllPeople();
+		const personCount = allPeople.length;
+
 		// Show menu to select numbering system
-		const systemChoices: { system: NumberingSystem; label: string; description: string }[] = [
-			{ system: 'ahnentafel', label: 'Ahnentafel', description: 'Ancestor numbering (1=self, 2=father, 3=mother)' },
-			{ system: 'daboville', label: "d'Aboville", description: 'Descendant numbering with dots (1, 1.1, 1.2)' },
-			{ system: 'henry', label: 'Henry', description: 'Compact descendant numbering (1, 11, 12)' },
-			{ system: 'generation', label: 'Generation', description: 'Relative generation (0=self, -1=parents, +1=children)' }
+		const systemChoices: { system: NumberingSystem; icon: string; label: string; description: string }[] = [
+			{ system: 'ahnentafel', icon: 'arrow-up', label: 'Ahnentafel', description: 'Best for pedigree charts — numbers ancestors (1=self, 2=father, 3=mother, 4=paternal grandfather...)' },
+			{ system: 'daboville', icon: 'git-branch', label: "d'Aboville", description: 'Best for descendant reports — clear lineage paths using dots (1.1, 1.2, 1.1.1)' },
+			{ system: 'henry', icon: 'list-ordered', label: 'Henry', description: 'Compact descendant numbering — shorter than d\'Aboville but uses letters after 9 children' },
+			{ system: 'generation', icon: 'layers', label: 'Generation', description: 'Shows generational distance from root person (0=self, −1=parents, +1=children)' }
 		];
 
 		// Create a simple selection modal
@@ -5852,37 +5857,62 @@ export class ControlCenterModal extends Modal {
 		modal.titleEl.setText('Assign reference numbers');
 
 		const content = modal.contentEl;
+		content.addClass('cr-ref-numbers-modal');
+
 		content.createEl('p', {
-			text: 'Reference numbers help identify people in charts and reports. Choose a numbering system, then select the root person.',
+			text: 'Reference numbers uniquely identify individuals when names are ambiguous and follow standard genealogical notation for sharing research.',
 			cls: 'crc-text-muted'
 		});
+
+		// Person count preview
+		if (personCount > 0) {
+			const previewEl = content.createDiv({ cls: 'cr-ref-numbers-preview' });
+			previewEl.createSpan({ text: `This will update ` });
+			previewEl.createEl('strong', { text: `${personCount} person${personCount !== 1 ? 's' : ''}` });
+			previewEl.createSpan({ text: ' in your tree.' });
+		}
 
 		const buttonContainer = content.createDiv({ cls: 'cr-numbering-system-buttons' });
 
 		for (const choice of systemChoices) {
-			const btn = buttonContainer.createEl('button', {
-				cls: 'crc-btn crc-btn--block',
-				text: choice.label
+			const btn = buttonContainer.createDiv({
+				cls: 'cr-numbering-btn'
 			});
-			btn.createEl('small', {
-				text: ` - ${choice.description}`,
-				cls: 'crc-text-muted'
-			});
+
+			// Icon
+			const iconSpan = btn.createSpan({ cls: 'cr-numbering-btn-icon' });
+			setIcon(iconSpan, choice.icon);
+
+			// Text content
+			const textContainer = btn.createDiv({ cls: 'cr-numbering-btn-text' });
+			textContainer.createEl('div', { cls: 'cr-numbering-btn-label', text: choice.label });
+			textContainer.createEl('div', { cls: 'cr-numbering-btn-desc', text: choice.description });
+
 			btn.addEventListener('click', () => {
 				modal.close();
 				this.selectRootPersonForNumbering(choice.system);
 			});
 		}
 
-		// Add skip button
-		const footerContainer = content.createDiv({ cls: 'cr-modal-footer' });
-		const skipBtn = footerContainer.createEl('button', {
-			cls: 'crc-btn',
-			text: 'Skip'
+		// Footer with skip link and learn more
+		const footerContainer = content.createDiv({ cls: 'cr-ref-numbers-footer' });
+
+		const skipLink = footerContainer.createEl('a', {
+			cls: 'cr-ref-numbers-skip',
+			text: 'Skip for now'
 		});
-		skipBtn.addEventListener('click', () => {
+		skipLink.addEventListener('click', (e) => {
+			e.preventDefault();
 			modal.close();
 		});
+
+		const learnMoreLink = footerContainer.createEl('a', {
+			cls: 'cr-ref-numbers-learn-more',
+			text: 'Learn more',
+			href: 'https://github.com/banisterious/obsidian-canvas-roots/wiki/Relationship-Tools#reference-numbering-systems'
+		});
+		learnMoreLink.setAttr('target', '_blank');
+		learnMoreLink.setAttr('rel', 'noopener noreferrer');
 
 		modal.open();
 	}
