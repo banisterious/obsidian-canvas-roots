@@ -4,6 +4,10 @@ This document covers technical implementation specifics for Canvas Roots feature
 
 ## Table of Contents
 
+- [Note Types and Entity System](#note-types-and-entity-system)
+  - [Core Entity Types](#core-entity-types)
+  - [Type Detection](#type-detection)
+  - [Cross-References Between Types](#cross-references-between-types)
 - [Context Menu Implementation](#context-menu-implementation)
 - [Canvas Generation Implementation](#canvas-generation-implementation)
 - [Family Chart Layout System](#family-chart-layout-system)
@@ -35,6 +39,228 @@ This document covers technical implementation specifics for Canvas Roots feature
   - [Living Person Privacy](#living-person-privacy)
   - [Log Export Obfuscation](#log-export-obfuscation)
   - [Planned Features](#planned-features-not-yet-implemented)
+
+---
+
+## Note Types and Entity System
+
+Canvas Roots uses a structured entity system with typed notes identified by frontmatter properties.
+
+### Core Entity Types
+
+Seven primary entity types plus three system types:
+
+| Type | Purpose | Key Properties |
+|------|---------|----------------|
+| **Person** | Individual genealogical records | `name`, `born`, `died`, `father`, `mother`, `spouse`, `children`, `sex` |
+| **Place** | Geographic locations (real, historical, fictional) | `name`, `place_type`, `place_category`, `parent_place`, `coordinates_lat/long` |
+| **Event** | Timeline events (vital, life, narrative) | `title`, `event_type`, `date`, `person`, `place` |
+| **Source** | Evidence and documentation | `title`, `source_type`, `source_quality`, `source_repository` |
+| **Organization** | Groups and hierarchies | `name`, `org_type`, `parent_org`, `seat`, `founded`, `dissolved` |
+| **Universe** | Fictional world containers | `name`, `description`, `default_calendar`, `default_map`, `status` |
+| **Map** | Custom image maps for fictional worlds | `name`, `universe`, `image_path`, `coordinate_system`, bounds |
+
+**System types:** Schema (validation), Proof_summary (research), Timeline-export
+
+### Type Detection
+
+Notes are identified by frontmatter properties with configurable priority:
+
+```typescript
+// Detection priority (from src/utils/note-type-detection.ts)
+1. cr_type property (recommended, namespaced to avoid conflicts)
+2. type property (legacy support)
+3. Tags (#person, #place, etc.) if tag detection enabled
+```
+
+**Identification properties:**
+- `cr_id` - Unique identifier (UUID recommended), survives file renames
+- `cr_type` - Type identifier: `person`, `place`, `event`, `source`, `organization`, `universe`, `map`
+
+**Dual storage for relationships** (see [Dual Storage System](#dual-storage-system)):
+```yaml
+father: "[[John Smith]]"      # Wikilink for Obsidian features
+father_id: abc-123-def-456    # cr_id for reliable resolution
+```
+
+### Person Note Structure
+
+```yaml
+cr_id: [string]
+cr_type: person
+name: [string]
+
+# Biological parents
+father: [wikilink]
+father_id: [string]
+mother: [wikilink]
+mother_id: [string]
+
+# Extended family (can be arrays)
+stepfather: [wikilink | wikilink[]]
+stepmother: [wikilink | wikilink[]]
+adoptive_father: [wikilink]
+adoptive_mother: [wikilink]
+
+# Spouses and children
+spouse: [wikilink | wikilink[]]
+spouse_id: [string]
+children: [wikilink[]]
+
+# Demographics
+sex: M | F | X | U           # GEDCOM-compatible
+gender_identity: [string]     # Free-form identity
+
+# Key dates and places
+born: [date string]
+died: [date string]
+birth_place: [wikilink to Place]
+death_place: [wikilink to Place]
+
+# Research tracking
+sourced_facts:
+  birth_date:
+    sources: [wikilink[]]
+  # ... other facts
+```
+
+### Place Note Structure
+
+```yaml
+cr_id: [string]
+cr_type: place
+name: [string]
+
+# Classification
+place_type: planet | continent | country | state | city | town | village | ...
+place_category: real | historical | disputed | legendary | mythological | fictional
+
+# Hierarchy
+parent_place: [wikilink to Place]
+parent_place_id: [string]
+
+# Coordinates
+coordinates_lat: [number]      # Real-world
+coordinates_long: [number]
+custom_coordinates_x: [number] # Custom map
+custom_coordinates_y: [number]
+custom_coordinates_map: [string]
+
+# World-building
+universe: [wikilink to Universe]
+```
+
+### Event Note Structure
+
+```yaml
+cr_id: [string]
+cr_type: event
+title: [string]
+event_type: [string]           # See event types below
+
+# Temporal
+date: [date string]
+date_end: [date string]
+date_precision: exact | month | year | decade | estimated | range | unknown
+
+# Participants and location
+person: [wikilink to Person]
+persons: [wikilink[]]
+place: [wikilink to Place]
+
+# Documentation
+sources: [wikilink[]]
+confidence: high | medium | low | unknown
+
+# Fictional
+universe: [wikilink to Universe]
+date_system: [calendar id]
+is_canonical: [boolean]
+```
+
+**Event types (23 built-in):**
+- **Vital:** birth, death, marriage, divorce
+- **Life:** residence, occupation, military, immigration, education, burial, baptism, confirmation, ordination
+- **Narrative:** anecdote, lore_event, plot_point, flashback, foreshadowing, backstory, climax, resolution
+
+### Source Note Structure
+
+```yaml
+cr_id: [string]
+cr_type: source
+title: [string]
+source_type: [string]          # See source types below
+source_quality: primary | secondary | derivative
+
+# Repository
+source_repository: [string]
+source_repository_url: [string]
+source_collection: [string]
+
+# Dates
+source_date: [date string]
+source_date_accessed: [date string]
+
+# Media
+media: [wikilink | wikilink[]]
+confidence: high | medium | low | unknown
+```
+
+**Source types (15 built-in):** vital_record, obituary, census, church_record, court_record, land_deed, probate, military, immigration, photo, correspondence, newspaper, oral_history, custom
+
+### Organization Note Structure
+
+```yaml
+cr_id: [string]
+cr_type: organization
+name: [string]
+org_type: noble_house | guild | corporation | military | religious | political | educational | custom
+
+# Hierarchy
+parent_org: [wikilink to Organization]
+seat: [wikilink to Place]
+
+# Timeline
+founded: [date string]
+dissolved: [date string]
+
+# World-building
+universe: [wikilink to Universe]
+```
+
+**Membership tracking** (in Person notes):
+```yaml
+memberships:
+  - org: "[[House Stark]]"
+    org_id: [string]
+    role: [string]
+    from: [date]
+    to: [date]
+```
+
+### Cross-References Between Types
+
+The entity system uses wikilinks for Obsidian integration plus `_id` fields for reliable resolution:
+
+| From | To | Properties |
+|------|-----|------------|
+| Person | Person | `father`, `mother`, `spouse`, `children`, stepparents, adoptive parents |
+| Person | Place | `birth_place`, `death_place` |
+| Person | Source | `sourced_facts.*.sources` |
+| Person | Organization | `memberships[].org` |
+| Event | Person | `person`, `persons` |
+| Event | Place | `place` |
+| Event | Source | `sources` |
+| Event | Universe | `universe` |
+| Place | Place | `parent_place` (hierarchy: Country → State → City) |
+| Place | Universe | `universe` (for fictional places) |
+| Organization | Organization | `parent_org` |
+| Organization | Place | `seat` |
+| Organization | Universe | `universe` |
+| Map | Universe | `universe` |
+| Universe | Map | `default_map` |
+
+**Type definitions:** `src/types/frontmatter.ts`, `src/*/types/*-types.ts`
 
 ---
 
