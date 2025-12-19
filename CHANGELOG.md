@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Source media linker dropdown styling** - Fixed dropdown styling conflict in the "Link media to existing sources" wizard. The dropdown now uses Obsidian's native styling, avoiding conflicts with themes, snippets, and GTK styling on Linux.
+
 ---
 
 ## [0.13.2] - 2025-12-19
