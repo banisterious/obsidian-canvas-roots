@@ -15,56 +15,93 @@ This document covers technical implementation specifics for Canvas Roots feature
 
 ### File Menu Integration
 
-To add a context menu item that appears when right-clicking on person notes:
+The plugin adds context menu items when right-clicking on files. The implementation uses nested submenus on desktop and flat menus on mobile for better UX.
 
-**Implementation in main.ts:**
+**Basic Pattern in main.ts:**
 
 ```typescript
 this.registerEvent(
   this.app.workspace.on('file-menu', (menu, file) => {
-    // Only show for person notes (files with cr_id in frontmatter)
+    // Desktop: use nested submenus; Mobile: use flat menu with prefixes
+    const useSubmenu = Platform.isDesktop && !Platform.isMobile;
+
     if (file instanceof TFile && file.extension === 'md') {
-      // Check if file has cr_id property
       const cache = this.app.metadataCache.getFileCache(file);
-      if (cache?.frontmatter?.cr_id) {
-        menu.addItem((item) => {
-          item
-            .setTitle('Generate Family Tree')
-            .setIcon('git-fork')
-            .onClick(async () => {
-              // Open Control Center with this person pre-selected
-              const modal = new ControlCenterModal(this.app, this);
-              modal.openWithPerson(file);
+      const hasCrId = !!cache?.frontmatter?.cr_id;
+
+      if (hasCrId) {
+        menu.addSeparator();
+
+        if (useSubmenu) {
+          menu.addItem((item) => {
+            const submenu: Menu = item
+              .setTitle('Canvas Roots')
+              .setIcon('git-fork')
+              .setSubmenu();
+
+            // Add submenu items...
+            submenu.addItem((subItem) => {
+              subItem
+                .setTitle('Generate Canvas tree')
+                .setIcon('layout')
+                .onClick(() => {
+                  const modal = new ControlCenterModal(this.app, this);
+                  modal.openWithPerson(file);
+                });
             });
-        });
+          });
+        } else {
+          // Mobile: flat menu with prefix
+          menu.addItem((item) => {
+            item
+              .setTitle('Canvas Roots: Generate family tree')
+              .setIcon('git-fork')
+              .onClick(() => {
+                const modal = new ControlCenterModal(this.app, this);
+                modal.openWithPerson(file);
+              });
+          });
+        }
       }
     }
   })
 );
 ```
 
-**Required ControlCenterModal changes:**
-
-Add `openWithPerson()` method to pre-select person and navigate to Tree Generation tab:
+**ControlCenterModal.openWithPerson() in control-center.ts:**
 
 ```typescript
 public openWithPerson(file: TFile): void {
-  this.open();
-
-  // Switch to Tree Generation tab
-  this.switchToTab('tree-generation');
-
-  // Pre-populate the root person field
   const cache = this.app.metadataCache.getFileCache(file);
-  if (cache?.frontmatter) {
-    const crId = cache.frontmatter.cr_id;
-    const name = cache.frontmatter.name || file.basename;
-
-    // Set the person picker value
-    this.setRootPerson({ crId, name, file });
+  if (!cache?.frontmatter?.cr_id) {
+    new Notice('This note does not have a cr_id field');
+    return;
   }
+
+  const crId = cache.frontmatter.cr_id;
+  const name = cache.frontmatter.name || file.basename;
+
+  // Store person info for the tab to use when it renders
+  this.pendingRootPerson = {
+    name,
+    crId,
+    birthDate: cache.frontmatter.born,
+    deathDate: cache.frontmatter.died,
+    file
+  };
+
+  // Open to Tree Output tab (combines open + tab switch)
+  this.openToTab('tree-generation');
 }
 ```
+
+**Note:** The actual implementation in main.ts is more comprehensive, with separate handling for:
+- Canvas files (regenerate, export, statistics)
+- Person notes (generate tree, add relationships, reference numbers)
+- Place notes (geocode, view on map)
+- Source/Event/Organization notes
+- Schema notes
+- Folders (import/export, statistics)
 
 ---
 
@@ -113,22 +150,22 @@ Example:
 #### Issue: Canvas nodes not movable/resizable
 **Cause:** Canvas node IDs contained dashes (e.g., `qjk-453-lms-042`)
 **Solution:** Generate alphanumeric-only IDs matching Obsidian's format
-**Fixed in:** canvas-generator.ts lines 132-141
+**Fixed in:** `canvas-generator.ts` - `generateNodeId()` method
 
 #### Issue: Canvas cleared on close/reopen
 **Cause:** JSON formatting didn't match Obsidian's exact requirements
 **Solution:** Implement custom JSON formatter with tabs and compact objects
-**Fixed in:** control-center.ts lines 1067-1100
+**Fixed in:** `control-center.ts` - `formatCanvasJson()` method
 
 #### Issue: Race condition when opening canvas
 **Cause:** Canvas opened before file system write completed
 **Solution:** Add 100ms delay before opening canvas file
-**Fixed in:** control-center.ts lines 1052-1055
+**Fixed in:** `control-center.ts` and `main.ts` - canvas opening logic
 
 #### Issue: GEDCOM import only shows root person in tree
 **Cause:** GEDCOM importer's second pass replaced IDs in wrong fields (father/mother/spouse instead of father_id/mother_id/spouse_id)
 **Solution:** Update regex patterns to target correct _id fields with dual storage
-**Fixed in:** gedcom-importer.ts lines 208-246 (2025-11-20)
+**Fixed in:** `gedcom-importer.ts` - Phase 2 ID replacement logic
 
 ---
 
