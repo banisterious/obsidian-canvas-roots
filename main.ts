@@ -247,6 +247,18 @@ export default class CanvasRootsPlugin extends Plugin {
 			(leaf) => new StatisticsView(leaf, this)
 		);
 
+		// Register URI protocol handler for opening map at specific coordinates
+		// Usage: obsidian://canvas-roots-map?lat=51.5074&lng=-0.1278&zoom=12
+		this.registerObsidianProtocolHandler('canvas-roots-map', async (params) => {
+			const lat = parseFloat(params.lat);
+			const lng = parseFloat(params.lng);
+			const zoom = params.zoom ? parseInt(params.zoom, 10) : 12;
+
+			if (!isNaN(lat) && !isNaN(lng)) {
+				await this.activateMapView(undefined, false, undefined, { lat, lng, zoom });
+			}
+		});
+
 		// Register dynamic content code block processors
 		const timelineProcessor = new TimelineProcessor(this);
 		this.registerMarkdownCodeBlockProcessor(
@@ -7068,7 +7080,12 @@ export default class CanvasRootsPlugin extends Plugin {
 	 * @param forceNew If true, always create a new map view (for side-by-side comparison)
 	 * @param splitDirection If provided, split the existing map view in this direction
 	 */
-	async activateMapView(mapId?: string, forceNew = false, splitDirection?: 'horizontal' | 'vertical'): Promise<void> {
+	async activateMapView(
+		mapId?: string,
+		forceNew = false,
+		splitDirection?: 'horizontal' | 'vertical',
+		focusCoordinates?: { lat: number; lng: number; zoom?: number }
+	): Promise<void> {
 		const { workspace } = this.app;
 
 		let leaf: WorkspaceLeaf | null = null;
@@ -7096,16 +7113,29 @@ export default class CanvasRootsPlugin extends Plugin {
 		if (leaf) {
 			void workspace.revealLeaf(leaf);
 
-			// If a specific map was requested, switch to it after the view is ready
-			if (mapId && leaf.view) {
-				// Use a short delay to ensure the map controller is initialized
-				setTimeout(() => {
-					const mapView = leaf?.view as { mapController?: { setActiveMap: (id: string) => Promise<void> } };
-					if (mapView?.mapController?.setActiveMap) {
-						void mapView.mapController.setActiveMap(mapId);
+			// Use a short delay to ensure the map controller is initialized
+			setTimeout(() => {
+				const mapView = leaf?.view as {
+					mapController?: {
+						setActiveMap: (id: string) => Promise<void>;
+						setView: (center: { lat: number; lng: number }, zoom: number) => void;
 					}
-				}, 100);
-			}
+				};
+
+				// If a specific map was requested, switch to it
+				if (mapId && mapView?.mapController?.setActiveMap) {
+					void mapView.mapController.setActiveMap(mapId);
+				}
+
+				// If coordinates were provided, center the map on them
+				if (focusCoordinates && mapView?.mapController?.setView) {
+					const zoom = focusCoordinates.zoom ?? 12; // Default zoom level for a place
+					mapView.mapController.setView(
+						{ lat: focusCoordinates.lat, lng: focusCoordinates.lng },
+						zoom
+					);
+				}
+			}, 100);
 		}
 	}
 

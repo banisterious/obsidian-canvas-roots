@@ -33,7 +33,8 @@ export function generatePlacesBaseTemplate(aliases: PropertyAliases = {}): strin
 	const place_type = getPropertyName('place_type', aliases);
 	const place_category = getPropertyName('place_category', aliases);
 	const parent_place = getPropertyName('parent_place', aliases);
-	const coordinates = getPropertyName('coordinates', aliases);
+	const coordinates_lat = getPropertyName('coordinates_lat', aliases);
+	const coordinates_long = getPropertyName('coordinates_long', aliases);
 	const universe = getPropertyName('universe', aliases);
 	const collection = getPropertyName('collection', aliases);
 	const aliases_prop = getPropertyName('aliases', aliases);
@@ -42,10 +43,9 @@ export function generatePlacesBaseTemplate(aliases: PropertyAliases = {}): strin
 
 	return `visibleProperties:
   - note.${name}
+  - formula.map_link
   - note.${place_type}
-  - note.${place_category}
   - note.${parent_place}
-  - note.${coordinates}
   - note.${universe}
   - note.${collection}
   - note.${aliases_prop}
@@ -56,7 +56,9 @@ filters:
     - '${cr_type} == "place"'
 formulas:
   display_name: '${name} || file.name'
-  has_coords: 'if(${coordinates}, "Yes", "No")'
+  coordinates: 'if(${coordinates_lat}, ${coordinates_lat} + ", " + ${coordinates_long}, "")'
+  map_link: 'if(${coordinates_lat}, link("obsidian://canvas-roots-map?lat=" + ${coordinates_lat} + "&lng=" + ${coordinates_long} + "&zoom=12", "📍"), "")'
+  has_coords: 'if(${coordinates_lat}, "Yes", "No")'
   hierarchy_path: 'if(${parent_place}, ${parent_place} + " → " + ${name}, ${name})'
 properties:
   ${cr_id}:
@@ -69,8 +71,14 @@ properties:
     displayName: Category
   note.${parent_place}:
     displayName: Parent
-  note.${coordinates}:
+  note.${coordinates_lat}:
+    displayName: Latitude
+  note.${coordinates_long}:
+    displayName: Longitude
+  formula.coordinates:
     displayName: Coordinates
+  formula.map_link:
+    displayName: Map
   note.${universe}:
     displayName: Universe
   note.${collection}:
@@ -89,10 +97,10 @@ views:
     order:
       - file.name
       - note.${name}
+      - formula.map_link
       - note.${place_type}
       - note.${place_category}
       - note.${parent_place}
-      - note.${coordinates}
   - name: By Type
     type: table
     groupBy:
@@ -168,14 +176,15 @@ views:
     type: table
     filters:
       and:
-        - '!${coordinates}.isEmpty()'
+        - '!${coordinates_lat}.isEmpty()'
     order:
       - note.${name}
+      - formula.map_link
   - name: Missing Coordinates
     type: table
     filters:
       and:
-        - '${coordinates}.isEmpty()'
+        - '${coordinates_lat}.isEmpty()'
     order:
       - file.name
       - note.${name}

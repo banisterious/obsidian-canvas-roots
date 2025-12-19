@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-19 16:23:27 UTC
+ * - Generated: 2025-12-19 17:15:31 UTC
  * - Components: 34 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -620,7 +620,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 6297 lines, 116.15 KB */
+/* Component Size: 6333 lines, 116.81 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -4613,6 +4613,42 @@ settings:
 
 .crc-place-cell-type {
   color: var(--text-muted);
+}
+
+.crc-place-cell-coords {
+  white-space: nowrap;
+}
+
+.crc-place-coords-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.crc-place-coords-text {
+  font-family: var(--font-monospace);
+  font-size: var(--font-smallest);
+  color: var(--text-muted);
+}
+
+.crc-place-map-btn {
+  padding: 3px;
+  border-radius: var(--radius-s);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.crc-place-map-btn:hover {
+  color: var(--text-accent);
+  background: var(--background-modifier-hover);
 }
 
 .crc-place-cell-people {
@@ -21770,11 +21806,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-19 16:23:27 UTC
+ * Build completed: 2025-12-19 17:15:31 UTC
  * Components processed: 34
- * Total lines: 21441
- * Total size: 425.61 KB
- * Build duration: 0.03 seconds
+ * Total lines: 21477
+ * Total size: 426.28 KB
+ * Build duration: 0.02 seconds
  *
  * Component breakdown:
  * - variables.css: 48 lines, 1.33 KB
@@ -21785,7 +21821,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 6297 lines, 116.15 KB
+ * - modals.css: 6333 lines, 116.81 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

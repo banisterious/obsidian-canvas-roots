@@ -1020,6 +1020,7 @@ function loadPlaceList(
 		headerRow.createEl('th', { text: 'Name' });
 		headerRow.createEl('th', { text: 'Category' });
 		headerRow.createEl('th', { text: 'Type' });
+		headerRow.createEl('th', { text: 'Coordinates' });
 		headerRow.createEl('th', { text: 'People' });
 		headerRow.createEl('th', { text: '', cls: 'crc-place-th--actions' });
 
@@ -1070,6 +1071,38 @@ function loadPlaceList(
 				typeCell.textContent = place.placeType;
 			} else {
 				typeCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
+			}
+
+			// Coordinates cell
+			const coordsCell = row.createEl('td', { cls: 'crc-place-cell-coords' });
+			if (place.coordinates) {
+				const coordsWrapper = coordsCell.createDiv({ cls: 'crc-place-coords-wrapper' });
+
+				// Format coordinates to reasonable precision
+				const lat = place.coordinates.lat.toFixed(4);
+				const lng = place.coordinates.long.toFixed(4);
+				coordsWrapper.createEl('span', {
+					text: `${lat}, ${lng}`,
+					cls: 'crc-place-coords-text'
+				});
+
+				// Map button
+				const mapBtn = coordsWrapper.createEl('button', {
+					cls: 'crc-place-map-btn clickable-icon',
+					attr: { 'aria-label': 'Show on map' }
+				});
+				const mapIcon = createLucideIcon('map', 14);
+				mapBtn.appendChild(mapIcon);
+				mapBtn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					void plugin.activateMapView(undefined, false, undefined, {
+						lat: place.coordinates!.lat,
+						lng: place.coordinates!.long,
+						zoom: 12
+					});
+				});
+			} else {
+				coordsCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
 			}
 
 			// People cell

@@ -3991,6 +3991,42 @@
   color: var(--text-muted);
 }
 
+.crc-place-cell-coords {
+  white-space: nowrap;
+}
+
+.crc-place-coords-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.crc-place-coords-text {
+  font-family: var(--font-monospace);
+  font-size: var(--font-smallest);
+  color: var(--text-muted);
+}
+
+.crc-place-map-btn {
+  padding: 3px;
+  border-radius: var(--radius-s);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.crc-place-map-btn:hover {
+  color: var(--text-accent);
+  background: var(--background-modifier-hover);
+}
+
 .crc-place-cell-people {
   text-align: center;
   width: 60px;

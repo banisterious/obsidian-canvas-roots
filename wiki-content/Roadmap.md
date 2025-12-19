@@ -8,6 +8,7 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
+  - [PDF Report Export](#pdf-report-export) ⚡ High
   - [Calendarium Integration](#calendarium-integration) ⚡ High
   - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard) 📋 Medium
   - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
@@ -64,6 +65,54 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
+
+---
+
+### PDF Report Export
+
+**Priority:** ⚡ High — Professional output for sharing and archiving
+
+**Status:** Planning
+
+**Summary:** Export genealogical reports as professionally styled PDF documents. Currently, reports can only be saved as markdown files or downloaded as markdown. PDF export enables sharing reports with family members, archiving for long-term preservation, and printing physical copies.
+
+**Supported Reports:**
+- Ahnentafel (numbered ancestor list)
+- Pedigree Chart (ancestor tree)
+- Descendant Chart (descendant tree)
+- Register Report (NGSQ-style)
+- Family Group Sheet
+- Individual Summary
+- Gaps Report
+
+**Phased Approach:**
+
+**Phase 1 — Core PDF Export:**
+- Add pdfmake library for PDF generation
+- Create PdfReportRenderer service
+- Add "Download as PDF" output option to Report Generator modal
+- Professional fixed styling (serif font, clean tables, page numbers)
+- All 7 report types supported
+
+**Phase 2 — User-Configurable Styling:**
+- Page size selection (A4 / Letter)
+- Font style (traditional serif / modern sans-serif)
+- Optional cover page with report title and date
+- Color scheme options
+- Settings persistence
+
+**Phase 3 — Advanced Features (Future):**
+- Custom fonts
+- Logo/watermark support
+- Table of contents for long reports
+- Multi-report compilation
+
+**Technical Approach:**
+- Use pdfmake library (~400KB) for document generation
+- Render directly from structured report data (not markdown parsing)
+- Existing jsPDF dependency is only used for image-based export (family chart canvas)
+
+See [PDF Report Export Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/pdf-report-export.md) for implementation details.
 
 ---
 
