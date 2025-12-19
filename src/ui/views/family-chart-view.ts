@@ -55,6 +55,14 @@ interface FamilyChartViewState {
 	showDeathDates?: boolean;
 	showKinshipLabels?: boolean;
 	isHorizontal?: boolean;
+	// Tree depth limits
+	ancestryDepth?: number | null;  // null = unlimited
+	progenyDepth?: number | null;   // null = unlimited
+	// Display options
+	showSiblingsOfMain?: boolean;
+	showSingleParentEmptyCard?: boolean;
+	sortChildrenByBirthDate?: boolean;
+	hidePrivateLiving?: boolean;
 	[key: string]: unknown;  // Index signature for Record<string, unknown> compatibility
 }
 
@@ -74,6 +82,14 @@ export class FamilyChartView extends ItemView {
 	private showDeathDates: boolean = false;
 	private showKinshipLabels: boolean = false;
 	private isHorizontal: boolean = false; // Tree orientation: false = vertical (top-to-bottom), true = horizontal (left-to-right)
+	// Tree depth limits (null = unlimited)
+	private ancestryDepth: number | null = null;
+	private progenyDepth: number | null = null;
+	// Display options
+	private showSiblingsOfMain: boolean = true;
+	private showSingleParentEmptyCard: boolean = false;
+	private sortChildrenByBirthDate: boolean = false;
+	private hidePrivateLiving: boolean = false;
 
 	// family-chart instances
 	private f3Chart: ReturnType<typeof f3.createChart> | null = null;
@@ -263,13 +279,29 @@ export class FamilyChartView extends ItemView {
 			popOutBtn.addEventListener('click', () => this.popOutToMainWorkspace());
 		}
 
-		// Layout settings button
+		// Layout settings button (orientation, spacing)
 		const layoutBtn = rightControls.createEl('button', {
 			cls: 'cr-fcv-btn clickable-icon',
 			attr: { 'aria-label': 'Layout settings' }
 		});
 		setIcon(layoutBtn, 'sliders');
 		layoutBtn.addEventListener('click', (e) => this.showLayoutMenu(e));
+
+		// Display settings button (card display, visibility options)
+		const displayBtn = rightControls.createEl('button', {
+			cls: 'cr-fcv-btn clickable-icon',
+			attr: { 'aria-label': 'Display settings' }
+		});
+		setIcon(displayBtn, 'eye');
+		displayBtn.addEventListener('click', (e) => this.showDisplayMenu(e));
+
+		// Depth settings button (ancestry/progeny limits)
+		const depthBtn = rightControls.createEl('button', {
+			cls: 'cr-fcv-btn clickable-icon',
+			attr: { 'aria-label': 'Tree depth' }
+		});
+		setIcon(depthBtn, 'git-branch');
+		depthBtn.addEventListener('click', (e) => this.showDepthMenu(e));
 
 		// Export button
 		const exportBtn = rightControls.createEl('button', {
@@ -798,6 +830,41 @@ export class FamilyChartView extends ItemView {
 			// Apply tree orientation
 			if (this.isHorizontal) {
 				this.f3Chart.setOrientationHorizontal();
+			}
+
+			// Apply tree depth limits
+			if (this.ancestryDepth !== null) {
+				this.f3Chart.setAncestryDepth(this.ancestryDepth);
+			}
+			if (this.progenyDepth !== null) {
+				this.f3Chart.setProgenyDepth(this.progenyDepth);
+			}
+
+			// Apply display options
+			this.f3Chart.setShowSiblingsOfMain(this.showSiblingsOfMain);
+			this.f3Chart.setSingleParentEmptyCard(this.showSingleParentEmptyCard, { label: 'Unknown' });
+
+			// Apply sort children by birth date
+			if (this.sortChildrenByBirthDate) {
+				this.f3Chart.setSortChildrenFunction((a, b) => {
+					const aBirthday = a.data?.birthday || '';
+					const bBirthday = b.data?.birthday || '';
+					// Sort by birthday string (works for ISO dates)
+					if (!aBirthday && !bBirthday) return 0;
+					if (!aBirthday) return 1; // No date goes last
+					if (!bBirthday) return -1;
+					return aBirthday.localeCompare(bBirthday);
+				});
+			}
+
+			// Apply privacy filter for living persons
+			if (this.hidePrivateLiving) {
+				this.f3Chart.setPrivateCardsConfig({
+					condition: (d) => {
+						// Consider a person "living" if they have no death date
+						return !d.data?.deathday;
+					}
+				});
 			}
 
 			// Configure SVG cards with current display options
@@ -1685,7 +1752,7 @@ export class FamilyChartView extends ItemView {
 	// ============ Layout Configuration ============
 
 	/**
-	 * Show layout settings menu
+	 * Show layout settings menu (orientation, spacing)
 	 */
 	private showLayoutMenu(e: MouseEvent): void {
 		const menu = new Menu();
@@ -1750,7 +1817,14 @@ export class FamilyChartView extends ItemView {
 				.onClick(() => this.setLevelSpacing(200));
 		});
 
-		menu.addSeparator();
+		menu.showAtMouseEvent(e);
+	}
+
+	/**
+	 * Show display settings menu (card display, visibility options)
+	 */
+	private showDisplayMenu(e: MouseEvent): void {
+		const menu = new Menu();
 
 		// Card display options
 		menu.addItem((item) => {
@@ -1776,6 +1850,82 @@ export class FamilyChartView extends ItemView {
 				.setIcon('tag')
 				.onClick(() => this.toggleKinshipLabels());
 		});
+
+		menu.addSeparator();
+
+		// Visibility options
+		menu.addItem((item) => {
+			item.setTitle('Visibility')
+				.setIcon('eye')
+				.setDisabled(true);
+		});
+
+		menu.addItem((item) => {
+			item.setTitle(`${this.showSiblingsOfMain ? '✓ ' : ''}Show siblings of root person`)
+				.onClick(() => this.toggleShowSiblingsOfMain());
+		});
+
+		menu.addItem((item) => {
+			item.setTitle(`${this.showSingleParentEmptyCard ? '✓ ' : ''}Show unknown parent placeholders`)
+				.onClick(() => this.toggleSingleParentEmptyCard());
+		});
+
+		menu.addItem((item) => {
+			item.setTitle(`${this.sortChildrenByBirthDate ? '✓ ' : ''}Sort children by birth date`)
+				.onClick(() => this.toggleSortChildrenByBirthDate());
+		});
+
+		menu.addItem((item) => {
+			item.setTitle(`${this.hidePrivateLiving ? '✓ ' : ''}Hide living persons`)
+				.onClick(() => this.toggleHidePrivateLiving());
+		});
+
+		menu.showAtMouseEvent(e);
+	}
+
+	/**
+	 * Show depth settings menu (ancestry/progeny limits)
+	 */
+	private showDepthMenu(e: MouseEvent): void {
+		const menu = new Menu();
+
+		// Tree depth limits - Ancestry
+		const ancestryLabel = this.ancestryDepth === null ? 'Unlimited' : `${this.ancestryDepth} gen`;
+		menu.addItem((item) => {
+			item.setTitle(`Ancestors: ${ancestryLabel}`)
+				.setIcon('arrow-up')
+				.setDisabled(true);
+		});
+
+		const ancestryOptions: (number | null)[] = [null, 1, 2, 3, 5];
+		for (const depth of ancestryOptions) {
+			const label = depth === null ? 'Unlimited' : `${depth} generation${depth === 1 ? '' : 's'}`;
+			const isSelected = this.ancestryDepth === depth;
+			menu.addItem((item) => {
+				item.setTitle(`${isSelected ? '✓ ' : '  '}${label}`)
+					.onClick(() => this.setAncestryDepth(depth));
+			});
+		}
+
+		menu.addSeparator();
+
+		// Tree depth limits - Descendants
+		const progenyLabel = this.progenyDepth === null ? 'Unlimited' : `${this.progenyDepth} gen`;
+		menu.addItem((item) => {
+			item.setTitle(`Descendants: ${progenyLabel}`)
+				.setIcon('arrow-down')
+				.setDisabled(true);
+		});
+
+		const progenyOptions: (number | null)[] = [null, 1, 2, 3, 5];
+		for (const depth of progenyOptions) {
+			const label = depth === null ? 'Unlimited' : `${depth} generation${depth === 1 ? '' : 's'}`;
+			const isSelected = this.progenyDepth === depth;
+			menu.addItem((item) => {
+				item.setTitle(`${isSelected ? '✓ ' : '  '}${label}`)
+					.onClick(() => this.setProgenyDepth(depth));
+			});
+		}
 
 		menu.showAtMouseEvent(e);
 	}
@@ -1821,6 +1971,96 @@ export class FamilyChartView extends ItemView {
 		}
 
 		new Notice(`Tree orientation: ${horizontal ? 'horizontal' : 'vertical'}`);
+	}
+
+	/**
+	 * Set ancestry depth limit
+	 */
+	private setAncestryDepth(depth: number | null): void {
+		if (this.ancestryDepth === depth) return;
+
+		this.ancestryDepth = depth;
+
+		// Re-initialize chart with new depth
+		if (this.f3Chart && this.rootPersonId) {
+			this.initializeChart();
+		}
+
+		const label = depth === null ? 'unlimited' : `${depth} generation${depth === 1 ? '' : 's'}`;
+		new Notice(`Ancestry depth: ${label}`);
+	}
+
+	/**
+	 * Set progeny depth limit
+	 */
+	private setProgenyDepth(depth: number | null): void {
+		if (this.progenyDepth === depth) return;
+
+		this.progenyDepth = depth;
+
+		// Re-initialize chart with new depth
+		if (this.f3Chart && this.rootPersonId) {
+			this.initializeChart();
+		}
+
+		const label = depth === null ? 'unlimited' : `${depth} generation${depth === 1 ? '' : 's'}`;
+		new Notice(`Descendant depth: ${label}`);
+	}
+
+	/**
+	 * Toggle show siblings of main person
+	 */
+	private toggleShowSiblingsOfMain(): void {
+		this.showSiblingsOfMain = !this.showSiblingsOfMain;
+
+		// Re-initialize chart with new setting
+		if (this.f3Chart && this.rootPersonId) {
+			this.initializeChart();
+		}
+
+		new Notice(`Siblings of root person ${this.showSiblingsOfMain ? 'shown' : 'hidden'}`);
+	}
+
+	/**
+	 * Toggle single parent empty card display
+	 */
+	private toggleSingleParentEmptyCard(): void {
+		this.showSingleParentEmptyCard = !this.showSingleParentEmptyCard;
+
+		// Re-initialize chart with new setting
+		if (this.f3Chart && this.rootPersonId) {
+			this.initializeChart();
+		}
+
+		new Notice(`Unknown parent placeholders ${this.showSingleParentEmptyCard ? 'shown' : 'hidden'}`);
+	}
+
+	/**
+	 * Toggle sort children by birth date
+	 */
+	private toggleSortChildrenByBirthDate(): void {
+		this.sortChildrenByBirthDate = !this.sortChildrenByBirthDate;
+
+		// Re-initialize chart with new setting
+		if (this.f3Chart && this.rootPersonId) {
+			this.initializeChart();
+		}
+
+		new Notice(`Sort children by birth date ${this.sortChildrenByBirthDate ? 'enabled' : 'disabled'}`);
+	}
+
+	/**
+	 * Toggle hide private/living persons
+	 */
+	private toggleHidePrivateLiving(): void {
+		this.hidePrivateLiving = !this.hidePrivateLiving;
+
+		// Re-initialize chart with new setting
+		if (this.f3Chart && this.rootPersonId) {
+			this.initializeChart();
+		}
+
+		new Notice(`Living persons ${this.hidePrivateLiving ? 'hidden' : 'shown'}`);
 	}
 
 	/**
@@ -2547,6 +2787,12 @@ export class FamilyChartView extends ItemView {
 			showDeathDates: this.showDeathDates,
 			showKinshipLabels: this.showKinshipLabels,
 			isHorizontal: this.isHorizontal,
+			ancestryDepth: this.ancestryDepth,
+			progenyDepth: this.progenyDepth,
+			showSiblingsOfMain: this.showSiblingsOfMain,
+			showSingleParentEmptyCard: this.showSingleParentEmptyCard,
+			sortChildrenByBirthDate: this.sortChildrenByBirthDate,
+			hidePrivateLiving: this.hidePrivateLiving,
 		};
 	}
 
@@ -2580,6 +2826,24 @@ export class FamilyChartView extends ItemView {
 		}
 		if (state.isHorizontal !== undefined) {
 			this.isHorizontal = state.isHorizontal;
+		}
+		if (state.ancestryDepth !== undefined) {
+			this.ancestryDepth = state.ancestryDepth;
+		}
+		if (state.progenyDepth !== undefined) {
+			this.progenyDepth = state.progenyDepth;
+		}
+		if (state.showSiblingsOfMain !== undefined) {
+			this.showSiblingsOfMain = state.showSiblingsOfMain;
+		}
+		if (state.showSingleParentEmptyCard !== undefined) {
+			this.showSingleParentEmptyCard = state.showSingleParentEmptyCard;
+		}
+		if (state.sortChildrenByBirthDate !== undefined) {
+			this.sortChildrenByBirthDate = state.sortChildrenByBirthDate;
+		}
+		if (state.hidePrivateLiving !== undefined) {
+			this.hidePrivateLiving = state.hidePrivateLiving;
 		}
 
 		// Re-initialize chart if the view is already open (chartContainerEl exists)
