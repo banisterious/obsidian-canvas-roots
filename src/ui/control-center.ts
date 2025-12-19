@@ -116,6 +116,7 @@ export class ControlCenterModal extends Modal {
 	private drawer: HTMLElement;
 	private contentContainer: HTMLElement;
 	private appBar: HTMLElement;
+	private drawerBackdrop: HTMLElement;
 
 	// Relationship field data
 	private fatherField: RelationshipField = { name: '' };
@@ -195,6 +196,18 @@ export class ControlCenterModal extends Modal {
 	private createStickyHeader(container: HTMLElement): void {
 		this.appBar = container.createDiv({ cls: 'crc-sticky-header' });
 
+		// Mobile menu toggle button (hidden on desktop via CSS)
+		const menuToggle = this.appBar.createEl('button', {
+			cls: 'crc-mobile-menu-toggle',
+			attr: { type: 'button' }
+		});
+		setIcon(menuToggle, 'menu');
+		menuToggle.addEventListener('click', (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+			this.toggleMobileDrawer();
+		});
+
 		// Title section
 		const titleSection = this.appBar.createDiv({ cls: 'crc-header-title' });
 		const titleIcon = createLucideIcon('git-branch', 20);
@@ -215,10 +228,40 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
+	 * Check if we're in mobile mode
+	 */
+	private isMobileMode(): boolean {
+		return Platform.isMobile || document.body.classList.contains('is-mobile');
+	}
+
+	/**
 	 * Create navigation drawer with tab list
 	 */
 	private createNavigationDrawer(container: HTMLElement): void {
+		// Mobile backdrop (hidden on desktop via CSS)
+		this.drawerBackdrop = container.createDiv({ cls: 'crc-drawer-backdrop' });
+		this.drawerBackdrop.addEventListener('click', () => this.closeMobileDrawer());
+
 		this.drawer = container.createDiv({ cls: 'crc-drawer' });
+
+		// Add mobile class directly if in mobile mode
+		if (this.isMobileMode()) {
+			this.drawer.addClass('crc-drawer--mobile');
+			this.drawerBackdrop.addClass('crc-drawer-backdrop--mobile');
+			this.modalEl.addClass('crc-mobile-mode');
+		}
+
+		// Mobile close button (hidden on desktop via CSS)
+		const closeBtn = this.drawer.createEl('button', {
+			cls: 'crc-drawer-close',
+			attr: { type: 'button' }
+		});
+		setIcon(closeBtn, 'x');
+		closeBtn.addEventListener('click', (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+			this.closeMobileDrawer();
+		});
 
 		// Drawer header
 		const header = this.drawer.createDiv({ cls: 'crc-drawer__header' });
@@ -228,6 +271,34 @@ export class ControlCenterModal extends Modal {
 		// Drawer content
 		const content = this.drawer.createDiv({ cls: 'crc-drawer__content' });
 		this.createNavigationList(content);
+	}
+
+	/**
+	 * Toggle mobile drawer visibility
+	 */
+	private toggleMobileDrawer(): void {
+		const isOpen = this.drawer.classList.contains('crc-drawer--open');
+		if (isOpen) {
+			this.closeMobileDrawer();
+		} else {
+			this.openMobileDrawer();
+		}
+	}
+
+	/**
+	 * Open mobile drawer
+	 */
+	private openMobileDrawer(): void {
+		this.drawer.classList.add('crc-drawer--open');
+		this.drawerBackdrop.classList.add('crc-drawer-backdrop--visible');
+	}
+
+	/**
+	 * Close mobile drawer
+	 */
+	private closeMobileDrawer(): void {
+		this.drawer.classList.remove('crc-drawer--open');
+		this.drawerBackdrop.classList.remove('crc-drawer-backdrop--visible');
 	}
 
 	/**
@@ -296,6 +367,11 @@ export class ControlCenterModal extends Modal {
 		// Update active tab and show content
 		this.activeTab = tabId;
 		this.showTab(tabId);
+
+		// Close drawer on mobile after selecting a tab
+		if (Platform.isMobile) {
+			this.closeMobileDrawer();
+		}
 	}
 
 	/**

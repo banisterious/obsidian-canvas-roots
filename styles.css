@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-19 14:55:55 UTC
+ * - Generated: 2025-12-19 15:50:17 UTC
  * - Components: 34 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -620,7 +620,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 6112 lines, 112.26 KB */
+/* Component Size: 6297 lines, 116.15 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -6732,6 +6732,191 @@ settings:
 
 .cr-ref-numbers-learn-more:hover {
   text-decoration: underline;
+}
+
+/* ==========================================================================
+   CONTROL CENTER - MOBILE RESPONSIVE STYLES
+   ========================================================================== */
+
+/* Mobile menu toggle button - hidden on desktop */
+.crc-mobile-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  position: relative;
+}
+
+.crc-mobile-menu-toggle:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-mobile-menu-toggle:active {
+  background: var(--background-modifier-active-hover);
+}
+
+/* Mobile back button in content header */
+.crc-mobile-back-btn {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.crc-mobile-back-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+/* Drawer overlay backdrop for mobile */
+.crc-drawer-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+/* Mobile styles - using direct classes applied via JavaScript */
+/* .crc-mobile-mode is added to modalEl when Platform.isMobile or body.is-mobile */
+
+.crc-mobile-mode {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  border-radius: 0;
+}
+
+.crc-mobile-mode .crc-mobile-menu-toggle {
+  display: flex;
+}
+
+/* Drawer in mobile mode - slides in from left */
+.crc-drawer.crc-drawer--mobile {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 280px !important;
+  z-index: 101 !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.3s ease !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.crc-drawer.crc-drawer--mobile.crc-drawer--open {
+  transform: translateX(0) !important;
+}
+
+.crc-drawer-backdrop.crc-drawer-backdrop--mobile.crc-drawer-backdrop--visible {
+  display: block;
+}
+
+.crc-mobile-mode .crc-content-area {
+  padding: 16px;
+}
+
+.crc-mobile-mode .crc-mobile-back-btn {
+  display: inline-flex;
+}
+
+/* Adjust header for mobile */
+.crc-mobile-mode .crc-sticky-header {
+  padding: 10px 16px;
+}
+
+.crc-mobile-mode .crc-header-title {
+  font-size: 14px;
+}
+
+.crc-mobile-mode .crc-header-actions {
+  gap: 8px;
+  margin-right: 28px;
+}
+
+/* Hide some header actions on mobile to save space */
+.crc-mobile-mode .crc-header-btn {
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+/* Cards on mobile */
+.crc-mobile-mode .crc-card {
+  border-radius: 8px;
+}
+
+.crc-mobile-mode .crc-card__header {
+  padding: 12px 16px;
+}
+
+.crc-mobile-mode .crc-card__body {
+  padding: 12px 16px;
+}
+
+/* Tables on mobile - horizontal scroll */
+.crc-mobile-mode .crc-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.crc-mobile-mode .crc-table {
+  min-width: 600px;
+}
+
+/* Form inputs on mobile */
+.crc-mobile-mode .crc-form-input,
+.crc-mobile-mode .crc-form-select {
+  font-size: 16px; /* Prevents iOS zoom on focus */
+}
+
+/* Navigation items on mobile - compact but tappable */
+.crc-mobile-mode .crc-nav-item {
+  padding: 8px 16px;
+  margin: 0 8px;
+}
+
+/* Close drawer button for mobile */
+.crc-drawer-close {
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.crc-drawer-close:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.crc-drawer.crc-drawer--mobile .crc-drawer-close {
+  display: flex;
 }
 
 
@@ -21565,10 +21750,10 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-19 14:55:55 UTC
+ * Build completed: 2025-12-19 15:50:17 UTC
  * Components processed: 34
- * Total lines: 21236
- * Total size: 421.26 KB
+ * Total lines: 21421
+ * Total size: 425.16 KB
  * Build duration: 0.03 seconds
  *
  * Component breakdown:
@@ -21580,7 +21765,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 6112 lines, 112.26 KB
+ * - modals.css: 6297 lines, 116.15 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB
