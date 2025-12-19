@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.13.1] - 2025-12-18
+
 ### Added
 
 - **Family Chart horizontal orientation** - New option in Layout menu to switch between vertical (top-to-bottom) and horizontal (left-to-right) tree layouts.
