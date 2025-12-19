@@ -604,7 +604,7 @@ export class SourceMediaLinkerModal extends Modal {
 
 		// Use standard DOM API for select/option elements (Obsidian's createEl doesn't handle them well)
 		const select = document.createElement('select');
-		select.className = 'cr-media-linker__source-select dropdown';
+		select.className = 'dropdown';
 		selectWrapper.appendChild(select);
 
 		// Empty option - different text based on whether suggestions exist

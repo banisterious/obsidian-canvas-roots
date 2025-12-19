@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-19 17:15:31 UTC
+ * - Generated: 2025-12-19 21:27:06 UTC
  * - Components: 34 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -16059,7 +16059,7 @@ body.wide-timeline .view-content {
    COMPONENT: SOURCES.CSS
    ========================================================================== */
 
-/* Component Size: 2664 lines, 54.11 KB */
+/* Component Size: 2654 lines, 53.83 KB */
 
 /**
  * Sources Styles
@@ -18523,16 +18523,6 @@ body:has(.cr-media-linker) .suggestion-container {
   display: flex;
   align-items: center;
   gap: var(--size-4-2);
-}
-
-.cr-media-linker__source-select {
-  flex: 1;
-  padding: var(--size-4-1) var(--size-4-2);
-  font-size: var(--font-ui-small);
-  background: var(--background-primary);
-  border: 1px solid var(--background-modifier-border);
-  border-radius: var(--radius-s);
-  color: var(--text-normal);
 }
 
 /* "+N more" badge */
@@ -21806,11 +21796,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-19 17:15:31 UTC
+ * Build completed: 2025-12-19 21:27:06 UTC
  * Components processed: 34
- * Total lines: 21477
- * Total size: 426.28 KB
- * Build duration: 0.02 seconds
+ * Total lines: 21467
+ * Total size: 426 KB
+ * Build duration: 0.03 seconds
  *
  * Component breakdown:
  * - variables.css: 48 lines, 1.33 KB
@@ -21838,7 +21828,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - events.css: 1373 lines, 27.6 KB
  * - timeline-callouts.css: 321 lines, 10.66 KB
  * - organizations.css: 245 lines, 4.36 KB
- * - sources.css: 2664 lines, 54.11 KB
+ * - sources.css: 2654 lines, 53.83 KB
  * - statistics.css: 1487 lines, 29.34 KB
  * - universe-wizard.css: 621 lines, 11.05 KB
  * - preferences.css: 242 lines, 5.29 KB
