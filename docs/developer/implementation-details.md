@@ -2,6 +2,15 @@
 
 This document covers technical implementation specifics for Canvas Roots features.
 
+## Table of Contents
+
+- [Context Menu Implementation](#context-menu-implementation)
+- [Canvas Generation Implementation](#canvas-generation-implementation)
+- [Dual Storage System](#dual-storage-system)
+- [Privacy and Gender Identity Protection](#privacy-and-gender-identity-protection)
+
+---
+
 ## Context Menu Implementation
 
 ### File Menu Integration

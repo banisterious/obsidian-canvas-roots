@@ -2,6 +2,27 @@
 
 This document describes the Canvas Roots plugin directory layout and component status.
 
+## Table of Contents
+
+- [Directory Layout](#directory-layout)
+- [Component Map](#component-map)
+  - [Core Services](#core-services-srccore)
+  - [Sources Module](#sources-module-srcsources)
+  - [Events Module](#events-module-srcevents)
+  - [Maps Module](#maps-module-srcmaps)
+  - [Places Module](#places-module-srcplaces)
+  - [Organizations Module](#organizations-module-srcorganizations)
+  - [Relationships Module](#relationships-module-srcrelationships)
+  - [Dates Module](#dates-module-srcdates)
+  - [Schemas Module](#schemas-module-srcschemas)
+  - [UI Components](#ui-components-srcui)
+  - [Data Models](#data-models-srcmodels)
+- [Commands](#commands-maints)
+- [Context Menus](#context-menus)
+- [Control Center Tabs](#control-center-tabs)
+
+---
+
 ## Directory Layout
 
 ```

@@ -4,6 +4,23 @@ This document lists all `obsidianmd/ui/sentence-case` warnings for manual review
 
 **Total flagged items:** 292
 
+## Table of Contents
+
+- [Summary by Category](#summary-by-category)
+- [Category: add-button](#category-add-button)
+- [Category: aria-attribute](#category-aria-attribute)
+- [Category: error-message](#category-error-message)
+- [Category: example-text](#category-example-text)
+- [Category: html-tag](#category-html-tag)
+- [Category: identifier](#category-identifier)
+- [Category: navigation](#category-navigation)
+- [Category: sentence-start](#category-sentence-start)
+- [Category: separator](#category-separator)
+- [Category: title-case](#category-title-case)
+- [Category: unknown](#category-unknown)
+
+---
+
 ## Summary by Category
 
 | Category | Count | Notes |

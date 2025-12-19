@@ -2,6 +2,19 @@
 
 This document contains detailed implementation notes for significant features. For high-level release notes, see the [CHANGELOG](../../CHANGELOG.md).
 
+## Table of Contents
+
+- [Version 0.10.x - 0.11.x Summary](#version-010x---011x-summary-2025-12)
+- [Re-Layout Canvas Command](#re-layout-canvas-command-2025-11-21)
+- [Canvas Metadata & Smart Re-layout](#canvas-metadata--smart-re-layout-2025-11-22)
+- [Tree Generation Tab Streamlining](#tree-generation-tab-streamlining-2025-11-21)
+- [Person Picker Enhancements](#person-picker-enhancements-2025-11-20)
+- [Recent Trees History](#recent-trees-history-2025-11-20)
+- [GEDCOM X and Gramps XML Export](#gedcom-x-and-gramps-xml-export-2025-12-02)
+- [Canvas Color Enhancements](#canvas-color-enhancements-2025-11-20)
+- [Evidence Visualization](#evidence-visualization-2025-12-05)
+- [GEDCOM Test Datasets](#gedcom-test-datasets-2025-11-20)
+
 ---
 
 ## Version 0.10.x - 0.11.x Summary (2025-12)

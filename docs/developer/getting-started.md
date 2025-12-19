@@ -2,6 +2,18 @@
 
 This guide covers setting up your development environment, building, and testing the Canvas Roots plugin.
 
+## Table of Contents
+
+- [Project Setup](#project-setup)
+- [Manual Deployment to Obsidian Vault](#manual-deployment-to-obsidian-vault)
+- [Testing in Obsidian](#testing-in-obsidian)
+- [Hot Reload (Advanced)](#hot-reload-advanced)
+- [Debugging](#debugging)
+- [Version Management](#version-management)
+- [Related Documentation](#related-documentation)
+
+---
+
 ## Project Setup
 
 ### Installation

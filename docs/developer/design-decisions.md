@@ -2,6 +2,14 @@
 
 This document records architectural decisions (ADRs) for Canvas Roots.
 
+## Table of Contents
+
+- [Smart Hybrid Collections Architecture](#smart-hybrid-collections-architecture-2025-11-22)
+- [Interactive Tree Preview](#interactive-tree-preview-2025-11-24)
+- [Switch to family-chart Library](#switch-to-family-chart-library-2025-11-20)
+- [Layout Engine Extraction](#layout-engine-extraction-2025-11-20)
+- [Canvas-Only Mode Removal](#canvas-only-mode-removal-2025-11-20)
+
 ---
 
 ## Smart Hybrid Collections Architecture (2025-11-22)
