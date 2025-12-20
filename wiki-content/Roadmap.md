@@ -313,7 +313,7 @@ After a GEDCOM import (especially from a file with data quality issues), users f
 **UI Integration:**
 - Context menu: "Link Media" action for Person, Event, Place, Organization
 - Control Center: Media column/indicator in entity tables
-- Person note: Media gallery section (similar to Source notes)
+- Dynamic Note Content: `<!-- cr:media-gallery -->` block renders linked media inline
 - Canvas nodes: Optional thumbnail display
 
 **Technical Approach:**
