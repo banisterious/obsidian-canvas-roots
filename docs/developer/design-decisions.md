@@ -4,11 +4,124 @@ This document records architectural decisions (ADRs) for Canvas Roots.
 
 ## Table of Contents
 
+- [PDF Library and Font Strategy](#pdf-library-and-font-strategy-2025-12-19)
 - [Smart Hybrid Collections Architecture](#smart-hybrid-collections-architecture-2025-11-22)
 - [Interactive Tree Preview](#interactive-tree-preview-2025-11-24)
 - [Switch to family-chart Library](#switch-to-family-chart-library-2025-11-20)
 - [Layout Engine Extraction](#layout-engine-extraction-2025-11-20)
 - [Canvas-Only Mode Removal](#canvas-only-mode-removal-2025-11-20)
+
+---
+
+## PDF Library and Font Strategy (2025-12-19)
+
+**Decision:** Use pdfmake with dynamic loading and standard PDF fonts (Helvetica, Times, Courier) for report PDF export. Keep jsPDF for existing image-based chart exports.
+
+**Context:**
+- Users requested PDF export for genealogical reports (Ahnentafel, Register Report, Family Group Sheets, etc.)
+- Existing jsPDF usage is for image-based chart export (SVG → Canvas → PNG → PDF)
+- Plugin footprint matters: users may sync plugins via Obsidian Sync (1-10 GB storage limits)
+
+**Options Evaluated:**
+
+1. **Option A: jsPDF + jspdf-autotable for everything** ❌
+   - Imperative API, harder to maintain
+   - Would require rewriting existing chart export code
+   - Table support via plugin, not native
+
+2. **Option B: pdfmake with embedded Roboto fonts** ❌
+   - Full pdfmake bundle: ~3.7 MB (vfs_fonts.js alone is ~2.4 MB)
+   - Significant impact on vault storage for Sync users
+   - Roboto fonts are overkill for document-style reports
+
+3. **Option C: pdfmake with standard PDF fonts + dynamic loading** ✅ **SELECTED**
+   - pdfmake core without vfs_fonts.js: ~400-500 KB
+   - Standard PDF fonts (Helvetica, Times, Courier) require zero embedding
+   - Dynamic import: 0 KB initial bundle impact, loads on first PDF export
+   - ~85% size reduction compared to full pdfmake bundle
+
+4. **Option D: Replace jsPDF entirely with pdfmake** ❌
+   - pdfmake supports SVG natively, could work for charts
+   - However, the SVG → Canvas → PNG approach works well for visual charts
+   - Mixing approaches for different use cases is acceptable
+   - No benefit to rewriting working code
+
+**Implementation:**
+
+**Dynamic Loading Pattern:**
+```typescript
+export class PdfReportRenderer {
+  private pdfMake: any = null;
+
+  private async ensurePdfMake(): Promise<void> {
+    if (this.pdfMake) return;
+
+    new Notice('Preparing PDF export...');
+
+    // Dynamic import - not in initial bundle
+    const pdfMakeModule = await import('pdfmake/build/pdfmake');
+    this.pdfMake = pdfMakeModule.default || pdfMakeModule;
+
+    // Standard PDF fonts - NO vfs_fonts.js needed
+    this.pdfMake.fonts = {
+      Helvetica: {
+        normal: 'Helvetica',
+        bold: 'Helvetica-Bold',
+        italics: 'Helvetica-Oblique',
+        bolditalics: 'Helvetica-BoldOblique'
+      },
+      Times: {
+        normal: 'Times-Roman',
+        bold: 'Times-Bold',
+        italics: 'Times-Italic',
+        bolditalics: 'Times-BoldItalic'
+      },
+      Courier: {
+        normal: 'Courier',
+        bold: 'Courier-Bold',
+        italics: 'Courier-Oblique',
+        bolditalics: 'Courier-BoldOblique'
+      }
+    };
+  }
+}
+```
+
+**Why Standard PDF Fonts:**
+
+| Benefit | Explanation |
+|---------|-------------|
+| Zero embedding size | Built into every PDF reader since PDF 1.0 |
+| Professional appearance | Helvetica and Times are industry standards |
+| Sufficient coverage | Full Latin character set for English/European genealogy |
+| Fast rendering | No font parsing overhead |
+
+**Trade-offs Accepted:**
+
+| Trade-off | Mitigation |
+|-----------|------------|
+| No non-Latin scripts (CJK, Arabic, Hebrew) | Phase 3: Optional font pack download |
+| First PDF export has ~1-3s delay | Show "Preparing PDF export..." notice |
+| Two PDF libraries in codebase | Clear separation: jsPDF for images, pdfmake for documents |
+
+**Bundle Size Impact:**
+
+| Component | Size | Notes |
+|-----------|------|-------|
+| jsPDF (existing) | ~229 KB | Kept for chart export |
+| pdfmake core | ~400-500 KB | Dynamic import, not in initial bundle |
+| vfs_fonts.js | 0 KB | **Excluded** - use standard fonts |
+| **Initial bundle change** | 0 KB | pdfmake loads on demand |
+| **Runtime (first export)** | ~400-500 KB | Cached for session |
+
+**Impact:**
+- Zero impact on initial plugin load time
+- Zero impact on vault storage for users who don't export PDFs
+- ~400-500 KB one-time load for users who do export PDFs
+- Professional-looking reports with Helvetica/Times typography
+- Path forward for non-Latin support without bloating default bundle
+
+**Related:** See [PDF Report Export Planning Document](../planning/pdf-report-export.md) for full implementation plan.
 
 ---
 

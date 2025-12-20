@@ -6,6 +6,7 @@ Planning document for adding PDF export capability to genealogical reports.
 **Priority:** High
 **GitHub Issue:** #TBD
 **Created:** 2024-12-19
+**Updated:** 2025-12-19
 
 ---
 
@@ -33,19 +34,22 @@ The report generation system currently supports 7 report types:
 - Save to vault (markdown file)
 - Download file (markdown download)
 
-**No PDF export currently exists.**
+**Existing PDF export (charts only):**
+- jsPDF is used in `family-chart-view.ts` and `tree-preview.ts` for image-based PDF export (SVG → Canvas → PNG → PDF)
+- Not suitable for text-heavy reports
 
 ---
 
 ## Phase 1: Core PDF Export
 
-Add PDF export with fixed professional styling using pdfmake.
+Add PDF export with fixed professional styling using pdfmake with dynamic loading and standard PDF fonts.
 
 ### Scope
 
 1. **Add pdfmake dependency**
-   - Install `pdfmake` npm package (~400KB minified)
-   - Note: jsPDF is currently in the project but only used for image-based PDF export in family-chart-view and tree-preview
+   - Install `pdfmake` npm package
+   - Use dynamic import (lazy loading) to minimize bundle impact
+   - Use standard PDF fonts only (no vfs_fonts.js)
 
 2. **Create PdfReportRenderer service**
    - Location: `src/reports/services/pdf-report-renderer.ts`
@@ -62,6 +66,73 @@ Add PDF export with fixed professional styling using pdfmake.
    - Handle PDF output method
    - Call PdfReportRenderer for PDF generation
 
+### Dynamic Loading Strategy
+
+pdfmake is loaded only when the user exports a PDF, not at plugin startup:
+
+```typescript
+export class PdfReportRenderer {
+  private pdfMake: any = null;
+
+  private async ensurePdfMake(): Promise<void> {
+    if (this.pdfMake) return;
+
+    new Notice('Preparing PDF export...');
+
+    // Dynamic import - only loads when needed
+    const pdfMakeModule = await import('pdfmake/build/pdfmake');
+    this.pdfMake = pdfMakeModule.default || pdfMakeModule;
+
+    // Use standard PDF fonts - NO vfs_fonts.js needed
+    this.pdfMake.fonts = {
+      Helvetica: {
+        normal: 'Helvetica',
+        bold: 'Helvetica-Bold',
+        italics: 'Helvetica-Oblique',
+        bolditalics: 'Helvetica-BoldOblique'
+      },
+      Times: {
+        normal: 'Times-Roman',
+        bold: 'Times-Bold',
+        italics: 'Times-Italic',
+        bolditalics: 'Times-BoldItalic'
+      },
+      Courier: {
+        normal: 'Courier',
+        bold: 'Courier-Bold',
+        italics: 'Courier-Oblique',
+        bolditalics: 'Courier-BoldOblique'
+      }
+    };
+  }
+
+  async renderReport(data: ReportResult, options: PdfOptions): Promise<void> {
+    await this.ensurePdfMake();
+
+    const docDefinition = {
+      defaultStyle: {
+        font: options.fontStyle === 'serif' ? 'Times' : 'Helvetica'
+      },
+      // ... rest of document
+    };
+
+    this.pdfMake.createPdf(docDefinition).download(filename);
+  }
+}
+```
+
+### Standard PDF Fonts
+
+Using standard PDF fonts eliminates the need for embedded fonts:
+
+| Font Family | Use Case | Variants |
+|-------------|----------|----------|
+| Helvetica | Sans-serif body, headers | Regular, Bold, Oblique, BoldOblique |
+| Times | Serif body (traditional reports) | Roman, Bold, Italic, BoldItalic |
+| Courier | Monospace (ASCII trees, code) | Regular, Bold, Oblique, BoldOblique |
+
+These fonts are built into every PDF reader—no embedding required.
+
 ### Default Styling
 
 Professional genealogy report styling:
@@ -69,7 +140,9 @@ Professional genealogy report styling:
 | Element | Style |
 |---------|-------|
 | Page size | A4 (Letter as future option) |
-| Font | Times-like serif for body, sans-serif for headers |
+| Serif font | Times (traditional look) |
+| Sans-serif font | Helvetica (modern look) |
+| Monospace font | Courier (ASCII trees) |
 | Title | Large, bold, centered |
 | Section headers | Bold, slightly larger, with subtle underline |
 | Body text | 11pt, black on white |
@@ -83,14 +156,19 @@ Professional genealogy report styling:
 
 ```typescript
 class PdfReportRenderer {
+  private pdfMake: any = null;
+
+  // Lazy loading
+  private async ensurePdfMake(): Promise<void>;
+
   // Render methods for each report type
-  renderAhnentafel(result: AhnentafelResult, options: AhnentafelOptions): Promise<Blob>;
-  renderPedigreeChart(result: PedigreeChartResult, options: PedigreeChartOptions): Promise<Blob>;
-  renderDescendantChart(result: DescendantChartResult, options: DescendantChartOptions): Promise<Blob>;
-  renderRegisterReport(result: RegisterReportResult, options: RegisterReportOptions): Promise<Blob>;
-  renderFamilyGroupSheet(result: FamilyGroupSheetResult, options: FamilyGroupSheetOptions): Promise<Blob>;
-  renderIndividualSummary(result: IndividualSummaryResult, options: IndividualSummaryOptions): Promise<Blob>;
-  renderGapsReport(result: GapsReportResult, options: GapsReportOptions): Promise<Blob>;
+  async renderAhnentafel(result: AhnentafelResult, options: AhnentafelOptions): Promise<void>;
+  async renderPedigreeChart(result: PedigreeChartResult, options: PedigreeChartOptions): Promise<void>;
+  async renderDescendantChart(result: DescendantChartResult, options: DescendantChartOptions): Promise<void>;
+  async renderRegisterReport(result: RegisterReportResult, options: RegisterReportOptions): Promise<void>;
+  async renderFamilyGroupSheet(result: FamilyGroupSheetResult, options: FamilyGroupSheetOptions): Promise<void>;
+  async renderIndividualSummary(result: IndividualSummaryResult, options: IndividualSummaryOptions): Promise<void>;
+  async renderGapsReport(result: GapsReportResult, options: GapsReportOptions): Promise<void>;
 }
 ```
 
@@ -100,6 +178,10 @@ class PdfReportRenderer {
 const docDefinition = {
   pageSize: 'A4',
   pageMargins: [40, 60, 40, 60],
+  defaultStyle: {
+    font: 'Times',
+    fontSize: 11
+  },
   header: { text: 'Report Title', alignment: 'right', margin: [40, 20] },
   footer: (currentPage, pageCount) => ({
     text: `Page ${currentPage} of ${pageCount}`,
@@ -113,7 +195,7 @@ const docDefinition = {
     title: { fontSize: 24, bold: true, alignment: 'center', margin: [0, 0, 0, 20] },
     h2: { fontSize: 16, bold: true, margin: [0, 15, 0, 5] },
     h3: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
-    normal: { fontSize: 11 },
+    monospace: { font: 'Courier', fontSize: 10 },
     tableHeader: { bold: true, fillColor: '#f0f0f0' }
   }
 };
@@ -198,37 +280,68 @@ Future enhancements based on user feedback.
 
 ### Potential Features
 
-| Feature | Description |
-|---------|-------------|
-| Custom fonts | Embed user-specified fonts |
-| Logo/watermark | Add family crest or watermark |
-| Table of contents | For long reports |
-| Hyperlinks | Internal document links between generations |
-| Charts/graphs | Visual statistics (age distribution, etc.) |
-| Multi-report compilation | Combine multiple reports into one PDF |
+| Feature | Description | Complexity |
+|---------|-------------|------------|
+| Custom fonts | Embed user-specified fonts (increases size) | High |
+| Logo/watermark | Add family crest or watermark | Medium |
+| Table of contents | For long reports | Medium |
+| Hyperlinks | Internal document links between generations | Low |
+| Charts/graphs | Visual statistics (age distribution, etc.) | High |
+| Multi-report compilation | Combine multiple reports into one PDF | Medium |
+| Non-Latin font packs | Optional download for CJK, Arabic, Hebrew | High |
+
+### Non-Latin Script Support
+
+For users with non-Latin names (Chinese, Arabic, Hebrew, etc.), standard PDF fonts won't work. Options:
+
+1. **Optional font pack download** - User downloads additional font file when needed
+2. **Transliteration fallback** - Convert to Latin equivalents with notice
+3. **Skip with warning** - Notify user that custom fonts are needed
+
+This is deferred to Phase 3 based on user demand.
 
 ---
 
 ## Technical Considerations
 
-### Bundle Size Impact
+### Bundle Size Strategy
 
-| Library | Size (minified) | Notes |
-|---------|-----------------|-------|
-| pdfmake | ~400 KB | Full-featured PDF generation |
-| Current main.js | 6.2 MB | Existing bundle |
-| Impact | +6.5% | Acceptable for feature value |
+The hybrid approach minimizes impact on both initial bundle and vault storage:
 
-### Why pdfmake Over jsPDF
+| Component | Size | Strategy |
+|-----------|------|----------|
+| pdfmake core | ~400-500 KB | Dynamic import (not in initial bundle) |
+| vfs_fonts.js (Roboto) | ~2.4 MB | **Excluded** - use standard PDF fonts |
+| **Initial bundle impact** | 0 KB | Loaded only when exporting PDF |
+| **Runtime load (first export)** | ~400-500 KB | Cached for subsequent exports |
 
-- **Document definition approach:** JSON-based, easier to maintain
-- **Better table support:** Built-in table rendering
-- **Consistent typography:** Better font handling
-- **Existing jsPDF usage:** Only for image-based export (canvas → PNG → PDF), not suitable for text-heavy reports
+This is an **~85% reduction** compared to including the full pdfmake bundle with fonts.
+
+### Why Standard PDF Fonts
+
+Standard PDF fonts (Helvetica, Times, Courier) are:
+- Built into every PDF reader—no embedding required
+- Professional and appropriate for genealogy reports
+- Zero additional bundle size
+- Sufficient for Latin-script genealogy (English, European languages)
+
+See [ADR: PDF Library and Font Strategy](../developer/design-decisions.md#pdf-library-and-font-strategy) for the full decision record.
+
+### Why pdfmake Over jsPDF for Reports
+
+| Aspect | pdfmake | jsPDF |
+|--------|---------|-------|
+| API style | Declarative JSON | Imperative |
+| Table support | Built-in | Requires jspdf-autotable |
+| Typography | Excellent | Basic |
+| Maintainability | Higher | Lower |
+| Current usage | New | Image-based chart export |
+
+**Decision:** Use pdfmake for text-heavy reports, keep jsPDF for existing image-based chart exports.
 
 ### Migration Path
 
-If pdfmake proves too large or problematic, the abstraction (PdfReportRenderer service) allows swapping to jsPDF + jspdf-autotable with minimal changes to calling code.
+The abstraction (PdfReportRenderer service) allows swapping to jsPDF + jspdf-autotable if needed, with minimal changes to calling code.
 
 ---
 
@@ -238,7 +351,7 @@ If pdfmake proves too large or problematic, the abstraction (PdfReportRenderer s
 
 | File | Purpose |
 |------|---------|
-| `src/reports/services/pdf-report-renderer.ts` | PDF rendering service |
+| `src/reports/services/pdf-report-renderer.ts` | PDF rendering service with lazy loading |
 
 ### Modified Files
 
@@ -248,6 +361,7 @@ If pdfmake proves too large or problematic, the abstraction (PdfReportRenderer s
 | `src/reports/ui/report-generator-modal.ts` | Add PDF output option |
 | `src/reports/services/report-generation-service.ts` | Handle PDF output |
 | `package.json` | Add pdfmake dependency |
+| `docs/developer/design-decisions.md` | Add ADR for PDF strategy |
 
 ---
 
@@ -258,7 +372,9 @@ If pdfmake proves too large or problematic, the abstraction (PdfReportRenderer s
 - [ ] All 7 report types render correctly to PDF
 - [ ] PDFs open correctly in standard PDF readers
 - [ ] Styling is consistent and professional
-- [ ] ASCII tree charts are legible in PDF
+- [ ] ASCII tree charts are legible in PDF (using Courier)
+- [ ] pdfmake loads dynamically (not in initial bundle)
+- [ ] No vfs_fonts.js in bundle (standard fonts only)
 
 ### Phase 2
 - [ ] User can configure page size and font style
@@ -270,4 +386,4 @@ If pdfmake proves too large or problematic, the abstraction (PdfReportRenderer s
 ## Related Documents
 
 - [Statistics and Reports](../../wiki-content/Statistics-And-Reports.md) - Report documentation
-- [Report Types](../architecture/report-types.md) - Report type definitions
+- [ADR: PDF Library and Font Strategy](../developer/design-decisions.md#pdf-library-and-font-strategy) - Design decision
