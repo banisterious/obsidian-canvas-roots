@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/version-0.13.5-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
-**Canvas Roots** transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas. Designed for genealogists, historians, writers, and world-builders.
+**Canvas Roots** brings professional genealogical tools to Obsidian—import, organize, visualize, and share family histories and fictional worlds without leaving your vault. From GEDCOM imports to PDF reports, interactive charts to map views, manage your research with the power of linked Markdown notes. Built for genealogists, historians, writers, and world-builders.
 
 ## Demo
 
