@@ -1,0 +1,252 @@
+/* ==========================================================================
+   Dashboard Tab Styles
+   Control Center Dashboard with quick-action tiles and vault overview
+   ========================================================================== */
+
+/* Section Header */
+.crc-dashboard-section-header {
+  margin-bottom: 12px;
+}
+
+.crc-dashboard-section-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Tile Grid */
+.crc-dashboard-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* Individual Tile */
+.crc-dashboard-tile {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.crc-dashboard-tile:hover {
+  border-color: var(--interactive-accent);
+  background: rgba(var(--interactive-accent-rgb), 0.1);
+}
+
+.crc-dashboard-tile:focus {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
+.crc-dashboard-tile:active {
+  transform: scale(0.98);
+}
+
+/* Tile Icon */
+.crc-dashboard-tile-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--interactive-accent-rgb), 0.15);
+  border-radius: 8px;
+  color: var(--interactive-accent);
+}
+
+/* Tile Label */
+.crc-dashboard-tile-label {
+  font-weight: 500;
+  font-size: 0.9em;
+  color: var(--text-normal);
+}
+
+/* Collapsible Sections */
+.crc-dashboard-collapsible {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.crc-dashboard-collapsible-header {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  font-weight: 500;
+  list-style: none;
+}
+
+.crc-dashboard-collapsible-header::-webkit-details-marker {
+  display: none;
+}
+
+.crc-dashboard-collapsible-header:hover {
+  background: rgba(var(--background-modifier-hover-rgb), 0.5);
+}
+
+.crc-dashboard-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.crc-dashboard-collapsible[open] .crc-dashboard-chevron {
+  transform: rotate(90deg);
+}
+
+.crc-dashboard-collapsible-title {
+  flex: 1;
+}
+
+.crc-dashboard-collapsible-content {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Loading State */
+.crc-dashboard-loading {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Metrics Grid */
+.crc-dashboard-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.crc-dashboard-metric {
+  text-align: center;
+}
+
+.crc-dashboard-metric-value {
+  font-size: 1.4em;
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.crc-dashboard-metric-label {
+  font-size: 0.8em;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Completeness Progress */
+.crc-dashboard-completeness {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.crc-dashboard-completeness-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.crc-dashboard-completeness-label {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.crc-dashboard-completeness-value {
+  font-size: 0.85em;
+  color: var(--color-green);
+  font-weight: 500;
+}
+
+.crc-dashboard-progress-bar {
+  height: 6px;
+  background: var(--background-primary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.crc-dashboard-progress-fill {
+  height: 100%;
+  background: var(--color-green);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Issues Row */
+.crc-dashboard-issues-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.crc-dashboard-issues-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9em;
+}
+
+.crc-dashboard-issues-icon {
+  display: flex;
+  align-items: center;
+  color: var(--color-orange);
+}
+
+.crc-dashboard-issues-badge {
+  background: rgba(var(--color-orange-rgb), 0.2);
+  color: var(--color-orange);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.crc-dashboard-view-details-link {
+  color: var(--interactive-accent);
+  font-size: 0.85em;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.crc-dashboard-view-details-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive: Mobile */
+@media (max-width: 500px) {
+  .crc-dashboard-tile-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .crc-dashboard-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .crc-dashboard-tile {
+    padding: 14px 12px;
+  }
+
+  .crc-dashboard-tile-icon {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* End of dashboard.css */

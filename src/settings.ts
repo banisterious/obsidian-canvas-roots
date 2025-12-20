@@ -273,6 +273,8 @@ export interface CanvasRootsSettings {
 	reportsFolder: string;
 	// Sex value normalization
 	sexNormalizationMode: SexNormalizationMode;
+	// Dashboard settings
+	dashboardVaultHealthCollapsed: boolean;
 }
 
 /**
@@ -497,7 +499,9 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	// Reports settings
 	reportsFolder: 'Canvas Roots/Reports',     // Default folder for generated reports
 	// Sex value normalization
-	sexNormalizationMode: 'standard'           // Default: normalize to GEDCOM M/F
+	sexNormalizationMode: 'standard',          // Default: normalize to GEDCOM M/F
+	// Dashboard settings
+	dashboardVaultHealthCollapsed: false       // Default: expanded on first visit
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {
