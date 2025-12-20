@@ -112,11 +112,18 @@ export class ReportGeneratorModal extends Modal {
 		includeSources: true
 	};
 
+	// PDF-specific options
+	private pdfOptions = {
+		pageSize: 'A4' as 'A4' | 'LETTER',
+		includeCoverPage: false
+	};
+
 	// UI elements
 	private optionsContainer: HTMLElement | null = null;
 	private personPickerSetting: Setting | null = null;
 	private outputFolderSetting: Setting | null = null;
 	private privacyMessageEl: HTMLElement | null = null;
+	private pdfOptionsContainer: HTMLElement | null = null;
 
 	constructor(app: App, plugin: CanvasRootsPlugin, options: ReportGeneratorModalOptions = {}) {
 		super(app);
@@ -197,6 +204,10 @@ export class ReportGeneratorModal extends Modal {
 				: 'File is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.'
 		);
 
+		// PDF-specific options (shown only when PDF output is selected)
+		this.pdfOptionsContainer = outputSection.createDiv({ cls: 'cr-report-modal__pdf-options' });
+		this.renderPdfOptions();
+
 		this.outputFolderSetting = new Setting(outputSection)
 			.setName('Output folder')
 			.setDesc('Folder to save report (configured in Preferences → Folder locations)')
@@ -234,6 +245,7 @@ export class ReportGeneratorModal extends Modal {
 	 */
 	private updateOutputVisibility(): void {
 		const isDownload = this.outputMethod === 'download' || this.outputMethod === 'pdf';
+		const isPdf = this.outputMethod === 'pdf';
 
 		// Show/hide privacy message
 		if (this.privacyMessageEl) {
@@ -242,16 +254,52 @@ export class ReportGeneratorModal extends Modal {
 			// Update message text based on PDF vs MD
 			const messageSpan = this.privacyMessageEl.querySelector('span:last-child');
 			if (messageSpan) {
-				messageSpan.textContent = this.outputMethod === 'pdf'
+				messageSpan.textContent = isPdf
 					? 'PDF is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.'
 					: 'File is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.';
 			}
+		}
+
+		// Show/hide PDF options (only for PDF output)
+		if (this.pdfOptionsContainer) {
+			this.pdfOptionsContainer.style.display = isPdf ? 'block' : 'none';
 		}
 
 		// Show/hide output folder setting
 		if (this.outputFolderSetting) {
 			this.outputFolderSetting.settingEl.style.display = isDownload ? 'none' : '';
 		}
+	}
+
+	/**
+	 * Render PDF-specific options
+	 */
+	private renderPdfOptions(): void {
+		if (!this.pdfOptionsContainer) return;
+		this.pdfOptionsContainer.empty();
+
+		// Page size
+		new Setting(this.pdfOptionsContainer)
+			.setName('Page size')
+			.addDropdown(dropdown => {
+				dropdown.addOption('A4', 'A4');
+				dropdown.addOption('LETTER', 'Letter');
+				dropdown.setValue(this.pdfOptions.pageSize);
+				dropdown.onChange(value => {
+					this.pdfOptions.pageSize = value as 'A4' | 'LETTER';
+				});
+			});
+
+		// Cover page
+		new Setting(this.pdfOptionsContainer)
+			.setName('Include cover page')
+			.setDesc('Add a title page with report name and generation date')
+			.addToggle(toggle => {
+				toggle.setValue(this.pdfOptions.includeCoverPage);
+				toggle.onChange(value => {
+					this.pdfOptions.includeCoverPage = value;
+				});
+			});
 	}
 
 	/**
@@ -763,8 +811,9 @@ export class ReportGeneratorModal extends Modal {
 	 */
 	private async generatePdfFromResult(result: any): Promise<void> {
 		const pdfOptions = {
-			pageSize: 'A4' as const,
-			fontStyle: 'serif' as const
+			pageSize: this.pdfOptions.pageSize,
+			fontStyle: 'serif' as const,
+			includeCoverPage: this.pdfOptions.includeCoverPage
 		};
 
 		switch (this.selectedReportType) {

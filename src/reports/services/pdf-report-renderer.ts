@@ -30,6 +30,7 @@ import type {
 export interface PdfOptions {
 	pageSize: 'A4' | 'LETTER';
 	fontStyle: 'serif' | 'sans-serif';
+	includeCoverPage: boolean;
 }
 
 /**
@@ -37,7 +38,8 @@ export interface PdfOptions {
  */
 const DEFAULT_PDF_OPTIONS: PdfOptions = {
 	pageSize: 'A4',
-	fontStyle: 'serif'
+	fontStyle: 'serif',
+	includeCoverPage: false
 };
 
 /**
@@ -356,6 +358,78 @@ export class PdfReportRenderer {
 	}
 
 	/**
+	 * Build a cover page for the report
+	 */
+	private buildCoverPage(reportTitle: string, subtitle?: string): Content[] {
+		const generatedDate = new Date().toLocaleDateString();
+		const content: Content[] = [];
+
+		// Vertical spacer to center content
+		content.push({ text: '', margin: [0, 150, 0, 0] });
+
+		// Report title
+		content.push({
+			text: reportTitle,
+			fontSize: 28,
+			bold: true,
+			alignment: 'center',
+			color: COLORS.primaryText,
+			margin: [0, 0, 0, 20]
+		});
+
+		// Subtitle (person name, etc.)
+		if (subtitle) {
+			content.push({
+				text: subtitle,
+				fontSize: 18,
+				italics: true,
+				alignment: 'center',
+				color: COLORS.secondaryText,
+				margin: [0, 0, 0, 40]
+			});
+		}
+
+		// Decorative line
+		content.push({
+			canvas: [
+				{
+					type: 'line',
+					x1: 150,
+					y1: 0,
+					x2: 350,
+					y2: 0,
+					lineWidth: 1,
+					lineColor: COLORS.separatorLine
+				}
+			],
+			alignment: 'center',
+			margin: [0, 20, 0, 40]
+		});
+
+		// Generation info
+		content.push({
+			text: `Generated on ${generatedDate}`,
+			fontSize: 11,
+			alignment: 'center',
+			color: COLORS.mutedText,
+			margin: [0, 0, 0, 10]
+		});
+
+		content.push({
+			text: 'Canvas Roots for Obsidian',
+			fontSize: 10,
+			alignment: 'center',
+			color: COLORS.lightMuted,
+			margin: [0, 0, 0, 0]
+		});
+
+		// Page break after cover
+		content.push({ text: '', pageBreak: 'after' });
+
+		return content;
+	}
+
+	/**
 	 * Render Family Group Sheet to PDF
 	 */
 	async renderFamilyGroupSheet(
@@ -366,15 +440,21 @@ export class PdfReportRenderer {
 
 		const defaultFont = this.getDefaultFont(options.fontStyle);
 		const reportTitle = 'Family Group Sheet';
+		const husbandName = result.primaryPerson.sex === 'male' ? result.primaryPerson.name : result.spouses[0]?.name || '';
+		const wifeName = result.primaryPerson.sex === 'female' ? result.primaryPerson.name : result.spouses[0]?.name || '';
+		const subtitle = `${husbandName} & ${wifeName}`;
 
 		// Build content
 		const content: Content[] = [];
 
+		// Cover page (if enabled)
+		if (options.includeCoverPage) {
+			content.push(...this.buildCoverPage(reportTitle, subtitle));
+		}
+
 		// Title
-		const husbandName = result.primaryPerson.sex === 'male' ? result.primaryPerson.name : result.spouses[0]?.name || '';
-		const wifeName = result.primaryPerson.sex === 'female' ? result.primaryPerson.name : result.spouses[0]?.name || '';
 		content.push({ text: reportTitle, style: 'title' });
-		content.push({ text: `${husbandName} & ${wifeName}`, style: 'subtitle' });
+		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Husband section
 		const husband = result.primaryPerson.sex === 'male' ? result.primaryPerson : result.spouses[0];
@@ -455,12 +535,18 @@ export class PdfReportRenderer {
 
 		const defaultFont = this.getDefaultFont(options.fontStyle);
 		const reportTitle = 'Ahnentafel Report';
+		const subtitle = `Ancestors of ${result.rootPerson.name}`;
 
 		const content: Content[] = [];
 
+		// Cover page (if enabled)
+		if (options.includeCoverPage) {
+			content.push(...this.buildCoverPage(reportTitle, subtitle));
+		}
+
 		// Title
 		content.push({ text: reportTitle, style: 'title' });
-		content.push({ text: `Ancestors of ${result.rootPerson.name}`, style: 'subtitle' });
+		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Group ancestors by generation
 		const generations = new Map<number, Array<{ sosa: number; person: ReportPerson }>>();
@@ -529,12 +615,18 @@ export class PdfReportRenderer {
 
 		const defaultFont = this.getDefaultFont(options.fontStyle);
 		const reportTitle = 'Individual Summary';
+		const subtitle = result.person.name;
 
 		const content: Content[] = [];
 
+		// Cover page (if enabled)
+		if (options.includeCoverPage) {
+			content.push(...this.buildCoverPage(reportTitle, subtitle));
+		}
+
 		// Title
 		content.push({ text: reportTitle, style: 'title' });
-		content.push({ text: result.person.name, style: 'subtitle' });
+		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Vital Statistics
 		content.push(this.buildSectionHeader('Vital Statistics'));
@@ -593,12 +685,18 @@ export class PdfReportRenderer {
 
 		const defaultFont = this.getDefaultFont(options.fontStyle);
 		const reportTitle = 'Data Quality Report';
+		const subtitle = 'Research Opportunities & Missing Data';
 
 		const content: Content[] = [];
 
+		// Cover page (if enabled)
+		if (options.includeCoverPage) {
+			content.push(...this.buildCoverPage(reportTitle, subtitle));
+		}
+
 		// Title
 		content.push({ text: reportTitle, style: 'title' });
-		content.push({ text: 'Research Opportunities & Missing Data', style: 'subtitle' });
+		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Summary
 		content.push(this.buildSectionHeader('Summary'));
@@ -684,12 +782,18 @@ export class PdfReportRenderer {
 
 		const defaultFont = this.getDefaultFont(options.fontStyle);
 		const reportTitle = 'Register Report';
+		const subtitle = `Descendants of ${result.rootPerson.name}`;
 
 		const content: Content[] = [];
 
+		// Cover page (if enabled)
+		if (options.includeCoverPage) {
+			content.push(...this.buildCoverPage(reportTitle, subtitle));
+		}
+
 		// Title
 		content.push({ text: reportTitle, style: 'title' });
-		content.push({ text: `Descendants of ${result.rootPerson.name}`, style: 'subtitle' });
+		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Entries
 		for (const entry of result.entries) {
@@ -777,12 +881,18 @@ export class PdfReportRenderer {
 		await this.ensurePdfMake();
 
 		const reportTitle = 'Pedigree Chart';
+		const subtitle = `Ancestors of ${result.rootPerson.name}`;
 
 		const content: Content[] = [];
 
+		// Cover page (if enabled)
+		if (options.includeCoverPage) {
+			content.push(...this.buildCoverPage(reportTitle, subtitle));
+		}
+
 		// Title
 		content.push({ text: reportTitle, style: 'title' });
-		content.push({ text: `Ancestors of ${result.rootPerson.name}`, style: 'subtitle' });
+		content.push({ text: subtitle, style: 'subtitle' });
 
 		// ASCII tree in monospace
 		content.push(this.buildSectionHeader('Ancestor Tree'));
@@ -823,12 +933,18 @@ export class PdfReportRenderer {
 
 		const defaultFont = this.getDefaultFont(options.fontStyle);
 		const reportTitle = 'Descendant Chart';
+		const subtitle = `Descendants of ${result.rootPerson.name}`;
 
 		const content: Content[] = [];
 
+		// Cover page (if enabled)
+		if (options.includeCoverPage) {
+			content.push(...this.buildCoverPage(reportTitle, subtitle));
+		}
+
 		// Title
 		content.push({ text: reportTitle, style: 'title' });
-		content.push({ text: `Descendants of ${result.rootPerson.name}`, style: 'subtitle' });
+		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Tree structure
 		content.push(this.buildSectionHeader('Descendant Tree'));
