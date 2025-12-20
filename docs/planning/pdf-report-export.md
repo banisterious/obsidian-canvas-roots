@@ -61,10 +61,36 @@ Add PDF export with fixed professional styling using pdfmake with dynamic loadin
 
 4. **Update ReportGeneratorModal**
    - Add "Download as PDF" option to output method dropdown
+   - Rename "Download file" to "Download as MD" for clarity
+   - Add privacy/security messaging when download options are selected (see below)
+   - Hide "Output folder" setting when download options are selected (not applicable)
 
 5. **Update ReportGenerationService**
    - Handle PDF output method
    - Call PdfReportRenderer for PDF generation
+
+### Privacy & Security Messaging
+
+When "Download as PDF" or "Download as MD" is selected, display an inline description below the dropdown to reassure users about data privacy:
+
+```
+┌─────────────────────────────────────────────┐
+│ Output method          [Download as PDF  ▼] │
+│                                             │
+│ ⓘ PDF is generated locally on your device.  │
+│   No internet connection required. Downloads │
+│   to your system's Downloads folder.         │
+│                                             │
+│              [Cancel]  [Generate report]    │
+└─────────────────────────────────────────────┘
+```
+
+**Rationale:** Genealogy data is highly personal. Users may assume PDF generation involves a cloud service. This messaging addresses concerns proactively:
+- Emphasizes local generation (no cloud processing)
+- Confirms no network activity
+- Clarifies where the file is saved (outside the vault)
+
+The description is hidden when "Save to vault" is selected (where it's not relevant).
 
 ### Dynamic Loading Strategy
 
