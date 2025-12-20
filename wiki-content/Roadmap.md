@@ -8,10 +8,10 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
+  - [Universal Media Linking](#universal-media-linking) ⚡ High
   - [Calendarium Integration](#calendarium-integration) ⚡ High
   - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard) 📋 Medium
   - [Extended Report Types](#extended-report-types) 📋 Medium
-  - [Universal Media Linking](#universal-media-linking) 📋 Medium
   - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
 - [Future Considerations](#future-considerations)
@@ -76,6 +76,78 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
+
+---
+
+### Universal Media Linking
+
+**Priority:** ⚡ High — Enable media attachments for all entity types
+
+**Summary:** Extend the `media` property (currently only supported on Source notes) to Person, Event, Place, and Organization notes. This enables linking images, documents, and other media files to any entity type and provides foundation for Gramps Package (`.gpkg`) import support.
+
+**Current State:**
+- Only Source notes support the `media` property
+- Bulk Source-Image Linking tool links images to sources
+- Family Chart thumbnails not yet implemented
+
+**Proposed Changes:**
+
+| Entity Type | Media Support | Use Cases |
+|-------------|---------------|-----------|
+| **Person** | Multiple media | Photos, portraits, scanned documents |
+| **Event** | Multiple media | Ceremony photos, certificates, newspaper clippings |
+| **Place** | Multiple media | Location photos, historical maps, property records |
+| **Organization** | Multiple media | Logos, documents, group photos |
+| **Source** | Multiple media | ✅ Already supported |
+
+**Features:**
+- `media` property accepts array of wikilinks to image/document files
+- First media item serves as display thumbnail (Gramps convention)
+- "Link Media" action available in context menu for all entity types
+- Bulk media linking tool extended beyond sources
+
+**Family Chart Integration:**
+- Display first media item as thumbnail on person nodes
+- Configurable thumbnail size and position
+- Fallback to initials or icon when no media present
+
+**Gramps Package Import:**
+- `.gpkg` files bundle media with XML data
+- Import extracts media files to configurable folder
+- Links media to corresponding entity notes
+- Preserves media ordering (first = primary)
+
+**UI Integration:**
+- Context menu: "Link Media" action for Person, Event, Place, Organization
+- Control Center: Media column/indicator in entity tables
+- Dynamic Note Content: `<!-- cr:media-gallery -->` block renders linked media inline
+- Canvas nodes: Optional thumbnail display
+
+**Technical Approach:**
+- Extend `NoteTypeSchema` to include `media` property for all entity types
+- Add `MediaService` with entity-agnostic linking methods
+- Extend Gramps import to handle `.gpkg` media extraction
+- Add thumbnail rendering to `CanvasNodeRenderer`
+
+**Worldbuilding Use Cases:**
+
+| Entity | Use Cases |
+|--------|-----------|
+| **Person** | Character portraits, concept art, reference images for visual consistency |
+| **Place** | Location art, fantasy maps, floor plans, setting mood boards |
+| **Event** | Scene illustrations, battle maps, timeline graphics |
+| **Organization** | Faction banners, house sigils, guild logos, heraldry |
+
+Canvas thumbnails are particularly useful for writers — seeing character faces on relationship maps makes it easier to visualize story dynamics.
+
+**Phased Implementation:**
+
+| Phase | Scope |
+|-------|-------|
+| **Phase 1** | Add `media` property to Person, Event, Place, Organization schemas |
+| **Phase 2** | Context menu actions and bulk linking tool |
+| **Phase 3** | Family Chart thumbnail display |
+| **Phase 4** | Gramps Package (`.gpkg`) import with media extraction |
 
 ---
 
@@ -269,78 +341,6 @@ After a GEDCOM import (especially from a file with data quality issues), users f
 - Reuse `PlaceGraphService` for place hierarchy and associations
 - Add new generator methods to `ReportGenerator`
 - Add new render methods to `PdfReportRenderer`
-
----
-
-### Universal Media Linking
-
-**Priority:** 📋 Medium — Enable media attachments for all entity types
-
-**Summary:** Extend the `media` property (currently only supported on Source notes) to Person, Event, Place, and Organization notes. This enables linking images, documents, and other media files to any entity type and provides foundation for Gramps Package (`.gpkg`) import support.
-
-**Current State:**
-- Only Source notes support the `media` property
-- Bulk Source-Image Linking tool links images to sources
-- Family Chart thumbnails not yet implemented
-
-**Proposed Changes:**
-
-| Entity Type | Media Support | Use Cases |
-|-------------|---------------|-----------|
-| **Person** | Multiple media | Photos, portraits, scanned documents |
-| **Event** | Multiple media | Ceremony photos, certificates, newspaper clippings |
-| **Place** | Multiple media | Location photos, historical maps, property records |
-| **Organization** | Multiple media | Logos, documents, group photos |
-| **Source** | Multiple media | ✅ Already supported |
-
-**Features:**
-- `media` property accepts array of wikilinks to image/document files
-- First media item serves as display thumbnail (Gramps convention)
-- "Link Media" action available in context menu for all entity types
-- Bulk media linking tool extended beyond sources
-
-**Family Chart Integration:**
-- Display first media item as thumbnail on person nodes
-- Configurable thumbnail size and position
-- Fallback to initials or icon when no media present
-
-**Gramps Package Import:**
-- `.gpkg` files bundle media with XML data
-- Import extracts media files to configurable folder
-- Links media to corresponding entity notes
-- Preserves media ordering (first = primary)
-
-**UI Integration:**
-- Context menu: "Link Media" action for Person, Event, Place, Organization
-- Control Center: Media column/indicator in entity tables
-- Dynamic Note Content: `<!-- cr:media-gallery -->` block renders linked media inline
-- Canvas nodes: Optional thumbnail display
-
-**Technical Approach:**
-- Extend `NoteTypeSchema` to include `media` property for all entity types
-- Add `MediaService` with entity-agnostic linking methods
-- Extend Gramps import to handle `.gpkg` media extraction
-- Add thumbnail rendering to `CanvasNodeRenderer`
-
-**Worldbuilding Use Cases:**
-
-| Entity | Use Cases |
-|--------|-----------|
-| **Person** | Character portraits, concept art, reference images for visual consistency |
-| **Place** | Location art, fantasy maps, floor plans, setting mood boards |
-| **Event** | Scene illustrations, battle maps, timeline graphics |
-| **Organization** | Faction banners, house sigils, guild logos, heraldry |
-
-Canvas thumbnails are particularly useful for writers — seeing character faces on relationship maps makes it easier to visualize story dynamics.
-
-**Phased Implementation:**
-
-| Phase | Scope |
-|-------|-------|
-| **Phase 1** | Add `media` property to Person, Event, Place, Organization schemas |
-| **Phase 2** | Context menu actions and bulk linking tool |
-| **Phase 3** | Family Chart thumbnail display |
-| **Phase 4** | Gramps Package (`.gpkg`) import with media extraction |
 
 ---
 
