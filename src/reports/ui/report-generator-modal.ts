@@ -40,6 +40,7 @@ import type { ReportCategory } from '../types/report-types';
 import { ReportGenerationService } from '../services/report-generation-service';
 import { PdfReportRenderer } from '../services/pdf-report-renderer';
 import { PersonPickerModal, PersonInfo } from '../../ui/person-picker';
+import { PlacePickerModal, SelectedPlaceInfo } from '../../ui/place-picker';
 import { FolderFilterService } from '../../core/folder-filter';
 import { createLucideIcon } from '../../ui/lucide-icons';
 
@@ -1080,15 +1081,28 @@ export class ReportGeneratorModal extends Modal {
 
 		const placeContainer = this.optionsContainer.createDiv({ cls: 'cr-report-modal__place' });
 
-		new Setting(placeContainer)
+		const placeSetting = new Setting(placeContainer)
 			.setName('Select place')
 			.setDesc(this.selectedPlaceName || 'Click to select a place')
-			.addText(text => {
-				text.setPlaceholder('Enter place name or CR ID')
-					.setValue(this.selectedPlaceName || this.selectedPlaceCrId)
-					.onChange(value => {
-						this.selectedPlaceCrId = value;
-						this.selectedPlaceName = value;
+			.addButton(button => {
+				button
+					.setButtonText(this.selectedPlaceName || 'Select...')
+					.onClick(() => {
+						const folderFilter = this.plugin.settings.folderFilterMode !== 'disabled'
+							? new FolderFilterService(this.plugin.settings)
+							: undefined;
+
+						const picker = new PlacePickerModal(
+							this.app,
+							(place: SelectedPlaceInfo) => {
+								this.selectedPlaceCrId = place.crId;
+								this.selectedPlaceName = place.name;
+								button.setButtonText(place.name);
+								placeSetting.setDesc(`Selected: ${place.name}`);
+							},
+							{ folderFilter }
+						);
+						picker.open();
 					});
 			});
 	}
