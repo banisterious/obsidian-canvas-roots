@@ -6,7 +6,7 @@
 import { App, Modal, TFile } from 'obsidian';
 import { createLucideIcon } from './lucide-icons';
 import { PlaceGraphService } from '../core/place-graph';
-import { PlaceNode, PlaceCategory } from '../models/place';
+import { PlaceCategory } from '../models/place';
 import { FolderFilterService } from '../core/folder-filter';
 import { CreatePlaceModal } from './create-place-modal';
 import type { CanvasRootsSettings } from '../settings';
