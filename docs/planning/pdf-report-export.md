@@ -345,6 +345,203 @@ The abstraction (PdfReportRenderer service) allows swapping to jsPDF + jspdf-aut
 
 ---
 
+## PDF Styling Guide
+
+This section documents the visual design system for PDF reports. All reports share common styling elements for consistency.
+
+**Reference Implementation:** See [docs/samples/pdf-family-group-sheet-demo.html](../samples/pdf-family-group-sheet-demo.html) for the canonical styling example.
+
+### Color Palette
+
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Primary text | `#333333` | Section headers, labels |
+| Secondary text | `#555555` | Marriage card headers |
+| Tertiary text | `#666666` | Notes, footer text |
+| Muted text | `#888888` | Decorative elements |
+| Light muted | `#999999` | Footer text |
+| Accent bar | `#5b5b5b` | Section header accent |
+| Header row | `#e8e8e8` | Table header background |
+| Alternating row | `#f8f8f8` | Table zebra striping |
+| Card background | `#fafafa` | Marriage card fill |
+| Border light | `#dddddd` | Table borders |
+| Border card | `#e0e0e0` | Card borders |
+| Separator line | `#cccccc` | Header/footer lines |
+
+### Typography Scale
+
+| Element | Font | Size | Weight | Color |
+|---------|------|------|--------|-------|
+| Title | Body font | 22pt | Bold | Default |
+| Subtitle | Body font | 14pt | Italic | `#444444` |
+| Section header | Header font | 11pt | Bold | `#333333` |
+| Label | Header font | 10pt | Bold | `#333333` |
+| Body text | Body font | 10pt | Regular | Default |
+| Table header | Header font | 9pt | Bold | Default |
+| Table cell | Body font | 9pt | Regular | Default |
+| Note/caption | Body font | 9pt | Italic | `#666666` |
+| Page header | Header font | 9pt | Regular | `#666666` |
+| Page footer | Header font | 8pt | Regular | `#999999` |
+
+### Page Layout
+
+```
+Page margins: [40, 60, 40, 60] (left, top, right, bottom)
+
+┌─────────────────────────────────────────┐
+│  Report Title              Canvas Roots │ ← Header (9pt, #666666)
+│  ─────────────────────────────────────  │ ← Separator line (#cccccc)
+│                                         │
+│              [CONTENT]                  │
+│                                         │
+│  ─────────────────────────────────────  │ ← Separator line (#cccccc)
+│  Generated: Date           Page X of Y  │ ← Footer (8pt, #999999)
+└─────────────────────────────────────────┘
+```
+
+### Reusable Components
+
+#### Section Header
+
+Dark accent bar with text, used for major sections (HUSBAND, WIFE, CHILDREN, NOTES, SOURCES).
+
+```
+┌───┬──────────────────────────────────────┐
+│ ▌ │  SECTION NAME                        │
+└───┴──────────────────────────────────────┘
+     ↑ 3px accent bar (#5b5b5b)
+```
+
+- Margin: `[0, 18, 0, 8]` (top: 18, bottom: 8)
+- Accent bar width: 3px
+- Text margin from bar: 6px
+
+#### Data Table (Key-Value)
+
+For person vitals, marriage details—label on left, value on right.
+
+| Property | Value |
+|----------|-------|
+| Widths | `[120, '*']` |
+| Layout | `noBorders` |
+| Label style | Bold, 10pt, `#333333` |
+
+#### Data Table (Columnar)
+
+For children lists, events—with header row and alternating colors.
+
+| Property | Value |
+|----------|-------|
+| Header row fill | `#e8e8e8` |
+| Odd row fill | `#f8f8f8` |
+| Even row fill | none (white) |
+| Header border | 1px, `#666666` |
+| Cell border | 0.5px, `#dddddd` |
+| Cell padding | 6px horizontal, 5px vertical |
+| Font size | 9pt |
+
+#### Relationship Card
+
+Centered card with decorative element, for marriage/union information.
+
+```
+         ┌─────────────────────────────┐
+         │            ❧                │ ← Fleuron (#888888)
+         │         MARRIAGE            │ ← 11pt bold (#555555)
+         │                             │
+         │    Date:   12 June 1902     │
+         │    Place:  St. Patrick's... │
+         │                             │
+         └─────────────────────────────┘
+```
+
+- Outer margin: `[40, 15, 40, 15]`
+- Background: `#fafafa`
+- Border: 0.5px, `#e0e0e0`
+- Inner padding: 8px vertical
+
+### Shared Helper Functions
+
+The implementation should include these reusable builders:
+
+```typescript
+// Section header with accent bar
+function buildSectionHeader(title: string): Content;
+
+// Key-value table (person vitals, etc.)
+function buildKeyValueTable(data: Record<string, string>): Content;
+
+// Columnar table with zebra striping
+function buildDataTable(headers: string[], rows: string[][], options?: TableOptions): Content;
+
+// Centered relationship card
+function buildRelationshipCard(title: string, data: Record<string, string>): Content;
+```
+
+---
+
+## Report-Specific Layouts
+
+Each report uses the shared components above with report-specific arrangements.
+
+### Family Group Sheet
+
+| Section | Component | Notes |
+|---------|-----------|-------|
+| Title | Centered title + subtitle | Names of couple |
+| Husband | Section header + key-value table | 8 fields |
+| Wife | Section header + key-value table | 8 fields |
+| Marriage | Relationship card | Date + place |
+| Children | Section header + columnar table | 6 columns |
+| Notes | Section header + paragraph | Free text |
+| Sources | Section header + numbered list | Citations |
+
+### Ahnentafel Report
+
+| Section | Component | Notes |
+|---------|-----------|-------|
+| Title | Centered title + subtitle | Root person name |
+| Per generation | Section header | "Generation 1", "Generation 2", etc. |
+| Ancestor entries | Numbered paragraphs | Sosa number + vitals |
+| Summary | Key-value table | Statistics |
+
+### Register Report (NGSQ-style)
+
+| Section | Component | Notes |
+|---------|-----------|-------|
+| Title | Centered title | Progenitor name |
+| Per person | Section header | Person number + name |
+| Vitals | Indented paragraphs | Birth, death, marriage |
+| Children | Indented numbered list | Roman numerals |
+
+### Pedigree/Descendant Charts
+
+| Section | Component | Notes |
+|---------|-----------|-------|
+| Title | Centered title | Root person |
+| ASCII tree | Monospace block | Courier font, preserve spacing |
+| Legend | Note text | Explanation of symbols |
+
+### Individual Summary
+
+| Section | Component | Notes |
+|---------|-----------|-------|
+| Title | Centered title | Person name |
+| Vitals | Key-value table | Birth, death, etc. |
+| Family | Section header + lists | Parents, spouses, children |
+| Events | Section header + columnar table | Timeline |
+| Attributes | Section header + key-value table | Custom fields |
+
+### Gaps Report
+
+| Section | Component | Notes |
+|---------|-----------|-------|
+| Title | Centered title | "Data Quality Report" |
+| Summary | Columnar table | Statistics by gap type |
+| Per gap type | Section header + columnar table | List of affected people |
+
+---
+
 ## Files to Create/Modify
 
 ### New Files

@@ -88,3 +88,6 @@ canvas-roots-v*.zip
 # UI mockups (internal design reference)
 mockups/
 docs/developer/pr-reviews/
+
+# Sample/demo files (for local testing only)
+docs/samples/
