@@ -381,7 +381,7 @@ export class ControlCenterModal extends Modal {
 
 		switch (tabId) {
 			case 'dashboard':
-				void this.showDashboardTab();
+				this.showDashboardTab();
 				break;
 			case 'guide':
 				this.showGuideTab();
@@ -864,7 +864,7 @@ export class ControlCenterModal extends Modal {
 	/**
 	 * Show Dashboard tab with quick actions and vault overview
 	 */
-	private async showDashboardTab(): Promise<void> {
+	private showDashboardTab(): void {
 		renderDashboardTab({
 			container: this.contentContainer,
 			plugin: this.plugin,
