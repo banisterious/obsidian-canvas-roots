@@ -2,11 +2,11 @@
 
 Planning document for adding PDF export capability to genealogical reports.
 
-**Status:** Planning
-**Priority:** High
-**GitHub Issue:** #TBD
-**Created:** 2024-12-19
-**Updated:** 2025-12-19
+- **Status:** Planning
+- **Priority:** High
+- **GitHub Issue:** #TBD
+- **Created:** 2024-12-19
+- **Updated:** 2025-12-19
 
 ---
 
