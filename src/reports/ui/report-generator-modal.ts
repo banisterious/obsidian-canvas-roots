@@ -208,6 +208,7 @@ export class ReportGeneratorModal extends Modal {
 		includeCoverPage: false,
 		logoDataUrl: undefined as string | undefined,
 		customTitle: '',
+		customTitleScope: 'both' as 'cover' | 'headers' | 'both',
 		customSubtitle: '',
 		coverNotes: ''
 	};
@@ -529,13 +530,27 @@ export class ReportGeneratorModal extends Modal {
 		// Custom title
 		new Setting(coverFieldsContainer)
 			.setName('Custom title')
-			.setDesc('Override the default report title (also used in page headers)')
+			.setDesc('Override the default report title')
 			.addText(text => {
 				text.setPlaceholder('Leave blank for default')
 					.setValue(this.pdfOptions.customTitle)
 					.onChange(value => {
 						this.pdfOptions.customTitle = value;
 					});
+			});
+
+		// Title scope (where custom title appears)
+		new Setting(coverFieldsContainer)
+			.setName('Apply custom title to')
+			.setDesc('Choose where the custom title appears')
+			.addDropdown(dropdown => {
+				dropdown.addOption('both', 'Cover and headers');
+				dropdown.addOption('cover', 'Cover page only');
+				dropdown.addOption('headers', 'Page headers only');
+				dropdown.setValue(this.pdfOptions.customTitleScope);
+				dropdown.onChange(value => {
+					this.pdfOptions.customTitleScope = value as 'cover' | 'headers' | 'both';
+				});
 			});
 
 		// Custom subtitle
@@ -1675,6 +1690,7 @@ export class ReportGeneratorModal extends Modal {
 			includeCoverPage: this.pdfOptions.includeCoverPage,
 			logoDataUrl: this.pdfOptions.logoDataUrl,
 			customTitle: this.pdfOptions.customTitle || undefined,
+			customTitleScope: this.pdfOptions.customTitleScope,
 			customSubtitle: this.pdfOptions.customSubtitle || undefined,
 			coverNotes: this.pdfOptions.coverNotes || undefined
 		};

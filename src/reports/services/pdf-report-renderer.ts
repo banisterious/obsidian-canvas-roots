@@ -39,8 +39,10 @@ export interface PdfOptions {
 	includeCoverPage: boolean;
 	/** Logo/crest image as base64 data URL (displayed on cover page) */
 	logoDataUrl?: string;
-	/** Custom title to override the default report type name (used on cover page and headers) */
+	/** Custom title to override the default report type name */
 	customTitle?: string;
+	/** Where to apply custom title: 'cover', 'headers', or 'both' */
+	customTitleScope?: 'cover' | 'headers' | 'both';
 	/** Custom subtitle to override the auto-generated subject line (cover page only) */
 	customSubtitle?: string;
 	/** Additional notes/preface text for cover page (supports multiple paragraphs) */
@@ -493,8 +495,10 @@ export class PdfReportRenderer {
 		const wifeName = result.primaryPerson.sex === 'female' ? result.primaryPerson.name : result.spouses[0]?.name || '';
 		const defaultSubtitle = `${husbandName} & ${wifeName}`;
 
-		// Use custom title/subtitle if provided
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		// Build content
@@ -502,11 +506,11 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
-		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		// Title (uses cover title for consistency with cover page)
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Husband section
@@ -564,7 +568,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -590,18 +594,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Ahnentafel Report';
 		const defaultSubtitle = `Ancestors of ${result.rootPerson.name}`;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Group ancestors by generation
@@ -648,7 +655,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -673,18 +680,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Individual Summary';
 		const defaultSubtitle = result.person.name;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Vital Statistics
@@ -721,7 +731,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -746,18 +756,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Data Quality Report';
 		const defaultSubtitle = 'Research Opportunities & Missing Data';
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Summary
@@ -821,7 +834,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -846,18 +859,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Register Report';
 		const defaultSubtitle = `Descendants of ${result.rootPerson.name}`;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Entries
@@ -924,7 +940,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -948,18 +964,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Pedigree Chart';
 		const defaultSubtitle = `Ancestors of ${result.rootPerson.name}`;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// ASCII tree in monospace
@@ -978,7 +997,7 @@ export class PdfReportRenderer {
 				font: this.getDefaultFont(options.fontStyle),
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -1003,18 +1022,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Descendant Chart';
 		const defaultSubtitle = `Descendants of ${result.rootPerson.name}`;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Tree structure
@@ -1052,7 +1074,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -1094,18 +1116,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Source Summary';
 		const defaultSubtitle = result.person.name;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Summary
@@ -1170,7 +1195,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -1197,18 +1222,21 @@ export class PdfReportRenderer {
 			? `${result.dateRange.from} to ${result.dateRange.to}`
 			: 'All events';
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Summary
@@ -1257,7 +1285,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -1282,18 +1310,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Place Summary';
 		const defaultSubtitle = result.place.name;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Place info
@@ -1384,7 +1415,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -1409,18 +1440,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Media Inventory';
 		const defaultSubtitle = `${result.summary.totalFiles} files`;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Summary
@@ -1506,7 +1540,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -1531,18 +1565,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Universe Overview';
 		const defaultSubtitle = result.universe.name;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Description
@@ -1629,7 +1666,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
@@ -1654,18 +1691,21 @@ export class PdfReportRenderer {
 		const defaultTitle = 'Collection Overview';
 		const defaultSubtitle = result.collection.name;
 
-		const reportTitle = options.customTitle || defaultTitle;
+		// Apply custom title based on scope
+		const scope = options.customTitleScope || 'both';
+		const coverTitle = (scope === 'cover' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
+		const headerTitle = (scope === 'headers' || scope === 'both') ? (options.customTitle || defaultTitle) : defaultTitle;
 		const subtitle = options.customSubtitle || defaultSubtitle;
 
 		const content: Content[] = [];
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(reportTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
 		}
 
 		// Title
-		content.push({ text: reportTitle, style: 'title' });
+		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
 		// Collection type note
@@ -1739,7 +1779,7 @@ export class PdfReportRenderer {
 				font: defaultFont,
 				fontSize: 10
 			},
-			header: this.createHeader(reportTitle),
+			header: this.createHeader(headerTitle),
 			footer: this.createFooter(),
 			content,
 			styles: this.getStyles(options.fontStyle)
