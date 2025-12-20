@@ -371,7 +371,7 @@ menu.addItem((item) => {
 interface GalleryFilterOptions {
   entityType?: 'person' | 'event' | 'place' | 'organization' | 'source' | 'all';
   sourceType?: string;  // For sources only
-  mediaType?: 'image' | 'document' | 'all';
+  mediaType?: 'image' | 'audio' | 'video' | 'pdf' | 'document' | 'all';
   searchQuery?: string;
 }
 ```
@@ -774,6 +774,94 @@ this.registerDynamicContentBlock('cr:media-gallery', (el, options, file) => {
 ---
 
 ## Technical Considerations
+
+### Supported Media Types
+
+Canvas Roots supports all file types that Obsidian can embed natively, plus document formats.
+
+**File Type Categories:**
+
+| Category | Extensions | Obsidian Native | Notes |
+|----------|------------|-----------------|-------|
+| **Image** | `.avif`, `.bmp`, `.gif`, `.jpeg`, `.jpg`, `.png`, `.svg`, `.webp` | Yes | Full thumbnail/lightbox support |
+| **Audio** | `.flac`, `.m4a`, `.mp3`, `.ogg`, `.wav`, `.webm`, `.3gp` | Yes | Inline player in gallery |
+| **Video** | `.mkv`, `.mov`, `.mp4`, `.ogv`, `.webm` | Yes | Thumbnail frame + inline player |
+| **PDF** | `.pdf` | Yes | First page as thumbnail |
+| **Document** | `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx` | No (icon only) | File icon, opens in external app |
+
+**Type Constants:**
+
+```typescript
+const IMAGE_EXTENSIONS = ['.avif', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'];
+const AUDIO_EXTENSIONS = ['.flac', '.m4a', '.mp3', '.ogg', '.wav', '.webm', '.3gp'];
+const VIDEO_EXTENSIONS = ['.mkv', '.mov', '.mp4', '.ogv', '.webm'];
+const PDF_EXTENSIONS = ['.pdf'];
+const DOCUMENT_EXTENSIONS = ['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
+
+type MediaType = 'image' | 'audio' | 'video' | 'pdf' | 'document' | 'other';
+```
+
+**Gallery Display by Type:**
+
+| Type | Thumbnail | Gallery Card | On Click |
+|------|-----------|--------------|----------|
+| **Image** | Image preview | Image thumbnail | Lightbox viewer |
+| **Audio** | Waveform icon | Audio icon + duration | Inline `<audio>` player |
+| **Video** | First frame (future) or video icon | Video icon + duration | Inline `<video>` player |
+| **PDF** | First page (future) or PDF icon | PDF icon | Open in Obsidian PDF viewer |
+| **Document** | File type icon | Document icon | Open in system default app |
+
+**Thumbnail Selection by Type:**
+
+For Family Chart nodes, only certain types make sense as visual thumbnails:
+
+| Type | Can Be Thumbnail? | Display |
+|------|-------------------|---------|
+| **Image** | Yes | Rendered image |
+| **Video** | Yes (future) | First frame, or video icon |
+| **Audio** | No | Skip to next media item |
+| **PDF** | No | Skip to next media item |
+| **Document** | No | Skip to next media item |
+
+Resolution order for thumbnail:
+1. If `thumbnail` field is set → use it
+2. Scan `media` list for first image or video
+3. If no image/video found → show initials/icon fallback
+
+**Inline Playback:**
+
+Audio and video use Obsidian's native embedding, leveraging `<audio>` and `<video>` HTML elements:
+
+```typescript
+function renderAudioPlayer(container: HTMLElement, file: TFile, app: App): void {
+  const audio = container.createEl('audio', {
+    attr: {
+      controls: '',
+      src: app.vault.getResourcePath(file)
+    }
+  });
+}
+
+function renderVideoPlayer(container: HTMLElement, file: TFile, app: App): void {
+  const video = container.createEl('video', {
+    attr: {
+      controls: '',
+      src: app.vault.getResourcePath(file),
+      style: 'max-width: 100%; max-height: 400px;'
+    }
+  });
+}
+```
+
+**Future Enhancements:**
+
+- Video thumbnail extraction (first frame) — requires canvas manipulation or ffmpeg
+- PDF first page thumbnail — requires pdf.js rendering
+- Audio waveform visualization — requires Web Audio API
+
+These are deferred to keep initial implementation simple.
+
+---
 
 ### Media File Organization
 
