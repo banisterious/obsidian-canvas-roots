@@ -75,6 +75,11 @@ This document covers technical implementation specifics for Canvas Roots feature
   - [SchemaService](#schemaservice)
   - [ValidationService](#validationservice)
   - [Property Types and Validation](#property-types-and-validation)
+- [Custom Relationship Types](#custom-relationship-types)
+  - [Relationship Type Definition](#relationship-type-definition)
+  - [Built-in Types and Categories](#built-in-types-and-categories)
+  - [RelationshipService](#relationshipservice)
+  - [Frontmatter Storage](#frontmatter-storage)
 - [Privacy and Gender Identity Protection](#privacy-and-gender-identity-protection)
   - [Sex vs Gender Data Model](#sex-vs-gender-data-model)
   - [Living Person Privacy](#living-person-privacy)
@@ -3111,6 +3116,227 @@ interface SchemaConstraint {
 ```
 
 The expression has access to all frontmatter properties as variables.
+
+---
+
+## Custom Relationship Types
+
+Custom relationship types allow defining non-familial relationships (mentor, guardian, godparent, liege, etc.) between person notes. The system supports both built-in types and user-defined types with inverse relationships and visual styling.
+
+### Relationship Type Definition
+
+**File structure:**
+
+```
+src/relationships/
+├── index.ts                              # Public exports
+├── types/
+│   └── relationship-types.ts             # Type definitions
+├── constants/
+│   └── default-relationship-types.ts     # Built-in types
+├── services/
+│   └── relationship-service.ts           # CRUD and parsing
+└── ui/
+    ├── relationships-tab.ts              # Control Center tab
+    ├── relationship-type-editor-modal.ts # Create/edit modal
+    └── relationship-type-manager-card.ts # Type list UI
+```
+
+**RelationshipTypeDefinition structure:**
+
+```typescript
+interface RelationshipTypeDefinition {
+  id: string;                    // Unique identifier (lowercase, no spaces)
+  name: string;                  // Display name
+  description?: string;          // Brief description
+  category: RelationshipCategory;
+  color: string;                 // Hex color for canvas edges
+  lineStyle: RelationshipLineStyle;  // 'solid' | 'dashed' | 'dotted'
+  inverse?: string;              // ID of inverse type (e.g., mentor → mentee)
+  symmetric: boolean;            // Same in both directions (e.g., spouse)
+  builtIn: boolean;              // Cannot be deleted if true
+}
+```
+
+**Categories:**
+
+```typescript
+type RelationshipCategory =
+  | 'family'       // Spouse, parent, child, sibling
+  | 'legal'        // Guardian, adoptive parent, foster parent
+  | 'religious'    // Godparent, mentor, disciple
+  | 'professional' // Master, apprentice, employer
+  | 'social'       // Witness, neighbor, companion, ally, rival
+  | 'feudal';      // Liege, vassal (world-building)
+```
+
+### Built-in Types and Categories
+
+The plugin ships with 20+ built-in relationship types organized by category:
+
+| Category | Types | Color |
+|----------|-------|-------|
+| Family | spouse, parent, child, sibling | Purple, Green, Lime |
+| Legal | guardian/ward, adoptive_parent/adoptee, foster_parent/foster_child | Teal, Cyan, Sky |
+| Religious | godparent/godchild, mentor/mentee | Blue, Violet |
+| Professional | master/apprentice, employer/employee | Orange |
+| Social | witness, neighbor, companion, ally, rival, betrothed | Gray, Pink, Emerald, Red |
+| Feudal | liege/vassal | Gold |
+
+**Inverse relationships:**
+
+Non-symmetric relationships define their inverse:
+
+```typescript
+{
+  id: 'mentor',
+  name: 'Mentor',
+  inverse: 'mentee',  // When A is mentor to B, B is mentee to A
+  symmetric: false,
+  // ...
+}
+
+{
+  id: 'mentee',
+  name: 'Mentee',
+  inverse: 'mentor',
+  symmetric: false,
+  // ...
+}
+```
+
+Symmetric relationships (like `spouse`, `sibling`) apply equally in both directions.
+
+**Color palette:**
+
+Built-in types use Tailwind CSS colors for consistency:
+- Green (`#22c55e`) — Parent/child
+- Purple (`#a855f7`) — Spouse
+- Lime (`#84cc16`) — Sibling
+- Teal (`#14b8a6`) — Guardian
+- Blue (`#3b82f6`) — Godparent
+- Orange (`#f97316`) — Professional
+- Gold (`#eab308`) — Feudal
+
+### RelationshipService
+
+`RelationshipService` (`src/relationships/services/relationship-service.ts`) manages relationship types and parses relationships from person notes.
+
+**Key methods:**
+
+```typescript
+class RelationshipService {
+  // Type management
+  getAllRelationshipTypes(): RelationshipTypeDefinition[];
+  getRelationshipType(id: string): RelationshipTypeDefinition | undefined;
+  getRelationshipTypesByCategory(category: RelationshipCategory): RelationshipTypeDefinition[];
+
+  // CRUD for custom types
+  async addRelationshipType(type: Omit<RelationshipTypeDefinition, 'builtIn'>): Promise<void>;
+  async updateRelationshipType(id: string, updates: Partial<...>): Promise<void>;
+  async deleteRelationshipType(id: string): Promise<void>;
+
+  // Parsing relationships from vault
+  getAllRelationships(forceRefresh?: boolean): ParsedRelationship[];
+  getRelationshipsForPerson(crId: string): ParsedRelationship[];
+  getStats(): RelationshipStats;
+}
+```
+
+**Type resolution (built-in + custom):**
+
+```typescript
+getAllRelationshipTypes(): RelationshipTypeDefinition[] {
+  const builtIn = this.plugin.settings.showBuiltInRelationshipTypes
+    ? DEFAULT_RELATIONSHIP_TYPES
+    : [];
+  const custom = this.plugin.settings.customRelationshipTypes || [];
+
+  // Custom types can override built-in types by ID
+  const typeMap = new Map<string, RelationshipTypeDefinition>();
+  for (const type of builtIn) typeMap.set(type.id, type);
+  for (const type of custom) typeMap.set(type.id, type);
+
+  return Array.from(typeMap.values());
+}
+```
+
+**ParsedRelationship structure:**
+
+```typescript
+interface ParsedRelationship {
+  type: RelationshipTypeDefinition;
+  sourceCrId: string;
+  sourceName: string;
+  sourceFilePath: string;
+  targetCrId?: string;
+  targetName: string;
+  targetFilePath?: string;
+  from?: string;       // Start date
+  to?: string;         // End date
+  notes?: string;
+  isInferred: boolean; // True if derived from inverse
+}
+```
+
+### Frontmatter Storage
+
+Relationships are stored in person note frontmatter as an array:
+
+```yaml
+---
+cr_id: abc-123-def-456
+name: John Smith
+relationships:
+  - type: mentor
+    target: "[[Jane Doe]]"
+    target_id: xyz-789-uvw-012
+    from: "1920"
+    to: "1925"
+    notes: "Taught blacksmithing"
+  - type: godparent
+    target: "[[Mary Johnson]]"
+---
+```
+
+**RawRelationship structure (as stored):**
+
+```typescript
+interface RawRelationship {
+  type: string;          // Type ID
+  target: string;        // Wikilink to target person
+  target_id?: string;    // Target's cr_id for reliable resolution
+  from?: string;         // Start date
+  to?: string;           // End date
+  notes?: string;        // Optional notes
+}
+```
+
+**Wikilink parsing utilities:**
+
+```typescript
+// Extract display name from wikilink
+extractWikilinkName('[[People/John Smith|John]]') // → 'John'
+extractWikilinkName('[[John Smith]]')             // → 'John Smith'
+
+// Extract file path from wikilink
+extractWikilinkPath('[[People/John Smith|John]]') // → 'People/John Smith'
+
+// Validate wikilink format
+isWikilink('[[John Smith]]')  // → true
+isWikilink('John Smith')      // → false
+```
+
+**Inferred relationships:**
+
+When person A has a relationship to B with an inverse type defined, the service infers the reverse relationship for B:
+
+```
+A.relationships = [{ type: 'mentor', target: '[[B]]' }]
+// Service infers: B has { type: 'mentee', target: '[[A]]', isInferred: true }
+```
+
+This allows querying all relationships for a person without requiring both sides to be explicitly defined.
 
 ---
 
