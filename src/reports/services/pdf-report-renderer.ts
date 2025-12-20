@@ -47,6 +47,8 @@ export interface PdfOptions {
 	customSubtitle?: string;
 	/** Additional notes/preface text for cover page (supports multiple paragraphs) */
 	coverNotes?: string;
+	/** Date format preference: 'mdy' (Month-Day-Year), 'dmy' (Day-Month-Year), 'ymd' (Year-Month-Day) */
+	dateFormat?: 'mdy' | 'dmy' | 'ymd';
 }
 
 /**
@@ -347,6 +349,25 @@ export class PdfReportRenderer {
 	}
 
 	/**
+	 * Format a date according to the specified format preference
+	 */
+	private formatDate(date: Date, format: 'mdy' | 'dmy' | 'ymd' = 'mdy'): string {
+		const day = date.getDate();
+		const month = date.getMonth() + 1;
+		const year = date.getFullYear();
+
+		switch (format) {
+			case 'dmy':
+				return `${day}/${month}/${year}`;
+			case 'ymd':
+				return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+			case 'mdy':
+			default:
+				return `${month}/${day}/${year}`;
+		}
+	}
+
+	/**
 	 * Create the document header
 	 */
 	private createHeader(reportTitle: string): (currentPage: number, pageCount: number) => Content {
@@ -362,8 +383,8 @@ export class PdfReportRenderer {
 	/**
 	 * Create the document footer
 	 */
-	private createFooter(): (currentPage: number, pageCount: number) => Content {
-		const generatedDate = new Date().toLocaleDateString();
+	private createFooter(dateFormat?: 'mdy' | 'dmy' | 'ymd'): (currentPage: number, pageCount: number) => Content {
+		const generatedDate = this.formatDate(new Date(), dateFormat || 'mdy');
 		return (currentPage: number, pageCount: number): Content => ({
 			columns: [
 				{ text: `Generated: ${generatedDate}`, style: 'pageFooter', alignment: 'left' },
@@ -380,9 +401,10 @@ export class PdfReportRenderer {
 		reportTitle: string,
 		subtitle?: string,
 		logoDataUrl?: string,
-		coverNotes?: string
+		coverNotes?: string,
+		dateFormat?: 'mdy' | 'dmy' | 'ymd'
 	): Content[] {
-		const generatedDate = new Date().toLocaleDateString();
+		const generatedDate = this.formatDate(new Date(), dateFormat || 'mdy');
 		const content: Content[] = [];
 
 		// Logo/crest at top (if provided)
@@ -506,7 +528,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title (uses cover title for consistency with cover page)
@@ -569,7 +591,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -604,7 +626,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -656,7 +678,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -690,7 +712,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -732,7 +754,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -766,7 +788,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -835,7 +857,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -869,7 +891,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -941,7 +963,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -974,7 +996,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -998,7 +1020,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -1032,7 +1054,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -1075,7 +1097,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -1126,7 +1148,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -1196,7 +1218,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -1232,7 +1254,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -1286,7 +1308,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -1320,7 +1342,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -1416,7 +1438,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -1450,7 +1472,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -1541,7 +1563,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -1575,7 +1597,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -1667,7 +1689,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};
@@ -1701,7 +1723,7 @@ export class PdfReportRenderer {
 
 		// Cover page (if enabled)
 		if (options.includeCoverPage) {
-			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes));
+			content.push(...this.buildCoverPage(coverTitle, subtitle, options.logoDataUrl, options.coverNotes, options.dateFormat));
 		}
 
 		// Title
@@ -1780,7 +1802,7 @@ export class PdfReportRenderer {
 				fontSize: 10
 			},
 			header: this.createHeader(headerTitle),
-			footer: this.createFooter(),
+			footer: this.createFooter(options.dateFormat),
 			content,
 			styles: this.getStyles(options.fontStyle)
 		};

@@ -205,6 +205,7 @@ export class ReportGeneratorModal extends Modal {
 	// PDF-specific options
 	private pdfOptions = {
 		pageSize: 'A4' as 'A4' | 'LETTER',
+		dateFormat: 'mdy' as 'mdy' | 'dmy' | 'ymd',
 		includeCoverPage: false,
 		logoDataUrl: undefined as string | undefined,
 		customTitle: '',
@@ -423,6 +424,9 @@ export class ReportGeneratorModal extends Modal {
 		}
 	}
 
+	// Reference to title scope dropdown for dynamic updates
+	private titleScopeDropdown: HTMLSelectElement | null = null;
+
 	/**
 	 * Render PDF-specific options
 	 */
@@ -442,7 +446,54 @@ export class ReportGeneratorModal extends Modal {
 				});
 			});
 
-		// Cover page
+		// Date format - show example dates for clarity
+		const exampleDate = new Date();
+		const day = exampleDate.getDate();
+		const month = exampleDate.getMonth() + 1;
+		const year = exampleDate.getFullYear();
+		const mdyExample = `${month}/${day}/${year}`;
+		const dmyExample = `${day}/${month}/${year}`;
+		const ymdExample = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+		new Setting(this.pdfOptionsContainer)
+			.setName('Date format')
+			.setDesc('Format for generated date display')
+			.addDropdown(dropdown => {
+				dropdown.addOption('mdy', `${mdyExample} (US)`);
+				dropdown.addOption('dmy', `${dmyExample} (UK/EU)`);
+				dropdown.addOption('ymd', `${ymdExample} (ISO)`);
+				dropdown.setValue(this.pdfOptions.dateFormat);
+				dropdown.onChange(value => {
+					this.pdfOptions.dateFormat = value as 'mdy' | 'dmy' | 'ymd';
+				});
+			});
+
+		// Custom title (always visible - affects headers even without cover page)
+		new Setting(this.pdfOptionsContainer)
+			.setName('Custom title')
+			.setDesc('Override the default report title')
+			.addText(text => {
+				text.setPlaceholder('Leave blank for default')
+					.setValue(this.pdfOptions.customTitle)
+					.onChange(value => {
+						this.pdfOptions.customTitle = value;
+					});
+			});
+
+		// Title scope (always visible - controls where custom title appears)
+		// Options change based on whether cover page is enabled
+		new Setting(this.pdfOptionsContainer)
+			.setName('Apply custom title to')
+			.setDesc('Choose where the custom title appears')
+			.addDropdown(dropdown => {
+				this.titleScopeDropdown = dropdown.selectEl;
+				this.updateTitleScopeOptions();
+				dropdown.onChange(value => {
+					this.pdfOptions.customTitleScope = value as 'cover' | 'headers' | 'both';
+				});
+			});
+
+		// Cover page toggle
 		new Setting(this.pdfOptionsContainer)
 			.setName('Include cover page')
 			.setDesc('Add a title page with report name and generation date')
@@ -450,15 +501,41 @@ export class ReportGeneratorModal extends Modal {
 				toggle.setValue(this.pdfOptions.includeCoverPage);
 				toggle.onChange(value => {
 					this.pdfOptions.includeCoverPage = value;
-					this.updateLogoVisibility();
+					this.updateTitleScopeOptions();
+					this.updateCoverPageFieldsVisibility();
 				});
 			});
 
 		// Logo/crest (only shown when cover page is enabled)
 		this.renderLogoSetting();
 
-		// Cover page customization fields (only shown when cover page is enabled)
+		// Cover page-only customization fields (subtitle, notes)
 		this.renderCoverPageFields();
+	}
+
+	/**
+	 * Update the title scope dropdown options based on cover page state
+	 */
+	private updateTitleScopeOptions(): void {
+		if (!this.titleScopeDropdown) return;
+
+		const currentValue = this.pdfOptions.customTitleScope;
+		this.titleScopeDropdown.empty();
+
+		if (this.pdfOptions.includeCoverPage) {
+			// Cover page enabled: show all options
+			this.titleScopeDropdown.createEl('option', { value: 'both', text: 'Cover and headers' });
+			this.titleScopeDropdown.createEl('option', { value: 'cover', text: 'Cover page only' });
+			this.titleScopeDropdown.createEl('option', { value: 'headers', text: 'Page headers only' });
+			// Preserve current value if valid
+			this.titleScopeDropdown.value = currentValue;
+		} else {
+			// Cover page disabled: only headers option makes sense
+			this.titleScopeDropdown.createEl('option', { value: 'headers', text: 'Page headers' });
+			// Force to headers since cover options don't apply
+			this.pdfOptions.customTitleScope = 'headers';
+			this.titleScopeDropdown.value = 'headers';
+		}
 	}
 
 	/**
@@ -524,36 +601,10 @@ export class ReportGeneratorModal extends Modal {
 	private renderCoverPageFields(): void {
 		if (!this.pdfOptionsContainer) return;
 
-		// Create container for cover page customization
+		// Create container for cover page-only customization
 		const coverFieldsContainer = this.pdfOptionsContainer.createDiv({ cls: 'cr-report-modal__cover-fields' });
 
-		// Custom title
-		new Setting(coverFieldsContainer)
-			.setName('Custom title')
-			.setDesc('Override the default report title')
-			.addText(text => {
-				text.setPlaceholder('Leave blank for default')
-					.setValue(this.pdfOptions.customTitle)
-					.onChange(value => {
-						this.pdfOptions.customTitle = value;
-					});
-			});
-
-		// Title scope (where custom title appears)
-		new Setting(coverFieldsContainer)
-			.setName('Apply custom title to')
-			.setDesc('Choose where the custom title appears')
-			.addDropdown(dropdown => {
-				dropdown.addOption('both', 'Cover and headers');
-				dropdown.addOption('cover', 'Cover page only');
-				dropdown.addOption('headers', 'Page headers only');
-				dropdown.setValue(this.pdfOptions.customTitleScope);
-				dropdown.onChange(value => {
-					this.pdfOptions.customTitleScope = value as 'cover' | 'headers' | 'both';
-				});
-			});
-
-		// Custom subtitle
+		// Custom subtitle (cover page only)
 		new Setting(coverFieldsContainer)
 			.setName('Custom subtitle')
 			.setDesc('Override the auto-generated subject line')
@@ -590,7 +641,7 @@ export class ReportGeneratorModal extends Modal {
 	/**
 	 * Update cover page options visibility based on cover page toggle
 	 */
-	private updateLogoVisibility(): void {
+	private updateCoverPageFieldsVisibility(): void {
 		const logoContainer = this.pdfOptionsContainer?.querySelector('.cr-report-modal__logo-setting') as HTMLElement | null;
 		if (logoContainer) {
 			logoContainer.style.display = this.pdfOptions.includeCoverPage ? '' : 'none';
@@ -1687,6 +1738,7 @@ export class ReportGeneratorModal extends Modal {
 		const pdfOptions = {
 			pageSize: this.pdfOptions.pageSize,
 			fontStyle: 'serif' as const,
+			dateFormat: this.pdfOptions.dateFormat,
 			includeCoverPage: this.pdfOptions.includeCoverPage,
 			logoDataUrl: this.pdfOptions.logoDataUrl,
 			customTitle: this.pdfOptions.customTitle || undefined,
