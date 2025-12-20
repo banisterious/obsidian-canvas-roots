@@ -50,6 +50,7 @@ import { AddPersonTypePreviewModal } from './add-person-type-modal';
 import { renderFamilyTimeline, getFamilyTimelineSummary } from '../events/ui/family-timeline';
 import { renderPlaceTimelineCard } from '../events/ui/place-timeline';
 import { renderPreferencesTab } from './preferences-tab';
+import { renderDashboardTab } from './dashboard-tab';
 import { renderPlacesTab } from './places-tab';
 import { PropertyAliasService } from '../core/property-alias-service';
 import { CreateEventModal } from '../events/ui/create-event-modal';
@@ -861,7 +862,21 @@ export class ControlCenterModal extends Modal {
 	// ==========================================================================
 
 	/**
-	 * Show Status tab
+	 * Show Dashboard tab with quick actions and vault overview
+	 */
+	private async showDashboardTab(): Promise<void> {
+		renderDashboardTab({
+			container: this.contentContainer,
+			plugin: this.plugin,
+			app: this.app,
+			createCard: this.createCard.bind(this),
+			switchTab: this.switchTab.bind(this),
+			closeModal: () => this.close()
+		});
+	}
+
+	/**
+	 * Show Status tab (legacy - kept for reference during migration)
 	 */
 	private async showStatusTab(): Promise<void> {
 		const container = this.contentContainer;
