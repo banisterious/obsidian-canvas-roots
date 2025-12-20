@@ -4,11 +4,18 @@
  * Provides quick-action tiles for common operations and vault overview.
  */
 
-import { App, setIcon } from 'obsidian';
+import { App } from 'obsidian';
 import CanvasRootsPlugin from '../../main';
 import { LucideIconName, setLucideIcon } from './lucide-icons';
 import { VaultStatsService, FullVaultStats } from '../core/vault-stats';
 import { getErrorMessage } from '../core/error-utils';
+import { CreatePersonModal } from './create-person-modal';
+import { CreatePlaceModal } from './create-place-modal';
+import { CreateEventModal } from '../events/ui/create-event-modal';
+import { CreateSourceModal } from '../sources/ui/create-source-modal';
+import { ReportGeneratorModal } from '../reports/ui/report-generator-modal';
+import { FamilyGraphService } from '../core/family-graph';
+import { EventService } from '../events/services/event-service';
 
 /**
  * Dashboard tile configuration
@@ -63,6 +70,40 @@ function renderQuickActionsSection(
 	// Tile grid
 	const grid = container.createDiv({ cls: 'crc-dashboard-tile-grid' });
 
+	// Helper to open create person modal
+	const openCreatePerson = () => {
+		closeModal();
+		const familyGraph = new FamilyGraphService(app);
+
+		new CreatePersonModal(app, {
+			directory: plugin.settings.peopleFolder || '',
+			familyGraph,
+			propertyAliases: plugin.settings.propertyAliases
+		}).open();
+	};
+
+	// Helper to open create event modal
+	const openCreateEvent = () => {
+		closeModal();
+		const eventService = new EventService(app, plugin.settings);
+		new CreateEventModal(app, eventService, plugin.settings).open();
+	};
+
+	// Helper to open create source modal
+	const openCreateSource = () => {
+		closeModal();
+		new CreateSourceModal(app, plugin).open();
+	};
+
+	// Helper to open create place modal
+	const openCreatePlace = () => {
+		closeModal();
+		new CreatePlaceModal(app, {
+			directory: plugin.settings.placesFolder || 'Canvas Roots/Places',
+			settings: plugin.settings
+		}).open();
+	};
+
 	// Define the 9 tiles
 	const tiles: DashboardTile[] = [
 		{
@@ -70,30 +111,21 @@ function renderQuickActionsSection(
 			label: 'Person',
 			icon: 'user',
 			description: 'Create a new person note',
-			action: () => {
-				closeModal();
-				plugin.openCreatePersonModal();
-			}
+			action: () => void openCreatePerson()
 		},
 		{
 			id: 'create-event',
 			label: 'Event',
 			icon: 'calendar',
 			description: 'Create a new event note',
-			action: () => {
-				closeModal();
-				plugin.openCreateEventModal();
-			}
+			action: openCreateEvent
 		},
 		{
 			id: 'create-source',
 			label: 'Source',
 			icon: 'file-text',
 			description: 'Create a new source note',
-			action: () => {
-				closeModal();
-				plugin.openCreateSourceModal();
-			}
+			action: openCreateSource
 		},
 		{
 			id: 'generate-report',
@@ -102,7 +134,7 @@ function renderQuickActionsSection(
 			description: 'Generate a genealogical report',
 			action: () => {
 				closeModal();
-				plugin.openReportGenerator();
+				new ReportGeneratorModal(app, plugin).open();
 			}
 		},
 		{
@@ -129,10 +161,7 @@ function renderQuickActionsSection(
 			label: 'Place',
 			icon: 'map-pin',
 			description: 'Create a new place note',
-			action: () => {
-				closeModal();
-				plugin.openCreatePlaceModal();
-			}
+			action: openCreatePlace
 		},
 		{
 			id: 'tree-output',
@@ -278,7 +307,7 @@ async function renderVaultHealthContent(
 		{ label: 'Sources', value: stats.sources.totalSources },
 		{ label: 'Places', value: stats.places.totalPlaces },
 		{ label: 'Canvases', value: stats.canvases.totalCanvases },
-		{ label: 'Organizations', value: stats.organizations?.totalOrganizations ?? 0 }
+		{ label: 'Maps', value: stats.maps.totalMaps }
 	];
 
 	for (const metric of metrics) {
