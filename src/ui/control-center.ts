@@ -9,7 +9,6 @@ import { FamilyGraphService, TreeOptions, PersonNode } from '../core/family-grap
 import { CanvasGenerator, CanvasData, CanvasGenerationOptions } from '../core/canvas-generator';
 import { getLogger } from '../core/logging';
 import { getErrorMessage } from '../core/error-utils';
-import { GedcomImporter } from '../gedcom/gedcom-importer';
 import { GedcomImporterV2 } from '../gedcom/gedcom-importer-v2';
 import type { GedcomImportOptionsV2, FilenameFormat, FilenameFormatOptions, GedcomDataV2 } from '../gedcom/gedcom-types';
 import { analyzeGedcomQuality, applyQualityFixes } from '../gedcom/gedcom-quality-analyzer';
@@ -19,7 +18,6 @@ import { GedcomXParser } from '../gedcomx/gedcomx-parser';
 import { GrampsImporter, GrampsImportResult } from '../gramps/gramps-importer';
 import { GrampsParser } from '../gramps/gramps-parser';
 import { readFileWithDecompression } from '../core/compression-utils';
-import { GedcomImportResultsModal } from './gedcom-import-results-modal';
 import { GedcomImportProgressModal } from './gedcom-import-progress-modal';
 import { SchemaValidationProgressModal } from './schema-validation-progress-modal';
 import { BidirectionalLinker } from '../core/bidirectional-linker';
@@ -5586,86 +5584,6 @@ export class ControlCenterModal extends Modal {
 				analysisContainer.addClass('cr-hidden');
 				fileBtn.removeClass('cr-hidden');
 			});
-		}
-	}
-
-	/**
-	 * Handle GEDCOM file import
-	 */
-	private async handleGedcomImport(file: File, targetFolder?: string): Promise<void> {
-		try {
-			// Use target folder if provided, otherwise use settings
-			const destFolder = targetFolder || this.plugin.settings.peopleFolder;
-			logger.info('gedcom', `Starting GEDCOM import: ${file.name} to ${destFolder}`);
-
-			// Read file content
-			const content = await file.text();
-
-			// Disable bidirectional sync during import to prevent duplicate relationships
-			this.plugin.disableBidirectionalSync();
-
-			// Create importer
-			const importer = new GedcomImporter(this.app);
-
-			// Import GEDCOM file
-			let result;
-			try {
-				result = await importer.importFile(content, {
-					peopleFolder: destFolder,
-					overwriteExisting: false,
-					fileName: file.name
-				});
-			} finally {
-				// Re-enable bidirectional sync after import
-				this.plugin.enableBidirectionalSync();
-			}
-
-			// Log results
-			logger.info('gedcom', `Import complete: ${result.individualsProcessed} individuals processed`);
-
-			if (result.errors.length > 0) {
-				logger.warn('gedcom', `Import had ${result.errors.length} errors`);
-				result.errors.forEach(error => logger.error('gedcom', error));
-			}
-
-			// Track import in recent imports history (limit to 10)
-			if (result.success && result.notesCreated > 0) {
-				const importInfo: RecentImportInfo = {
-					fileName: file.name,
-					recordsImported: result.individualsProcessed,
-					notesCreated: result.notesCreated,
-					timestamp: Date.now()
-				};
-
-				this.plugin.settings.recentImports.unshift(importInfo);
-				if (this.plugin.settings.recentImports.length > 10) {
-					this.plugin.settings.recentImports = this.plugin.settings.recentImports.slice(0, 10);
-				}
-				await this.plugin.saveSettings();
-			}
-
-			// Sync bidirectional relationships after import if enabled
-			if (this.plugin.settings.enableBidirectionalSync && result.success && result.notesCreated > 0) {
-				await this.syncImportedRelationships();
-			}
-
-			// Show detailed import results modal with option to assign reference numbers
-			const resultsModal = new GedcomImportResultsModal(
-				this.app,
-				result,
-				result.validation,
-				() => this.promptAssignReferenceNumbersAfterImport()
-			);
-			resultsModal.open();
-
-			// Refresh status tab
-			if (result.notesCreated > 0) {
-				this.showTab('status');
-			}
-		} catch (error: unknown) {
-			const errorMsg = getErrorMessage(error);
-			logger.error('gedcom', `GEDCOM import failed: ${errorMsg}`);
-			new Notice(`Failed to import GEDCOM: ${errorMsg}`);
 		}
 	}
 
