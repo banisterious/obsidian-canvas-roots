@@ -130,10 +130,10 @@ export interface TabConfig {
  */
 export const TAB_CONFIGS: TabConfig[] = [
 	{
-		id: 'status',
-		name: 'Status',
-		icon: 'activity',
-		description: 'Vault statistics and health checks'
+		id: 'dashboard',
+		name: 'Dashboard',
+		icon: 'home',
+		description: 'Quick actions and vault overview'
 	},
 	{
 		id: 'guide',

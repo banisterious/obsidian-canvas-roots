@@ -110,7 +110,7 @@ interface RelationshipField {
  */
 export class ControlCenterModal extends Modal {
 	plugin: CanvasRootsPlugin;
-	private activeTab: string = 'status';
+	private activeTab: string = 'dashboard';
 	private drawer: HTMLElement;
 	private contentContainer: HTMLElement;
 	private appBar: HTMLElement;
@@ -379,8 +379,8 @@ export class ControlCenterModal extends Modal {
 		this.contentContainer.empty();
 
 		switch (tabId) {
-			case 'status':
-				void this.showStatusTab();
+			case 'dashboard':
+				void this.showDashboardTab();
 				break;
 			case 'guide':
 				this.showGuideTab();
