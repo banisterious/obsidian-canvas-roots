@@ -6,7 +6,7 @@ Planning document for adding new report types beyond the genealogical reports.
 - **Priority:** Medium
 - **GitHub Issue:** #TBD
 - **Created:** 2025-12-20
-- **Updated:** 2025-12-20
+- **Updated:** 2025-12-20 (added Media Inventory, Universe Overview, Collection Overview)
 
 ---
 
@@ -188,6 +188,134 @@ The report generation system supports 7 genealogical report types:
 
 ---
 
+### Media Inventory Report
+
+**Category:** Media / Data Quality
+**Purpose:** Inventory all media files with linked entities, identify orphaned files and coverage gaps.
+
+**Use Cases:**
+- Audit media collection for organization and cleanup
+- Identify orphaned media files not linked to any entity
+- Find entities missing media attachments
+- Plan digitization or media acquisition priorities
+
+**Report Sections:**
+
+| Section | Content |
+|---------|---------|
+| **Header** | Report title, scope, generation date |
+| **Summary Statistics** | Total media files, linked count, orphan count, coverage stats |
+| **By Entity Type** | Media counts per entity type (sources, and future: persons, places, events) |
+| **File Type Breakdown** | Images, PDFs, audio, video counts |
+| **Linked Media** | Media files with their linked entities |
+| **Orphaned Media** | Media files with no entity links |
+| **Entities Without Media** | Entities that could have media but don't |
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| Scope | Dropdown | all | all, sources_only, by_folder |
+| Show orphaned files | Boolean | true | Include unlinked media |
+| Show coverage gaps | Boolean | true | Show entities without media |
+| Group by | Dropdown | entity_type | entity_type, folder, file_type |
+| Include file sizes | Boolean | false | Show file size statistics |
+| Folder filter | Folder picker | None | Limit to specific folder |
+
+**Data Sources:**
+- Vault file listing for media files (images, PDFs, audio)
+- Source notes with `media` property
+- Future: Person, Place, Event, Organization notes with media (after Universal Media Linking)
+
+**Note:** This report is designed to work with current source-only media linking and will automatically expand when Universal Media Linking ships.
+
+---
+
+### Universe Overview Report
+
+**Category:** Universe / Summary
+**Purpose:** Summary of all entities in a universe with statistics, date ranges, and entity type breakdown.
+
+**Use Cases:**
+- Get a high-level view of a fictional world's scope
+- Track worldbuilding progress across entity types
+- Generate universe documentation for sharing
+- Compare relative sizes of different universes
+
+**Report Sections:**
+
+| Section | Content |
+|---------|---------|
+| **Header** | Universe name, description, generation date |
+| **Summary Statistics** | Total entities, by type, date range |
+| **Entity Breakdown** | Count and percentage per entity type |
+| **Date Range** | Earliest to latest dates (using fictional dates if applicable) |
+| **Geographic Summary** | Places with coordinates, coverage areas |
+| **Calendar Systems** | Date systems used in this universe |
+| **Recent Activity** | Recently modified entities (optional) |
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| Universe | Universe picker | Required | Subject universe |
+| Include entity list | Boolean | false | List all entities (can be long) |
+| Show geographic summary | Boolean | true | Include place statistics |
+| Show date systems | Boolean | true | List fictional calendars used |
+| Show recent activity | Boolean | false | List recently modified entities |
+| Max entities per type | Number | 20 | Limit for entity lists |
+
+**Data Sources:**
+- `UniverseService` for universe entity aggregation
+- `FamilyGraphService` for person counts
+- `PlaceGraphService` for place data
+- `EventService` for event counts
+- `DateService` for fictional date handling
+
+---
+
+### Collection Overview Report
+
+**Category:** Collection / Summary
+**Purpose:** Summary of a user collection or auto-detected family component.
+
+**Use Cases:**
+- Document a specific family line or research project
+- Generate summaries for family reunions or publications
+- Analyze scope of a collection before export
+- Compare different branches of a family tree
+
+**Report Sections:**
+
+| Section | Content |
+|---------|---------|
+| **Header** | Collection name, type (user/component), generation date |
+| **Summary Statistics** | Member count, generation depth, date range |
+| **Member List** | People with key dates (birth, death) |
+| **Generation Analysis** | Ancestor/descendant counts by generation |
+| **Geographic Distribution** | Places represented, with counts |
+| **Date Range** | Earliest birth to latest death |
+| **Surname Distribution** | Surname counts (for family components) |
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| Collection | Collection picker | Required | User collection or family component |
+| Include member list | Boolean | true | List all members with dates |
+| Show generation analysis | Boolean | true | Break down by generation |
+| Show geographic distribution | Boolean | true | List places and counts |
+| Show surname distribution | Boolean | true | For family components |
+| Sort members by | Dropdown | birth_date | birth_date, name, death_date |
+| Max members | Number | 100 | Limit for member list |
+
+**Data Sources:**
+- `FamilyGraphService` for collection data and member lists
+- Person notes for vital dates
+- Place references for geographic distribution
+
+---
+
 ## UI Integration
 
 ### Report Category Selector
@@ -219,9 +347,10 @@ Add a category selector to the Report Generator modal:
 | Category | Report Types |
 |----------|-------------|
 | Genealogical | Ahnentafel, Pedigree Chart, Descendant Chart, Register, Family Group Sheet, Individual Summary |
-| Research | Source Summary, Gaps Report |
+| Research | Source Summary, Gaps Report, Media Inventory |
 | Timeline | Timeline Report |
 | Geographic | Place Summary |
+| Summary | Universe Overview, Collection Overview |
 
 ### Entry Points
 
@@ -282,6 +411,50 @@ Same as existing reports:
 2. Reorganize existing reports under categories
 3. Add category filtering to report type dropdown
 4. Update Statistics Dashboard reports card with categories
+
+### Phase 5: Media Inventory Report
+
+**Scope:**
+1. Add Media Inventory report type
+2. Create `MediaInventoryResult` interface
+3. Implement `generateMediaInventory()` in `ReportGenerator`
+4. Add `renderMediaInventory()` to `PdfReportRenderer`
+5. Update modal with Media Inventory options
+
+**Dependencies:**
+- Vault API for file listing
+- Source notes with `media` property
+- Future: Universal Media Linking for other entity types
+
+**Note:** Designed to work with current source-only media and expand automatically when Universal Media Linking ships.
+
+### Phase 6: Universe Overview Report
+
+**Scope:**
+1. Add Universe Overview report type
+2. Create `UniverseOverviewResult` interface
+3. Implement `generateUniverseOverview()` in `ReportGenerator`
+4. Add `renderUniverseOverview()` to `PdfReportRenderer`
+5. Update modal with Universe Overview options
+
+**Dependencies:**
+- `UniverseService` for entity aggregation
+- `DateService` for fictional date handling
+- Universe notes with `date_system` property
+
+### Phase 7: Collection Overview Report
+
+**Scope:**
+1. Add Collection Overview report type
+2. Create `CollectionOverviewResult` interface
+3. Implement `generateCollectionOverview()` in `ReportGenerator`
+4. Add `renderCollectionOverview()` to `PdfReportRenderer`
+5. Update modal with Collection Overview options
+
+**Dependencies:**
+- `FamilyGraphService` for collection/component data
+- Generation calculation utilities
+- Place aggregation for geographic distribution
 
 ---
 
@@ -605,6 +778,9 @@ For large vaults:
 | `src/reports/generators/source-summary-generator.ts` | Source Summary report logic |
 | `src/reports/generators/timeline-generator.ts` | Timeline Report logic |
 | `src/reports/generators/place-summary-generator.ts` | Place Summary report logic |
+| `src/reports/generators/media-inventory-generator.ts` | Media Inventory report logic |
+| `src/reports/generators/universe-overview-generator.ts` | Universe Overview report logic |
+| `src/reports/generators/collection-overview-generator.ts` | Collection Overview report logic |
 
 ## Files to Modify
 
@@ -646,6 +822,29 @@ For large vaults:
 - [ ] Reports grouped logically by category
 - [ ] Existing reports continue to work unchanged
 - [ ] Statistics Dashboard reflects new category structure
+
+### Phase 5 (Media Inventory)
+- [ ] User can generate Media Inventory report
+- [ ] Media files listed with linked entities
+- [ ] Orphaned files identified (media with no entity links)
+- [ ] Coverage gaps shown (entities without media)
+- [ ] File type breakdown displayed
+- [ ] Report works with source media now, expands when Universal Media Linking ships
+
+### Phase 6 (Universe Overview)
+- [ ] User can generate Universe Overview for any universe
+- [ ] Entity counts by type displayed
+- [ ] Date range shown (with fictional dates if applicable)
+- [ ] Geographic summary included when places have coordinates
+- [ ] Calendar systems listed for universes with fictional dates
+
+### Phase 7 (Collection Overview)
+- [ ] User can generate Collection Overview for user collections
+- [ ] User can generate Collection Overview for auto-detected family components
+- [ ] Member list with vital dates
+- [ ] Generation analysis (ancestor/descendant counts)
+- [ ] Geographic distribution shown
+- [ ] Surname distribution for family components
 
 ---
 

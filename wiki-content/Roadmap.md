@@ -310,6 +310,9 @@ After a GEDCOM import (especially from a file with data quality issues), users f
 | **Source Summary** | Person | All sources cited for a person, grouped by fact type, with quality classification and gaps |
 | **Timeline Report** | Event | Chronological list of events with dates, participants, places, and sources |
 | **Place Summary** | Place | All events at a location, people associated with the place (born, died, resided) |
+| **Media Inventory** | Media | All media files with linked entities, orphaned files, coverage gaps |
+| **Universe Overview** | Universe | All entities in a universe with stats, date range, entity type breakdown |
+| **Collection Overview** | Collection | Summary of a user collection or family component: members, date range, geographic spread |
 
 **Source Summary Options:**
 - Root person picker
@@ -333,6 +336,27 @@ After a GEDCOM import (especially from a file with data quality issues), users f
 - Event type filter
 - Include coordinates and map reference
 
+**Media Inventory Options:**
+- Scope filter (all media, sources only, or future entity types when Universal Media Linking ships)
+- Show orphaned files (media not linked to any entity)
+- Show coverage gaps (entities without media)
+- File type breakdown (images, PDFs, audio)
+- Group by entity type or folder
+
+**Universe Overview Options:**
+- Universe picker
+- Entity type breakdown (people, places, events, sources, organizations)
+- Date range summary (earliest to latest dates, using fictional dates if applicable)
+- Geographic distribution (if places have coordinates)
+- Include entity counts and percentages
+
+**Collection Overview Options:**
+- Collection picker (user collections or auto-detected family components)
+- Member list with key dates
+- Generation depth and ancestor/descendant counts
+- Geographic distribution
+- Date range (earliest birth to latest death)
+
 **UI Integration:**
 - Add report category selector to Report Generator modal (Genealogical / Timeline / Place)
 - Reuse existing PDF export infrastructure
@@ -341,6 +365,9 @@ After a GEDCOM import (especially from a file with data quality issues), users f
 **Technical Approach:**
 - Reuse `EventService` for timeline data
 - Reuse `PlaceGraphService` for place hierarchy and associations
+- Reuse `UniverseService` for universe entity aggregation
+- Reuse `FamilyGraphService` for collection/component data
+- Add `MediaInventoryService` for media file scanning and linkage analysis
 - Add new generator methods to `ReportGenerator`
 - Add new render methods to `PdfReportRenderer`
 
