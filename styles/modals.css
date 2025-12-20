@@ -921,6 +921,13 @@
   color: var(--text-normal);
 }
 
+.crc-picker-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
 .crc-picker-search {
   padding: 16px 20px 8px;
   border-bottom: 1px solid var(--background-modifier-border);

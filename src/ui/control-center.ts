@@ -5921,6 +5921,28 @@ export class ControlCenterModal extends Modal {
 	 * Select root person and assign reference numbers
 	 */
 	private selectRootPersonForNumbering(system: NumberingSystem): void {
+		// Build context-specific title and subtitle based on numbering system
+		const systemInfo: Record<NumberingSystem, { title: string; subtitle: string }> = {
+			ahnentafel: {
+				title: 'Select root person',
+				subtitle: 'This person will be #1; ancestors are numbered upward'
+			},
+			daboville: {
+				title: 'Select progenitor',
+				subtitle: 'This person will be 1; descendants are numbered downward'
+			},
+			henry: {
+				title: 'Select progenitor',
+				subtitle: 'This person will be 1; descendants are numbered downward'
+			},
+			generation: {
+				title: 'Select reference person',
+				subtitle: 'This person will be generation 0'
+			}
+		};
+
+		const { title, subtitle } = systemInfo[system];
+
 		const picker = new PersonPickerModal(this.app, (selectedPerson) => {
 			void (async () => {
 				try {
@@ -5949,7 +5971,7 @@ export class ControlCenterModal extends Modal {
 					new Notice(`Failed to assign numbers: ${getErrorMessage(error)}`);
 				}
 			})();
-		});
+		}, { title, subtitle });
 		picker.open();
 	}
 

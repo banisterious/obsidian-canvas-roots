@@ -74,6 +74,18 @@ interface FilterOptions {
 }
 
 /**
+ * Options for customizing the person picker modal
+ */
+export interface PersonPickerOptions {
+	/** Custom title (default: "Select person") */
+	title?: string;
+	/** Optional subtitle shown below the title */
+	subtitle?: string;
+	/** Optional folder filter service */
+	folderFilter?: FolderFilterService;
+}
+
+/**
  * Person Picker Modal
  * Allows users to search and select a person from the vault
  */
@@ -98,11 +110,23 @@ export class PersonPickerModal extends Modal {
 	private loadingEl?: HTMLElement;
 	private mainContainer?: HTMLElement;
 	private familyComponentsLoaded = false;
+	private customTitle?: string;
+	private customSubtitle?: string;
 
-	constructor(app: App, onSelect: (person: PersonInfo) => void, folderFilter?: FolderFilterService) {
+	constructor(app: App, onSelect: (person: PersonInfo) => void, options?: PersonPickerOptions | FolderFilterService) {
 		super(app);
 		this.onSelect = onSelect;
-		this.folderFilter = folderFilter;
+		// Support both old signature (folderFilter) and new signature (options object)
+		if (options && typeof options === 'object' && 'getAllowedFolders' in options) {
+			// Old signature: FolderFilterService passed directly
+			this.folderFilter = options as FolderFilterService;
+		} else if (options) {
+			// New signature: options object
+			const opts = options as PersonPickerOptions;
+			this.customTitle = opts.title;
+			this.customSubtitle = opts.subtitle;
+			this.folderFilter = opts.folderFilter;
+		}
 	}
 
 	onOpen(): void {
@@ -334,7 +358,15 @@ export class PersonPickerModal extends Modal {
 		const titleSection = header.createDiv({ cls: 'crc-picker-title' });
 		const icon = createLucideIcon('users', 20);
 		titleSection.appendChild(icon);
-		titleSection.appendText('Select person');
+		titleSection.appendText(this.customTitle || 'Select person');
+
+		// Optional subtitle
+		if (this.customSubtitle) {
+			header.createDiv({
+				cls: 'crc-picker-subtitle',
+				text: this.customSubtitle
+			});
+		}
 
 		// Search and sort section
 		const searchSection = contentEl.createDiv({ cls: 'crc-picker-search' });
