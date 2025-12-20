@@ -385,25 +385,24 @@ export class PdfReportRenderer {
 				italics: true,
 				alignment: 'center',
 				color: COLORS.secondaryText,
-				margin: [0, 0, 0, 40]
+				margin: [0, 0, 0, 30]
 			});
 		}
 
-		// Decorative line
+		// Decorative line (centered: 200pt line on ~515pt content width)
 		content.push({
 			canvas: [
 				{
 					type: 'line',
-					x1: 150,
+					x1: 157,
 					y1: 0,
-					x2: 350,
+					x2: 357,
 					y2: 0,
 					lineWidth: 1,
 					lineColor: COLORS.separatorLine
 				}
 			],
-			alignment: 'center',
-			margin: [0, 20, 0, 40]
+			margin: [0, 0, 0, 30]
 		});
 
 		// Generation info
@@ -412,7 +411,7 @@ export class PdfReportRenderer {
 			fontSize: 11,
 			alignment: 'center',
 			color: COLORS.mutedText,
-			margin: [0, 0, 0, 10]
+			margin: [0, 0, 0, 8]
 		});
 
 		content.push({
