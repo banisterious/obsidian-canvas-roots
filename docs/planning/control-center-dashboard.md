@@ -79,40 +79,36 @@ Rename "Status" tab to "Dashboard" and add a tile grid of quick actions above th
 
 ## Tile Categories & Actions
 
-### Core Tiles (Always Visible)
+### Dashboard Tiles (9 tiles, 3×3 grid)
 
 | Tile | Icon | Action | Description |
 |------|------|--------|-------------|
-| **Person** | 👤 | Create Person | Opens person creation modal |
-| **Event** | 📅 | Create Event | Opens event creation modal |
-| **Source** | 📄 | Create Source | Opens source creation modal |
-| **Report** | 📊 | Generate Report | Opens Report Generator modal |
-| **Statistics** | 📈 | Open Dashboard | Opens Statistics Dashboard view |
-| **Import** | 📥 | Import Data | Opens Import Wizard |
-
-### Secondary Tiles (Collapsible or Row 2)
-
-| Tile | Icon | Action | Description |
-|------|------|--------|-------------|
-| **Place** | 📍 | Create Place | Opens place creation modal |
-| **Organization** | 🏛️ | Create Organization | Opens organization creation modal |
-| **Canvas** | 🎨 | New Canvas | Creates new canvas file |
-| **Search** | 🔍 | Search Vault | Opens CR-aware search or Obsidian search |
-| **Validate** | ✓ | Validate Data | Runs data quality checks |
-| **Batch** | ⚡ | Batch Operations | Opens batch operations modal |
+| **Person** | `user` | Create Person | Opens person creation modal |
+| **Event** | `calendar` | Create Event | Opens event creation modal |
+| **Source** | `file-text` | Create Source | Opens source creation modal |
+| **Report** | `bar-chart` | Generate Report | Opens Report Generator modal |
+| **Statistics** | `line-chart` | Open Dashboard | Opens Statistics Dashboard view |
+| **Import** | `upload` | Import Data | Opens Import Wizard |
+| **Place** | `map-pin` | Create Place | Opens place creation modal |
+| **Tree Output** | `git-branch` | Generate Tree | Opens Tree Output tab |
+| **Map** | `map` | Open Map View | Opens Map View (works without person context) |
 
 ### Tile Selection Rationale
 
 **Included:**
-- Create Person/Event/Source — Most frequent operations for genealogists
+- Create Person/Event/Source/Place — Core entity creation for genealogists
 - Generate Report — Key feature, currently requires navigating to Statistics Dashboard
 - Statistics Dashboard — Central hub for analysis
 - Import — Common entry point for new data
+- Tree Output — Core visualization feature
+- Map — Geographic exploration, works context-free, unique differentiator
 
 **Deferred:**
+- Family Chart — Requires person context (would need picker)
+- Organization — Niche (worldbuilders only)
 - Universe/Collection creation — Less frequent, available via other tabs
 - Export — Less urgent than import, available in Import/Export tab
-- Settings — Already accessible via gear icon
+- Validate — Can add later based on user demand
 
 ---
 
@@ -289,15 +285,19 @@ These ideas are interesting but deferred to keep initial scope manageable:
 
 ---
 
-## Open Questions
+## Design Decisions
 
-1. **Icon style:** Use emoji (👤) or Lucide icons? Lucide is more consistent with Obsidian, but emoji may be more visually distinct on small screens.
+1. **Icon style:** Lucide icons for consistency with Obsidian's native UI. Emoji render differently across platforms and can look out of place.
 
-2. **Tile count:** 6 tiles (2 rows of 3) or 9 tiles (3 rows of 3)? More tiles = more options but more scrolling on mobile.
+2. **Tile count:** 9 tiles (3 rows of 3). Covers core entity creation, key features, and visualization.
 
-3. **Recent tracking scope:** Track all file opens, or only opens via Canvas Roots features? The latter is cleaner but misses direct file navigation.
+3. **Recent tracking scope:** Track file opens via Canvas Roots features only. Cleaner data, and users opening files directly probably don't need the Dashboard reminder.
 
-4. **Tab icon:** What icon for "Dashboard" tab? Current "Status" uses a bar chart. Options: `layout-dashboard`, `grid`, `home`.
+4. **Tab icon:** `home` — feels intuitive as the "starting point" for CR operations.
+
+5. **Vault Health default state:** Expanded on first visit, remembers collapse state thereafter.
+
+6. **Existing Status tab users:** Brief first-run tooltip to orient users to the renamed/reorganized tab.
 
 ---
 
@@ -343,4 +343,9 @@ These ideas are interesting but deferred to keep initial scope manageable:
 | 2025-12-20 | Fixed tile set over configurable | Simpler implementation, better defaults matter more |
 | 2025-12-20 | Preserve existing metrics in collapsible section | Don't lose existing functionality |
 | 2025-12-20 | 4-phase implementation | Incremental delivery with foundation first |
+| 2025-12-20 | Lucide icons over emoji | Consistency with Obsidian native UI |
+| 2025-12-20 | 9 tiles (3×3 grid) | Added Place, Tree Output, Map for complete coverage |
+| 2025-12-20 | Track CR feature opens only | Cleaner recent files data |
+| 2025-12-20 | `home` tab icon | Intuitive "starting point" metaphor |
+| 2025-12-20 | First-run tooltip for Status→Dashboard | Orient existing users to the change |
 | | | |
