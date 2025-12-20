@@ -14,10 +14,18 @@ import type {
 	GapsReportOptions,
 	RegisterReportOptions,
 	PedigreeChartOptions,
-	DescendantChartOptions
+	DescendantChartOptions,
+	FamilyGroupSheetResult,
+	IndividualSummaryResult,
+	AhnentafelResult,
+	GapsReportResult,
+	RegisterReportResult,
+	PedigreeChartResult,
+	DescendantChartResult
 } from '../types/report-types';
 import { REPORT_METADATA } from '../types/report-types';
 import { ReportGenerationService } from '../services/report-generation-service';
+import { PdfReportRenderer } from '../services/pdf-report-renderer';
 import { PersonPickerModal, PersonInfo } from '../../ui/person-picker';
 import { FolderFilterService } from '../../core/folder-filter';
 import { createLucideIcon } from '../../ui/lucide-icons';
@@ -41,12 +49,13 @@ export class ReportGeneratorModal extends Modal {
 	private plugin: CanvasRootsPlugin;
 	private options: ReportGeneratorModalOptions;
 	private reportService: ReportGenerationService;
+	private pdfRenderer: PdfReportRenderer;
 
 	// Form state
 	private selectedReportType: ReportType = 'family-group-sheet';
 	private selectedPersonCrId: string = '';
 	private selectedPersonName: string = '';
-	private outputMethod: 'vault' | 'download' = 'vault';
+	private outputMethod: 'vault' | 'download' | 'pdf' = 'vault';
 	private outputFolder: string;
 
 	// Report-specific options
@@ -106,12 +115,15 @@ export class ReportGeneratorModal extends Modal {
 	// UI elements
 	private optionsContainer: HTMLElement | null = null;
 	private personPickerSetting: Setting | null = null;
+	private outputFolderSetting: Setting | null = null;
+	private privacyMessageEl: HTMLElement | null = null;
 
 	constructor(app: App, plugin: CanvasRootsPlugin, options: ReportGeneratorModalOptions = {}) {
 		super(app);
 		this.plugin = plugin;
 		this.options = options;
 		this.reportService = new ReportGenerationService(app, plugin.settings);
+		this.pdfRenderer = new PdfReportRenderer();
 
 		// Initialize output folder from settings
 		this.outputFolder = plugin.settings.reportsFolder || '';
@@ -166,14 +178,26 @@ export class ReportGeneratorModal extends Modal {
 			.setName('Output method')
 			.addDropdown(dropdown => {
 				dropdown.addOption('vault', 'Save to vault');
-				dropdown.addOption('download', 'Download file');
+				dropdown.addOption('pdf', 'Download as PDF');
+				dropdown.addOption('download', 'Download as MD');
 				dropdown.setValue(this.outputMethod);
 				dropdown.onChange(value => {
-					this.outputMethod = value as 'vault' | 'download';
+					this.outputMethod = value as 'vault' | 'download' | 'pdf';
+					this.updateOutputVisibility();
 				});
 			});
 
-		new Setting(outputSection)
+		// Privacy message for download options
+		this.privacyMessageEl = outputSection.createDiv({ cls: 'cr-report-modal__privacy-message' });
+		this.privacyMessageEl.createSpan({ text: 'ⓘ ' });
+		const messageText = this.privacyMessageEl.createSpan();
+		messageText.setText(
+			this.outputMethod === 'pdf'
+				? 'PDF is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.'
+				: 'File is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.'
+		);
+
+		this.outputFolderSetting = new Setting(outputSection)
 			.setName('Output folder')
 			.setDesc('Folder to save report (configured in Preferences → Folder locations)')
 			.addText(text => {
@@ -183,6 +207,9 @@ export class ReportGeneratorModal extends Modal {
 						this.outputFolder = value;
 					});
 			});
+
+		// Set initial visibility
+		this.updateOutputVisibility();
 
 		// Actions
 		const actionsContainer = contentEl.createDiv({ cls: 'cr-report-modal__actions' });
@@ -200,6 +227,31 @@ export class ReportGeneratorModal extends Modal {
 	onClose(): void {
 		const { contentEl } = this;
 		contentEl.empty();
+	}
+
+	/**
+	 * Update visibility of output-related UI elements based on output method
+	 */
+	private updateOutputVisibility(): void {
+		const isDownload = this.outputMethod === 'download' || this.outputMethod === 'pdf';
+
+		// Show/hide privacy message
+		if (this.privacyMessageEl) {
+			this.privacyMessageEl.style.display = isDownload ? 'block' : 'none';
+
+			// Update message text based on PDF vs MD
+			const messageSpan = this.privacyMessageEl.querySelector('span:last-child');
+			if (messageSpan) {
+				messageSpan.textContent = this.outputMethod === 'pdf'
+					? 'PDF is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.'
+					: 'File is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.';
+			}
+		}
+
+		// Show/hide output folder setting
+		if (this.outputFolderSetting) {
+			this.outputFolderSetting.settingEl.style.display = isDownload ? 'none' : '';
+		}
 	}
 
 	/**
@@ -678,8 +730,11 @@ export class ReportGeneratorModal extends Modal {
 				return;
 			}
 
-			// Handle output
-			if (this.outputMethod === 'download') {
+			// Handle output based on method
+			if (this.outputMethod === 'pdf') {
+				// Generate PDF using the structured result data
+				await this.generatePdfFromResult(result);
+			} else if (this.outputMethod === 'download') {
 				this.reportService.downloadReport(result.content, result.suggestedFilename);
 				new Notice('Report downloaded');
 			} else {
@@ -696,6 +751,40 @@ export class ReportGeneratorModal extends Modal {
 		} catch (error) {
 			console.error('Report generation error:', error);
 			new Notice('Report generation failed. Check console for details.');
+		}
+	}
+
+	/**
+	 * Generate PDF from the report result
+	 */
+	private async generatePdfFromResult(result: any): Promise<void> {
+		const pdfOptions = {
+			pageSize: 'A4' as const,
+			fontStyle: 'serif' as const
+		};
+
+		switch (this.selectedReportType) {
+			case 'family-group-sheet':
+				await this.pdfRenderer.renderFamilyGroupSheet(result as FamilyGroupSheetResult, pdfOptions);
+				break;
+			case 'individual-summary':
+				await this.pdfRenderer.renderIndividualSummary(result as IndividualSummaryResult, pdfOptions);
+				break;
+			case 'ahnentafel':
+				await this.pdfRenderer.renderAhnentafel(result as AhnentafelResult, pdfOptions);
+				break;
+			case 'gaps-report':
+				await this.pdfRenderer.renderGapsReport(result as GapsReportResult, pdfOptions);
+				break;
+			case 'register-report':
+				await this.pdfRenderer.renderRegisterReport(result as RegisterReportResult, pdfOptions);
+				break;
+			case 'pedigree-chart':
+				await this.pdfRenderer.renderPedigreeChart(result as PedigreeChartResult, pdfOptions);
+				break;
+			case 'descendant-chart':
+				await this.pdfRenderer.renderDescendantChart(result as DescendantChartResult, pdfOptions);
+				break;
 		}
 	}
 }

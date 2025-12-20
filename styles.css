@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-20 03:28:10 UTC
+ * - Generated: 2025-12-20 13:25:33 UTC
  * - Components: 34 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -18729,7 +18729,7 @@ body:has(.cr-media-linker) .suggestion-container {
    COMPONENT: STATISTICS.CSS
    ========================================================================== */
 
-/* Component Size: 1487 lines, 29.34 KB */
+/* Component Size: 1501 lines, 29.69 KB */
 
 /**
  * Statistics Tab & View Styles
@@ -19647,6 +19647,20 @@ body:has(.cr-media-linker) .suggestion-container {
   gap: var(--size-4-2);
   padding-top: var(--size-4-3);
   border-top: 1px solid var(--background-modifier-border);
+}
+
+.cr-report-modal__privacy-message {
+  margin: var(--size-4-2) 0;
+  padding: var(--size-4-2) var(--size-4-3);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.cr-report-modal__privacy-message span:first-child {
+  color: var(--text-accent);
 }
 
 /* =============================================================================
@@ -21803,10 +21817,10 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-20 03:28:11 UTC
+ * Build completed: 2025-12-20 13:25:33 UTC
  * Components processed: 34
- * Total lines: 21474
- * Total size: 426.11 KB
+ * Total lines: 21488
+ * Total size: 426.46 KB
  * Build duration: 0.03 seconds
  *
  * Component breakdown:
@@ -21836,7 +21850,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - timeline-callouts.css: 321 lines, 10.66 KB
  * - organizations.css: 245 lines, 4.36 KB
  * - sources.css: 2654 lines, 53.83 KB
- * - statistics.css: 1487 lines, 29.34 KB
+ * - statistics.css: 1501 lines, 29.69 KB
  * - universe-wizard.css: 621 lines, 11.05 KB
  * - preferences.css: 242 lines, 5.29 KB
  * - tree-output.css: 425 lines, 8.68 KB

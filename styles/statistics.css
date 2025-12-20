@@ -916,6 +916,20 @@
   border-top: 1px solid var(--background-modifier-border);
 }
 
+.cr-report-modal__privacy-message {
+  margin: var(--size-4-2) 0;
+  padding: var(--size-4-2) var(--size-4-3);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.cr-report-modal__privacy-message span:first-child {
+  color: var(--text-accent);
+}
+
 /* =============================================================================
    EXTENDED STATISTICS SECTIONS (Phase 3)
    ============================================================================= */

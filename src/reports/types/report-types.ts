@@ -21,7 +21,7 @@ export type ReportType =
  */
 export interface ReportOptions {
 	/** Output method */
-	outputMethod: 'vault' | 'download';
+	outputMethod: 'vault' | 'download' | 'pdf';
 	/** Output folder path (for vault output) */
 	outputFolder?: string;
 	/** Custom filename (without extension) */
