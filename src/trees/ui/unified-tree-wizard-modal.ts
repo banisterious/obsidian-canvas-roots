@@ -197,6 +197,8 @@ export class UnifiedTreeWizardModal extends Modal {
 		sex: 'all',
 		hasConnections: false
 	};
+	private personListContainer?: HTMLElement;
+	private personStepContainer?: HTMLElement;
 
 	// PDF tree size analysis
 	private treeSizeAnalysis: TreeSizeAnalysis | null = null;
@@ -460,6 +462,9 @@ export class UnifiedTreeWizardModal extends Modal {
 			this.renderSelectedPerson(selectedContainer);
 		}
 
+		// Store container reference for use by event handlers after re-renders
+		this.personStepContainer = container;
+
 		// Toolbar row
 		const toolbarRow = container.createDiv({ cls: 'crc-wizard-toolbar' });
 
@@ -474,13 +479,13 @@ export class UnifiedTreeWizardModal extends Modal {
 		});
 		searchInput.value = this.searchQuery;
 
-		const listContainer = container.createDiv({ cls: 'crc-wizard-person-list' });
+		// Store list container reference as instance property
+		this.personListContainer = container.createDiv({ cls: 'crc-wizard-person-list' });
 
 		searchInput.addEventListener('input', (e) => {
 			this.searchQuery = (e.target as HTMLInputElement).value;
 			this.applyFiltersAndSort();
-			this.renderPersonList(listContainer);
-			this.updateResultsCount(container);
+			this.refreshPersonList();
 		});
 
 		// Sort dropdown
@@ -502,7 +507,7 @@ export class UnifiedTreeWizardModal extends Modal {
 		sortSelect.addEventListener('change', () => {
 			this.sortOption = sortSelect.value as PersonSortOption;
 			this.applyFiltersAndSort();
-			this.renderPersonList(listContainer);
+			this.refreshPersonList();
 		});
 
 		// Filter row
@@ -532,8 +537,7 @@ export class UnifiedTreeWizardModal extends Modal {
 				});
 				chip.addClass('crc-wizard-filter-chip--active');
 				this.applyFiltersAndSort();
-				this.renderPersonList(listContainer);
-				this.updateResultsCount(container);
+				this.refreshPersonList();
 			});
 		}
 
@@ -547,15 +551,27 @@ export class UnifiedTreeWizardModal extends Modal {
 		connectionsCheckbox.addEventListener('change', () => {
 			this.filterOptions.hasConnections = connectionsCheckbox.checked;
 			this.applyFiltersAndSort();
-			this.renderPersonList(listContainer);
-			this.updateResultsCount(container);
+			this.refreshPersonList();
 		});
 
 		// Results count
 		const resultsCount = container.createDiv({ cls: 'crc-wizard-results-count' });
 		resultsCount.createSpan({ text: `${this.filteredPeople.length} of ${this.allPeople.length} people` });
 
-		this.renderPersonList(listContainer);
+		this.renderPersonList(this.personListContainer);
+	}
+
+	/**
+	 * Refresh the person list using instance property references
+	 * This ensures we always use the current DOM elements after re-renders
+	 */
+	private refreshPersonList(): void {
+		if (this.personListContainer) {
+			this.renderPersonList(this.personListContainer);
+		}
+		if (this.personStepContainer) {
+			this.updateResultsCount(this.personStepContainer);
+		}
 	}
 
 	/**
