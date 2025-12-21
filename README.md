@@ -156,7 +156,7 @@
 *Real-time family tree visualization with pan/zoom, person details panel, and direct editing with bidirectional sync.*
 
 ### Control Center
-<img src="docs/images/canvas-roots-control-center-status-tab.png" alt="Control Center Status Tab" width="700">
+<img src="docs/images/canvas-roots-control-center-dashboard-tab.png" alt="Control Center Dashboard Tab" width="700">
 
 *Central hub for all Canvas Roots operations: vault statistics, import/export, tree generation, data quality tools, and quick actions.*
 
