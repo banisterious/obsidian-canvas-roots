@@ -1318,7 +1318,15 @@ export class UnifiedTreeWizardModal extends Modal {
 		const summaryList = summarySection.createEl('ul', { cls: 'crc-wizard-summary-list' });
 		summaryList.createEl('li', { text: `Root person: ${this.formData.rootPerson?.name || 'Not selected'}` });
 		summaryList.createEl('li', { text: `Tree type: ${this.getTreeTypeLabel()}` });
-		summaryList.createEl('li', { text: `Page: ${this.formData.pageSize.toUpperCase()}, ${this.formData.orientation}` });
+
+		// Show effective page size (may be overridden by large tree handling)
+		const effectivePageSize = this.treeSizeAnalysis?.isLarge &&
+			this.formData.largeTreeHandling === 'auto-page-size' &&
+			this.treeSizeAnalysis.recommendedPageSize
+			? this.treeSizeAnalysis.recommendedPageSize
+			: this.formData.pageSize;
+		summaryList.createEl('li', { text: `Page: ${effectivePageSize.toUpperCase()}, ${this.formData.orientation}` });
+
 		summaryList.createEl('li', { text: `Content: ${this.formData.nodeContent}` });
 		summaryList.createEl('li', { text: `Colors: ${this.formData.pdfColorScheme}` });
 	}
