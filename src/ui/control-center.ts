@@ -72,7 +72,7 @@ import { isPersonNote } from '../utils/note-type-detection';
 import { UniverseService } from '../universes/services/universe-service';
 import { UniverseWizardModal } from '../universes/ui/universe-wizard';
 import { EditUniverseModal } from '../universes/ui/edit-universe-modal';
-import { TreeGenerationWizardModal } from '../trees/ui/tree-generation-wizard';
+import { UnifiedTreeWizardModal } from '../trees/ui/unified-tree-wizard-modal';
 import type { UniverseInfo, UniverseEntityCounts } from '../universes/types';
 import type {
 	FactKey,
@@ -465,14 +465,9 @@ export class ControlCenterModal extends Modal {
 		const deathDate = fm.death_date instanceof Date ? fm.death_date.toISOString().split('T')[0] : fm.death_date;
 
 		// Open wizard directly with this person pre-selected
-		const wizard = new TreeGenerationWizardModal(this.plugin, {
-			initialPerson: {
-				name,
-				crId,
-				birthDate,
-				deathDate,
-				file
-			},
+		const wizard = new UnifiedTreeWizardModal(this.plugin, {
+			personCrId: crId,
+			personName: name,
 			onComplete: () => {
 				// Refresh the tab to show the new tree in recent list (if Control Center is open)
 				if (this.activeTab === 'tree-generation') {
@@ -4053,7 +4048,7 @@ export class ControlCenterModal extends Modal {
 		newTreeBtn.appendChild(createLucideIcon('plus', 16));
 		newTreeBtn.appendText('New Tree');
 		newTreeBtn.addEventListener('click', () => {
-			const wizard = new TreeGenerationWizardModal(this.plugin, {
+			const wizard = new UnifiedTreeWizardModal(this.plugin, {
 				onComplete: () => this.showTab(this.activeTab)
 			});
 			wizard.open();

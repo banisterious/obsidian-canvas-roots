@@ -43,7 +43,7 @@ import { PersonPickerModal, PersonInfo } from '../../ui/person-picker';
 import { PlacePickerModal, SelectedPlaceInfo } from '../../ui/place-picker';
 import { FolderFilterService } from '../../core/folder-filter';
 import { createLucideIcon } from '../../ui/lucide-icons';
-import { VisualTreeWizardModal } from '../../trees/ui/visual-tree-wizard-modal';
+import { UnifiedTreeWizardModal } from '../../trees/ui/unified-tree-wizard-modal';
 import type { VisualTreeChartType } from '../../trees/types/visual-tree-types';
 
 /**
@@ -1828,11 +1828,20 @@ export class ReportGeneratorModal extends Modal {
 
 		const chartType = chartTypeMap[this.selectedReportType] || 'pedigree';
 
-		// Close this modal and open the wizard
+		// Close this modal and open the unified wizard
 		this.close();
 
-		const wizard = new VisualTreeWizardModal(this.plugin, {
-			chartType,
+		// Map chart type to tree type for unified wizard
+		const treeTypeMap: Record<VisualTreeChartType, 'full' | 'ancestors' | 'descendants' | 'fan'> = {
+			'pedigree': 'ancestors',
+			'descendant': 'descendants',
+			'hourglass': 'full',
+			'fan': 'fan'
+		};
+
+		const wizard = new UnifiedTreeWizardModal(this.plugin, {
+			outputFormat: 'pdf',
+			treeType: treeTypeMap[chartType],
 			personCrId: this.selectedPersonCrId || undefined,
 			personName: this.selectedPersonName || undefined
 		});

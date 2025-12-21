@@ -181,7 +181,9 @@ export type LucideIconName =
 	| 'pedigree-tree' // Pedigree tree icon
 	| 'descendant-tree' // Descendant tree icon
 	| 'hourglass-tree' // Hourglass tree icon
-	| 'fan-chart'; // Fan chart icon
+	| 'fan-chart' // Fan chart icon
+	// Unified wizard
+	| 'layout-dashboard'; // Canvas output format
 
 /**
  * Tab configuration for Control Center navigation

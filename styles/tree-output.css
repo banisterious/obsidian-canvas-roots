@@ -1378,3 +1378,98 @@
   color: var(--text-muted);
   font-size: var(--cr-font-sm);
 }
+
+/* ==========================================================================
+   Unified Tree Wizard - Output Format Step
+   ========================================================================== */
+
+.crc-unified-wizard {
+  max-width: 750px;
+  width: 750px;
+}
+
+/* Output format selection cards */
+.crc-wizard-output-formats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.crc-wizard-format-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: var(--background-secondary);
+  border: 2px solid var(--background-modifier-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--cr-transition-fast);
+}
+
+.crc-wizard-format-card:hover {
+  border-color: var(--interactive-accent);
+  background: var(--background-secondary-alt);
+}
+
+.crc-wizard-format-card--selected {
+  border-color: var(--interactive-accent);
+  background: color-mix(in srgb, var(--interactive-accent) 10%, var(--background-secondary));
+}
+
+.crc-wizard-format-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  background: var(--background-modifier-border);
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+.crc-wizard-format-card--selected .crc-wizard-format-icon {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.crc-wizard-format-info {
+  flex: 1;
+}
+
+.crc-wizard-format-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-normal);
+  margin-bottom: 4px;
+}
+
+.crc-wizard-format-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.crc-wizard-format-features {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--text-muted);
+  list-style-type: disc;
+}
+
+.crc-wizard-format-features li {
+  padding: 2px 0;
+}
+
+.crc-wizard-format-card--selected .crc-wizard-format-title {
+  color: var(--interactive-accent);
+}
+
+/* Responsive layout for output format */
+@media (max-width: 600px) {
+  .crc-wizard-output-formats {
+    grid-template-columns: 1fr;
+  }
+}
