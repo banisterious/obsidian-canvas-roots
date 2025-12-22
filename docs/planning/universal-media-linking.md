@@ -17,6 +17,11 @@ Planning document for extending media attachment support to all entity types.
 - Implemented Phase 3.5: Media Folder Filter (settings, UI, and filter logic)
 - Renamed "Browse Gallery" to "Linked Media Gallery" for UX clarity
 - Added in-modal toggle for media folder filter to Linked Media Gallery and Find Unlinked modals
+- **SVG export with avatars now works for large trees (100+ avatars)**:
+  - Avatar images downscaled to 150px max
+  - Converted to JPEG at 85% quality (much smaller than PNG)
+  - 50ms delay between images for garbage collection
+  - Warning with depth limit suggestion for large exports
 
 ---
 
@@ -1447,7 +1452,7 @@ Benefits:
 - [x] Thumbnails are configurable (enable/disable via "Show avatars" menu toggle)
 - [x] Fallback to gender icons when no media present (built-in family-chart behavior)
 - [x] PNG/SVG/PDF export embeds avatar images as base64 data URIs
-- [ ] Performance acceptable with 100+ visible nodes (needs testing)
+- [x] SVG export works with 100+ avatars (downscaled to 150px JPEG, tested with 129 avatars)
 
 ### Phase 3.5: Media Folder Filter
 - [x] "Media folders" setting added to Preferences > Folder locations
