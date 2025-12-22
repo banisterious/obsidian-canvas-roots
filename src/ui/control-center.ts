@@ -1135,7 +1135,7 @@ export class ControlCenterModal extends Modal {
 					this.plugin.settings.recentTrees = [];
 					await this.plugin.saveSettings();
 					new Notice('Tree history cleared');
-					this.showTab('status'); // Refresh the tab
+					this.showTab('dashboard'); // Refresh the tab
 				})();
 			});
 
@@ -1214,7 +1214,7 @@ export class ControlCenterModal extends Modal {
 					this.plugin.settings.recentImports = [];
 					await this.plugin.saveSettings();
 					new Notice('Import history cleared');
-					this.showTab('status'); // Refresh the tab
+					this.showTab('dashboard'); // Refresh the tab
 				})();
 			});
 
@@ -5277,9 +5277,9 @@ export class ControlCenterModal extends Modal {
 				await this.plugin.createAllBases({ silent: true });
 			}
 
-			// Refresh status tab
+			// Refresh dashboard to show updated stats
 			if (totalNotesCreated > 0) {
-				this.showTab('status');
+				this.showTab('dashboard');
 			}
 
 			// If successful, offer to assign reference numbers
@@ -9263,9 +9263,9 @@ export class ControlCenterModal extends Modal {
 				await this.plugin.createAllBases({ silent: true });
 			}
 
-			// Refresh status tab
+			// Refresh dashboard to show updated stats
 			if (result.notesCreated > 0) {
-				this.showTab('status');
+				this.showTab('dashboard');
 			}
 
 			// If successful, offer to assign reference numbers
@@ -9860,9 +9860,9 @@ export class ControlCenterModal extends Modal {
 				await this.plugin.createAllBases({ silent: true });
 			}
 
-			// Refresh status tab
+			// Refresh dashboard to show updated stats
 			if (result.notesCreated > 0) {
-				this.showTab('status');
+				this.showTab('dashboard');
 			}
 
 			// If successful, offer to assign reference numbers
@@ -10524,9 +10524,9 @@ export class ControlCenterModal extends Modal {
 			}
 			new Notice(noticeMsg, 5000);
 
-			// Refresh status tab
+			// Refresh dashboard to show updated stats
 			if (result.notesCreated > 0) {
-				this.showTab('status');
+				this.showTab('dashboard');
 			}
 
 			// If successful, offer to assign reference numbers
