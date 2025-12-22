@@ -201,12 +201,12 @@ export class MediaManagerModal extends Modal {
 		// Action cards grid
 		const grid = contentEl.createDiv({ cls: 'crc-media-manager-grid' });
 
-		// Browse Gallery card
+		// Linked Media Gallery card
 		this.renderActionCard(grid, {
 			icon: 'layout-grid',
 			iconClass: 'gallery',
-			title: 'Browse Gallery',
-			description: 'View all media files linked to entities. Filter by entity type, search by name.',
+			title: 'Linked Media Gallery',
+			description: 'View media files linked to entities. Filter by entity type, search by name.',
 			stat: this.stats ? `${this.stats.linkedFiles} linked files` : 'Loading...',
 			onClick: () => this.openBrowseGallery()
 		});

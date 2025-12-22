@@ -229,7 +229,7 @@ export class MediaGalleryModal extends Modal {
 		const header = contentEl.createDiv({ cls: 'crc-media-gallery-header' });
 		const headerIcon = header.createDiv({ cls: 'crc-media-gallery-header-icon' });
 		setIcon(headerIcon, 'layout-grid');
-		header.createEl('h2', { text: 'Media Gallery' });
+		header.createEl('h2', { text: 'Linked Media Gallery' });
 
 		// Search and filters
 		const controls = contentEl.createDiv({ cls: 'crc-media-gallery-controls' });
