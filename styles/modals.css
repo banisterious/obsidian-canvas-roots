@@ -1206,9 +1206,21 @@
 .crc-picker-footer {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
   padding: 12px 16px;
   border-top: 1px solid var(--background-modifier-border);
   background: var(--background-secondary);
+}
+
+.crc-picker-footer--spaced {
+  justify-content: space-between;
+}
+
+.crc-picker-footer__buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .crc-picker-footer .crc-btn {
@@ -6351,13 +6363,38 @@
    Media Picker Modal
    ========================================================================== */
 
-.crc-media-picker-modal {
+/* Applied to contentEl, so target the parent modal container */
+.modal:has(.crc-media-picker-modal) {
   max-width: 900px;
   width: 90vw;
 }
 
-.crc-media-picker-modal .modal-content {
+.modal:has(.crc-media-picker-modal) .modal-content {
   padding: 0;
+  overflow: hidden;
+}
+
+/* Direct styles on contentEl */
+.crc-media-picker-modal {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+/* Ensure footer stays within modal bounds */
+.crc-media-picker-modal .crc-picker-footer {
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Fix empty state text wrapping */
+.crc-media-picker-modal .crc-picker-empty {
+  padding: 48px 16px;
+}
+
+.crc-media-picker-modal .crc-picker-empty p {
+  word-wrap: break-word;
+  max-width: 100%;
 }
 
 .crc-media-picker-results {
@@ -6481,9 +6518,28 @@
    Media Manage Modal
    ========================================================================== */
 
-.crc-media-manage-modal {
+/* Applied to contentEl, so target the parent modal container */
+.modal:has(.crc-media-manage-modal) {
   max-width: 600px;
   width: 90vw;
+}
+
+.modal:has(.crc-media-manage-modal) .modal-content {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Direct styles on contentEl */
+.crc-media-manage-modal {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+
+/* Ensure footer stays within modal bounds */
+.crc-media-manage-modal .crc-picker-footer {
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .crc-media-manage-instructions {
@@ -6498,11 +6554,18 @@
 .crc-media-manage-add {
   padding: 12px 16px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+}
+
+.crc-media-manage-add button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .crc-media-manage-add .crc-btn-icon {
-  margin-right: 6px;
+  display: flex;
+  align-items: center;
 }
 
 .crc-media-manage-list {

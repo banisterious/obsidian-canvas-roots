@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-22 17:16:50 UTC
+ * - Generated: 2025-12-22 17:29:34 UTC
  * - Components: 35 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -620,7 +620,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 6652 lines, 122.85 KB */
+/* Component Size: 6715 lines, 124.11 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -1830,9 +1830,21 @@ settings:
 .crc-picker-footer {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
   padding: 12px 16px;
   border-top: 1px solid var(--background-modifier-border);
   background: var(--background-secondary);
+}
+
+.crc-picker-footer--spaced {
+  justify-content: space-between;
+}
+
+.crc-picker-footer__buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .crc-picker-footer .crc-btn {
@@ -6975,13 +6987,38 @@ settings:
    Media Picker Modal
    ========================================================================== */
 
-.crc-media-picker-modal {
+/* Applied to contentEl, so target the parent modal container */
+.modal:has(.crc-media-picker-modal) {
   max-width: 900px;
   width: 90vw;
 }
 
-.crc-media-picker-modal .modal-content {
+.modal:has(.crc-media-picker-modal) .modal-content {
   padding: 0;
+  overflow: hidden;
+}
+
+/* Direct styles on contentEl */
+.crc-media-picker-modal {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+/* Ensure footer stays within modal bounds */
+.crc-media-picker-modal .crc-picker-footer {
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Fix empty state text wrapping */
+.crc-media-picker-modal .crc-picker-empty {
+  padding: 48px 16px;
+}
+
+.crc-media-picker-modal .crc-picker-empty p {
+  word-wrap: break-word;
+  max-width: 100%;
 }
 
 .crc-media-picker-results {
@@ -7105,9 +7142,28 @@ settings:
    Media Manage Modal
    ========================================================================== */
 
-.crc-media-manage-modal {
+/* Applied to contentEl, so target the parent modal container */
+.modal:has(.crc-media-manage-modal) {
   max-width: 600px;
   width: 90vw;
+}
+
+.modal:has(.crc-media-manage-modal) .modal-content {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Direct styles on contentEl */
+.crc-media-manage-modal {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+
+/* Ensure footer stays within modal bounds */
+.crc-media-manage-modal .crc-picker-footer {
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .crc-media-manage-instructions {
@@ -7122,11 +7178,18 @@ settings:
 .crc-media-manage-add {
   padding: 12px 16px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+}
+
+.crc-media-manage-add button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .crc-media-manage-add .crc-btn-icon {
-  margin-right: 6px;
+  display: flex;
+  align-items: center;
 }
 
 .crc-media-manage-list {
@@ -23605,11 +23668,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-22 17:16:50 UTC
+ * Build completed: 2025-12-22 17:29:34 UTC
  * Components processed: 35
- * Total lines: 23267
- * Total size: 460.82 KB
- * Build duration: 0.05 seconds
+ * Total lines: 23330
+ * Total size: 462.09 KB
+ * Build duration: 0.04 seconds
  *
  * Component breakdown:
  * - variables.css: 48 lines, 1.33 KB
@@ -23620,7 +23683,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 6652 lines, 122.85 KB
+ * - modals.css: 6715 lines, 124.11 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

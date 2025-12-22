@@ -275,12 +275,14 @@ export class MediaPickerModal extends Modal {
 		this.resultsContainer = contentEl.createDiv({ cls: 'crc-picker-results crc-media-picker-results' });
 
 		// Footer with selection count and confirm button
-		const footer = contentEl.createDiv({ cls: 'crc-picker-footer' });
+		const footer = contentEl.createDiv({ cls: 'crc-picker-footer crc-picker-footer--spaced' });
 
 		this.selectionCountEl = footer.createDiv({ cls: 'crc-picker-selection-count' });
 		this.updateSelectionCount();
 
-		const confirmBtn = footer.createEl('button', {
+		const footerButtons = footer.createDiv({ cls: 'crc-picker-footer__buttons' });
+
+		const confirmBtn = footerButtons.createEl('button', {
 			cls: 'mod-cta',
 			text: this.options.multiSelect ? 'Add selected' : 'Select'
 		});
