@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Fixed
 
-- **Recent Files tracks created notes** - Notes created via Dashboard quick-action tiles (Person, Event, Source, Place) now immediately appear in the Recent Files section.
+- **ESLint compliance** - Fixed all non-sentence-case ESLint errors for Obsidian plugin review compliance: async functions without await, misused promises in event handlers, floating promises, unused variables, and TFile cast issues.
 
 ---
 
@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Visual Tree Charts** - Generate printable PDF tree diagrams with positioned boxes and connecting lines. Four chart types available: Pedigree (ancestors), Descendant, Hourglass (both directions), and Fan Chart (semicircular).
+
+- **Recent Files tracks created notes** - Notes created via Dashboard quick-action tiles (Person, Event, Source, Place) now immediately appear in the Recent Files section.
 
 - **Unified Tree Wizard** - Single wizard for both Canvas and PDF tree generation. Dynamic step flow branches based on output format selection. Replaces the previous separate wizards for a streamlined experience.
 

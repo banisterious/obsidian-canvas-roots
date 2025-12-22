@@ -1124,12 +1124,14 @@ function loadPlaceList(
 			});
 			const tabIcon = createLucideIcon('file-text', 14);
 			openTabBtn.appendChild(tabIcon);
-			openTabBtn.addEventListener('click', async (e) => {
+			openTabBtn.addEventListener('click', (e) => {
 				e.stopPropagation();
 				const file = plugin.app.vault.getAbstractFileByPath(place.filePath);
 				if (file instanceof TFile) {
-					await plugin.trackRecentFile(file, 'place');
-					void plugin.app.workspace.getLeaf('tab').openFile(file);
+					void (async () => {
+						await plugin.trackRecentFile(file, 'place');
+						void plugin.app.workspace.getLeaf('tab').openFile(file);
+					})();
 				}
 			});
 
@@ -1140,12 +1142,14 @@ function loadPlaceList(
 			});
 			const windowIcon = createLucideIcon('external-link', 14);
 			openWindowBtn.appendChild(windowIcon);
-			openWindowBtn.addEventListener('click', async (e) => {
+			openWindowBtn.addEventListener('click', (e) => {
 				e.stopPropagation();
 				const file = plugin.app.vault.getAbstractFileByPath(place.filePath);
 				if (file instanceof TFile) {
-					await plugin.trackRecentFile(file, 'place');
-					void plugin.app.workspace.getLeaf('window').openFile(file);
+					void (async () => {
+						await plugin.trackRecentFile(file, 'place');
+						void plugin.app.workspace.getLeaf('window').openFile(file);
+					})();
 				}
 			});
 		}

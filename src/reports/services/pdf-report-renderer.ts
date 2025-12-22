@@ -89,6 +89,7 @@ const COLORS = {
  * Lazily loads pdfmake to minimize bundle impact.
  */
 export class PdfReportRenderer {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private pdfMake: any = null;
 
 	/**
@@ -278,6 +279,7 @@ export class PdfReportRenderer {
 				]
 			},
 			layout: {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				hLineWidth: (i: number, node: any) => (i === 0 || i === 1 || i === node.table.body.length ? 0.5 : 0.25),
 				vLineWidth: () => 0.25,
 				hLineColor: (i: number) => (i === 1 ? '#666666' : COLORS.borderLight),

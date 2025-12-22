@@ -514,10 +514,12 @@ function renderEventTable(
 		});
 		const fileIcon = createLucideIcon('file-text', 14);
 		openBtn.appendChild(fileIcon);
-		openBtn.addEventListener('click', async (e) => {
+		openBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
-			await plugin.trackRecentFile(event.file, 'event');
-			void plugin.app.workspace.getLeaf(false).openFile(event.file);
+			void (async () => {
+				await plugin.trackRecentFile(event.file, 'event');
+				void plugin.app.workspace.getLeaf(false).openFile(event.file);
+			})();
 		});
 	}
 

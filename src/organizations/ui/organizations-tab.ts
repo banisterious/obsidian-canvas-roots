@@ -347,11 +347,13 @@ function renderOrganizationRow(
 	const fileIcon = createLucideIcon('file-text', 14);
 	openBtn.appendChild(fileIcon);
 
-	openBtn.addEventListener('click', async (e) => {
+	openBtn.addEventListener('click', (e) => {
 		e.stopPropagation(); // Don't trigger row click
 		if (org.file instanceof TFile) {
-			await plugin.trackRecentFile(org.file, 'organization');
-			void plugin.app.workspace.getLeaf(false).openFile(org.file);
+			void (async () => {
+				await plugin.trackRecentFile(org.file, 'organization');
+				void plugin.app.workspace.getLeaf(false).openFile(org.file);
+			})();
 		}
 	});
 }

@@ -12,7 +12,6 @@ import {
 	VisualTreeLayout,
 	VisualTreeNode,
 	VisualTreeConnection,
-	VisualTreeChartType,
 	VisualTreePageSize,
 	TreeSizeAnalysis,
 	PAGE_SIZES,

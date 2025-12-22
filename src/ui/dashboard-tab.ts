@@ -488,13 +488,13 @@ function openPersonInFamilyChart(
 /**
  * Render the Vault Health section (collapsible)
  */
-async function renderVaultHealthSection(
+function renderVaultHealthSection(
 	container: HTMLElement,
 	plugin: CanvasRootsPlugin,
 	app: App,
 	createCard: (options: { title: string; icon?: LucideIconName; subtitle?: string }) => HTMLElement,
 	closeModal: () => void
-): Promise<void> {
+): void {
 	// Create collapsible details element
 	const details = container.createEl('details', { cls: 'crc-dashboard-collapsible' });
 
@@ -520,18 +520,18 @@ async function renderVaultHealthSection(
 	});
 
 	// Load and render stats
-	await renderVaultHealthContent(content, plugin, app, closeModal);
+	renderVaultHealthContent(content, plugin, app, closeModal);
 }
 
 /**
  * Render the vault health metrics content
  */
-async function renderVaultHealthContent(
+function renderVaultHealthContent(
 	container: HTMLElement,
 	plugin: CanvasRootsPlugin,
 	app: App,
 	closeModal: () => void
-): Promise<void> {
+): void {
 	// Show loading state
 	const loadingEl = container.createDiv({ cls: 'crc-dashboard-loading' });
 	loadingEl.createSpan({ text: 'Loading statistics...', cls: 'crc-text-muted' });
@@ -609,7 +609,7 @@ async function renderVaultHealthContent(
 
 	// Count orphaned people as issues
 	const issueCount = stats.people.orphanedPeople;
-	const issuesBadge = issuesLabel.createSpan({
+	issuesLabel.createSpan({
 		cls: 'crc-dashboard-issues-badge',
 		text: issueCount.toString()
 	});

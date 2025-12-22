@@ -1748,6 +1748,7 @@ export class ReportGeneratorModal extends Modal {
 	/**
 	 * Generate PDF from the report result
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private async generatePdfFromResult(result: any): Promise<void> {
 		const pdfOptions = {
 			pageSize: this.pdfOptions.pageSize,

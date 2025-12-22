@@ -1,4 +1,4 @@
-import { App, Menu, MenuItem, Modal, Notice, Platform, Setting, TFile, TFolder, setIcon, ToggleComponent, normalizePath } from 'obsidian';
+import { App, Menu, MenuItem, Modal, Notice, Platform, Setting, TFile, TFolder, setIcon, normalizePath } from 'obsidian';
 import CanvasRootsPlugin from '../../main';
 import { TAB_CONFIGS, createLucideIcon, setLucideIcon, LucideIconName } from './lucide-icons';
 import { ensureFolderExists } from '../core/canvas-utils';
@@ -22,7 +22,7 @@ import { GedcomImportProgressModal } from './gedcom-import-progress-modal';
 import { SchemaValidationProgressModal } from './schema-validation-progress-modal';
 import { BidirectionalLinker } from '../core/bidirectional-linker';
 import { ReferenceNumberingService, NumberingSystem } from '../core/reference-numbering';
-import type { RecentTreeInfo, RecentImportInfo, ColorScheme } from '../settings';
+import type { RecentTreeInfo, RecentImportInfo } from '../settings';
 import { FolderFilterService } from '../core/folder-filter';
 import { StagingService, StagingSubfolderInfo } from '../core/staging-service';
 import { CrossImportDetectionService, CrossImportMatch } from '../core/cross-import-detection';
@@ -457,12 +457,6 @@ export class ControlCenterModal extends Modal {
 			new Notice('This note does not have a cr_id field');
 			return;
 		}
-
-		const fm = cache.frontmatter;
-
-		// Convert Date objects to ISO strings if necessary (Obsidian parses YAML dates as Date objects)
-		const birthDate = fm.birth_date instanceof Date ? fm.birth_date.toISOString().split('T')[0] : fm.birth_date;
-		const deathDate = fm.death_date instanceof Date ? fm.death_date.toISOString().split('T')[0] : fm.death_date;
 
 		// Open wizard directly with this person pre-selected
 		const wizard = new UnifiedTreeWizardModal(this.plugin, {
@@ -3002,10 +2996,12 @@ export class ControlCenterModal extends Modal {
 		});
 		const fileIcon = createLucideIcon('file-text', 14);
 		openBtn.appendChild(fileIcon);
-		openBtn.addEventListener('click', async (e) => {
+		openBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
-			await this.plugin.trackRecentFile(person.file, 'person');
-			void this.app.workspace.getLeaf(false).openFile(person.file);
+			void (async () => {
+				await this.plugin.trackRecentFile(person.file, 'person');
+				void this.app.workspace.getLeaf(false).openFile(person.file);
+			})();
 		});
 
 		// Click row to open edit modal
@@ -4086,8 +4082,8 @@ export class ControlCenterModal extends Modal {
 			const statBox = statsGrid.createDiv({ cls: 'crc-tree-stat-box' });
 			const iconEl = statBox.createDiv({ cls: 'crc-tree-stat-box__icon' });
 			iconEl.appendChild(createLucideIcon(stat.icon, 16));
-			const valueEl = statBox.createDiv({ cls: 'crc-tree-stat-box__value', text: String(stat.value) });
-			const labelEl = statBox.createDiv({ cls: 'crc-tree-stat-box__label', text: stat.label });
+			statBox.createDiv({ cls: 'crc-tree-stat-box__value', text: String(stat.value) });
+			statBox.createDiv({ cls: 'crc-tree-stat-box__label', text: stat.label });
 		});
 
 		// === Recent Trees Card ===
@@ -13510,7 +13506,7 @@ export class ControlCenterModal extends Modal {
 					const file = this.app.vault.getAbstractFileByPath(tree.canvasPath);
 					if (file instanceof TFile) {
 						// Trigger file explorer reveal
-						this.app.workspace.revealLeaf(
+						void this.app.workspace.revealLeaf(
 							this.app.workspace.getLeavesOfType('file-explorer')[0]
 						);
 						// Use internal API to reveal file if available
@@ -13568,7 +13564,7 @@ export class ControlCenterModal extends Modal {
 							});
 
 							if (confirmed) {
-								await this.app.vault.trash(file, true);
+								await this.app.fileManager.trashFile(file);
 								// Remove from recent trees
 								if (this.plugin.settings.recentTrees) {
 									this.plugin.settings.recentTrees = this.plugin.settings.recentTrees.filter(

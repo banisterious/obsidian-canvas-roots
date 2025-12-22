@@ -13,12 +13,12 @@
  * 4b. PDF Options → 5b. PDF Output
  */
 
-import { Modal, Setting, Notice, TFile, TFolder, setIcon, normalizePath } from 'obsidian';
+import { Modal, Setting, Notice, TFile, setIcon, normalizePath } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import { createLucideIcon, setLucideIcon, LucideIconName } from '../../ui/lucide-icons';
 import type { PersonInfo } from '../../ui/person-picker';
 import { TreePreviewRenderer } from '../../ui/tree-preview';
-import { FamilyGraphService, FamilyTree, TreeOptions } from '../../core/family-graph';
+import { FamilyGraphService, TreeOptions } from '../../core/family-graph';
 import { CanvasGenerator, CanvasGenerationOptions } from '../../core/canvas-generator';
 import type { LayoutOptions } from '../../core/layout-engine';
 import type { CanvasColor, ColorScheme, LayoutType, RecentTreeInfo } from '../../settings';
@@ -203,6 +203,9 @@ export class UnifiedTreeWizardModal extends Modal {
 	// PDF tree size analysis
 	private treeSizeAnalysis: TreeSizeAnalysis | null = null;
 
+	// Pre-selected person (resolved in onOpen)
+	private preSelectedPersonCrId?: string;
+
 	constructor(plugin: CanvasRootsPlugin, options?: UnifiedTreeWizardOptions) {
 		super(plugin.app);
 		this.plugin = plugin;
@@ -257,14 +260,22 @@ export class UnifiedTreeWizardModal extends Modal {
 			pdfTitle: ''
 		};
 
-		// Apply pre-selected person if provided
-		if (options?.personCrId && options?.personName) {
-			this.formData.rootPerson = {
-				crId: options.personCrId,
-				name: options.personName,
-				file: null as unknown as TFile
-			};
+		// Pre-selected person will be resolved in onOpen after loadPeople()
+		this.preSelectedPersonCrId = options?.personCrId;
+	}
+
+	/**
+	 * Find a person file by cr_id
+	 */
+	private findPersonFileByCrId(crId: string): TFile | null {
+		const files = this.app.vault.getMarkdownFiles();
+		for (const file of files) {
+			const cache = this.app.metadataCache.getFileCache(file);
+			if (cache?.frontmatter?.cr_id === crId) {
+				return file;
+			}
 		}
+		return null;
 	}
 
 	/**
@@ -297,7 +308,7 @@ export class UnifiedTreeWizardModal extends Modal {
 		return flow[this.currentStepIndex];
 	}
 
-	async onOpen(): Promise<void> {
+	onOpen(): void {
 		const { contentEl } = this;
 		contentEl.empty();
 		this.modalEl.addClass('crc-tree-wizard');
@@ -318,7 +329,15 @@ export class UnifiedTreeWizardModal extends Modal {
 		this.contentContainer = contentEl.createDiv({ cls: 'cr-wizard-content' });
 
 		// Load people for Step 1
-		await this.loadPeople();
+		this.loadPeople();
+
+		// Apply pre-selected person if provided
+		if (this.preSelectedPersonCrId) {
+			const person = this.allPeople.find(p => p.crId === this.preSelectedPersonCrId);
+			if (person) {
+				this.formData.rootPerson = person;
+			}
+		}
 
 		this.renderCurrentStep();
 	}
@@ -333,7 +352,7 @@ export class UnifiedTreeWizardModal extends Modal {
 	/**
 	 * Load all people from the vault
 	 */
-	private async loadPeople(): Promise<void> {
+	private loadPeople(): void {
 		const files = this.app.vault.getMarkdownFiles();
 		this.allPeople = [];
 
@@ -1067,10 +1086,10 @@ export class UnifiedTreeWizardModal extends Modal {
 
 		const summary = container.createDiv({ cls: 'crc-wizard-preview-summary' });
 
-		void this.buildCanvasPreview(summary);
+		this.buildCanvasPreview(summary);
 	}
 
-	private async buildCanvasPreview(summaryContainer: HTMLElement): Promise<void> {
+	private buildCanvasPreview(summaryContainer: HTMLElement): void {
 		if (!this.previewContainer || !this.formData.rootPerson) return;
 
 		this.previewContainer.empty();
@@ -1230,9 +1249,8 @@ export class UnifiedTreeWizardModal extends Modal {
 				.setValue(this.formData.pdfColorScheme)
 				.onChange(value => { this.formData.pdfColorScheme = value as VisualTreeColorScheme; }));
 
-		// Large tree warning placeholder
-		const warningContainer = form.createDiv({ cls: 'cr-large-tree-warning' });
-		warningContainer.style.display = 'none';
+		// Large tree warning placeholder (hidden by default via CSS)
+		const warningContainer = form.createDiv({ cls: 'cr-large-tree-warning cr-hidden' });
 		warningContainer.setAttribute('data-warning-container', 'true');
 
 		// Run initial analysis
@@ -1266,11 +1284,11 @@ export class UnifiedTreeWizardModal extends Modal {
 		this.treeSizeAnalysis = this.visualTreeService.analyzeTreeSize(options);
 
 		if (!this.treeSizeAnalysis || !this.treeSizeAnalysis.isLarge) {
-			warningContainer.style.display = 'none';
+			warningContainer.addClass('cr-hidden');
 			return;
 		}
 
-		warningContainer.style.display = 'block';
+		warningContainer.removeClass('cr-hidden');
 		warningContainer.empty();
 
 		const analysis = this.treeSizeAnalysis;
