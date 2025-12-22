@@ -6,7 +6,7 @@ Planning document for extending media attachment support to all entity types.
 - **Priority:** High
 - **GitHub Issue:** [#21](https://github.com/banisterious/obsidian-canvas-roots/issues/21)
 - **Created:** 2025-12-20
-- **Updated:** 2025-12-20
+- **Updated:** 2025-12-22
 
 ---
 
@@ -72,7 +72,7 @@ export interface SourceNote {
 
 ### Schema Changes
 
-Add `media: string[]` to all entity type interfaces, using the same indexed property convention as Sources:
+Add `media: string[]` to all entity type interfaces, using YAML array syntax:
 
 ```yaml
 # Person note
@@ -80,8 +80,9 @@ Add `media: string[]` to all entity type interfaces, using the same indexed prop
 cr_type: person
 cr_id: john-smith
 name: John Smith
-media: "[[photos/john-smith-portrait.jpg]]"
-media_2: "[[documents/john-smith-birth-cert.pdf]]"
+media:
+  - "[[photos/john-smith-portrait.jpg]]"
+  - "[[documents/john-smith-birth-cert.pdf]]"
 ---
 
 # Event note
@@ -89,7 +90,8 @@ media_2: "[[documents/john-smith-birth-cert.pdf]]"
 cr_type: event
 cr_id: wedding-1902
 event_type: marriage
-media: "[[photos/wedding-ceremony.jpg]]"
+media:
+  - "[[photos/wedding-ceremony.jpg]]"
 ---
 
 # Place note
@@ -97,8 +99,9 @@ media: "[[photos/wedding-ceremony.jpg]]"
 cr_type: place
 cr_id: dublin-ireland
 name: Dublin, Ireland
-media: "[[photos/dublin-1920s.jpg]]"
-media_2: "[[maps/dublin-historical.png]]"
+media:
+  - "[[photos/dublin-1920s.jpg]]"
+  - "[[maps/dublin-historical.png]]"
 ---
 
 # Organization note
@@ -106,9 +109,12 @@ media_2: "[[maps/dublin-historical.png]]"
 cr_type: organization
 cr_id: house-stark
 name: House Stark
-media: "[[images/stark-sigil.png]]"
+media:
+  - "[[images/stark-sigil.png]]"
 ---
 ```
+
+> **Note:** This uses YAML array syntax rather than indexed properties (`media_2`, `media_3`, etc.). The existing `source_*` indexed pattern will be migrated to arrays in a future update. See [source-array-migration.md](./source-array-migration.md).
 
 ### Thumbnail Selection
 
@@ -140,8 +146,9 @@ The first media item serves as the display thumbnail by default. Users control w
 
 ```yaml
 thumbnail: "[[cropped-portrait.jpg]]"  # Optional override
-media: "[[full-portrait.jpg]]"
-media_2: "[[document.pdf]]"
+media:
+  - "[[full-portrait.jpg]]"
+  - "[[document.pdf]]"
 ```
 
 Resolution order:
@@ -251,26 +258,26 @@ export class MediaService {
   constructor(private app: App, private settings: CanvasRootsSettings) {}
 
   /**
-   * Parse indexed media properties from frontmatter
-   * Handles: media, media_2, media_3, etc.
+   * Parse media array from frontmatter
+   * Expects YAML array format:
+   *   media:
+   *     - "[[file1.jpg]]"
+   *     - "[[file2.jpg]]"
    */
-  parseMediaProperties(frontmatter: Record<string, unknown>): string[] {
-    const media: string[] = [];
+  parseMediaProperty(frontmatter: Record<string, unknown>): string[] {
+    if (!frontmatter.media) return [];
 
-    // Primary media field
-    if (frontmatter.media) {
-      media.push(...this.normalizeToArray(frontmatter.media));
+    // Handle both array and single value (for backwards compatibility)
+    if (Array.isArray(frontmatter.media)) {
+      return frontmatter.media.filter((item): item is string => typeof item === 'string');
     }
 
-    // Indexed media fields (media_2, media_3, ...)
-    for (let i = 2; i <= 20; i++) {
-      const key = `media_${i}`;
-      if (frontmatter[key]) {
-        media.push(...this.normalizeToArray(frontmatter[key]));
-      }
+    // Single value - wrap in array
+    if (typeof frontmatter.media === 'string') {
+      return [frontmatter.media];
     }
 
-    return media;
+    return [];
   }
 
   /**
@@ -314,26 +321,43 @@ export class MediaService {
 #### Scope
 
 1. **Context menu actions**
-   - Add "Link Media" action to Person, Event, Place, Organization notes
-   - Opens file picker to select media file
-   - Adds wikilink to entity's `media` property
+   - Add "Link Media" and "Manage media..." to **Canvas Roots** submenu
+   - All Canvas Roots actions grouped under single submenu
+   - Opens file picker modal with search and filters
+   - Adds wikilink to entity's `media` array
 
-2. **Bulk Media Linking tool**
+2. **Link Media Modal (File Picker)**
+   - FuzzySuggestModal-based file picker
+   - Search field with filters:
+     - **File type:** All types, Images, Documents, Video, Audio
+     - **File age:** Any age, Today, This week, This month, This year
+     - **File size:** Any size, < 100KB, 100KB - 1MB, > 1MB
+   - Shows thumbnail preview for images
+   - Displays file path
+
+3. **Bulk Media Linking tool**
    - Extend existing bulk linking modal
    - Add entity type selector (Person, Event, Place, Organization, Source)
    - Show entities without media for linking
    - Support batch linking from folder
 
-3. **Control Center integration**
+4. **Control Center integration**
    - Add media column/indicator to entity tables in each tab
    - Show media count or thumbnail indicator
+   - **Row context menu** with:
+     - Open note
+     - Link media
+     - Manage media...
+     - Open in default app
+     - Reveal in explorer
+     - Copy path
 
-4. **Unified Media Gallery**
+5. **Unified Media Gallery**
    - Extend gallery to show media from all entity types
    - Add entity type filter
    - Group by entity type option
 
-5. **Media Order UI (Thumbnail Selection)**
+6. **Media Order UI (Thumbnail Selection)**
    - Drag-and-drop reorderable media list
    - First item highlighted as "Thumbnail"
    - Accessible from context menu ("Manage media...")
@@ -342,27 +366,79 @@ export class MediaService {
 
 #### Implementation Notes
 
-**Context Menu Action:**
+**Context Menu (Canvas Roots Submenu):**
 
 ```typescript
-// Add to context menu registration
+// All Canvas Roots actions under submenu
 menu.addItem((item) => {
   item
-    .setTitle('Link media')
-    .setIcon('image-plus')
-    .onClick(async () => {
-      const file = await this.app.vault.adapter.pick({
-        accept: [...IMAGE_EXTENSIONS, ...DOCUMENT_EXTENSIONS]
-      });
-      if (file) {
-        await this.mediaService.linkMediaToEntity(
-          entityType,
-          entity.crId,
-          file.path
-        );
-      }
+    .setTitle('Canvas Roots')
+    .setIcon('trees')
+    .setSubmenu()
+    .addItem((sub) => {
+      sub
+        .setTitle('Link media')
+        .setIcon('image-plus')
+        .onClick(() => new LinkMediaModal(this.app, entity).open());
+    })
+    .addItem((sub) => {
+      sub
+        .setTitle('Manage media...')
+        .setIcon('list')
+        .onClick(() => new MediaOrderModal(this.app, entity).open());
     });
 });
+```
+
+**Link Media Modal with Filters:**
+
+```typescript
+interface MediaPickerFilters {
+  fileType: 'all' | 'image' | 'document' | 'video' | 'audio';
+  fileAge: 'all' | 'today' | 'week' | 'month' | 'year';
+  fileSize: 'all' | 'small' | 'medium' | 'large';  // <100KB, 100KB-1MB, >1MB
+}
+
+class LinkMediaModal extends FuzzySuggestModal<TFile> {
+  private filters: MediaPickerFilters = {
+    fileType: 'all',
+    fileAge: 'all',
+    fileSize: 'all'
+  };
+
+  getItems(): TFile[] {
+    return this.app.vault.getFiles()
+      .filter(file => this.matchesFilters(file));
+  }
+
+  private matchesFilters(file: TFile): boolean {
+    // Type filter
+    if (this.filters.fileType !== 'all') {
+      const ext = file.extension.toLowerCase();
+      if (this.filters.fileType === 'image' && !IMAGE_EXTENSIONS.includes(`.${ext}`)) return false;
+      if (this.filters.fileType === 'document' && !DOCUMENT_EXTENSIONS.includes(`.${ext}`)) return false;
+      // ... video, audio
+    }
+
+    // Age filter
+    if (this.filters.fileAge !== 'all') {
+      const age = Date.now() - file.stat.mtime;
+      if (this.filters.fileAge === 'today' && age > 86400000) return false;
+      if (this.filters.fileAge === 'week' && age > 604800000) return false;
+      // ... month, year
+    }
+
+    // Size filter
+    if (this.filters.fileSize !== 'all') {
+      const size = file.stat.size;
+      if (this.filters.fileSize === 'small' && size >= 100000) return false;
+      if (this.filters.fileSize === 'medium' && (size < 100000 || size >= 1000000)) return false;
+      if (this.filters.fileSize === 'large' && size < 1000000) return false;
+    }
+
+    return true;
+  }
+}
 ```
 
 **Entity Type Filter in Gallery:**
@@ -519,22 +595,15 @@ class MediaOrderModal extends Modal {
 ```typescript
 /**
  * Update frontmatter with new media order.
- * Rewrites media, media_2, media_3, etc. in new order.
+ * Writes media as YAML array.
  */
 async updateMediaOrder(file: TFile, mediaRefs: string[]): Promise<void> {
   await this.app.fileManager.processFrontMatter(file, (fm) => {
-    // Clear existing media fields
-    delete fm.media;
-    for (let i = 2; i <= 20; i++) {
-      delete fm[`media_${i}`];
-    }
-
-    // Write in new order
+    // Write as array (or remove if empty)
     if (mediaRefs.length > 0) {
-      fm.media = mediaRefs[0];
-    }
-    for (let i = 1; i < mediaRefs.length; i++) {
-      fm[`media_${i + 1}`] = mediaRefs[i];
+      fm.media = mediaRefs;
+    } else {
+      delete fm.media;
     }
   });
 }
@@ -577,7 +646,7 @@ async updateMediaOrder(file: TFile, mediaRefs: string[]): Promise<void> {
    - Show initials when no media present
    - Optional: show placeholder icon
 
-3. **Settings**
+3. **Plugin Settings** (in Canvas Roots settings tab)
    - Enable/disable thumbnails globally
    - Thumbnail size setting
    - Thumbnail position setting
@@ -950,20 +1019,18 @@ attachments/
 
 ---
 
-### Indexed Property Convention
+### YAML Array Convention
 
-All entity types use the same indexed property pattern:
+The `media` property uses YAML array syntax:
 
 ```yaml
-media: "[[file1.jpg]]"        # Primary (also thumbnail)
-media_2: "[[file2.jpg]]"      # Additional
-media_3: "[[file3.pdf]]"      # Additional
+media:
+  - "[[file1.jpg]]"        # First item = thumbnail
+  - "[[file2.jpg]]"
+  - "[[file3.pdf]]"
 ```
 
-This matches the existing pattern used for:
-- `spouse`, `spouse_2`, etc.
-- `source`, `source_2`, etc.
-- Media on sources
+This is cleaner than the indexed property pattern (`media_2`, `media_3`) used by existing `source_*` properties. The source properties will be migrated to arrays in a future update (see [source-array-migration.md](./source-array-migration.md)).
 
 ### Media Resolution
 
@@ -1027,6 +1094,7 @@ For large vaults with many media:
 
 ## Related Documents
 
+- [Source Array Migration](./source-array-migration.md) - Future migration of `source_*` to array format
 - [Roadmap: Universal Media Linking](../../wiki-content/Roadmap.md#universal-media-linking)
 - [Source Media Gallery](../../wiki-content/Statistics-And-Reports.md#media-gallery)
 - [Bulk Source-Image Linking](../../wiki-content/Release-History.md#bulk-source-image-linking-v0125)
