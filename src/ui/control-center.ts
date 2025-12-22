@@ -3156,6 +3156,16 @@ export class ControlCenterModal extends Modal {
 				});
 		});
 
+		menu.addItem((item) => {
+			item
+				.setTitle('Show in Family Chart')
+				.setIcon('git-fork')
+				.onClick(() => {
+					this.close();
+					void this.plugin.activateFamilyChartView(person.crId);
+				});
+		});
+
 		menu.addSeparator();
 
 		// Events actions - submenu on desktop, flat on mobile
