@@ -2,7 +2,7 @@
 
 Planning document for extending media attachment support to all entity types.
 
-- **Status:** Complete (Phases 1, 2 & 3)
+- **Status:** Complete (Phases 1, 2, 3 & 3.5)
 - **Priority:** High
 - **GitHub Issue:** [#20](https://github.com/banisterious/obsidian-canvas-roots/issues/20)
 - **Branch:** `feature/universal-media-linking`
@@ -14,7 +14,7 @@ Planning document for extending media attachment support to all entity types.
 - Fixed Media Gallery and Unlinked Media modals not finding linked media (missing `ensureCacheLoaded()` call)
 - Added YAML array format support for `media` property in SourceService
 - Fixed Unlinked Media modal styling (CSS `:has()` selector pattern, search field styling)
-- Added Phase 3.5: Media Folder Filter enhancement (planned)
+- Implemented Phase 3.5: Media Folder Filter (settings, UI, and filter logic)
 
 ---
 
@@ -1373,13 +1373,13 @@ For large vaults with many media:
 - [ ] Performance acceptable with 100+ visible nodes (needs testing)
 
 ### Phase 3.5: Media Folder Filter
-- [ ] "Media folders" setting added to Preferences > Folder locations
-- [ ] "Limit media scanning to specified folders" toggle
-- [ ] Filter applied to Find Unlinked modal
-- [ ] Filter applied to Media Manager hub stats
-- [ ] Filter applied to MediaPickerModal
-- [ ] Browse Gallery unaffected (already shows only linked media)
-- [ ] Backwards compatible (empty folders + disabled = scan entire vault)
+- [x] "Media folders" setting added to Preferences > Folder locations
+- [x] "Limit media scanning to specified folders" toggle
+- [x] Filter applied to Find Unlinked modal
+- [x] Filter applied to Media Manager hub stats
+- [x] Filter applied to MediaPickerModal
+- [x] Browse Gallery unaffected (already shows only linked media)
+- [x] Backwards compatible (empty folders + disabled = scan entire vault)
 
 ### Phase 4
 - [ ] `.gpkg` files import correctly
