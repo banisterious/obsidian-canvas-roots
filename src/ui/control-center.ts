@@ -17,7 +17,7 @@ import { GedcomXImporter, GedcomXImportResult } from '../gedcomx/gedcomx-importe
 import { GedcomXParser } from '../gedcomx/gedcomx-parser';
 import { GrampsImporter, GrampsImportResult } from '../gramps/gramps-importer';
 import { GrampsParser } from '../gramps/gramps-parser';
-import { extractGpkg, isZipFile, type GpkgExtractionResult } from '../gramps/gpkg-extractor';
+import { extractGpkg, isZipFile, isGzipFile, type GpkgExtractionResult } from '../gramps/gpkg-extractor';
 import { readFileWithDecompression } from '../core/compression-utils';
 import { GedcomImportProgressModal } from './gedcom-import-progress-modal';
 import { SchemaValidationProgressModal } from './schema-validation-progress-modal';
@@ -9684,11 +9684,11 @@ export class ControlCenterModal extends Modal {
 				// Handle .gpkg package files
 				const arrayBuffer = await file.arrayBuffer();
 
-				// Verify it's a ZIP file
-				if (!isZipFile(arrayBuffer)) {
+				// Verify it's a valid archive format (ZIP or gzip)
+				if (!isZipFile(arrayBuffer) && !isGzipFile(arrayBuffer)) {
 					analysisContainer.empty();
 					analysisContainer.createEl('p', {
-						text: 'This .gpkg file does not appear to be a valid ZIP archive.',
+						text: 'This .gpkg file does not appear to be a valid ZIP or gzip archive.',
 						cls: 'crc-text-error'
 					});
 					return;

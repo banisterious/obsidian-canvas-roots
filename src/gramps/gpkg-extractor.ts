@@ -1,9 +1,10 @@
 /**
  * Gramps Package (.gpkg) Extractor
  *
- * Handles extraction of .gpkg files which are ZIP archives containing:
- * - data.gramps (Gramps XML file, possibly gzip compressed)
- * - media/ directory with referenced media files
+ * Handles extraction of .gpkg files which may be:
+ * - ZIP archives containing data.gramps and media files
+ * - Gzip-compressed tar archives (.tar.gz) containing data.gramps and media
+ * - Gzip-compressed XML files (just the XML, no bundled media)
  */
 
 import JSZip from 'jszip';
@@ -33,6 +34,15 @@ export function isZipFile(data: ArrayBuffer): boolean {
 }
 
 /**
+ * Check if a file is gzip compressed by checking magic bytes
+ */
+export function isGzipFile(data: ArrayBuffer): boolean {
+	const view = new Uint8Array(data);
+	// Gzip magic bytes: 0x1F 0x8B
+	return view.length >= 2 && view[0] === 0x1f && view[1] === 0x8b;
+}
+
+/**
  * Check if data is gzip compressed by checking magic bytes
  */
 function isGzipCompressed(data: Uint8Array): boolean {
@@ -41,8 +51,9 @@ function isGzipCompressed(data: Uint8Array): boolean {
 
 /**
  * Decompress gzip data using native DecompressionStream
+ * Returns the raw decompressed bytes
  */
-async function decompressGzip(data: Uint8Array): Promise<string> {
+async function decompressGzipToBytes(data: Uint8Array): Promise<Uint8Array> {
 	if (typeof DecompressionStream === 'undefined') {
 		throw new Error('DecompressionStream API not available. Cannot decompress gzip data.');
 	}
@@ -66,7 +77,7 @@ async function decompressGzip(data: Uint8Array): Promise<string> {
 		done = readerDone;
 	}
 
-	// Combine chunks and decode as UTF-8
+	// Combine chunks
 	const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
 	const combined = new Uint8Array(totalLength);
 	let offset = 0;
@@ -75,11 +86,84 @@ async function decompressGzip(data: Uint8Array): Promise<string> {
 		offset += chunk.length;
 	}
 
-	return new TextDecoder('utf-8').decode(combined);
+	return combined;
+}
+
+/**
+ * Decompress gzip data and return as UTF-8 string
+ */
+async function decompressGzip(data: Uint8Array): Promise<string> {
+	const decompressed = await decompressGzipToBytes(data);
+	return new TextDecoder('utf-8').decode(decompressed);
+}
+
+/**
+ * Check if data is a tar archive by looking for tar file signature
+ * Tar files have "ustar" at offset 257 in the header
+ */
+function isTarFile(data: Uint8Array): boolean {
+	if (data.length < 263) return false;
+	// Check for "ustar" magic at offset 257
+	const magic = String.fromCharCode(data[257], data[258], data[259], data[260], data[261]);
+	return magic === 'ustar';
+}
+
+/**
+ * Extract files from a tar archive
+ * Returns a map of filename to file content
+ */
+function extractTar(data: Uint8Array): Map<string, Uint8Array> {
+	const files = new Map<string, Uint8Array>();
+	let offset = 0;
+
+	while (offset < data.length - 512) {
+		// Read header (512 bytes)
+		const header = data.slice(offset, offset + 512);
+
+		// Check if we've reached the end (empty block)
+		if (header.every(b => b === 0)) {
+			break;
+		}
+
+		// Extract filename (first 100 bytes, null-terminated)
+		let nameEnd = 0;
+		while (nameEnd < 100 && header[nameEnd] !== 0) nameEnd++;
+		const filename = new TextDecoder('utf-8').decode(header.slice(0, nameEnd));
+
+		// Extract file size (bytes 124-135, octal string)
+		let sizeStr = '';
+		for (let i = 124; i < 136; i++) {
+			if (header[i] === 0 || header[i] === 32) break;
+			sizeStr += String.fromCharCode(header[i]);
+		}
+		const fileSize = parseInt(sizeStr.trim(), 8) || 0;
+
+		// Extract file type (byte 156)
+		const typeFlag = header[156];
+
+		// Move past header
+		offset += 512;
+
+		// Only process regular files (typeFlag 0 or '0' which is 48)
+		if ((typeFlag === 0 || typeFlag === 48) && fileSize > 0 && filename) {
+			const fileData = data.slice(offset, offset + fileSize);
+			files.set(filename, fileData);
+		}
+
+		// Move past file content (padded to 512-byte blocks)
+		offset += Math.ceil(fileSize / 512) * 512;
+	}
+
+	return files;
 }
 
 /**
  * Extract contents of a .gpkg (Gramps Package) file
+ *
+ * Handles multiple formats:
+ * - ZIP archives containing data.gramps and media files
+ * - Gzip-compressed tar archives (.tar.gz) with data.gramps and media
+ * - Gzip-compressed XML (no bundled media)
  *
  * @param data - The raw file data as ArrayBuffer
  * @param filename - Original filename for logging
@@ -91,9 +175,67 @@ export async function extractGpkg(
 ): Promise<GpkgExtractionResult> {
 	logger.info('extractGpkg', `Starting extraction of ${filename}`);
 
-	// Verify it's a ZIP file
+	const mediaFiles = new Map<string, ArrayBuffer>();
+
+	// Check if it's a gzip-compressed file (not a ZIP)
+	if (isGzipFile(data)) {
+		logger.debug('extractGpkg', 'File is gzip compressed, decompressing...');
+		const decompressed = await decompressGzipToBytes(new Uint8Array(data));
+
+		// Check if the decompressed data is a tar archive
+		if (isTarFile(decompressed)) {
+			logger.debug('extractGpkg', 'Decompressed data is a tar archive, extracting...');
+			const tarFiles = extractTar(decompressed);
+
+			// Find the Gramps XML file in the tar
+			let grampsXml: string | null = null;
+			for (const [path, content] of tarFiles.entries()) {
+				const lowerPath = path.toLowerCase();
+				if (lowerPath.endsWith('.gramps') || lowerPath.endsWith('.xml')) {
+					// Check if this file is also gzip compressed
+					if (isGzipCompressed(content)) {
+						logger.debug('extractGpkg', `Found gzip-compressed Gramps file in tar: ${path}`);
+						grampsXml = await decompressGzip(content);
+					} else {
+						logger.debug('extractGpkg', `Found Gramps file in tar: ${path}`);
+						grampsXml = new TextDecoder('utf-8').decode(content);
+					}
+				} else {
+					// Check if it's a media file
+					const isMediaFile = /\.(jpg|jpeg|png|gif|webp|bmp|tiff?|svg|pdf|doc|docx)$/i.test(path);
+					if (isMediaFile) {
+						mediaFiles.set(path, content.buffer.slice(content.byteOffset, content.byteOffset + content.byteLength));
+						logger.debug('extractGpkg', `Extracted media file from tar: ${path}`);
+					}
+				}
+			}
+
+			if (!grampsXml) {
+				throw new Error('No Gramps XML file found in tar archive');
+			}
+
+			logger.info('extractGpkg', `Tar extraction complete: ${mediaFiles.size} media files found`);
+			return {
+				grampsXml,
+				mediaFiles,
+				filename
+			};
+		}
+
+		// Plain gzip-compressed XML (not a tar)
+		const grampsXml = new TextDecoder('utf-8').decode(decompressed);
+		logger.info('extractGpkg', 'Gzip-compressed .gpkg file - no bundled media');
+
+		return {
+			grampsXml,
+			mediaFiles,
+			filename
+		};
+	}
+
+	// Check if it's a ZIP archive
 	if (!isZipFile(data)) {
-		throw new Error('File is not a valid ZIP archive');
+		throw new Error('File is not a valid ZIP or gzip archive');
 	}
 
 	// Load the ZIP
@@ -132,26 +274,21 @@ export async function extractGpkg(
 		grampsXml = new TextDecoder('utf-8').decode(grampsData);
 	}
 
-	// Extract media files
-	const mediaFiles = new Map<string, ArrayBuffer>();
-	const mediaPrefix = 'media/';
-
+	// Extract media files - any file with a media extension, regardless of directory
 	for (const [path, file] of Object.entries(zip.files)) {
 		// Skip directories and the Gramps XML file
 		if (file.dir || path === grampsPath) {
 			continue;
 		}
 
-		// Check if it's in the media folder or is a media file at root
-		const isMediaPath = path.toLowerCase().startsWith(mediaPrefix);
+		// Check if it's a media file by extension (anywhere in the archive)
 		const isMediaFile = /\.(jpg|jpeg|png|gif|webp|bmp|tiff?|svg|pdf|doc|docx)$/i.test(path);
 
-		if (isMediaPath || isMediaFile) {
+		if (isMediaFile) {
 			const content = await file.async('arraybuffer');
-			// Store with normalized path (remove media/ prefix if present)
-			const normalizedPath = isMediaPath ? path.substring(mediaPrefix.length) : path;
-			mediaFiles.set(normalizedPath, content);
-			logger.debug('extractGpkg', `Extracted media file: ${normalizedPath}`);
+			// Store with original path - the importer will handle path matching
+			mediaFiles.set(path, content);
+			logger.debug('extractGpkg', `Extracted media file: ${path}`);
 		}
 	}
 
