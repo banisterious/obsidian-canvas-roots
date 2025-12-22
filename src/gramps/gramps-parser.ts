@@ -15,6 +15,7 @@ import {
 	GrampsNote,
 	GrampsRepository,
 	GrampsRepoRef,
+	GrampsMedia,
 	GrampsName,
 	GrampsDate,
 	GrampsValidationResult,
@@ -427,7 +428,8 @@ export class GrampsParser {
 			sources: new Map(),
 			citations: new Map(),
 			notes: new Map(),
-			repositories: new Map()
+			repositories: new Map(),
+			media: new Map()
 		};
 
 		// Parse header
@@ -436,7 +438,8 @@ export class GrampsParser {
 			database.header = {
 				createdBy: header.querySelector('researcher > resname')?.textContent || undefined,
 				createdDate: header.getAttribute('created') || undefined,
-				version: header.querySelector('mediapath')?.textContent || undefined
+				version: header.querySelector('grampsversion')?.textContent || undefined,
+				mediapath: header.querySelector('mediapath')?.textContent || undefined
 			};
 		}
 
@@ -482,6 +485,15 @@ export class GrampsParser {
 			const source = this.parseSource(sourceEl);
 			if (source) {
 				database.sources.set(source.handle, source);
+			}
+		});
+
+		// Parse media objects
+		const mediaObjects = doc.querySelectorAll('objects > object');
+		mediaObjects.forEach(mediaEl => {
+			const media = this.parseMedia(mediaEl);
+			if (media) {
+				database.media.set(media.handle, media);
 			}
 		});
 
@@ -774,6 +786,52 @@ export class GrampsParser {
 		};
 
 		return note;
+	}
+
+	/**
+	 * Parse a media object element
+	 */
+	private static parseMedia(el: Element): GrampsMedia | null {
+		const handle = el.getAttribute('handle');
+		if (!handle) return null;
+
+		// Get the file element which contains path and mime
+		const fileEl = el.querySelector('file');
+		const path = fileEl?.getAttribute('src') || '';
+
+		if (!path) {
+			logger.warn('parseMedia', `Media object ${handle} has no file path`);
+			return null;
+		}
+
+		const media: GrampsMedia = {
+			handle,
+			id: el.getAttribute('id') || undefined,
+			path,
+			mime: fileEl?.getAttribute('mime') || undefined,
+			description: fileEl?.getAttribute('description') || el.querySelector('attribute[type="description"]')?.getAttribute('value') || undefined,
+			date: this.parseDate(el),
+			noteRefs: [],
+			citationRefs: []
+		};
+
+		// Parse note references
+		el.querySelectorAll('noteref').forEach(refEl => {
+			const hlink = refEl.getAttribute('hlink');
+			if (hlink) {
+				media.noteRefs.push(hlink);
+			}
+		});
+
+		// Parse citation references
+		el.querySelectorAll('citationref').forEach(refEl => {
+			const hlink = refEl.getAttribute('hlink');
+			if (hlink) {
+				media.citationRefs.push(hlink);
+			}
+		});
+
+		return media;
 	}
 
 	/**

@@ -168,6 +168,21 @@ export interface GrampsRepoRef {
 }
 
 /**
+ * Media object record
+ * Represents a media file (image, document, etc.) in the Gramps database
+ */
+export interface GrampsMedia {
+	handle: string;
+	id?: string;
+	path: string;        // Original file path (relative to mediapath in header)
+	mime?: string;       // MIME type (e.g., "image/jpeg")
+	description?: string;
+	date?: GrampsDate;
+	noteRefs: string[];  // Handle links to notes
+	citationRefs: string[]; // Handle links to citations
+}
+
+/**
  * Citation confidence levels in Gramps (0-4 scale)
  */
 export type GrampsConfidence = 0 | 1 | 2 | 3 | 4;
@@ -194,10 +209,12 @@ export interface GrampsDatabase {
 	citations: Map<string, GrampsCitation>;
 	notes: Map<string, GrampsNote>;
 	repositories: Map<string, GrampsRepository>;
+	media: Map<string, GrampsMedia>;
 	header?: {
 		createdBy?: string;
 		createdDate?: string;
 		version?: string;
+		mediapath?: string;  // Base path for media files
 	};
 }
 
