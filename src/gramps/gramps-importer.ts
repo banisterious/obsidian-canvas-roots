@@ -346,7 +346,8 @@ export class GrampsImporter {
 						const { crId, wikilink } = await this.importSource(
 							source,
 							sourcesFolder,
-							options
+							options,
+							result.mediaHandleToPath
 						);
 						sourceHandleToCrId.set(handle, crId);
 						sourceHandleToWikilink.set(handle, wikilink);
@@ -993,7 +994,8 @@ export class GrampsImporter {
 	private async importSource(
 		source: ParsedGrampsSource,
 		sourcesFolder: string,
-		options: GrampsImportOptions
+		options: GrampsImportOptions,
+		mediaHandleToPath?: Map<string, string>
 	): Promise<{ crId: string; wikilink: string }> {
 		const crId = generateCrId();
 
@@ -1043,10 +1045,36 @@ export class GrampsImporter {
 			frontmatterLines.push(`${prop('gramps_id')}: ${source.id}`);
 		}
 
-		// Add media refs for user to resolve manually (Phase 2.2)
+		// Handle media references - convert handles to wikilinks if we have the mapping
+		const resolvedMediaLinks: string[] = [];
+		const unresolvedMediaRefs: string[] = [];
+
 		if (source.mediaRefs && source.mediaRefs.length > 0) {
-			frontmatterLines.push(`${prop('gramps_media_refs')}:`);
 			for (const ref of source.mediaRefs) {
+				const vaultPath = mediaHandleToPath?.get(ref);
+				if (vaultPath) {
+					// Extract just the filename for the wikilink
+					const filename = vaultPath.split('/').pop() || vaultPath;
+					resolvedMediaLinks.push(`[[${filename}]]`);
+				} else {
+					// Store unresolved refs for manual resolution
+					unresolvedMediaRefs.push(ref);
+				}
+			}
+		}
+
+		// Add resolved media as proper media property
+		if (resolvedMediaLinks.length > 0) {
+			frontmatterLines.push(`${prop('media')}:`);
+			for (const link of resolvedMediaLinks) {
+				frontmatterLines.push(`  - "${link}"`);
+			}
+		}
+
+		// Keep unresolved refs for manual resolution (if any remain)
+		if (unresolvedMediaRefs.length > 0) {
+			frontmatterLines.push(`${prop('gramps_media_refs')}:`);
+			for (const ref of unresolvedMediaRefs) {
 				frontmatterLines.push(`  - "${ref}"`);
 			}
 		}
@@ -1059,11 +1087,11 @@ export class GrampsImporter {
 			body += `\n${source.noteText}\n`;
 		}
 
-		// Add note about media refs that need manual resolution (Phase 2.2)
-		if (source.mediaRefs && source.mediaRefs.length > 0) {
-			body += `\n## Media References\n\n`;
-			body += `This source has ${source.mediaRefs.length} media reference(s) from Gramps that need to be manually attached.\n`;
-			body += `Use the Source Media Gallery feature to link media files.\n`;
+		// Add note about unresolved media refs that need manual resolution
+		if (unresolvedMediaRefs.length > 0) {
+			body += `\n## Unresolved Media References\n\n`;
+			body += `This source has ${unresolvedMediaRefs.length} media reference(s) from Gramps that could not be automatically linked.\n`;
+			body += `Use the Media Manager to find and link these files.\n`;
 		}
 
 		const content = frontmatterLines.join('\n') + body;
