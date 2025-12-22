@@ -17,6 +17,7 @@ import { GedcomXImporter, GedcomXImportResult } from '../gedcomx/gedcomx-importe
 import { GedcomXParser } from '../gedcomx/gedcomx-parser';
 import { GrampsImporter, GrampsImportResult } from '../gramps/gramps-importer';
 import { GrampsParser } from '../gramps/gramps-parser';
+import { extractGpkg, isZipFile, type GpkgExtractionResult } from '../gramps/gpkg-extractor';
 import { readFileWithDecompression } from '../core/compression-utils';
 import { GedcomImportProgressModal } from './gedcom-import-progress-modal';
 import { SchemaValidationProgressModal } from './schema-validation-progress-modal';
@@ -133,6 +134,9 @@ export class ControlCenterModal extends Modal {
 	private spouseInput?: HTMLInputElement;
 	private spouseBtn?: HTMLButtonElement;
 	private spouseHelp?: HTMLElement;
+
+	// Gramps package extraction result (when importing .gpkg files)
+	private gpkgExtractionResult?: GpkgExtractionResult;
 
 	constructor(app: App, plugin: CanvasRootsPlugin, initialTab?: string) {
 		super(app);
@@ -9608,14 +9612,14 @@ export class ControlCenterModal extends Modal {
 		// File selection button
 		const fileBtn = content.createEl('button', {
 			cls: 'crc-btn crc-btn--primary crc-mt-4',
-			text: 'Select Gramps XML file'
+			text: 'Select Gramps file'
 		});
 
 		// Create hidden file input
 		const fileInput = content.createEl('input', {
 			attr: {
 				type: 'file',
-				accept: '.gramps,.xml',
+				accept: '.gramps,.gpkg,.xml',
 				style: 'display: none;'
 			}
 		});
@@ -9661,21 +9665,53 @@ export class ControlCenterModal extends Modal {
 		analysisContainer.empty();
 		analysisContainer.removeClass('cr-hidden');
 
+		// Clear any previous extraction result
+		this.gpkgExtractionResult = undefined;
+
+		// Determine file type from extension
+		const isGpkg = file.name.toLowerCase().endsWith('.gpkg');
+
 		// Show loading state
 		analysisContainer.createEl('p', {
-			text: 'Analyzing Gramps XML file...',
+			text: isGpkg ? 'Extracting Gramps package...' : 'Analyzing Gramps XML file...',
 			cls: 'crc-text-muted'
 		});
 
 		try {
-			// Read file with automatic gzip decompression for .gramps files
-			const content = await readFileWithDecompression(file);
+			let content: string;
+
+			if (isGpkg) {
+				// Handle .gpkg package files
+				const arrayBuffer = await file.arrayBuffer();
+
+				// Verify it's a ZIP file
+				if (!isZipFile(arrayBuffer)) {
+					analysisContainer.empty();
+					analysisContainer.createEl('p', {
+						text: 'This .gpkg file does not appear to be a valid ZIP archive.',
+						cls: 'crc-text-error'
+					});
+					return;
+				}
+
+				// Extract the package
+				this.gpkgExtractionResult = await extractGpkg(arrayBuffer, file.name);
+				content = this.gpkgExtractionResult.grampsXml;
+
+				// Show extraction info
+				if (this.gpkgExtractionResult.mediaFiles.size > 0) {
+					logger.info('gramps', `Extracted ${this.gpkgExtractionResult.mediaFiles.size} media files from package`);
+				}
+			} else {
+				// Read file with automatic gzip decompression for .gramps files
+				content = await readFileWithDecompression(file);
+			}
 
 			// Validate it's a Gramps XML file
 			if (!GrampsParser.isGrampsXml(content)) {
 				analysisContainer.empty();
 				analysisContainer.createEl('p', {
-					text: 'This file does not appear to be a valid Gramps XML file. If this is a .gpkg package file, please extract the .gramps file from it first.',
+					text: 'This file does not appear to be a valid Gramps XML file.',
 					cls: 'crc-text-error'
 				});
 				return;
@@ -9701,6 +9737,9 @@ export class ControlCenterModal extends Modal {
 			createStat('Places', analysis.placeCount);
 			createStat('Events', analysis.eventCount);
 			createStat('Family groups', analysis.componentCount);
+			if (this.gpkgExtractionResult && this.gpkgExtractionResult.mediaFiles.size > 0) {
+				createStat('Media files', this.gpkgExtractionResult.mediaFiles.size);
+			}
 
 			// Import destination info
 			analysisContainer.createEl('p', {
@@ -9805,8 +9844,14 @@ export class ControlCenterModal extends Modal {
 		}
 
 		try {
-			// Read file with automatic gzip decompression for .gramps files
-			const content = await readFileWithDecompression(file);
+			// Use cached extraction result for .gpkg files, otherwise read fresh
+			let content: string;
+			if (this.gpkgExtractionResult) {
+				content = this.gpkgExtractionResult.grampsXml;
+			} else {
+				// Read file with automatic gzip decompression for .gramps files
+				content = await readFileWithDecompression(file);
+			}
 
 			logger.info('gramps', `Starting Gramps import: ${file.name} to ${destFolder}`);
 
