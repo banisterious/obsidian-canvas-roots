@@ -383,6 +383,7 @@ function renderEventTable(
 	headerRow.createEl('th', { text: 'Type' });
 	headerRow.createEl('th', { text: 'Person' });
 	headerRow.createEl('th', { text: 'Place' });
+	headerRow.createEl('th', { text: 'Media', cls: 'crc-timeline-th--center' });
 	headerRow.createEl('th', { text: '', cls: 'crc-timeline-th--actions' });
 
 	// Body
@@ -437,6 +438,30 @@ function renderEventTable(
 						void plugin.app.workspace.getLeaf('tab').openFile(event.file);
 					});
 			});
+
+			menu.addSeparator();
+
+			// Media actions
+			const mediaCount = event.media?.length || 0;
+			menu.addItem((item) => {
+				item
+					.setTitle('Link media...')
+					.setIcon('image-plus')
+					.onClick(() => {
+						plugin.openLinkMediaModal(event.file, 'event', event.title);
+					});
+			});
+
+			if (mediaCount > 0) {
+				menu.addItem((item) => {
+					item
+						.setTitle(`Manage media (${mediaCount})...`)
+						.setIcon('images')
+						.onClick(() => {
+							plugin.openManageMediaModal(event.file, 'event', event.title);
+						});
+				});
+			}
 
 			menu.addSeparator();
 
@@ -504,6 +529,27 @@ function renderEventTable(
 			placeCell.textContent = event.place.replace(/^\[\[/, '').replace(/\]\]$/, '');
 		} else {
 			placeCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
+		}
+
+		// Media cell
+		const mediaCell = row.createEl('td', { cls: 'crc-timeline-cell-media' });
+		const mediaCount = event.media?.length || 0;
+		if (mediaCount > 0) {
+			const mediaBadge = mediaCell.createEl('span', {
+				cls: 'crc-person-list-badge crc-person-list-badge--media',
+				attr: { title: `${mediaCount} media file${mediaCount !== 1 ? 's' : ''}` }
+			});
+			const mediaIcon = createLucideIcon('image', 12);
+			mediaBadge.appendChild(mediaIcon);
+			mediaBadge.appendText(mediaCount.toString());
+
+			// Click to open manage media modal
+			mediaBadge.addEventListener('click', (e) => {
+				e.stopPropagation();
+				plugin.openManageMediaModal(event.file, 'event', event.title);
+			});
+		} else {
+			mediaCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
 		}
 
 		// Actions cell with open note button

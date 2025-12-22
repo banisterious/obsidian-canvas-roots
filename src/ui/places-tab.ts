@@ -5,7 +5,7 @@
  * place statistics, lists, references, and data quality issues.
  */
 
-import { Modal, Notice, Setting, TFile } from 'obsidian';
+import { Menu, Modal, Notice, Setting, TFile } from 'obsidian';
 import type CanvasRootsPlugin from '../../main';
 import type { LucideIconName } from './lucide-icons';
 import { createLucideIcon } from './lucide-icons';
@@ -1022,6 +1022,7 @@ function loadPlaceList(
 		headerRow.createEl('th', { text: 'Type' });
 		headerRow.createEl('th', { text: 'Coordinates' });
 		headerRow.createEl('th', { text: 'People' });
+		headerRow.createEl('th', { text: 'Media', cls: 'crc-place-th--center' });
 		headerRow.createEl('th', { text: '', cls: 'crc-place-th--actions' });
 
 		// Body
@@ -1046,6 +1047,61 @@ function loadPlaceList(
 						}
 					}).open();
 				}
+			});
+
+			// Context menu
+			row.addEventListener('contextmenu', (e) => {
+				e.preventDefault();
+				const file = plugin.app.vault.getAbstractFileByPath(place.filePath);
+				if (!(file instanceof TFile)) return;
+
+				const menu = new Menu();
+
+				menu.addItem((item) => {
+					item
+						.setTitle('Open note')
+						.setIcon('file')
+						.onClick(async () => {
+							await plugin.trackRecentFile(file, 'place');
+							void plugin.app.workspace.getLeaf(false).openFile(file);
+						});
+				});
+
+				menu.addItem((item) => {
+					item
+						.setTitle('Open in new tab')
+						.setIcon('file-plus')
+						.onClick(async () => {
+							await plugin.trackRecentFile(file, 'place');
+							void plugin.app.workspace.getLeaf('tab').openFile(file);
+						});
+				});
+
+				menu.addSeparator();
+
+				// Media actions
+				const mediaCount = place.media?.length || 0;
+				menu.addItem((item) => {
+					item
+						.setTitle('Link media...')
+						.setIcon('image-plus')
+						.onClick(() => {
+							plugin.openLinkMediaModal(file, 'place', place.name);
+						});
+				});
+
+				if (mediaCount > 0) {
+					menu.addItem((item) => {
+						item
+							.setTitle(`Manage media (${mediaCount})...`)
+							.setIcon('images')
+							.onClick(() => {
+								plugin.openManageMediaModal(file, 'place', place.name);
+							});
+					});
+				}
+
+				menu.showAtMouseEvent(e);
 			});
 
 			// Name cell
@@ -1112,6 +1168,30 @@ function loadPlaceList(
 				peopleCell.textContent = peopleCount.toString();
 			} else {
 				peopleCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
+			}
+
+			// Media cell
+			const mediaCell = row.createEl('td', { cls: 'crc-place-cell-media' });
+			const mediaCount = place.media?.length || 0;
+			if (mediaCount > 0) {
+				const mediaBadge = mediaCell.createEl('span', {
+					cls: 'crc-person-list-badge crc-person-list-badge--media',
+					attr: { title: `${mediaCount} media file${mediaCount !== 1 ? 's' : ''}` }
+				});
+				const mediaIcon = createLucideIcon('image', 12);
+				mediaBadge.appendChild(mediaIcon);
+				mediaBadge.appendText(mediaCount.toString());
+
+				// Click to open manage media modal
+				mediaBadge.addEventListener('click', (e) => {
+					e.stopPropagation();
+					const file = plugin.app.vault.getAbstractFileByPath(place.filePath);
+					if (file instanceof TFile) {
+						plugin.openManageMediaModal(file, 'place', place.name);
+					}
+				});
+			} else {
+				mediaCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
 			}
 
 			// Actions cell

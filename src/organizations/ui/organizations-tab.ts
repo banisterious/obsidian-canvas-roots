@@ -239,6 +239,7 @@ function renderOrganizationsListCard(
 			if (anyHasMembers) {
 				headerRow.createEl('th', { text: 'Members' });
 			}
+			headerRow.createEl('th', { text: 'Media', cls: 'cr-org-th-center' });
 			headerRow.createEl('th', { text: '', cls: 'cr-org-th-actions' });
 
 			// Body
@@ -336,6 +337,29 @@ function renderOrganizationRow(
 	if (showMembers) {
 		const membersCell = row.createEl('td', { cls: 'cr-org-cell-members' });
 		membersCell.textContent = memberCount > 0 ? String(memberCount) : '—';
+	}
+
+	// Media cell
+	const mediaCell = row.createEl('td', { cls: 'cr-org-cell-media' });
+	const mediaCount = org.media?.length || 0;
+	if (mediaCount > 0) {
+		const mediaBadge = mediaCell.createEl('span', {
+			cls: 'crc-person-list-badge crc-person-list-badge--media',
+			attr: { title: `${mediaCount} media file${mediaCount !== 1 ? 's' : ''}` }
+		});
+		const mediaIcon = createLucideIcon('image', 12);
+		mediaBadge.appendChild(mediaIcon);
+		mediaBadge.appendText(mediaCount.toString());
+
+		// Click to open manage media modal
+		mediaBadge.addEventListener('click', (e) => {
+			e.stopPropagation();
+			if (org.file instanceof TFile) {
+				plugin.openManageMediaModal(org.file, 'organization', org.name);
+			}
+		});
+	} else {
+		mediaCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
 	}
 
 	// Actions cell with open note button
