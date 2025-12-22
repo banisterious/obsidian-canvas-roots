@@ -820,6 +820,147 @@ async importGrampsPackage(gpkgPath: string, options: GpkgImportOptions): Promise
 3. **Options**
    - `<!-- cr:media-gallery columns=3 -->` for column count
    - `<!-- cr:media-gallery size=large -->` for thumbnail size
+   - `<!-- cr:media-gallery editable -->` for inline drag-to-reorder
+
+4. **Freeze to Markdown**
+   - ❄️ toolbar button converts live block to static markdown
+   - Outputs callout with `|cr-frozen-gallery` metadata
+   - Bundled CSS styles the gallery (no external dependencies)
+
+#### Freeze Output Format
+
+The freeze feature outputs a callout styled by bundled CSS:
+
+**Before (dynamic):**
+```markdown
+<!-- cr:media-gallery -->
+```
+
+**After (frozen):**
+```markdown
+> [!info|cr-frozen-gallery]
+> ![[portrait.jpg]]
+> ![[wedding.jpg]]
+> ![[birth-cert.pdf]]
+```
+
+**Benefits:**
+- Bundled CSS provides styled gallery layout out of the box
+- No external snippet dependencies
+- Namespaced class (`cr-frozen-gallery`) avoids conflicts with standalone MCL
+- Users who also have MCL enabled won't see style conflicts
+- Standard Obsidian markdown, fully portable
+
+**Callout type options** (configurable in settings):
+- `[!info|cr-frozen-gallery]` - Default, subtle styling
+- `[!blank|cr-frozen-gallery]` - Invisible container
+- `[!note|cr-frozen-gallery]` - Alternative styling
+
+#### Bundled Gallery CSS
+
+Canvas Roots bundles gallery styles derived from [MCL Gallery Cards](https://github.com/efemkay/obsidian-modular-css-layout) (MIT licensed), with namespaced classes to avoid conflicts:
+
+```css
+/* styles/frozen-gallery.css */
+
+/* Frozen media gallery - derived from MCL Gallery Cards (MIT) */
+.callout[data-callout-metadata*="cr-frozen-gallery"] > .callout-content > p {
+  display: flex;
+  gap: var(--cr-gallery-gap, 5px);
+  flex-wrap: wrap;
+}
+
+.callout[data-callout-metadata*="cr-frozen-gallery"] > .callout-content > p img {
+  max-height: var(--cr-gallery-max-height, 200px);
+  object-fit: var(--cr-gallery-object-fit, cover);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--cr-gallery-border-radius, var(--radius-s));
+}
+
+/* Hide callout title/icon for cleaner appearance */
+.callout[data-callout-metadata*="cr-frozen-gallery"] > .callout-title {
+  display: none;
+}
+
+.callout[data-callout-metadata*="cr-frozen-gallery"] {
+  padding: var(--cr-gallery-padding, 0.5rem);
+  background: var(--cr-gallery-background, transparent);
+}
+```
+
+#### Style Settings Integration
+
+Gallery appearance is configurable via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin:
+
+```css
+/* In styles/style-settings.css - add to existing settings block */
+
+  -
+    id: frozen-gallery-heading
+    title: Frozen media gallery
+    description: Styling for frozen <!-- cr:media-gallery --> callouts
+    type: heading
+    level: 1
+    collapsed: true
+  -
+    id: cr-gallery-gap
+    title: Image gap
+    description: Space between gallery images
+    type: variable-number-slider
+    default: 5
+    min: 0
+    max: 20
+    step: 1
+    format: px
+  -
+    id: cr-gallery-max-height
+    title: Maximum image height
+    description: Images taller than this will be scaled down
+    type: variable-number-slider
+    default: 200
+    min: 100
+    max: 500
+    step: 25
+    format: px
+  -
+    id: cr-gallery-border-radius
+    title: Image border radius
+    description: Roundness of image corners
+    type: variable-number-slider
+    default: 4
+    min: 0
+    max: 20
+    step: 2
+    format: px
+  -
+    id: cr-gallery-object-fit
+    title: Image fit mode
+    description: How images fill their container
+    type: variable-select
+    default: cover
+    options:
+      - cover
+      - contain
+      - fill
+      - none
+  -
+    id: cr-gallery-background
+    title: Gallery background color
+    description: Background color behind the gallery
+    type: variable-color
+    format: hex
+    default: transparent
+```
+
+**Configuration Options:**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Image gap | Space between thumbnails | 5px |
+| Maximum image height | Height limit for gallery images | 200px |
+| Image border radius | Corner roundness | 4px |
+| Image fit mode | `cover`, `contain`, `fill`, or `none` | cover |
+| Gallery background | Background color behind images | transparent |
 
 #### Implementation Notes
 
@@ -838,7 +979,34 @@ this.registerDynamicContentBlock('cr:media-gallery', (el, options, file) => {
 
   this.renderThumbnailGrid(el, mediaItems, options);
 });
+
+// Freeze to callout format with bundled styling
+private generateFrozenMarkdown(mediaRefs: string[]): string {
+  const calloutType = this.settings.mediaGalleryCalloutType ?? 'info';
+  const lines = [`> [!${calloutType}|cr-frozen-gallery]`];
+
+  for (const ref of mediaRefs) {
+    // Convert wikilink reference to embed syntax
+    const embedRef = ref.replace(/^\[\[/, '![[');
+    lines.push(`> ${embedRef}`);
+  }
+
+  return lines.join('\n');
+}
 ```
+
+#### Files to Create
+
+| File | Purpose |
+|------|---------|
+| `styles/frozen-gallery.css` | Bundled gallery styles (derived from MCL, MIT licensed) |
+
+#### Files to Modify
+
+| File | Changes |
+|------|---------|
+| `styles/style-settings.css` | Add frozen gallery settings section |
+| `build-css.js` | Include frozen-gallery.css in build |
 
 ---
 
