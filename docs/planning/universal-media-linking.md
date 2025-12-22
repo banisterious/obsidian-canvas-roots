@@ -15,6 +15,8 @@ Planning document for extending media attachment support to all entity types.
 - Added YAML array format support for `media` property in SourceService
 - Fixed Unlinked Media modal styling (CSS `:has()` selector pattern, search field styling)
 - Implemented Phase 3.5: Media Folder Filter (settings, UI, and filter logic)
+- Renamed "Browse Gallery" to "Linked Media Gallery" for UX clarity
+- Added in-modal toggle for media folder filter to Linked Media Gallery and Find Unlinked modals
 
 ---
 
@@ -1378,8 +1380,11 @@ For large vaults with many media:
 - [x] Filter applied to Find Unlinked modal
 - [x] Filter applied to Media Manager hub stats
 - [x] Filter applied to MediaPickerModal
-- [x] Browse Gallery unaffected (already shows only linked media)
 - [x] Backwards compatible (empty folders + disabled = scan entire vault)
+- [x] Renamed "Browse Gallery" to "Linked Media Gallery" for UX clarity
+- [x] In-modal toggle for filter in Linked Media Gallery (filters to show only linked media within configured folders)
+- [x] In-modal toggle for filter in Find Unlinked modal
+- [x] Toggle syncs with global setting, disabled when no folders configured
 
 ### Phase 4
 - [ ] `.gpkg` files import correctly
