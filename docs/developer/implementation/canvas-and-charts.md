@@ -1,6 +1,6 @@
 # Canvas and Charts
 
-This document covers canvas generation and family chart layout systems.
+This document covers canvas generation, PDF tree generation, and family chart layout systems.
 
 ## Table of Contents
 
@@ -16,6 +16,12 @@ This document covers canvas generation and family chart layout systems.
   - [Key Data Structures](#key-data-structures)
   - [Interactive Preview](#interactive-preview)
   - [Canvas Metadata](#canvas-metadata)
+- [Visual Tree PDF Generation](#visual-tree-pdf-generation)
+  - [Architecture](#pdf-architecture)
+  - [Visual Tree Service](#visual-tree-service)
+  - [PDF Rendering](#pdf-rendering)
+  - [Custom Icons](#custom-icons)
+- [Unified Tree Wizard](#unified-tree-wizard)
 
 ---
 
@@ -261,3 +267,191 @@ interface CanvasRootsMetadata {
     }
 }
 ```
+
+---
+
+## Visual Tree PDF Generation
+
+Visual Tree PDFs provide printable tree diagrams generated via pdfmake. This system was added in Phase 2 of the Tree Visualization Overhaul.
+
+### PDF Architecture
+
+```
+Person Notes (YAML frontmatter)
+         ↓
+VisualTreeService (build tree + calculate layout)
+         ↓
+VisualTreeData (nodes with positions, edges)
+         ↓
+PdfReportRenderer.generateVisualTreePdf()
+         ↓
+pdfmake Content (boxes, lines, text)
+         ↓
+PDF Blob → Download
+```
+
+### Visual Tree Service
+
+`src/trees/services/visual-tree-service.ts` handles tree building and layout:
+
+**Tree Types:**
+- `pedigree` - Ancestors only, binary branching upward
+- `descendant` - Descendants only, branching downward
+- `hourglass` - Both ancestors (up) and descendants (down)
+- `fan` - Semicircular radial layout (placeholder)
+
+**Key Methods:**
+```typescript
+// Build tree data from person notes
+buildTree(rootCrId: string, options: VisualTreeOptions): VisualTreeData
+
+// Calculate node positions for layout
+calculateLayout(tree: VisualTreeData, chartType: VisualTreeChartType): void
+
+// Analyze tree size for large tree handling
+analyzeTreeSize(rootCrId: string, options): TreeSizeAnalysis
+```
+
+**Large Tree Analysis:**
+```typescript
+interface TreeSizeAnalysis {
+    isLarge: boolean;
+    nodeCount: number;
+    generationCount: number;
+    estimatedWidth: number;
+    estimatedHeight: number;
+    recommendedPageSize?: VisualTreePageSize;
+    warnings: string[];
+}
+```
+
+### PDF Rendering
+
+`src/reports/services/pdf-report-renderer.ts` extended with:
+
+```typescript
+async generateVisualTreePdf(options: VisualTreeOptions): Promise<Blob>
+```
+
+**PDF Content Structure:**
+1. Title section (optional)
+2. Tree content:
+   - Node boxes with borders and backgrounds
+   - Connecting lines between parent/child relationships
+   - Text labels (name, dates, places based on nodeContent setting)
+
+**Color Schemes:**
+- `default` - Gender-based colors (blue/green for male, purple/pink for female)
+- `grayscale` - Black/white for printing
+- `generational` - Different colors per generation level
+
+**Page Sizes:**
+```typescript
+type VisualTreePageSize = 'letter' | 'a4' | 'legal' | 'tabloid' | 'a3';
+```
+
+**Large Tree Handling:**
+```typescript
+type LargeTreeHandling = 'auto-scale' | 'auto-page-size' | 'limit-generations';
+```
+
+### Custom Icons
+
+`src/ui/lucide-icons.ts` registers custom tree icons via Obsidian's `addIcon()` API:
+
+**Icon Requirements (per Obsidian docs):**
+- SVG content WITHOUT `<svg>` wrapper (Obsidian adds its own)
+- Must fit within `0 0 100 100` viewBox
+- Stroke width scaled from Lucide's 2px (24px canvas) to 8px (100px canvas)
+
+**Registered Icons:**
+| Icon Name | Description |
+|-----------|-------------|
+| `cr-pedigree-tree` | Root at bottom, ancestors branching up |
+| `cr-descendant-tree` | Root at top, descendants branching down |
+| `cr-hourglass-tree` | Root in center, both directions |
+| `cr-fan-chart` | Semicircular arcs |
+
+**Icon Registration:**
+```typescript
+export function registerCustomIcons(): void {
+    for (const [name, svg] of Object.entries(CUSTOM_ICONS)) {
+        addIcon(name, svg);
+    }
+}
+```
+
+Called during plugin initialization in `main.ts`.
+
+---
+
+## Unified Tree Wizard
+
+`src/trees/ui/unified-tree-wizard-modal.ts` provides a single wizard for both Canvas and PDF output.
+
+### Step Flow
+
+```
+Step 1: Person Selection
+    ↓
+Step 2: Tree Type Selection
+    ↓
+Step 3: Output Format (Canvas vs PDF)
+    ├── Canvas → Step 4a: Canvas Options → Step 5a: Preview → Step 6a: Output
+    └── PDF → Step 4b: PDF Options → Step 5b: Output
+```
+
+### Form Data
+
+```typescript
+interface UnifiedWizardFormData {
+    // Step 1: Person
+    rootPerson: PersonInfo | null;
+
+    // Step 2: Tree Type
+    treeType: 'full' | 'ancestors' | 'descendants' | 'fan';
+    maxAncestorGenerations: number;
+    maxDescendantGenerations: number;
+    includeSpouses: boolean;
+
+    // Step 3: Output Format
+    outputFormat: 'canvas' | 'pdf';
+
+    // Canvas-specific options
+    layoutAlgorithm: 'standard' | 'compact' | 'timeline' | 'hourglass';
+    colorScheme: ColorScheme;
+    // ... edge styles, filters, etc.
+
+    // PDF-specific options
+    pageSize: VisualTreePageSize;
+    orientation: 'portrait' | 'landscape';
+    nodeContent: VisualTreeNodeContent;
+    pdfColorScheme: VisualTreeColorScheme;
+    largeTreeHandling: LargeTreeHandling;
+}
+```
+
+### Initialization Options
+
+The wizard can be opened with pre-selections:
+
+```typescript
+const wizard = new UnifiedTreeWizardModal(this.plugin, {
+    // Pre-select a person
+    rootPerson: { crId: 'abc-123', name: 'John Smith' },
+
+    // Pre-select output format
+    outputFormat: 'pdf',
+
+    // Pre-select tree type for PDF reports
+    treeType: 'ancestors'
+});
+wizard.open();
+```
+
+### Integration Points
+
+The unified wizard is opened from:
+1. **Control Center** - Canvas Trees tab "New Tree" button
+2. **Statistics View** - Visual Trees report tiles
+3. **Report Generator Modal** - Visual tree report types

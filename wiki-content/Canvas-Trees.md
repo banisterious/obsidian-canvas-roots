@@ -1,147 +1,203 @@
 # Canvas Trees
 
-Generate interactive family tree visualizations on the Obsidian Canvas for exploration, annotation, and sharing.
-
-> **Note:** In the next release, the "Tree Output" tab in Control Center will be renamed to "Canvas Trees" to better reflect its purpose. This documentation uses the new name.
+Generate interactive family tree visualizations on the Obsidian Canvas for exploration, annotation, and sharing. You can also generate printable PDF tree diagrams.
 
 ---
 
 ## Table of Contents
 
-- [Step 1: Open Control Center](#step-1-open-control-center)
-- [Step 2: Navigate to Canvas Trees Tab](#step-2-navigate-to-canvas-trees-tab)
-- [Step 3: Select Root Person](#step-3-select-root-person)
-- [Step 4: Configure Tree Options](#step-4-configure-tree-options)
-- [Step 5: Generate](#step-5-generate)
-- [Layout Algorithms Explained](#layout-algorithms-explained)
+- [Overview](#overview)
+- [Opening the Tree Wizard](#opening-the-tree-wizard)
+- [Wizard Steps](#wizard-steps)
+  - [Step 1: Select Root Person](#step-1-select-root-person)
+  - [Step 2: Choose Tree Type](#step-2-choose-tree-type)
+  - [Step 3: Select Output Format](#step-3-select-output-format)
+  - [Canvas Path: Options and Preview](#canvas-path-options-and-preview)
+  - [PDF Path: Options and Generate](#pdf-path-options-and-generate)
+- [Tree Types Explained](#tree-types-explained)
+- [Canvas Layout Algorithms](#canvas-layout-algorithms)
+- [PDF Options](#pdf-options)
 - [Next Steps](#next-steps)
 
 ---
 
-## Step 1: Open Control Center
+## Overview
 
-**Method 1: Command Palette**
-1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Open Control Center"
-3. Press Enter
+Canvas Roots provides a unified tree generation wizard that supports two output formats:
 
-**Method 2: Ribbon Icon (if enabled)**
-- Click the Canvas Roots icon in the left sidebar
+| Output | Description | Best For |
+|--------|-------------|----------|
+| **Canvas** | Interactive Obsidian canvas file | Exploration, annotation, linking to notes |
+| **PDF** | Printable tree diagram | Sharing, printing, archiving |
 
-## Step 2: Navigate to Canvas Trees Tab
+Both formats share the same person selection and tree type steps, then branch into format-specific options.
 
-Click the **Canvas Trees** tab at the top of the Control Center modal.
+---
 
-## Step 3: Select Root Person
+## Opening the Tree Wizard
 
-**Using the Person Browser:**
-1. **Search**: Type in the search box to filter by name
-2. **Sort**: Click column headers to sort by name or birth year
-3. **Click**: Select any person as the tree's root
-4. Birth/death years appear next to names for identification
+**From Control Center:**
+1. Open Control Center (`Ctrl/Cmd + P` → "Canvas Roots: Open Control Center")
+2. Go to the **Canvas Trees** tab
+3. Click **New Tree** button
 
-**Using Family Groups (Multi-Family Vaults):**
-- If you have disconnected family groups, use the sidebar
-- Shows "Family 1", "Family 2", etc. with person counts
-- Click any family to select its representative person
+**From Statistics Dashboard:**
+1. Open Statistics Dashboard
+2. Scroll to **Visual Trees** section
+3. Click any tree type (Pedigree, Descendant, Hourglass, Fan Chart)
 
-## Step 4: Configure Tree Options
+---
 
-### Tree Type
+## Wizard Steps
 
-- **Ancestors**: Shows parents, grandparents, etc. (pedigree chart)
-- **Descendants**: Shows children, grandchildren, etc.
-- **Full**: Shows both ancestors and descendants
+### Step 1: Select Root Person
 
-### Generations
+Search and select the person who will be the root of your tree.
 
-- **All generations**: Include everyone related to root person
-- **Limit generations**: Set maximum number of generations (1-10)
+- **Search**: Type in the search box to filter by name
+- **Sort**: Use dropdown to sort by name, birth year, or death year
+- **Filter**: Filter by family group, collection, or universe
+- Birth/death years appear next to names for identification
 
-### Spouses
+Click a person to select them, then click **Next**.
 
-- **Include spouses**: Show spouse relationships in the tree
-- **Exclude spouses**: Show only blood relationships
+### Step 2: Choose Tree Type
 
-### Layout
+Select the type of tree to generate:
 
-- **Vertical**: Generations flow top-to-bottom (traditional pedigree)
-- **Horizontal**: Generations flow left-to-right (compact for wide screens)
+| Type | Icon | Description |
+|------|------|-------------|
+| **Full Tree** | Hourglass | Both ancestors and descendants from root |
+| **Ancestors** | Pedigree | Parents, grandparents, etc. (upward) |
+| **Descendants** | Downward tree | Children, grandchildren, etc. (downward) |
+| **Fan Chart** | Semicircle | Semicircular ancestor display (PDF only) |
 
-### Layout Algorithm
+Configure generation limits:
+- **Ancestor generations**: How many generations up (parents, grandparents, etc.)
+- **Descendant generations**: How many generations down (children, grandchildren, etc.)
+- **Include spouses**: Show spouse relationships
 
-- **Standard**: Default family-chart layout with proper spouse handling (default spacing)
-- **Compact**: 50% tighter spacing for large trees (ideal for 50+ people)
-- **Timeline**: Chronological positioning by birth year (X-axis = time, Y-axis = generation)
-- **Hourglass**: Root person centered with ancestors above and descendants below
+### Step 3: Select Output Format
 
-### Spacing
+Choose your output format:
 
-- **Horizontal spacing**: Distance between nodes side-by-side
-- **Vertical spacing**: Distance between generations
-- Adjust in Canvas Settings tab
+| Format | Features |
+|--------|----------|
+| **Canvas** | Interactive pan/zoom, links to person notes, editable, re-layoutable |
+| **PDF** | Printable, shareable, styled boxes and lines, multiple page sizes |
 
-### Source Indicators
+After selecting, the wizard branches into format-specific steps.
 
-Display badges showing how many source notes link to each person:
+### Canvas Path: Options and Preview
 
-- **Show source indicators**: Toggle in Settings → Canvas Roots → Canvas styling
-- When enabled, nodes show badges like "📎 3" indicating 3 linked sources
-- **Color coding**: Green for 3+ sources (well-documented), yellow for 1-2 sources
-- Only appears on nodes that have at least one linked source
-- Source notes are identified by `type: source` in their frontmatter
+**Canvas Options Step:**
+- **Scope options**: Include step-parents, adoptive parents, filter by collection/place/universe
+- **Style options**: Color scheme, edge styles, spouse edge display
 
-This feature helps visualize research quality at a glance—nodes without badges may need more documentation.
+**Canvas Preview Step:**
+- Interactive preview with pan and zoom
+- Tree statistics (people count, generations, edges)
+- Verify layout before generating
 
-## Step 5: Generate
+**Canvas Output Step:**
+- Set canvas filename
+- Choose save folder
+- Option to open canvas after generation
 
-### Single Tree
+### PDF Path: Options and Generate
 
-1. Enter an optional canvas name (defaults to "Family Tree - [Root Person]")
-2. Click **Generate family tree**
-3. Canvas opens automatically
+**PDF Options Step:**
+- **Page size**: Letter, A4, Legal, Tabloid, A3
+- **Orientation**: Portrait or Landscape
+- **Node content**: Name only, with dates, with dates and places
+- **Color scheme**: Default (gender-based), Grayscale, Generational
+- **Large tree handling**: Auto-scale, increase page size, or limit generations
 
-### All Trees (Multi-Family Vaults)
+**PDF Output Step:**
+- Set PDF title
+- Summary of selections
+- Click **Generate PDF** to download
 
-1. Click **Generate all trees**
-2. Creates separate canvas for each disconnected family group
-3. Files named "Family Tree [N] - [Representative Name].canvas"
+---
 
-The plugin calculates optimal positions using the [family-chart](https://github.com/donatso/family-chart) library and creates the canvas.
+## Tree Types Explained
 
-## Layout Algorithms Explained
+### Full Tree (Hourglass)
 
-### Standard Layout
+Shows both ancestors above the root person and descendants below:
+- Root person in the center
+- Parents and grandparents flow upward
+- Children and grandchildren flow downward
+- Best for showing a person's complete family context
 
-The default algorithm optimized for most family trees:
-- Properly positions spouses side-by-side
-- Balances ancestors and descendants
-- Good for trees up to ~50 people
+### Ancestors (Pedigree)
 
-### Compact Layout
+Traditional pedigree chart showing only ancestors:
+- Root person at the bottom (or left in horizontal layout)
+- Parents, grandparents, great-grandparents branching upward
+- Binary branching (each person has 2 parents)
 
-50% tighter spacing for larger trees:
-- Reduces horizontal and vertical gaps
-- Better for trees with 50+ people
-- May require more zooming to read individual nodes
+### Descendants
 
-### Timeline Layout
+Inverted pedigree showing only descendants:
+- Root person at the top
+- Children, grandchildren branching downward
+- Can show multiple children per generation
 
-Positions people chronologically by birth year:
-- X-axis represents time (earlier births on left)
-- Y-axis represents generation
-- Useful for visualizing when family members lived relative to each other
+### Fan Chart (PDF only)
 
-### Hourglass Layout
+Semicircular ancestor display:
+- Root person at center-bottom
+- Ancestors arranged in concentric arcs
+- Each generation occupies a ring
+- Compact visualization for many generations
 
-Centers the root person with ancestors above and descendants below:
-- Root person in the middle
-- Parents, grandparents flow upward
-- Children, grandchildren flow downward
-- Good for showing a person's complete context
+---
+
+## Canvas Layout Algorithms
+
+When generating canvas output, choose a layout algorithm:
+
+| Algorithm | Description | Best For |
+|-----------|-------------|----------|
+| **Standard** | Family-chart library layout with spouse handling | Most trees (< 50 people) |
+| **Compact** | 50% tighter spacing | Large trees (50+ people) |
+| **Timeline** | Chronological by birth year | Visualizing when people lived |
+| **Hourglass** | Root centered, ancestors up, descendants down | Person-focused context |
+
+---
+
+## PDF Options
+
+### Page Sizes
+
+| Size | Dimensions | Use Case |
+|------|------------|----------|
+| Letter | 8.5 × 11 in | Standard US paper |
+| A4 | 210 × 297 mm | Standard international |
+| Legal | 8.5 × 14 in | Extended US format |
+| Tabloid | 11 × 17 in | Large format US |
+| A3 | 297 × 420 mm | Large format international |
+
+### Color Schemes
+
+- **Default**: Males in blue/green tones, females in purple/pink tones
+- **Grayscale**: Black and white for printing
+- **Generational**: Different colors per generation level
+
+### Large Tree Handling
+
+For trees that exceed the selected page size:
+
+- **Auto-scale**: Shrink content to fit (may reduce readability)
+- **Auto page size**: Automatically use larger paper
+- **Limit generations**: Reduce depth to fit selected size
+
+---
 
 ## Next Steps
 
 - [Tree Preview](Tree-Preview) - Preview your tree before generating
 - [Family Chart View](Family-Chart-View) - Interactive view for exploring trees
+- [Statistics & Reports](Statistics-And-Reports) - Generate other report types
 - [Styling & Theming](Styling-And-Theming) - Customize tree appearance

@@ -5,11 +5,11 @@ Comprehensive planning document for modernizing tree visualization in Canvas Roo
 1. **Canvas Trees Tab Redesign** - Transform into a tree manager dashboard with wizard-based generation
 2. **Visual Tree Reports** - Add printable tree diagrams (Pedigree, Descendant, Hourglass, Fan) to Statistics and Reports
 
-- **Status:** In Progress (Phase 1 Complete)
+- **Status:** Complete (Phases 1 & 2 Complete)
 - **Priority:** Medium
 - **GitHub Issue:** TBD
 - **Created:** 2025-12-21
-- **Updated:** 2025-12-21
+- **Updated:** 2025-12-22
 
 ---
 
@@ -19,7 +19,7 @@ Comprehensive planning document for modernizing tree visualization in Canvas Roo
 
 #### Phase 1: Canvas Trees Tab Redesign (2025-12-21)
 
-**Tree Generation Wizard Modal** - `src/trees/ui/tree-generation-wizard.ts`
+**Tree Generation Wizard Modal** - `src/trees/ui/tree-generation-wizard.ts` (deprecated)
 - 5-step wizard flow: Person → Layout → Options → Preview → Output
 - Step 1: Person search with keyboard navigation, family group filtering
 - Step 2: Tree type selection (Ancestors/Descendants/Combined), layout algorithm, generation limits
@@ -42,13 +42,52 @@ Comprehensive planning document for modernizing tree visualization in Canvas Roo
 - Empty state and tips list styling
 - Wizard options step with collapsible `<details>` sections
 
-### Remaining
+#### Phase 2: Visual Tree Reports & Unified Wizard (2025-12-21 to 2025-12-22)
 
-#### Phase 2: Visual Tree Reports (Not Started)
-- Add Visual Trees category to Statistics and Reports
-- Pedigree, Descendant, Hourglass, Fan chart types
-- pdfmake-based PDF generation
-- Custom SVG icons for report tiles
+**Unified Tree Wizard Modal** - `src/trees/ui/unified-tree-wizard-modal.ts`
+- Merged Canvas and PDF wizard functionality into single modal
+- Dynamic step flow based on output format selection:
+  - Canvas path: Person → Tree Type → Output Format → Canvas Options → Preview → Output
+  - PDF path: Person → Tree Type → Output Format → PDF Options → Output
+- Chart type badges shown in step headers after selection
+- Custom tree icons for all chart types (cr-pedigree-tree, cr-descendant-tree, cr-hourglass-tree, cr-fan-chart)
+
+**Visual Tree Service** - `src/trees/services/visual-tree-service.ts`
+- Tree data building from person notes
+- Layout algorithms for all chart types:
+  - Pedigree: Standard ancestor tree with binary branching
+  - Descendant: Inverted tree with children branching downward
+  - Hourglass: Bidirectional with ancestors above and descendants below
+  - Fan: Semicircular radial layout (placeholder for future)
+- Coordinate calculation and bounding box computation
+- Large tree analysis with page size recommendations
+
+**PDF Report Renderer** - `src/reports/services/pdf-report-renderer.ts`
+- Extended with visual tree PDF generation
+- Tree-specific PDF layout with node boxes and connecting lines
+- Color schemes: default, grayscale, generational
+- Page size options: letter, a4, legal, tabloid, a3
+- Portrait and landscape orientations
+- Large tree handling with auto-scaling and page size recommendations
+
+**Visual Trees Report Category** - `src/reports/types/report-types.ts`
+- Added 4 visual tree report types:
+  - `pedigree-tree-pdf`: Graphical ancestor tree
+  - `descendant-tree-pdf`: Graphical descendant tree
+  - `hourglass-tree-pdf`: Both ancestors and descendants
+  - `fan-chart-pdf`: Semicircular pedigree (PDF only)
+
+**Custom SVG Icons** - `src/ui/lucide-icons.ts`
+- 4 custom icons registered via Obsidian's addIcon() API
+- Icons use 100x100 viewBox format per Obsidian requirements
+- Prefixed with `cr-` to avoid caching issues
+- Used across Statistics view, Report Generator, and Unified Wizard
+
+**Deprecated Old Wizards** (deleted 2025-12-22)
+- `src/trees/ui/tree-generation-wizard.ts` - Removed (was 1500+ lines)
+- `src/trees/ui/visual-tree-wizard-modal.ts` - Removed (was 570+ lines)
+
+### Remaining
 
 #### Phase 3: Library Consolidation (Not Started)
 - Migrate Family Chart PDF export from jsPDF to pdfmake
