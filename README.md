@@ -148,10 +148,10 @@
 ## Screenshots
 
 ### Canvas Trees
-| Canvas Trees Interface | Generated Family Tree |
+| Generate Tree Wizard | Generated Family Tree |
 |:---------------------:|:---------------------:|
-| ![Canvas Trees interface](docs/images/canvas-roots-generate-tree.png) | ![Family tree canvas](docs/images/family-tree-canvas.png) |
-| Person browser, layout selection, interactive preview | Automated genealogical layout with spouse and parent-child connections |
+| ![Generate Tree wizard](docs/images/canvas-roots-generate-tree.png) | ![Family tree canvas](docs/images/family-tree-canvas.png) |
+| Unified wizard with tree type, root person, layout, and output options | Automated genealogical layout with spouse and parent-child connections |
 
 ### Interactive Family Chart View
 <img src="docs/images/canvas-roots-family-chart-view.png" alt="Interactive Family Chart View" width="700">
