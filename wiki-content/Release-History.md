@@ -9,6 +9,8 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.15.x](#v015x)
+  - [Family Chart Export Wizard](#family-chart-export-wizard-v0151)
+  - [Family Chart Styling Panel](#family-chart-styling-panel-v0151)
   - [Universal Media Linking](#universal-media-linking-v0150)
 - [v0.14.x](#v014x)
   - [Visual Tree Charts](#visual-tree-charts-v0140)
@@ -56,6 +58,124 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.15.x
+
+### Family Chart Export Wizard (v0.15.1)
+
+Multi-step export wizard for Family Chart view with format presets, customization options, and progress tracking.
+
+**Problem Solved:**
+- The export dropdown menu was cluttered and easy to trigger accidentally
+- No preview of export settings before generating
+- Large exports could freeze the UI without progress indication
+- No way to remember last-used settings
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **5 Quick Presets** | Quick Share (PNG 1x), High Quality (PNG 2x), Print Ready (PDF), Editable (SVG), Document (ODT) |
+| **Format Options** | PNG, SVG, PDF, ODT with format-specific settings |
+| **Scope Selection** | Full tree or limited depth (1-5 generations) |
+| **PDF Options** | Page size (fit/A4/letter/legal/tabloid), layout (single/tiled), orientation (auto/portrait/landscape) |
+| **Cover Page** | Optional title page for PDF/ODT with custom title and subtitle |
+| **Avatar Toggle** | Include or exclude person thumbnails |
+| **Progress Modal** | Real-time progress with phase indicators and cancel button |
+| **Settings Memory** | Last-used format, scale, and options remembered |
+
+**Export Presets:**
+
+| Preset | Format | Settings | Use Case |
+|--------|--------|----------|----------|
+| **Quick Share** | PNG | 1x scale, no avatars | Social media, messaging |
+| **High Quality** | PNG | 2x scale, with avatars | Printing, archiving |
+| **Print Ready** | PDF | Cover page, with avatars | Physical prints, sharing |
+| **Editable** | SVG | Vector format, no avatars | Editing in Inkscape/Illustrator |
+| **Document** | ODT | Cover page, with avatars | Merging with reports in Word/LibreOffice |
+
+**ODT Export:**
+
+The ODT format creates an OpenDocument Text file that can be opened in LibreOffice Writer or Microsoft Word. This enables:
+- Merging family charts with narrative text
+- Adding custom formatting and styling
+- Creating comprehensive family history documents
+
+Technical implementation uses JSZip for creating the ODT ZIP archive with manual XML generation (no external library dependencies).
+
+**Files Changed:**
+
+| File | Change |
+|------|--------|
+| `src/ui/views/family-chart-export-wizard.ts` | New export wizard modal |
+| `src/ui/views/family-chart-export-progress-modal.ts` | Progress tracking modal |
+| `src/ui/views/odt-generator.ts` | ODT generation using JSZip |
+| `src/ui/views/family-chart-view.ts` | Export button wiring, exportWithOptions method |
+| `src/settings.ts` | LastFamilyChartExportSettings interface |
+| `styles/family-chart-export.css` | Wizard and progress modal styling |
+
+See [Family Chart View](Family-Chart-View#exporting) for usage documentation.
+
+---
+
+### Family Chart Styling Panel (v0.15.1)
+
+In-view color theming for Family Chart with preset themes and custom color picker.
+
+**Problem Solved:**
+- Chart color options were only accessible via the Style Settings plugin
+- Users without Style Settings couldn't customize colors
+- No quick way to switch between color themes
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **Palette Button** | Toolbar button opens theme menu |
+| **5 Theme Presets** | Classic, Pastel, Earth Tones, High Contrast, Monochrome |
+| **Customize Modal** | Color pickers for all 7 chart colors |
+| **Live Preview** | Colors update in real-time while adjusting |
+| **Settings Persistence** | Custom colors saved across sessions |
+| **Reset Option** | Reverts to default colors |
+
+**Theme Presets:**
+
+| Theme | Female | Male | Unknown | Description |
+|-------|--------|------|---------|-------------|
+| **Classic** | Pink `#c48a92` | Blue `#789fac` | Gray `#d3d3d3` | Default colors |
+| **Pastel** | Soft pink `#f4c2c2` | Soft blue `#a7c7e7` | Lavender `#e6e6fa` | Lighter, softer tones |
+| **Earth Tones** | Terracotta `#cc7a6f` | Sage `#8fbc8f` | Sand `#d2b48c` | Natural, warm palette |
+| **High Contrast** | Magenta `#ff00ff` | Cyan `#00ffff` | Yellow `#ffff00` | Accessibility-focused |
+| **Monochrome** | Dark gray `#666666` | Medium gray `#888888` | Light gray `#aaaaaa` | No color coding |
+
+**Customizable Colors:**
+
+| Color | Description |
+|-------|-------------|
+| **Female card** | Background color for female person cards |
+| **Male card** | Background color for male person cards |
+| **Unknown card** | Background color for unknown gender cards |
+| **Background (light)** | Chart background in light theme |
+| **Background (dark)** | Chart background in dark theme |
+| **Text (light)** | Card text color in light theme |
+| **Text (dark)** | Card text color in dark theme |
+
+**Interaction with Style Settings:**
+
+If you have the Style Settings plugin installed:
+- In-view settings take precedence (applied via inline styles)
+- "Reset to defaults" clears in-view settings, revealing Style Settings values
+- Both can coexist—use in-view for quick switching, Style Settings for vault-wide defaults
+
+**Files Changed:**
+
+| File | Change |
+|------|--------|
+| `src/ui/views/family-chart-view.ts` | Palette button, theme presets, FamilyChartStyleModal |
+| `src/settings.ts` | FamilyChartColors interface |
+| `styles/family-chart-view.css` | Style modal CSS |
+
+See [Family Chart View](Family-Chart-View#styling) for usage documentation.
+
+---
 
 ### Universal Media Linking (v0.15.0)
 

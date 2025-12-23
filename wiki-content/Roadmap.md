@@ -36,6 +36,8 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.15.1 | [Family Chart Export Wizard](Release-History#family-chart-export-wizard-v0151) | Multi-step export wizard with presets, PNG/SVG/PDF/ODT formats, progress modal |
+| v0.15.1 | [Family Chart Styling Panel](Release-History#family-chart-styling-panel-v0151) | In-view color theming with 5 presets, custom color picker modal |
 | v0.15.0 | [Universal Media Linking](#universal-media-linking) | Media support for all entities, .gpkg import, dynamic galleries |
 | v0.14.0 | [Visual Tree Charts](Release-History#visual-tree-charts-v0140) | Unified tree wizard for Canvas/PDF, 4 visual tree report types, custom SVG icons |
 | v0.13.6 | [Control Center Dashboard](Release-History#control-center-dashboard-v0136) | Dashboard tab with quick-action tiles, collapsible Vault Health, Recent Files |
