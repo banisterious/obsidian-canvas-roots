@@ -13,3 +13,6 @@ export { TimelineRenderer } from './renderers/timeline-renderer';
 
 export { RelationshipsProcessor } from './processors/relationships-processor';
 export { RelationshipsRenderer } from './renderers/relationships-renderer';
+
+export { MediaProcessor } from './processors/media-processor';
+export { MediaRenderer } from './renderers/media-renderer';

@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-22 23:16:27 UTC
+ * - Generated: 2025-12-23 00:40:38 UTC
  * - Components: 35 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -24566,7 +24566,7 @@ body:has(.cr-media-linker) .suggestion-container {
    COMPONENT: DYNAMIC-CONTENT.CSS
    ========================================================================== */
 
-/* Component Size: 190 lines, 4.08 KB */
+/* Component Size: 394 lines, 8.11 KB */
 
 /**
  * Dynamic Content Styles
@@ -24574,6 +24574,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * Styles for dynamic code block content:
  * - canvas-roots-timeline
  * - canvas-roots-relationships
+ * - canvas-roots-media
  */
 
 /* ==========================================================================
@@ -24750,6 +24751,209 @@ body:has(.cr-media-linker) .suggestion-container {
 }
 
 /* ==========================================================================
+   Media Gallery Block
+   ========================================================================== */
+
+.cr-dynamic-block__icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: var(--cr-spacing-xs);
+  opacity: 0.7;
+}
+
+.cr-dynamic-block__icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Gallery grid */
+.cr-media__grid {
+  display: grid;
+  gap: var(--cr-spacing-sm);
+}
+
+.cr-media__grid--cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.cr-media__grid--cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cr-media__grid--cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.cr-media__grid--cols-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.cr-media__grid--cols-6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.cr-media__grid--auto {
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
+
+/* Size variants */
+.cr-media__grid--small .cr-media__item {
+  aspect-ratio: 1;
+  min-height: 60px;
+}
+
+.cr-media__grid--medium .cr-media__item {
+  aspect-ratio: 1;
+  min-height: 100px;
+}
+
+.cr-media__grid--large .cr-media__item {
+  aspect-ratio: 1;
+  min-height: 150px;
+}
+
+/* Gallery items */
+.cr-media__item {
+  position: relative;
+  border-radius: var(--cr-radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: var(--background-secondary);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.cr-media__item:hover {
+  border-color: var(--text-accent);
+  transform: scale(1.02);
+}
+
+.cr-media__item--thumbnail {
+  border-color: var(--color-green);
+}
+
+.cr-media__item--thumbnail:hover {
+  border-color: var(--color-green);
+}
+
+/* Thumbnail badge */
+.cr-media__badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: var(--color-green);
+  color: var(--text-on-accent);
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+/* Image thumbnails */
+.cr-media__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Document placeholders */
+.cr-media__item--doc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cr-spacing-sm);
+}
+
+.cr-media__doc-icon {
+  color: var(--text-muted);
+  opacity: 0.6;
+  margin-bottom: var(--cr-spacing-xs);
+}
+
+.cr-media__doc-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.cr-media__doc-name {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Empty state */
+.cr-media__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cr-spacing-lg);
+  color: var(--text-muted);
+  text-align: center;
+  gap: var(--cr-spacing-sm);
+}
+
+.cr-media__empty-icon {
+  opacity: 0.4;
+}
+
+.cr-media__empty-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.cr-media__empty-text {
+  font-size: var(--font-ui-small);
+}
+
+.cr-media__empty-hint {
+  font-size: var(--font-ui-smaller);
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Frozen Gallery Callout
+   ========================================================================== */
+
+/* stylelint-disable selector-class-pattern -- Targets Obsidian's built-in .callout classes */
+
+/* Style for frozen gallery callout: > [!info|cr-frozen-gallery] */
+.callout[data-callout-metadata="cr-frozen-gallery"] {
+  padding: var(--cr-spacing-sm);
+}
+
+.callout[data-callout-metadata="cr-frozen-gallery"] .callout-title {
+  display: none;
+}
+
+.callout[data-callout-metadata="cr-frozen-gallery"] .callout-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cr-spacing-xs);
+}
+
+.callout[data-callout-metadata="cr-frozen-gallery"] .callout-content img {
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: var(--cr-radius-sm);
+  border: 1px solid var(--background-modifier-border);
+}
+
+/* stylelint-enable selector-class-pattern */
+
+/* ==========================================================================
    Theme Compatibility
    ========================================================================== */
 
@@ -24829,10 +25033,10 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-22 23:16:27 UTC
+ * Build completed: 2025-12-23 00:40:38 UTC
  * Components processed: 35
- * Total lines: 24491
- * Total size: 484.53 KB
+ * Total lines: 24695
+ * Total size: 488.56 KB
  * Build duration: 0.04 seconds
  *
  * Component breakdown:
@@ -24867,7 +25071,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - universe-wizard.css: 621 lines, 11.05 KB
  * - preferences.css: 315 lines, 6.86 KB
  * - tree-output.css: 1504 lines, 29.36 KB
- * - dynamic-content.css: 190 lines, 4.08 KB
+ * - dynamic-content.css: 394 lines, 8.11 KB
  * - animations.css: 16 lines, 0.18 KB
  * - responsive.css: 9 lines, 0.13 KB
  * - theme.css: 11 lines, 0.19 KB

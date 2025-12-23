@@ -14,7 +14,7 @@ import type { EventService } from '../../events/services/event-service';
 import type { EventNote } from '../../events/types/event-types';
 
 /** Block type for freeze operations */
-export type DynamicBlockType = 'canvas-roots-timeline' | 'canvas-roots-relationships';
+export type DynamicBlockType = 'canvas-roots-timeline' | 'canvas-roots-relationships' | 'canvas-roots-media';
 
 /**
  * Parsed configuration from a code block
@@ -316,9 +316,11 @@ export class DynamicContentService {
 			const content = await this.plugin.app.vault.read(file);
 
 			// Find the code block pattern
-			// Match ```canvas-roots-timeline or ```canvas-roots-relationships with any config
+			// Match ```canvas-roots-* with any config, handling various line endings and whitespace
+			// Pattern: ``` followed by blockType, optional whitespace, newline (LF or CRLF),
+			// any content (non-greedy), and closing ```
 			const blockPattern = new RegExp(
-				'```' + blockType + '\\s*\\n[\\s\\S]*?```',
+				'```' + blockType + '[^\\n]*(?:\\r?\\n)[\\s\\S]*?```',
 				'g'
 			);
 

@@ -45,7 +45,7 @@ import { EventService } from './src/events/services/event-service';
 import { CreateEventModal } from './src/events/ui/create-event-modal';
 import { isPlaceNote, isSourceNote, isEventNote, isMapNote, isSchemaNote, isUniverseNote } from './src/utils/note-type-detection';
 import { GeocodingService } from './src/maps/services/geocoding-service';
-import { TimelineProcessor, RelationshipsProcessor } from './src/dynamic-content';
+import { TimelineProcessor, RelationshipsProcessor, MediaProcessor } from './src/dynamic-content';
 import { UniverseService, EditUniverseModal } from './src/universes';
 import { RecentFilesService, RecentEntityType } from './src/core/recent-files-service';
 import { registerCustomIcons } from './src/ui/lucide-icons';
@@ -309,6 +309,12 @@ export default class CanvasRootsPlugin extends Plugin {
 		this.registerMarkdownCodeBlockProcessor(
 			'canvas-roots-relationships',
 			(source, el, ctx) => relationshipsProcessor.process(source, el, ctx)
+		);
+
+		const mediaProcessor = new MediaProcessor(this);
+		this.registerMarkdownCodeBlockProcessor(
+			'canvas-roots-media',
+			(source, el, ctx) => mediaProcessor.process(source, el, ctx)
 		);
 
 		// Add ribbon icon for control center
