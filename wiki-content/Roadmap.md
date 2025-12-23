@@ -12,6 +12,7 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Visual Tree PDF Enhancements](#visual-tree-pdf-enhancements) 💡 Low
   - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard) 📋 Medium
   - [Report Wizard Enhancements](#report-wizard-enhancements) 📋 Medium
+  - [Report Generator ODT Export](#report-generator-odt-export) 📋 Medium
   - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
 - [Future Considerations](#future-considerations)
@@ -158,7 +159,7 @@ This becomes higher priority when:
 - Bundle size becomes a concern
 - Major updates to either library require maintenance
 
-See [Tree Visualization Overhaul Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/tree-visualization-overhaul.md) for technical details.
+See [Visual Tree PDF Enhancements Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/visual-tree-pdf-enhancements.md) for technical details.
 
 ---
 
@@ -324,6 +325,49 @@ This creates cognitive overload for new users and makes adding more options diff
 - Recent reports stored in `plugin.settings.recentReports`
 
 See [Report Wizard Enhancements Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/report-wizard-enhancements.md) for full implementation details.
+
+---
+
+### Report Generator ODT Export
+
+**Priority:** 📋 Medium — Enable document merging workflows
+
+**Summary:** Add ODT (Open Document Text) export capability to the Report Generator, enabling users to export genealogical reports in an editable format compatible with LibreOffice Writer and Microsoft Word.
+
+**Motivation:**
+
+Users want to create comprehensive family history documents by combining text reports with visual tree charts. ODT export enables a document merging workflow:
+
+1. Export genealogical reports (Descendant Report, Ancestor Report, etc.) as ODT
+2. Export visual tree charts as ODT (from Family Chart Export Modal)
+3. Merge documents directly in LibreOffice/Word
+
+**Technical Approach:**
+
+- Use JSZip (already available in Obsidian) + manual XML generation
+- No external libraries required
+- ODT files are ZIP archives containing XML
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **All report types** | ODT option for all 13 report types |
+| **Cover page** | Optional title page using existing cover page options |
+| **Rich content** | Tables, lists, bold/italic text |
+| **Image embedding** | Visual tree charts embedded as images |
+
+**Phased Implementation:**
+
+| Phase | Scope |
+|-------|-------|
+| 1 | Core ODT generation (JSZip + XML) |
+| 2 | Report Generator integration |
+| 3 | Rich content support (tables, lists, formatting) |
+| 4 | Image embedding for visual tree reports |
+| 5 | Testing with LibreOffice, Word, Google Docs |
+
+See [Report Generator ODT Export Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/report-generator-odt-export.md) for full implementation details.
 
 ---
 

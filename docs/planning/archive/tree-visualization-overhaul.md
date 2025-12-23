@@ -91,16 +91,11 @@ Comprehensive planning document for modernizing tree visualization in Canvas Roo
 
 #### Phase 3: Library Consolidation (Deferred)
 
-**Reason:** The Family Chart PDF export (jsPDF) produces significantly higher quality output than the current pdfmake visual trees:
-- Proper spouse positioning side-by-side
-- Clean orthogonal connector lines with proper routing
-- Card-style nodes with profile silhouette icons
-- Corner badges/indicators
-- Better overall visual hierarchy
+**Decision (2025-12-22):** Keep jsPDF for Family Chart and defer library consolidation. The jsPDF-based Family Chart PDF export produces significantly higher quality output than the pdfmake visual trees due to differences in how images are embedded and scaled.
 
-**Decision (2025-12-22):** Keep jsPDF and defer consolidation until the pdfmake visual trees can match the Family Chart quality. The pdfmake trees remain useful for quick PDF generation from the unified wizard, while the Family Chart view provides high-quality printable output.
+**Future path:** Rather than migrating Family Chart to pdfmake, improve the pdfmake visual tree rendering to match Family Chart quality.
 
-**Future path:** Rather than migrating Family Chart to pdfmake, improve the pdfmake visual tree rendering to match Family Chart quality. See Roadmap entry "Visual Tree PDF Enhancements" for planned improvements.
+**See:** [Visual Tree PDF Enhancements](../visual-tree-pdf-enhancements.md) — Detailed technical analysis and implementation plan for improving pdfmake output quality.
 
 ---
 
