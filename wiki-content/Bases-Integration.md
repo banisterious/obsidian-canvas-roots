@@ -14,8 +14,11 @@ Canvas Roots is designed to work seamlessly with [Obsidian Bases](https://help.o
 - [Example Views](#example-views)
 - [Advanced Formulas](#advanced-formulas)
 - [Best Practices](#best-practices)
+- [People Base Template](#people-base-template)
 - [Places Base Template](#places-base-template)
+- [Events Base Template](#events-base-template)
 - [Organizations Base Template](#organizations-base-template)
+- [Sources Base Template](#sources-base-template)
 - [Troubleshooting](#troubleshooting)
 - [Integration with Canvas Roots Workflow](#integration-with-canvas-roots-workflow)
 - [Map View for Bases](#map-view-for-bases)
@@ -324,47 +327,356 @@ Don't try to make one view do everything. Create specialized views for different
 - **Research View**: All fields visible, sorted by missing data
 - **Analysis View**: Formulas and summaries, sorted by patterns
 
-## Places Base Template
+## People Base Template
 
-The Places template provides a table view for managing geographic locations:
+The People template is the most comprehensive, with **20+ predefined views** for managing family tree data.
 
 ### Key Columns
-- **Name**: Place name
-- **Category**: Type of place (city, country, region, etc.)
-- **Parent**: Hierarchical parent location
-- **Coordinates**: Latitude/longitude
-- **Universe**: For fictional locations
+
+| Column | Property | Description |
+|--------|----------|-------------|
+| **Photo** | `formula.thumbnail` | First image from `media` array |
+| **Name** | `formula.display_name` | Name or filename fallback |
+| **Father** | `note.father` | Link to father's note |
+| **Mother** | `note.mother` | Link to mother's note |
+| **Spouse(s)** | `note.spouse` | Link(s) to spouse notes |
+| **Children** | `note.child` | Link(s) to children notes |
+| **Born** | `formula.birth_display` | Formatted birth date |
+| **Died** | `formula.death_display` | Formatted death date |
+| **Age** | `formula.age` | Calculated age or lifespan |
+
+### Predefined Views
+
+**Core Views:**
+- **All family members** — Everyone with a `cr_id`, sorted by birth date
+- **Living members** — People without death dates (under max living age)
+- **Deceased members** — People with death dates or over max living age
+- **Recently added** — Notes created in the last 30 days
+
+**Research Views:**
+- **Missing parents** — People without father or mother defined
+- **Incomplete data** — Missing birth date or name
+- **Unassigned collections** — Not tagged to any collection
+
+**Relationship Views:**
+- **Single parents** — Have children but no spouse
+- **Childless couples** — Have spouse but no children
+- **Multiple marriages** — Have multiple spouse entries
+- **Sibling groups** — Grouped by father
+
+**Genealogical Organization:**
+- **By collection** — Grouped by research collection
+- **By family group** — Grouped by `group_name` property
+- **By lineage** — Grouped by lineage tag
+- **By generation number** — Grouped by generation
+- **Root generation** — People without parents
+- **Marked root persons** — People with `root_person: true`
+
+**Numbering System Views:**
+- **Ahnentafel ordered** — Sorted by Ahnentafel number
+- **d'Aboville ordered** — Sorted by d'Aboville number
+- **Without lineage** — No lineage tag assigned
+
+### Useful Formulas
+
+**Thumbnail from Media:**
+```yaml
+thumbnail: 'if(!media.isEmpty(), image(list(media)[0]), "")'
+```
+
+**Age Calculation (with living detection):**
+```yaml
+age: 'if(born.isEmpty(), "Unknown", if(died.isEmpty() && (now() - born).years.floor() < 125, (now() - born).years.floor() + " years", if(born && !died.isEmpty(), (died - born).years.floor() + " years", "Unknown")))'
+```
+
+**Formatted Date Display:**
+```yaml
+birth_display: 'if(born, born.format("YYYY-MM-DD"), "")'
+```
+
+### Configuration
+
+The People base respects your property aliases. If you've configured `birthdate` → `born`, the template will use `note.birthdate` instead of `note.born`.
+
+The **max living age** setting (default: 125) determines when someone without a death date is considered deceased for filtering purposes.
+
+---
+
+## Places Base Template
+
+The Places template provides **14 predefined views** for managing geographic locations with special map integration.
+
+### Key Columns
+
+| Column | Property | Description |
+|--------|----------|-------------|
+| **Name** | `note.name` | Place name |
+| **Map** | `formula.map_link` | 📌 link to open map view |
+| **Type** | `note.place_type` | country, state, city, etc. |
+| **Category** | `note.place_category` | real, historical, fictional |
+| **Parent** | `note.parent_place` | Parent location in hierarchy |
+| **Universe** | `note.universe` | Fictional world (if applicable) |
+
+### Predefined Views
+
+**Core Views:**
+- **All Places** — Complete list of all places
+- **By Type** — Grouped by place type
+- **By Category** — Grouped by real/historical/fictional
+
+**Type-Specific Views:**
+- **Countries** — Only country-type places
+- **States/Provinces** — States and provinces
+- **Cities/Towns** — Cities, towns, and villages
+
+**Category Views:**
+- **Real Places** — Real-world locations
+- **Historical Places** — Places that no longer exist
+- **Fictional Places** — Invented locations
+- **By Universe** — Grouped by fictional universe
+
+**Data Quality Views:**
+- **With Coordinates** — Places that have lat/long
+- **Missing Coordinates** — Need coordinate lookup
+- **Orphan Places** — No parent place defined
+- **By Collection** — Grouped by research collection
+
+### Special Feature: Map Link
+
+The Places template includes a clickable map link formula:
+
+```yaml
+map_link: 'if(coordinates_lat, link("obsidian://canvas-roots-map?lat=" + coordinates_lat + "&lng=" + coordinates_long + "&zoom=12", "📌"), "")'
+```
+
+Clicking the 📌 icon opens Canvas Roots' map view centered on that location.
 
 ### Useful Formulas
 
 **Has Coordinates:**
 ```yaml
-has_coords: 'if(latitude && longitude, "Yes", "No")'
+has_coords: 'if(coordinates_lat, "Yes", "No")'
 ```
 
-**Hierarchy Depth:**
+**Hierarchy Path:**
 ```yaml
-depth: 'if(parent, 1, 0)'  # Simplified; actual hierarchy may be deeper
+hierarchy_path: 'if(parent_place, parent_place + " → " + name, name)'
 ```
 
-## Organizations Base Template
+**Coordinates Display:**
+```yaml
+coordinates: 'if(coordinates_lat, coordinates_lat + ", " + coordinates_long, "")'
+```
 
-The Organizations template provides a table view for managing organizations and memberships:
+---
+
+## Events Base Template
+
+The Events template provides **19 predefined views** for managing life events, milestones, and narrative events.
 
 ### Key Columns
-- **Name**: Organization name
-- **Type**: Organization type (guild, corporation, noble_house, etc.)
-- **Universe**: For fictional organizations
-- **Members**: Count of people with membership
 
-### Organization Types
-Built-in types: noble_house, guild, corporation, military, religious, political, educational, custom
+| Column | Property | Description |
+|--------|----------|-------------|
+| **Title** | `note.title` | Event title/name |
+| **Type** | `note.event_type` | birth, death, marriage, etc. |
+| **Date** | `note.date` | When the event occurred |
+| **Person** | `note.person` | Primary person involved |
+| **Place** | `note.place` | Where the event occurred |
+| **Confidence** | `note.confidence` | Source confidence level |
+
+### Predefined Views
+
+**Core Views:**
+- **All Events** — Complete list of all events
+- **By Type** — Grouped by event type
+- **By Person** — Grouped by primary person
+- **By Place** — Grouped by location
+- **By Confidence** — Grouped by confidence level
+
+**Event Category Views:**
+- **Vital Events** — Birth, death, marriage, divorce
+- **Life Events** — Residence, occupation, military, immigration, education, burial, baptism, confirmation, ordination
+- **Narrative Events** — Anecdote, lore_event, plot_point, flashback, foreshadowing, backstory, climax, resolution
+
+**Research Views:**
+- **High Confidence** — Events with `confidence: high`
+- **Low Confidence** — Events with low or unknown confidence
+- **With Sources** — Events that have source citations
+- **Missing Sources** — Events needing source documentation
+
+**Temporal Views:**
+- **Dated Events** — Events with explicit dates
+- **Relative Ordering Only** — Events with only before/after relationships
+- **By Sort Order** — Ordered by sort_order property
+
+**Organization Views:**
+- **Canonical Events** — Events marked as `is_canonical: true`
+- **By Timeline** — Grouped by timeline property
+- **By Universe** — Grouped by fictional universe
+- **By Group** — Grouped by groups/factions
 
 ### Useful Formulas
 
-**Type Display:**
+**Year Only:**
 ```yaml
-type_label: 'org_type || "Other"'
+year_only: 'if(date, date.year, "")'
+```
+
+**Has Sources:**
+```yaml
+has_sources: 'if(sources, "Yes", "No")'
+```
+
+**Date Status:**
+```yaml
+is_dated: 'if(date, "Dated", "Relative only")'
+```
+
+---
+
+## Organizations Base Template
+
+The Organizations template provides **17 predefined views** for managing organizations, noble houses, guilds, and other groups.
+
+### Key Columns
+
+| Column | Property | Description |
+|--------|----------|-------------|
+| **Name** | `note.name` | Organization name |
+| **Type** | `note.org_type` | noble_house, guild, corporation, etc. |
+| **Parent** | `note.parent_org` | Parent organization |
+| **Founded** | `note.founded` | Founding date |
+| **Dissolved** | `note.dissolved` | Dissolution date (if any) |
+| **Seat** | `note.seat` | Headquarters/location |
+| **Universe** | `note.universe` | Fictional world (if applicable) |
+
+### Predefined Views
+
+**Core Views:**
+- **All Organizations** — Complete list
+- **By Type** — Grouped by organization type
+- **Active Organizations** — No dissolution date
+- **Dissolved Organizations** — Have dissolution date
+
+**Type-Specific Views:**
+- **Noble Houses** — `org_type: noble_house`
+- **Guilds** — `org_type: guild`
+- **Corporations** — `org_type: corporation`
+- **Military Units** — `org_type: military`
+- **Religious Orders** — `org_type: religious`
+- **Political Entities** — `org_type: political`
+- **Educational** — `org_type: educational`
+
+**Hierarchy Views:**
+- **Top-Level Organizations** — No parent organization
+- **Sub-Organizations** — Grouped by parent organization
+
+**Other Views:**
+- **By Universe** — Grouped by fictional universe
+- **By Collection** — Grouped by research collection
+- **With Seat** — Have a headquarters defined
+- **Missing Seat** — No seat assigned
+
+### Organization Types
+
+Built-in types: `noble_house`, `guild`, `corporation`, `military`, `religious`, `political`, `educational`, `custom`
+
+### Useful Formulas
+
+**Is Active:**
+```yaml
+is_active: 'if(dissolved, "No", "Yes")'
+```
+
+**Hierarchy Path:**
+```yaml
+hierarchy_path: 'if(parent_org, parent_org + " → " + name, name)'
+```
+
+---
+
+## Sources Base Template
+
+The Sources template provides **19 predefined views** for managing genealogical sources and evidence, including a special **Media Gallery** card view.
+
+### Key Columns
+
+| Column | Property | Description |
+|--------|----------|-------------|
+| **Name** | `note.name` | Source title |
+| **Type** | `note.source_type` | vital_record, census, etc. |
+| **Repository** | `note.source_repository` | Archive/library name |
+| **Date** | `note.source_date` | Date of the source |
+| **Confidence** | `note.confidence` | Reliability level |
+| **Location** | `note.location` | Physical/digital location |
+
+### Predefined Views
+
+**Core Views:**
+- **All Sources** — Complete list of all sources
+- **By Type** — Grouped by source type
+- **By Repository** — Grouped by archive/repository
+- **By Confidence** — Grouped by reliability level
+- **By Date** — Ordered chronologically
+
+**Source Type Views:**
+- **Vital Records** — Birth, death, marriage certificates
+- **Census Records** — Census enumeration records
+- **Church Records** — Parish registers, church records
+- **Legal Documents** — Wills, probate, land records, court records
+- **Military Records** — Military service records
+- **Photos & Media** — Photographs and newspaper clippings
+
+**Research Views:**
+- **High Confidence** — Reliable sources
+- **Low Confidence** — Sources needing verification
+- **Recently Accessed** — Sorted by access date
+
+**Media Views:**
+- **With Media** — Sources that have attached files
+- **Missing Media** — Sources without media attachments
+- **Media Gallery** — **Card view** showing source images
+
+**Organization Views:**
+- **By Collection** — Grouped by research collection
+- **By Location** — Grouped by physical/digital location
+
+### Special Feature: Media Gallery View
+
+The Sources template includes a card view that displays source images:
+
+```yaml
+- name: Media Gallery
+  type: cards
+  filters:
+    and:
+      - '!media.isEmpty()'
+  image: note.media
+  imageFit: contain
+```
+
+This displays sources as visual cards with their attached media, ideal for browsing photographs and document scans.
+
+### Source Types
+
+Built-in types: `vital_record`, `census`, `church_record`, `parish_register`, `will`, `probate`, `land_record`, `court_record`, `military_record`, `photograph`, `newspaper`
+
+### Useful Formulas
+
+**Display Name:**
+```yaml
+display_name: 'title || file.name'
+```
+
+**Has Media:**
+```yaml
+has_media: 'if(media, "Yes", "No")'
+```
+
+**Year Only:**
+```yaml
+year_only: 'if(source_date, source_date.year, "")'
 ```
 
 ## Troubleshooting
