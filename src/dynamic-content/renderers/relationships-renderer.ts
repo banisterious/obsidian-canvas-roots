@@ -100,7 +100,7 @@ export class RelationshipsRenderer {
 			cls: 'cr-dynamic-block__btn clickable-icon',
 			attr: { 'aria-label': 'Freeze to markdown' }
 		});
-		freezeBtn.innerHTML = '❄️';
+		freezeBtn.textContent = '❄️';
 		freezeBtn.addEventListener('click', () => {
 			void this.freezeToMarkdown();
 		});

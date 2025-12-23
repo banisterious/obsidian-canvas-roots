@@ -4586,16 +4586,18 @@ export default class CanvasRootsPlugin extends Plugin {
 		new MediaPickerModal(
 			this.app,
 			this.mediaService,
-			async (selectedFiles) => {
+			(selectedFiles) => {
 				if (!this.mediaService) return;
 
 				// Add each selected file as a wikilink
-				for (const mediaFile of selectedFiles) {
-					const wikilink = this.mediaService.pathToWikilink(mediaFile.path);
-					await this.mediaService.addMediaToEntity(file, wikilink);
-				}
+				void (async () => {
+					for (const mediaFile of selectedFiles) {
+						const wikilink = this.mediaService!.pathToWikilink(mediaFile.path);
+						await this.mediaService!.addMediaToEntity(file, wikilink);
+					}
 
-				new Notice(`Linked ${selectedFiles.length} media file${selectedFiles.length !== 1 ? 's' : ''} to ${entityName}`);
+					new Notice(`Linked ${selectedFiles.length} media file${selectedFiles.length !== 1 ? 's' : ''} to ${entityName}`);
+				})();
 			},
 			{
 				title: 'Link media',

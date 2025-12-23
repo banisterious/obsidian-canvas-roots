@@ -131,8 +131,8 @@ export class MediaManageModal extends Modal {
 			cls: 'mod-cta',
 			text: 'Save changes'
 		});
-		saveBtn.addEventListener('click', async () => {
-			await this.saveChanges();
+		saveBtn.addEventListener('click', () => {
+			void this.saveChanges();
 		});
 	}
 

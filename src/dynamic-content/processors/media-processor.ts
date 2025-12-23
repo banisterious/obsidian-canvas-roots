@@ -34,11 +34,11 @@ export class MediaProcessor {
 	/**
 	 * Process a canvas-roots-media code block
 	 */
-	async process(
+	process(
 		source: string,
 		el: HTMLElement,
 		ctx: MarkdownPostProcessorContext
-	): Promise<void> {
+	): void {
 		try {
 			// Parse config from code block source
 			const config = this.service.parseConfig(source);
@@ -51,7 +51,7 @@ export class MediaProcessor {
 			ctx.addChild(component);
 
 			// Render the media gallery
-			await this.renderer.render(el, context, config, component);
+			this.renderer.render(el, context, config, component);
 
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);

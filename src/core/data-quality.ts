@@ -907,7 +907,7 @@ export class DataQualityService {
 	/**
 	 * Parse a year from a date string
 	 */
-	private parseYear(dateStr?: string | number | unknown): number | null {
+	private parseYear(dateStr?: unknown): number | null {
 		if (!dateStr) return null;
 
 		// Handle number directly (e.g., year as number)
@@ -948,7 +948,7 @@ export class DataQualityService {
 	/**
 	 * Check if a date is in standard format
 	 */
-	private isStandardDateFormat(dateStr: string | number | unknown): boolean {
+	private isStandardDateFormat(dateStr: unknown): boolean {
 		// Handle non-string values
 		if (typeof dateStr === 'number') {
 			// A plain year number is considered standard

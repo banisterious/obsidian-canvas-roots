@@ -88,7 +88,7 @@ export class TimelineRenderer {
 			cls: 'cr-dynamic-block__btn clickable-icon',
 			attr: { 'aria-label': 'Freeze to markdown' }
 		});
-		freezeBtn.innerHTML = '❄️';
+		freezeBtn.textContent = '❄️';
 		freezeBtn.addEventListener('click', () => {
 			void this.freezeToMarkdown();
 		});
@@ -98,7 +98,7 @@ export class TimelineRenderer {
 			cls: 'cr-dynamic-block__btn clickable-icon',
 			attr: { 'aria-label': 'Copy timeline' }
 		});
-		copyBtn.innerHTML = '📋';
+		copyBtn.textContent = '📋';
 		copyBtn.addEventListener('click', () => {
 			this.copyTimelineToClipboard(container);
 		});

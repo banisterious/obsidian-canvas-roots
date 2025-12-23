@@ -6,12 +6,12 @@
  */
 
 import { Notice } from 'obsidian';
-// Use loose typing for pdfmake due to complex Content type requirements
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// Use loose typing for pdfmake due to complex Content type requirements that vary between versions
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- pdfmake Content type is complex and version-dependent
 type Content = any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- pdfmake TDocumentDefinitions type is complex and version-dependent
 type TDocumentDefinitions = any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- pdfmake StyleDictionary type is complex and version-dependent
 type StyleDictionary = any;
 import type {
 	FamilyGroupSheetResult,
@@ -89,7 +89,7 @@ const COLORS = {
  * Lazily loads pdfmake to minimize bundle impact.
  */
 export class PdfReportRenderer {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- pdfmake instance type is not exported
 	private pdfMake: any = null;
 
 	/**
@@ -106,7 +106,7 @@ export class PdfReportRenderer {
 
 		// Load the virtual file system with embedded Roboto font
 		const vfsFonts = await import('pdfmake/build/vfs_fonts');
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- vfs_fonts export structure varies between bundler configurations
 		const vfsModule = vfsFonts as any;
 		this.pdfMake.vfs = vfsModule.pdfMake?.vfs || vfsModule.default?.pdfMake?.vfs || vfsModule.vfs;
 
@@ -279,7 +279,7 @@ export class PdfReportRenderer {
 				]
 			},
 			layout: {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- pdfmake layout callback node type is not exported
 				hLineWidth: (i: number, node: any) => (i === 0 || i === 1 || i === node.table.body.length ? 0.5 : 0.25),
 				vLineWidth: () => 0.25,
 				hLineColor: (i: number) => (i === 1 ? '#666666' : COLORS.borderLight),

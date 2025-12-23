@@ -381,7 +381,7 @@ export class UnlinkedMediaModal extends Modal {
 	private renderLoadingState(): void {
 		this.gridContainer.empty();
 		const loading = this.gridContainer.createDiv({ cls: 'crc-unlinked-media-loading' });
-		const spinner = loading.createDiv({ cls: 'crc-unlinked-media-spinner' });
+		loading.createDiv({ cls: 'crc-unlinked-media-spinner' });
 		loading.createEl('p', { text: 'Scanning vault...' });
 	}
 
@@ -469,7 +469,7 @@ export class UnlinkedMediaModal extends Modal {
 		}
 
 		// Media type badge
-		const badge = card.createDiv({
+		card.createDiv({
 			cls: `crc-unlinked-media-item-badge crc-unlinked-media-item-badge--${item.mediaType}`,
 			text: this.getMediaLabel(item.mediaType)
 		});
@@ -582,7 +582,7 @@ export class UnlinkedMediaModal extends Modal {
 		this.close();
 
 		// Import and open BulkMediaLinkModal with the selected files
-		import('./bulk-media-link-modal').then(({ BulkMediaLinkModal }) => {
+		void import('./bulk-media-link-modal').then(({ BulkMediaLinkModal }) => {
 			const modal = new BulkMediaLinkModal(this.app, this.plugin);
 			modal.setPreselectedFiles(selected.map(i => i.file));
 			modal.open();
@@ -665,7 +665,7 @@ export class UnlinkedMediaModal extends Modal {
 		checkbox.disabled = !hasFolders;
 
 		// Label
-		const label = toggleWrapper.createSpan({
+		toggleWrapper.createSpan({
 			cls: 'crc-media-folder-filter-label',
 			text: 'Media folders only'
 		});
@@ -683,19 +683,19 @@ export class UnlinkedMediaModal extends Modal {
 		}
 
 		// Handle toggle change
-		checkbox.addEventListener('change', async () => {
+		checkbox.addEventListener('change', () => {
 			this.plugin.settings.enableMediaFolderFilter = checkbox.checked;
-			await this.plugin.saveSettings();
+			void this.plugin.saveSettings();
 			// Reload data with new filter setting
 			this.loadUnlinkedMedia();
 		});
 
 		// Clicking the wrapper also toggles (except on checkbox itself)
-		toggleWrapper.addEventListener('click', async (e) => {
+		toggleWrapper.addEventListener('click', (e) => {
 			if (e.target === checkbox || !hasFolders) return;
 			checkbox.checked = !checkbox.checked;
 			this.plugin.settings.enableMediaFolderFilter = checkbox.checked;
-			await this.plugin.saveSettings();
+			void this.plugin.saveSettings();
 			this.loadUnlinkedMedia();
 		});
 	}

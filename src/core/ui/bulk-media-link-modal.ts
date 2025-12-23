@@ -19,15 +19,12 @@ import { MediaPickerModal } from './media-picker-modal';
 import { BulkMediaLinkProgressModal } from './bulk-media-link-progress-modal';
 import { FamilyGraphService, type PersonNode } from '../family-graph';
 import { PlaceGraphService } from '../place-graph';
-import type { PlaceNode } from '../../models/place';
 import { FolderFilterService } from '../folder-filter';
 import { EventService } from '../../events/services/event-service';
 import type { EventNote } from '../../events/types/event-types';
 import { OrganizationService } from '../../organizations/services/organization-service';
 import { getOrganizationType } from '../../organizations/constants/organization-types';
-import type { OrganizationInfo } from '../../organizations/types/organization-types';
 import { SourceService } from '../../sources/services/source-service';
-import type { SourceNote } from '../../sources/types/source-types';
 
 /**
  * Entity item for display in the modal
@@ -276,13 +273,20 @@ export class BulkMediaLinkModal extends Modal {
 		const places = placeGraph.getAllPlaces();
 		const placesWithoutMedia = places.filter(p => !p.media || p.media.length === 0);
 
-		this.entities = placesWithoutMedia.map(p => ({
-			crId: p.id,
-			name: p.name,
-			file: this.app.vault.getAbstractFileByPath(p.filePath) as TFile,
-			isSelected: false,
-			subtitle: p.placeType || p.category
-		})).filter(e => e.file instanceof TFile);
+		this.entities = placesWithoutMedia
+			.map(p => {
+				const file = this.app.vault.getAbstractFileByPath(p.filePath);
+				if (!(file instanceof TFile)) return null;
+				const entity: EntityItem = {
+					crId: p.id,
+					name: p.name,
+					file,
+					isSelected: false,
+					subtitle: p.placeType || p.category
+				};
+				return entity;
+			})
+			.filter((e): e is EntityItem => e !== null);
 	}
 
 	/**
@@ -315,16 +319,20 @@ export class BulkMediaLinkModal extends Modal {
 		const sources = sourceService.getAllSources();
 		const sourcesWithoutMedia = sources.filter(s => s.media.length === 0);
 
-		this.entities = sourcesWithoutMedia.map(s => {
-			const file = this.app.vault.getAbstractFileByPath(s.filePath);
-			return {
-				crId: s.crId,
-				name: s.title,
-				file: file as TFile,
-				isSelected: false,
-				subtitle: s.sourceType || 'Source'
-			};
-		}).filter(e => e.file instanceof TFile);
+		this.entities = sourcesWithoutMedia
+			.map(s => {
+				const file = this.app.vault.getAbstractFileByPath(s.filePath);
+				if (!(file instanceof TFile)) return null;
+				const entity: EntityItem = {
+					crId: s.crId,
+					name: s.title,
+					file,
+					isSelected: false,
+					subtitle: s.sourceType || 'Source'
+				};
+				return entity;
+			})
+			.filter((e): e is EntityItem => e !== null);
 	}
 
 	/**
@@ -488,7 +496,7 @@ export class BulkMediaLinkModal extends Modal {
 		new MediaPickerModal(
 			this.app,
 			this.mediaService,
-			(files) => this.linkMediaToEntities(files),
+			(files) => { void this.linkMediaToEntities(files); },
 			{
 				title: 'Select media to link',
 				subtitle: `Will be linked to ${selectedCount} ${typeName}`,

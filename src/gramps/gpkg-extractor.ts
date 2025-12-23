@@ -63,8 +63,8 @@ async function decompressGzipToBytes(data: Uint8Array): Promise<Uint8Array> {
 	const reader = ds.readable.getReader();
 
 	// Write compressed data
-	writer.write(data);
-	writer.close();
+	void writer.write(data);
+	void writer.close();
 
 	// Read decompressed data
 	const chunks: Uint8Array[] = [];

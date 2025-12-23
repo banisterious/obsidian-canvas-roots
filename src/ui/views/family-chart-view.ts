@@ -14,7 +14,6 @@ import { FamilyGraphService, PersonNode } from '../../core/family-graph';
 import type { ColorScheme } from '../../settings';
 import { getLogger } from '../../core/logging';
 import { PersonPickerModal } from '../person-picker';
-import { MediaService } from '../../core/media-service';
 
 const logger = getLogger('FamilyChartView');
 
@@ -348,8 +347,8 @@ export class FamilyChartView extends ItemView {
 		headerTitle.setAttribute('data-view-title', 'Person details');
 		headerTitle.setAttribute('data-edit-title', 'Edit person');
 
-		const closeBtn = header.createEl('button', { cls: 'cr-fcv-info-panel-close' });
-		closeBtn.innerHTML = '&times;';
+		const closeBtn = header.createEl('button', { cls: 'cr-fcv-info-panel-close', attr: { 'aria-label': 'Close panel' } });
+		setIcon(closeBtn, 'x');
 		closeBtn.addEventListener('click', () => this.closeInfoPanel());
 
 		// Content area (populated dynamically)
@@ -1155,12 +1154,12 @@ export class FamilyChartView extends ItemView {
 	 * instance for the click handler.
 	 */
 	private createOpenNoteButtonCallback(): (d: { data: { id: string } }) => void {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		// eslint-disable-next-line @typescript-eslint/no-this-alias -- Capture view reference for use inside regular function below
 		const view = this;
 
 		// Return a regular function so `this` is bound to the card element by family-chart
 		return function(this: SVGGElement, d: { data: { id: string } }) {
-			// eslint-disable-next-line @typescript-eslint/no-this-alias
+			// eslint-disable-next-line @typescript-eslint/no-this-alias -- Capture card element reference for d3 operations
 			const cardEl = this;
 			const personId = d.data.id;
 

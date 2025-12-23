@@ -877,10 +877,11 @@ function renderMediaFoldersList(
 		setIcon(removeBtn, 'x');
 		removeBtn.setAttribute('aria-label', 'Remove folder');
 
-		removeBtn.addEventListener('click', async () => {
+		removeBtn.addEventListener('click', () => {
 			plugin.settings.mediaFolders = folders.filter((_, idx) => idx !== i);
-			await plugin.saveSettings();
-			renderMediaFoldersList(container, plugin);
+			void plugin.saveSettings().then(() => {
+				renderMediaFoldersList(container, plugin);
+			});
 		});
 	}
 
@@ -895,22 +896,24 @@ function renderMediaFoldersList(
 			text.setPlaceholder('Add media folder...');
 
 			// Attach folder autocomplete
-			new FolderSuggest(plugin.app, text, async (value) => {
+			new FolderSuggest(plugin.app, text, (value) => {
 				if (value.trim() && !folders.includes(value.trim())) {
 					plugin.settings.mediaFolders = [...folders, value.trim()];
-					await plugin.saveSettings();
-					renderMediaFoldersList(container, plugin);
+					void plugin.saveSettings().then(() => {
+						renderMediaFoldersList(container, plugin);
+					});
 				}
 			});
 
 			// Also handle Enter key
-			text.inputEl.addEventListener('keydown', async (e) => {
+			text.inputEl.addEventListener('keydown', (e) => {
 				if (e.key === 'Enter') {
 					const value = text.inputEl.value.trim();
 					if (value && !folders.includes(value)) {
 						plugin.settings.mediaFolders = [...folders, value];
-						await plugin.saveSettings();
-						renderMediaFoldersList(container, plugin);
+						void plugin.saveSettings().then(() => {
+							renderMediaFoldersList(container, plugin);
+						});
 					}
 				}
 			});

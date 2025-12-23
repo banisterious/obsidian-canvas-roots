@@ -63,7 +63,7 @@ export class BulkMediaLinkProgressModal extends Modal {
 		const progressContainer = contentEl.createDiv({ cls: 'cr-import-progress' });
 		const progressTrack = progressContainer.createDiv({ cls: 'cr-import-progress__track' });
 		this.progressBar = progressTrack.createDiv({ cls: 'cr-import-progress__bar' });
-		this.progressBar.style.setProperty('width', '0%');
+		this.progressBar.setCssProps({ '--progress-width': '0%' });
 
 		// Progress text
 		this.progressText = contentEl.createDiv({
@@ -112,7 +112,7 @@ export class BulkMediaLinkProgressModal extends Modal {
 		const percentage = progress.total > 0
 			? Math.round((progress.current / progress.total) * 100)
 			: 0;
-		this.progressBar.style.setProperty('width', `${percentage}%`);
+		this.progressBar.setCssProps({ '--progress-width': `${percentage}%` });
 
 		// Update progress text
 		if (progress.currentEntityName) {
@@ -153,7 +153,7 @@ export class BulkMediaLinkProgressModal extends Modal {
 			this.progressText.textContent = 'Operation cancelled by user';
 		} else {
 			this.phaseLabel.textContent = 'Complete';
-			this.progressBar.style.setProperty('width', '100%');
+			this.progressBar.setCssProps({ '--progress-width': '100%' });
 			this.progressText.textContent = 'Done!';
 		}
 

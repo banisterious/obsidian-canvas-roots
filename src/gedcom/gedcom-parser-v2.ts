@@ -358,9 +358,9 @@ export class GedcomParserV2 {
 					currentFamcRef = { familyRef, pedigree: 'birth' };
 					individual.familyAsChildRefs.push(currentFamcRef);
 					// Keep deprecated field for backward compatibility (first biological family only)
-					// eslint-disable-next-line @typescript-eslint/no-deprecated
+					// eslint-disable-next-line @typescript-eslint/no-deprecated -- Backward compatibility: populate legacy single-family field
 					if (!individual.familyAsChildRef) {
-						// eslint-disable-next-line @typescript-eslint/no-deprecated
+						// eslint-disable-next-line @typescript-eslint/no-deprecated -- Backward compatibility: populate legacy single-family field
 						individual.familyAsChildRef = familyRef;
 					}
 					return { currentEvent, currentCitation, currentFamcRef };
@@ -381,12 +381,12 @@ export class GedcomParserV2 {
 			if (tag === 'PEDI' && currentFamcRef) {
 				currentFamcRef.pedigree = getPedigreeType(value);
 				// Update deprecated familyAsChildRef - only keep first biological family
-				// eslint-disable-next-line @typescript-eslint/no-deprecated
+				// eslint-disable-next-line @typescript-eslint/no-deprecated -- Backward compatibility: check legacy single-family field
 				if (currentFamcRef.pedigree !== 'birth' && individual.familyAsChildRef === currentFamcRef.familyRef) {
 					// This was set as biological but is actually step/adopted/foster
 					// Find the first actual biological family or clear it
 					const firstBiological = individual.familyAsChildRefs.find(f => f.pedigree === 'birth' && f !== currentFamcRef);
-					// eslint-disable-next-line @typescript-eslint/no-deprecated
+					// eslint-disable-next-line @typescript-eslint/no-deprecated -- Backward compatibility: update legacy single-family field
 					individual.familyAsChildRef = firstBiological?.familyRef;
 				}
 				return { currentEvent, currentCitation, currentFamcRef };

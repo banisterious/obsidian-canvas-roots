@@ -14,9 +14,7 @@ import { App, Modal, TFile, Menu, setIcon } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import {
 	MediaService,
-	MediaType,
-	IMAGE_EXTENSIONS,
-	VIDEO_EXTENSIONS
+	MediaType
 } from '../media-service';
 import { FamilyGraphService } from '../family-graph';
 import { PlaceGraphService } from '../place-graph';
@@ -402,7 +400,7 @@ export class MediaGalleryModal extends Modal {
 		}
 
 		// Entity type badge
-		const badge = card.createDiv({
+		card.createDiv({
 			cls: `crc-media-gallery-item-badge crc-media-gallery-item-badge--${item.entityType}`,
 			text: this.getEntityLabel(item.entityType)
 		});
@@ -596,7 +594,7 @@ export class MediaGalleryModal extends Modal {
 		checkbox.disabled = !hasFolders;
 
 		// Label
-		const label = toggleWrapper.createSpan({
+		toggleWrapper.createSpan({
 			cls: 'crc-media-folder-filter-label',
 			text: 'Media folders only'
 		});
@@ -614,19 +612,19 @@ export class MediaGalleryModal extends Modal {
 		}
 
 		// Handle toggle change
-		checkbox.addEventListener('change', async () => {
+		checkbox.addEventListener('change', () => {
 			this.plugin.settings.enableMediaFolderFilter = checkbox.checked;
-			await this.plugin.saveSettings();
+			void this.plugin.saveSettings();
 			// Re-apply filters with new setting
 			this.applyFilters();
 		});
 
 		// Clicking the wrapper also toggles (except on checkbox itself)
-		toggleWrapper.addEventListener('click', async (e) => {
+		toggleWrapper.addEventListener('click', (e) => {
 			if (e.target === checkbox || !hasFolders) return;
 			checkbox.checked = !checkbox.checked;
 			this.plugin.settings.enableMediaFolderFilter = checkbox.checked;
-			await this.plugin.saveSettings();
+			void this.plugin.saveSettings();
 			this.applyFilters();
 		});
 	}

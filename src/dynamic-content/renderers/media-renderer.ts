@@ -5,7 +5,7 @@
  * Creates a styled grid of thumbnails from the note's `media` frontmatter property.
  */
 
-import { MarkdownRenderChild, TFile, Notice } from 'obsidian';
+import { MarkdownRenderChild, TFile, Notice, setIcon, setTooltip } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import type { DynamicBlockContext, DynamicBlockConfig } from '../services/dynamic-content-service';
 import type { DynamicContentService } from '../services/dynamic-content-service';
@@ -59,12 +59,12 @@ export class MediaRenderer {
 	/**
 	 * Render the media gallery block
 	 */
-	async render(
+	render(
 		el: HTMLElement,
 		context: DynamicBlockContext,
 		config: DynamicBlockConfig,
 		component: MarkdownRenderChild
-	): Promise<void> {
+	): void {
 		// Parse editable option
 		this.isEditable = this.parseEditable(config.editable);
 
@@ -97,7 +97,7 @@ export class MediaRenderer {
 		}
 
 		// Render gallery grid
-		await this.renderGalleryGrid(contentEl, items, columns, size, component);
+		this.renderGalleryGrid(contentEl, items, columns, size, component);
 	}
 
 	/**
@@ -230,11 +230,7 @@ export class MediaRenderer {
 
 		// Add icon
 		const iconEl = titleEl.createSpan({ cls: 'cr-dynamic-block__icon' });
-		iconEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-			<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-			<circle cx="8.5" cy="8.5" r="1.5"/>
-			<polyline points="21,15 16,10 5,21"/>
-		</svg>`;
+		setIcon(iconEl, 'image');
 
 		titleEl.createSpan({ text: ` ${titleWithCount}` });
 
@@ -246,7 +242,7 @@ export class MediaRenderer {
 			cls: 'cr-dynamic-block__btn clickable-icon',
 			attr: { 'aria-label': 'Freeze to markdown' }
 		});
-		freezeBtn.innerHTML = '❄️';
+		freezeBtn.textContent = '❄️';
 		freezeBtn.addEventListener('click', () => {
 			void this.freezeToMarkdown();
 		});
@@ -256,7 +252,7 @@ export class MediaRenderer {
 			cls: 'cr-dynamic-block__btn clickable-icon',
 			attr: { 'aria-label': 'Copy as embeds' }
 		});
-		copyBtn.innerHTML = '📋';
+		copyBtn.textContent = '📋';
 		copyBtn.addEventListener('click', () => {
 			this.copyAsEmbeds();
 		});
@@ -270,11 +266,7 @@ export class MediaRenderer {
 
 		// Icon
 		const iconEl = empty.createDiv({ cls: 'cr-media__empty-icon' });
-		iconEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
-			<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-			<circle cx="8.5" cy="8.5" r="1.5"/>
-			<polyline points="21,15 16,10 5,21"/>
-		</svg>`;
+		setIcon(iconEl, 'image');
 
 		empty.createDiv({ cls: 'cr-media__empty-text', text: 'No media linked to this note.' });
 		empty.createDiv({ cls: 'cr-media__empty-hint', text: 'Add media wikilinks to the "media" frontmatter property.' });
@@ -283,13 +275,13 @@ export class MediaRenderer {
 	/**
 	 * Render the gallery grid
 	 */
-	private async renderGalleryGrid(
+	private renderGalleryGrid(
 		contentEl: HTMLElement,
 		items: MediaItem[],
 		columns: number | 'auto',
 		size: GallerySize,
 		_component: MarkdownRenderChild
-	): Promise<void> {
+	): void {
 		// Create grid with appropriate classes
 		const gridClasses = ['cr-media__grid'];
 
@@ -306,14 +298,14 @@ export class MediaRenderer {
 
 		// Render each item with index for drag-and-drop
 		for (let i = 0; i < items.length; i++) {
-			await this.renderGalleryItem(grid, items[i], i);
+			this.renderGalleryItem(grid, items[i], i);
 		}
 	}
 
 	/**
 	 * Render a single gallery item
 	 */
-	private async renderGalleryItem(grid: HTMLElement, item: MediaItem, index: number): Promise<void> {
+	private renderGalleryItem(grid: HTMLElement, item: MediaItem, index: number): void {
 		const itemClasses = ['cr-media__item'];
 		if (item.isThumbnail) {
 			itemClasses.push('cr-media__item--thumbnail');
@@ -328,16 +320,10 @@ export class MediaRenderer {
 			itemEl.setAttribute('draggable', 'true');
 			this.setupDragEvents(itemEl, index);
 
-			// Add drag handle indicator
+			// Add drag handle indicator using Lucide grip-vertical icon
 			const handle = itemEl.createDiv({ cls: 'cr-media__drag-handle' });
-			handle.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-				<circle cx="9" cy="6" r="1.5"/>
-				<circle cx="15" cy="6" r="1.5"/>
-				<circle cx="9" cy="12" r="1.5"/>
-				<circle cx="15" cy="12" r="1.5"/>
-				<circle cx="9" cy="18" r="1.5"/>
-				<circle cx="15" cy="18" r="1.5"/>
-			</svg>`;
+			setIcon(handle, 'grip-vertical');
+			setTooltip(handle, 'Drag to reorder');
 		}
 
 		if (item.isImage && item.file) {
@@ -359,7 +345,7 @@ export class MediaRenderer {
 			const clickEvent = this.isEditable ? 'dblclick' : 'click';
 			itemEl.addEventListener(clickEvent, () => {
 				if (item.file) {
-					this.plugin.app.workspace.openLinkText(item.path, '', false);
+					void this.plugin.app.workspace.openLinkText(item.path, '', false);
 				}
 			});
 
@@ -374,7 +360,7 @@ export class MediaRenderer {
 			itemEl.addClass('cr-media__item--doc');
 
 			const iconEl = itemEl.createDiv({ cls: 'cr-media__doc-icon' });
-			iconEl.innerHTML = this.getDocumentIcon(item.extension);
+			setIcon(iconEl, this.getDocumentIconName(item.extension));
 
 			const nameEl = itemEl.createDiv({ cls: 'cr-media__doc-name' });
 			nameEl.textContent = item.file?.basename || item.path.split('/').pop() || 'Document';
@@ -384,7 +370,7 @@ export class MediaRenderer {
 			const clickEvent = this.isEditable ? 'dblclick' : 'click';
 			itemEl.addEventListener(clickEvent, () => {
 				if (item.file) {
-					this.plugin.app.workspace.openLinkText(item.path, '', false);
+					void this.plugin.app.workspace.openLinkText(item.path, '', false);
 				}
 			});
 		}
@@ -573,25 +559,16 @@ export class MediaRenderer {
 	}
 
 	/**
-	 * Get SVG icon for document type
+	 * Get Lucide icon name for document type
 	 */
-	private getDocumentIcon(extension: string): string {
-		// PDF icon
+	private getDocumentIconName(extension: string): string {
+		// PDF files use file-text icon
 		if (extension === 'pdf') {
-			return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
-				<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-				<polyline points="14,2 14,8 20,8"/>
-				<line x1="16" y1="13" x2="8" y2="13"/>
-				<line x1="16" y1="17" x2="8" y2="17"/>
-				<polyline points="10,9 9,9 8,9"/>
-			</svg>`;
+			return 'file-text';
 		}
 
 		// Generic document icon
-		return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
-			<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-			<polyline points="14,2 14,8 20,8"/>
-		</svg>`;
+		return 'file';
 	}
 
 	/**

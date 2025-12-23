@@ -62,7 +62,7 @@ export class StatisticsView extends ItemView {
 		return 'bar-chart-2';
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
+	// eslint-disable-next-line @typescript-eslint/require-await -- ItemView.onOpen requires async signature
 	async onOpen(): Promise<void> {
 		this.service = new StatisticsService(this.plugin.app, this.plugin.settings);
 		this.stats = this.service.getAllStatistics();
@@ -71,7 +71,7 @@ export class StatisticsView extends ItemView {
 		this.registerEventHandlers();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
+	// eslint-disable-next-line @typescript-eslint/require-await -- ItemView.onClose requires async signature
 	async onClose(): Promise<void> {
 		if (this.refreshTimeout) {
 			clearTimeout(this.refreshTimeout);
@@ -1807,7 +1807,7 @@ export class StatisticsView extends ItemView {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
+	// eslint-disable-next-line @typescript-eslint/require-await -- ItemView.setState requires async signature
 	async setState(state: Partial<StatisticsViewState>): Promise<void> {
 		if (state.expandedSections) {
 			this.expandedSections = new Set(state.expandedSections);
