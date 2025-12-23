@@ -44,14 +44,21 @@ Universe Notes support:
 
 ## Creating Universe Notes
 
+### Finding the Create Universe Button
+
+The Universes tab is **hidden by default** in the Control Center — it only appears once you have created at least one universe or have orphan universe strings in your vault.
+
+**To create your first universe:**
+
+1. Open the Control Center (`Ctrl/Cmd+Shift+F` or command palette: "Open Control Center")
+2. Navigate to the **Statistics** tab
+3. Scroll to the **Universes** section
+4. Click the **Create** button next to "Create universe"
+5. Follow the multi-step wizard
+
+Once you've created your first universe, the **Universes tab** will appear in the Control Center sidebar for easier access.
+
 ### Using the Create Universe Wizard
-
-The recommended way to create a new universe:
-
-1. Open the Control Center (command palette: "Open Control Center")
-2. Navigate to the **Universes** tab
-3. Click **Create universe** in the Actions card
-4. Follow the multi-step wizard
 
 The wizard guides you through creating:
 - The universe note with metadata
@@ -59,11 +66,12 @@ The wizard guides you through creating:
 - An optional custom map
 - An optional validation schema scoped to the universe
 
-### Using the Command
+**After you have at least one universe:**
 
-1. Open the Command Palette (Ctrl/Cmd + P)
-2. Search for "Canvas Roots: Create universe note"
-3. Fill in the universe details in the modal
+1. Open the Control Center
+2. Navigate to the **Universes** tab (now visible)
+3. Click **Create universe** in the Actions card
+4. Follow the multi-step wizard
 
 ### Manual Creation
 
@@ -314,9 +322,9 @@ The template includes these formulas:
 
 | Command | Description |
 |---------|-------------|
-| Create universe note | Opens the Create Universe wizard |
-| Open universes tab | Opens Control Center to Universes tab |
 | Create universes base template | Creates the Bases template file |
+
+> **Note:** There is currently no dedicated command to create a universe note. Use the Statistics tab or Universes tab (once visible) to access the Create Universe wizard.
 
 ---
 
