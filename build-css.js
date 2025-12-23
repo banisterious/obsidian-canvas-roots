@@ -42,6 +42,7 @@ const CONFIG = {
     'folder-scan.css',   // Folder scan modal
     'relationship-calculator.css', // Relationship calculator modal
     'family-chart-view.css', // Interactive family chart view
+    'family-chart-export.css', // Family chart export wizard modal
     'data-quality.css',  // Data quality analysis tab
     'relationships.css', // Custom relationships tab
     'canvas-navigation.css', // Canvas navigation and split wizard

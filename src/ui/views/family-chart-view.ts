@@ -14,6 +14,7 @@ import { FamilyGraphService, PersonNode } from '../../core/family-graph';
 import type { ColorScheme } from '../../settings';
 import { getLogger } from '../../core/logging';
 import { PersonPickerModal } from '../person-picker';
+import { FamilyChartExportWizard } from './family-chart-export-wizard';
 
 const logger = getLogger('FamilyChartView');
 
@@ -322,7 +323,7 @@ export class FamilyChartView extends ItemView {
 			attr: { 'aria-label': 'Export chart' }
 		});
 		setIcon(exportBtn, 'download');
-		exportBtn.addEventListener('click', (e) => this.showExportMenu(e));
+		exportBtn.addEventListener('click', () => this.openExportWizard());
 
 		// Refresh button
 		const refreshBtn = rightControls.createEl('button', {
@@ -1449,7 +1450,311 @@ export class FamilyChartView extends ItemView {
 	// ============ Export ============
 
 	/**
+	 * Open the export wizard modal
+	 */
+	private openExportWizard(): void {
+		const wizard = new FamilyChartExportWizard(this.plugin, this);
+		wizard.open();
+	}
+
+	/**
+	 * Get export information for the wizard to display estimates
+	 */
+	getExportInfo(): {
+		rootPersonName: string;
+		peopleCount: number;
+		avatarCount: number;
+	} {
+		// Get root person name
+		let rootPersonName = 'unknown';
+		if (this.rootPersonId && this.chartData.length > 0) {
+			const rootPerson = this.chartData.find(p => p.id === this.rootPersonId);
+			if (rootPerson) {
+				const firstName = rootPerson.data['first name'] || '';
+				const lastName = rootPerson.data['last name'] || '';
+				rootPersonName = `${firstName} ${lastName}`.trim() || 'unknown';
+			}
+		}
+
+		// Count avatars
+		let avatarCount = 0;
+		for (const person of this.chartData) {
+			if (person.data.avatar) {
+				avatarCount++;
+			}
+		}
+
+		return {
+			rootPersonName,
+			peopleCount: this.chartData.length,
+			avatarCount
+		};
+	}
+
+	/**
+	 * Export chart with options from the wizard
+	 */
+	async exportWithOptions(options: {
+		format: 'png' | 'svg' | 'pdf';
+		filename: string;
+		includeAvatars: boolean;
+		scale?: number;
+	}): Promise<void> {
+		const { format, filename, includeAvatars, scale } = options;
+
+		switch (format) {
+			case 'png':
+				await this.exportAsPngWithOptions(filename, includeAvatars, scale ?? 2);
+				break;
+			case 'svg':
+				await this.exportAsSvgWithOptions(filename, includeAvatars);
+				break;
+			case 'pdf':
+				await this.exportAsPdfWithOptions(filename, includeAvatars, scale ?? 2);
+				break;
+		}
+	}
+
+	/**
+	 * Export as PNG with options
+	 */
+	private async exportAsPngWithOptions(filename: string, includeAvatars: boolean, scale: number): Promise<void> {
+		if (!this.f3Chart) return;
+
+		const svg = this.f3Chart.svg;
+		if (!svg) {
+			new Notice('No chart to export');
+			return;
+		}
+
+		try {
+			const { svgClone, width, height } = this.prepareSvgForExport(svg as SVGSVGElement);
+
+			logger.debug('export-png', 'Preparing PNG export', { width, height, scale, includeAvatars });
+
+			// Check for canvas size limits
+			const maxDimension = 16384;
+			const maxArea = 268435456;
+			const scaledWidth = width * scale;
+			const scaledHeight = height * scale;
+			const scaledArea = scaledWidth * scaledHeight;
+
+			if (scaledWidth > maxDimension || scaledHeight > maxDimension) {
+				new Notice(`Chart too large for PNG export (${Math.round(width)}x${Math.round(height)}px). Try SVG export instead.`, 0);
+				return;
+			}
+
+			if (scaledArea > maxArea) {
+				new Notice(`Chart too large for PNG export (${Math.round(scaledArea / 1000000)}M pixels). Try SVG export instead.`, 0);
+				return;
+			}
+
+			// Handle avatars based on option
+			if (includeAvatars) {
+				await this.embedImagesAsBase64(svgClone);
+			} else {
+				// Remove avatar images
+				const imageElements = svgClone.querySelectorAll('image[href]');
+				imageElements.forEach((imgEl) => {
+					const href = imgEl.getAttribute('href') || imgEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+					if (href?.startsWith('app://')) {
+						imgEl.remove();
+					}
+				});
+			}
+
+			// Serialize SVG
+			const serializer = new XMLSerializer();
+			const svgString = serializer.serializeToString(svgClone);
+			const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+			const svgUrl = URL.createObjectURL(svgBlob);
+
+			// Create canvas and draw SVG
+			const canvas = document.createElement('canvas');
+			canvas.width = scaledWidth;
+			canvas.height = scaledHeight;
+			const ctx = canvas.getContext('2d');
+			if (!ctx) {
+				new Notice('Failed to create canvas context');
+				return;
+			}
+
+			const img = new Image();
+			img.onload = () => {
+				ctx.scale(scale, scale);
+				ctx.drawImage(img, 0, 0);
+				URL.revokeObjectURL(svgUrl);
+
+				canvas.toBlob((blob) => {
+					if (blob) {
+						const url = URL.createObjectURL(blob);
+						const link = document.createElement('a');
+						link.href = url;
+						link.download = filename;
+						link.click();
+						URL.revokeObjectURL(url);
+						new Notice('PNG exported successfully');
+					} else {
+						new Notice('Failed to create PNG image');
+					}
+				}, 'image/png');
+			};
+			img.onerror = () => {
+				URL.revokeObjectURL(svgUrl);
+				new Notice('Failed to render chart as PNG. Try SVG export instead.');
+			};
+			img.src = svgUrl;
+
+		} catch (error) {
+			logger.error('export-png', 'Failed to export PNG', { error });
+			new Notice('Failed to export PNG');
+		}
+	}
+
+	/**
+	 * Export as SVG with options
+	 */
+	private async exportAsSvgWithOptions(filename: string, includeAvatars: boolean): Promise<void> {
+		if (!this.f3Chart) return;
+
+		const svg = this.f3Chart.svg;
+		if (!svg) {
+			new Notice('No chart to export');
+			return;
+		}
+
+		try {
+			const { svgClone } = this.prepareSvgForExport(svg as SVGSVGElement);
+
+			// Handle avatars based on option
+			const imageElements = svgClone.querySelectorAll('image[href]');
+			if (includeAvatars) {
+				await this.embedImagesAsBase64(svgClone);
+			} else {
+				imageElements.forEach((imgEl) => {
+					const href = imgEl.getAttribute('href') || imgEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+					if (href?.startsWith('app://')) {
+						imgEl.remove();
+					}
+				});
+			}
+
+			// Serialize and download
+			const serializer = new XMLSerializer();
+			const svgString = serializer.serializeToString(svgClone);
+			const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = filename;
+			link.click();
+			URL.revokeObjectURL(url);
+
+			new Notice('SVG exported successfully');
+
+		} catch (error) {
+			logger.error('export-svg', 'Failed to export SVG', { error });
+			new Notice('Failed to export SVG');
+		}
+	}
+
+	/**
+	 * Export as PDF with options
+	 */
+	private async exportAsPdfWithOptions(filename: string, includeAvatars: boolean, scale: number): Promise<void> {
+		if (!this.f3Chart) return;
+
+		const svg = this.f3Chart.svg;
+		if (!svg) {
+			new Notice('No chart to export');
+			return;
+		}
+
+		try {
+			const { svgClone, width, height } = this.prepareSvgForExport(svg as SVGSVGElement);
+
+			logger.debug('export-pdf', 'Preparing PDF export', { width, height, scale, includeAvatars });
+
+			// Check for canvas size limits
+			const maxDimension = 16384;
+			const maxArea = 268435456;
+			const scaledWidth = width * scale;
+			const scaledHeight = height * scale;
+			const scaledArea = scaledWidth * scaledHeight;
+
+			if (scaledWidth > maxDimension || scaledHeight > maxDimension) {
+				new Notice(`Chart too large for PDF export (${Math.round(width)}x${Math.round(height)}px). Try SVG export instead.`, 0);
+				return;
+			}
+
+			if (scaledArea > maxArea) {
+				new Notice(`Chart too large for PDF export (${Math.round(scaledArea / 1000000)}M pixels). Try SVG export instead.`, 0);
+				return;
+			}
+
+			// Handle avatars based on option
+			if (includeAvatars) {
+				await this.embedImagesAsBase64(svgClone);
+			} else {
+				const imageElements = svgClone.querySelectorAll('image[href]');
+				imageElements.forEach((imgEl) => {
+					const href = imgEl.getAttribute('href') || imgEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+					if (href?.startsWith('app://')) {
+						imgEl.remove();
+					}
+				});
+			}
+
+			// Serialize SVG
+			const serializer = new XMLSerializer();
+			const svgString = serializer.serializeToString(svgClone);
+			const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+			const svgUrl = URL.createObjectURL(svgBlob);
+
+			// Create canvas
+			const canvas = document.createElement('canvas');
+			canvas.width = scaledWidth;
+			canvas.height = scaledHeight;
+			const ctx = canvas.getContext('2d');
+			if (!ctx) {
+				new Notice('Failed to create canvas context');
+				return;
+			}
+
+			const img = new Image();
+			img.onload = () => {
+				ctx.scale(scale, scale);
+				ctx.drawImage(img, 0, 0);
+				URL.revokeObjectURL(svgUrl);
+
+				// Create PDF
+				const orientation = width > height ? 'landscape' : 'portrait';
+				const pdf = new jsPDF({
+					orientation,
+					unit: 'px',
+					format: [width, height]
+				});
+
+				const imgData = canvas.toDataURL('image/png');
+				pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+				pdf.save(filename);
+				new Notice('PDF exported successfully');
+			};
+			img.onerror = () => {
+				URL.revokeObjectURL(svgUrl);
+				new Notice('Failed to render chart as PDF. Try SVG export instead.');
+			};
+			img.src = svgUrl;
+
+		} catch (error) {
+			logger.error('export-pdf', 'Failed to export PDF', { error });
+			new Notice('Failed to export PDF');
+		}
+	}
+
+	/**
 	 * Show export menu with PNG and SVG options
+	 * @deprecated Use openExportWizard() instead - kept for potential fallback
 	 */
 	private showExportMenu(e: MouseEvent): void {
 		const menu = new Menu();
