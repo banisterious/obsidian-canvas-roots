@@ -1,7 +1,8 @@
 # Family Chart Export Modal
 
-**Status:** Planned
+**Status:** Complete
 **Priority:** Medium
+**Completed:** 2025-12-23
 **Extracted from:** `universal-media-linking.md` (Phase 3 notes)
 
 ---
@@ -576,13 +577,13 @@ const PAGE_SIZES = {
 - [x] Visual feedback shows which preset is selected (icon + border highlight)
 - [x] Settings remembered between sessions (lastFamilyChartExport in settings)
 
-### Phase 6: ODT Export
-- [ ] ODT format option fully functional alongside PNG/SVG/PDF
-- [ ] ODT generation works without external library (JSZip + manual XML)
-- [ ] Chart embedded as image in ODT document
-- [ ] Optional cover page with title/subtitle renders correctly
-- [ ] Generated ODT opens in LibreOffice/Word without errors
-- [ ] Document preset uses ODT format
+### Phase 6: ODT Export ✅
+- [x] ODT format option fully functional alongside PNG/SVG/PDF
+- [x] ODT generation works without external library (JSZip + manual XML)
+- [x] Chart embedded as image in ODT document
+- [x] Optional cover page with title/subtitle renders correctly
+- [x] Generated ODT opens in LibreOffice/Word without errors
+- [x] Document preset uses ODT format
 
 ---
 
