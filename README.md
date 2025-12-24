@@ -47,7 +47,7 @@
 | **Direct Editing** | Edit relationships in the chart with full undo/redo support |
 | **Bidirectional Sync** | Chart edits update frontmatter; file changes refresh the chart |
 | **Multiple Color Schemes** | Gender, Generation, Collection, or Monochrome |
-| **Export Options** | High-quality PNG, SVG, or PDF with customizable filenames |
+| **Export Options** | High-quality PNG, SVG, PDF, or ODT with customizable filenames |
 
 ### [Data Management](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Management)
 
