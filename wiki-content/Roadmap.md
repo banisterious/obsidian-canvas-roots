@@ -8,12 +8,12 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
-  - [Calendarium Integration](#calendarium-integration) ⚡ High
-  - [Visual Tree PDF Enhancements](#visual-tree-pdf-enhancements) 💡 Low
   - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard) 📋 Medium
   - [Report Wizard Enhancements](#report-wizard-enhancements) 📋 Medium
   - [Report Generator ODT Export](#report-generator-odt-export) 📋 Medium
+  - [Visual Tree PDF Enhancements](#visual-tree-pdf-enhancements) 💡 Low
   - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
+  - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
 - [Future Considerations](#future-considerations)
   - [Ghost Nodes for Unresolved Links](#ghost-nodes-for-unresolved-links)
@@ -60,64 +60,6 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
-
----
-
-### Calendarium Integration
-
-**Priority:** ⚡ High — Unified timeline experience for fictional worldbuilders
-
-**Status:** ✅ Phase 1 complete (v0.12.0) | ✅ Phase 2 complete | Phases 3-4 planned
-
-**Summary:** Integration with the [Calendarium](https://plugins.javalent.com/calendarium) plugin to share calendar definitions, eliminating duplicate configuration for worldbuilders. Designed to be invisible to users who don't need it—settings default to off, and no UI changes appear unless Calendarium is installed.
-
-**User Feedback (December 2024):**
-- Calendar definition is the main value—users want Calendarium for setting up calendar structure (dates, eras), not primarily for events
-- Date ranges (`fc-date` + `fc-end`) are important for lifespans, reign periods, residences
-- Pain points with Calendarium include era handling and per-calendar frontmatter fields
-- Phase 1 (read-only calendar import) validated as the right starting point
-
-**Integration Modes:**
-
-| Mode | Description | Use Case |
-|------|-------------|----------|
-| Standalone | Canvas Roots manages its own calendars | Users without Calendarium |
-| Calendarium Primary | Canvas Roots reads Calendarium calendars | Existing Calendarium users |
-| Bidirectional | Full sync between both plugins | Power users wanting unified experience |
-
-**Phased Approach:**
-- ✅ **Phase 1 (v0.12.0):** Import calendar definitions from Calendarium—delivers ~80% of value
-- ✅ **Phase 2:** Display Calendarium events on Canvas Roots timelines; support date ranges (`fc-end`)
-- **Phase 3:** Bidirectional sync between plugins
-- **Phase 4:** Cross-calendar date translation
-
-**Phase 1 Implementation (v0.12.0):**
-- Detects Calendarium plugin installation
-- Imports calendar definitions (names, eras, abbreviations, year directions)
-- Displays imported calendars in Date Systems card and Create Event modal
-- Graceful fallback when Calendarium not installed
-- Integrations card hidden when Calendarium not installed
-
-See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#calendarium-integration) for usage documentation.
-
-**Data Mapping (Planned for Phase 2+):**
-
-| Canvas Roots Field | Calendarium Field |
-|--------------------|-------------------|
-| `fictional_date` | `fc-date` / `fc-start` |
-| `fictional_date_end` | `fc-end` |
-| `calendar_system` | `fc-calendar` |
-| `event_category` | `fc-category` |
-| `display_name` | `fc-display-name` |
-
-**Settings:**
-- `calendariumIntegration`: off / read-only (bidirectional planned for Phase 3)
-
-**API Integration:** Uses `window.Calendarium` global when available, with graceful fallback when Calendarium is not installed.
-
-**Future Consideration:** Per-calendar frontmatter fields (e.g., `mycalendar-date` instead of `fc-calendar` + `fc-date`) to allow one note to have dates across multiple calendars.
-
-See [Calendarium Integration Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/calendarium-integration.md) for implementation details.
 
 ---
 
@@ -409,6 +351,64 @@ These enhancements become valuable when users have:
 - Want streamlined navigation within a single universe context
 
 See [Universe Management Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/universe-management.md) for implementation details.
+
+---
+
+### Calendarium Integration
+
+**Priority:** 💡 Low — Unified timeline experience for fictional worldbuilders
+
+**Status:** ✅ Phase 1 complete (v0.12.0) | ✅ Phase 2 complete (v0.15.2) | Phases 3-4 planned
+
+**Summary:** Integration with the [Calendarium](https://plugins.javalent.com/calendarium) plugin to share calendar definitions, eliminating duplicate configuration for worldbuilders. Designed to be invisible to users who don't need it—settings default to off, and no UI changes appear unless Calendarium is installed.
+
+**User Feedback (December 2024):**
+- Calendar definition is the main value—users want Calendarium for setting up calendar structure (dates, eras), not primarily for events
+- Date ranges (`fc-date` + `fc-end`) are important for lifespans, reign periods, residences
+- Pain points with Calendarium include era handling and per-calendar frontmatter fields
+- Phase 1 (read-only calendar import) validated as the right starting point
+
+**Integration Modes:**
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| Standalone | Canvas Roots manages its own calendars | Users without Calendarium |
+| Calendarium Primary | Canvas Roots reads Calendarium calendars | Existing Calendarium users |
+| Bidirectional | Full sync between both plugins | Power users wanting unified experience |
+
+**Phased Approach:**
+- ✅ **Phase 1 (v0.12.0):** Import calendar definitions from Calendarium—delivers ~80% of value
+- ✅ **Phase 2 (v0.15.2):** Display Calendarium events on Canvas Roots timelines; support date ranges (`fc-end`)
+- **Phase 3:** Bidirectional sync between plugins
+- **Phase 4:** Cross-calendar date translation
+
+**Phase 1 Implementation (v0.12.0):**
+- Detects Calendarium plugin installation
+- Imports calendar definitions (names, eras, abbreviations, year directions)
+- Displays imported calendars in Date Systems card and Create Event modal
+- Graceful fallback when Calendarium not installed
+- Integrations card hidden when Calendarium not installed
+
+See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#calendarium-integration) for usage documentation.
+
+**Data Mapping (Planned for Phase 3+):**
+
+| Canvas Roots Field | Calendarium Field |
+|--------------------|-------------------|
+| `fictional_date` | `fc-date` / `fc-start` |
+| `fictional_date_end` | `fc-end` |
+| `calendar_system` | `fc-calendar` |
+| `event_category` | `fc-category` |
+| `display_name` | `fc-display-name` |
+
+**Settings:**
+- `calendariumIntegration`: off / read-only (bidirectional planned for Phase 3)
+
+**API Integration:** Uses `window.Calendarium` global when available, with graceful fallback when Calendarium is not installed.
+
+**Future Consideration:** Per-calendar frontmatter fields (e.g., `mycalendar-date` instead of `fc-calendar` + `fc-date`) to allow one note to have dates across multiple calendars.
+
+See [Calendarium Integration Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/calendarium-integration.md) for implementation details.
 
 ---
 
