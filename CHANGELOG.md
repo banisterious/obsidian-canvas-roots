@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Preserve media folder structure on import** - New toggle in Gramps .gpkg import to recreate the original subfolder hierarchy from the source instead of importing all media to a flat folder. Useful for users who organize media by family or category.
 
+- **Link media action in People tab** - New "Link media" action in the People tab Actions card opens the Media Manager modal for browsing, linking, and organizing media files.
+
 ### Changed
 
 - **Universe discoverability** - Users can now discover and create universes from three entry points: command palette, Universes tab tiles, or Statistics tab. Previously the only entry was buried in the Statistics tab.

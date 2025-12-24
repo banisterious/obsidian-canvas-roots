@@ -59,6 +59,7 @@ import { ExportOptionsBuilder } from './export-options-builder';
 import { FlattenNestedPropertiesModal } from './flatten-nested-properties-modal';
 import { PlaceGeneratorModal } from '../enhancement/ui/place-generator-modal';
 import { BulkMediaLinkModal } from '../core/ui/bulk-media-link-modal';
+import { MediaManagerModal } from '../core/ui/media-manager-modal';
 import {
 	renderSourcesTab,
 	EvidenceService,
@@ -2118,6 +2119,15 @@ export class ControlCenterModal extends Modal {
 				.setButtonText('Create')
 				.onClick(() => {
 					this.app.commands.executeCommandById('canvas-roots:create-base-template');
+				}));
+
+		new Setting(actionsContent)
+			.setName('Link media')
+			.setDesc('Open the Media Manager to browse, link, and organize media files for person notes')
+			.addButton(button => button
+				.setButtonText('Open Media Manager')
+				.onClick(() => {
+					new MediaManagerModal(this.app, this.plugin).open();
 				}));
 
 		container.appendChild(actionsCard);
