@@ -197,7 +197,7 @@ export type LucideIconName =
 /**
  * Navigation group identifiers
  */
-export type NavGroup = 'dashboard' | 'entities' | 'data-structure' | 'output' | 'settings';
+export type NavGroup = 'dashboard' | 'entities' | 'data-structure' | 'output' | 'tools' | 'settings';
 
 /**
  * Navigation group configuration
@@ -215,6 +215,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
 	{ id: 'entities', label: 'Entities' },
 	{ id: 'data-structure', label: 'Data & Structure' },
 	{ id: 'output', label: 'Output' },
+	{ id: 'tools', label: 'Tools' },
 	{ id: 'settings', label: 'Settings' }
 ];
 
@@ -228,6 +229,47 @@ export interface TabConfig {
 	description: string;
 	group: NavGroup;
 }
+
+/**
+ * Tool entry configuration - opens modals/leaves instead of switching tabs
+ */
+export interface ToolConfig {
+	id: string;
+	name: string;
+	icon: LucideIconName;
+	description: string;
+}
+
+/**
+ * Tool entries that appear in the Tools group
+ * These open modals or dedicated leaves instead of switching the main content
+ */
+export const TOOL_CONFIGS: ToolConfig[] = [
+	{
+		id: 'templates',
+		name: 'Templates',
+		icon: 'file-code',
+		description: 'View and copy template snippets'
+	},
+	{
+		id: 'media-manager',
+		name: 'Media Manager',
+		icon: 'layout',
+		description: 'Manage media files and attachments'
+	},
+	{
+		id: 'family-chart',
+		name: 'Family Chart',
+		icon: 'users',
+		description: 'Open interactive family chart view'
+	},
+	{
+		id: 'report-wizard',
+		name: 'Report Wizard',
+		icon: 'file-text',
+		description: 'Generate reports with the wizard'
+	}
+];
 
 /**
  * Control Center tab configurations

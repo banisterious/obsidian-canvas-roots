@@ -373,6 +373,26 @@
   font-size: 12px;
 }
 
+/* Tool entries (open modals/leaves instead of switching tabs) */
+.crc-nav-item--tool {
+  color: var(--text-muted);
+}
+
+.crc-nav-item--tool:hover {
+  color: var(--text-normal);
+}
+
+.crc-nav-item__indicator {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-faint);
+  opacity: 0.7;
+}
+
+.crc-nav-item--tool:hover .crc-nav-item__indicator {
+  opacity: 1;
+}
+
 /* ==========================================================================
    CONTENT AREA
    ========================================================================== */

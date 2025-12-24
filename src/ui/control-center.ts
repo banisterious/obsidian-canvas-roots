@@ -1,6 +1,6 @@
 import { App, Menu, MenuItem, Modal, Notice, Platform, Setting, TFile, TFolder, setIcon, normalizePath } from 'obsidian';
 import CanvasRootsPlugin from '../../main';
-import { TAB_CONFIGS, NAV_GROUPS, createLucideIcon, setLucideIcon, LucideIconName } from './lucide-icons';
+import { TAB_CONFIGS, NAV_GROUPS, TOOL_CONFIGS, createLucideIcon, setLucideIcon, LucideIconName } from './lucide-icons';
 import { ensureFolderExists } from '../core/canvas-utils';
 import { createPersonNote, PersonData } from '../core/person-note-writer';
 import { PersonPickerModal, PersonInfo, PlaceInfo, extractPlaceInfo } from './person-picker';
@@ -309,6 +309,12 @@ export class ControlCenterModal extends Modal {
 
 		// Render groups in order
 		NAV_GROUPS.forEach((groupConfig, groupIndex) => {
+			// Tools group renders tool entries instead of tabs
+			if (groupConfig.id === 'tools') {
+				this.renderToolsGroup(container, groupIndex);
+				return;
+			}
+
 			// Get tabs for this group (excluding hidden ones)
 			const groupTabs = TAB_CONFIGS.filter(
 				tab => tab.group === groupConfig.id && !hiddenTabs.has(tab.id)
@@ -353,6 +359,74 @@ export class ControlCenterModal extends Modal {
 				});
 			});
 		});
+	}
+
+	/**
+	 * Render the Tools group with modal/leaf launchers
+	 */
+	private renderToolsGroup(container: HTMLElement, groupIndex: number): void {
+		const groupEl = container.createDiv({ cls: 'crc-nav-group' });
+
+		// Add divider
+		if (groupIndex > 0) {
+			groupEl.addClass('crc-nav-group--with-divider');
+		}
+
+		// Group label
+		const labelEl = groupEl.createDiv({ cls: 'crc-nav-group__label' });
+		labelEl.textContent = 'Tools';
+
+		// Create list for tool entries
+		const list = groupEl.createEl('ul', { cls: 'crc-nav-list' });
+
+		TOOL_CONFIGS.forEach((toolConfig) => {
+			const listItem = list.createEl('li', {
+				cls: 'crc-nav-item crc-nav-item--tool'
+			});
+			listItem.setAttribute('data-tool', toolConfig.id);
+
+			// Icon
+			const graphic = listItem.createDiv({ cls: 'crc-nav-item__icon' });
+			setLucideIcon(graphic, toolConfig.icon, 16);
+
+			// Text
+			const text = listItem.createDiv({ cls: 'crc-nav-item__text' });
+			text.textContent = toolConfig.name;
+
+			// External indicator (↗)
+			const indicator = listItem.createDiv({ cls: 'crc-nav-item__indicator' });
+			indicator.textContent = '↗';
+
+			// Click handler - open modal/leaf
+			listItem.addEventListener('click', () => {
+				this.openTool(toolConfig.id);
+			});
+		});
+	}
+
+	/**
+	 * Open a tool modal or dedicated leaf
+	 */
+	private openTool(toolId: string): void {
+		switch (toolId) {
+			case 'templates':
+				new TemplateSnippetsModal(this.app).open();
+				break;
+			case 'media-manager':
+				new MediaManagerModal(this.app, this.plugin).open();
+				break;
+			case 'family-chart':
+				// Open family chart leaf
+				this.plugin.activateFamilyChartView(undefined, true, true);
+				this.close();
+				break;
+			case 'report-wizard':
+				// Import and open report wizard
+				import('../reports/ui/report-wizard-modal').then(({ ReportWizardModal }) => {
+					new ReportWizardModal(this.plugin).open();
+				});
+				break;
+		}
 	}
 
 	/**
