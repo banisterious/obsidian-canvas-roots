@@ -37,6 +37,7 @@
 - [Universe Notes](Universe-Notes)
 
 ### Reference
+- [Essential Properties](Essential-Properties)
 - [Frontmatter Reference](Frontmatter-Reference)
 - [Settings & Configuration](Settings-And-Configuration)
 - [Schema Validation](Schema-Validation)

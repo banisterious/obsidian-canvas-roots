@@ -160,6 +160,7 @@ Adapt Canvas Roots to your existing data structure and terminology.
 - [Advanced Features](Advanced-Features) - Excalidraw export, split canvas, folder stats
 
 ### Reference
+- [Essential Properties](Essential-Properties) - Quick-reference cheat sheet
 - [Frontmatter Reference](Frontmatter-Reference) - Complete property documentation
 - [Settings and Configuration](Settings-And-Configuration) - Plugin settings and customization
 - [Styling and Theming](Styling-And-Theming) - CSS customization
@@ -174,5 +175,5 @@ Adapt Canvas Roots to your existing data structure and terminology.
 
 ---
 
-**Version**: 0.13.6
-**Last Updated**: 2025-12-21
+**Version**: 0.15.3
+**Last Updated**: 2025-12-24
