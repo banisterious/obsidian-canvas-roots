@@ -287,11 +287,6 @@ export class ReportWizardModal extends Modal {
 		titleRow.appendChild(createLucideIcon('file-text', 24));
 		titleRow.createSpan({ text: 'Generate Report' });
 
-		// Close button
-		const closeBtn = header.createDiv({ cls: 'cr-report-wizard-close' });
-		setIcon(closeBtn, 'x');
-		closeBtn.addEventListener('click', () => this.close());
-
 		// Step progress indicator
 		this.renderStepProgress(contentEl);
 

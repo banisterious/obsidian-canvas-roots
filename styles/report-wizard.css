@@ -42,23 +42,6 @@
   color: var(--text-accent);
 }
 
-.cr-report-wizard-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: all 0.15s ease;
-}
-
-.cr-report-wizard-close:hover {
-  background: var(--background-modifier-hover);
-  color: var(--text-normal);
-}
-
 /* ==========================================================================
    STEP PROGRESS INDICATOR
    ========================================================================== */
