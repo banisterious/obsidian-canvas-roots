@@ -1399,3 +1399,20 @@
   font-weight: var(--font-semibold);
   color: var(--text-muted);
 }
+
+/* ==========================================================================
+   Person Timeline Modal
+   ========================================================================== */
+
+.crc-person-timeline-modal {
+  --dialog-max-width: 600px;
+}
+
+.crc-person-timeline-modal .modal-content {
+  padding: 0;
+}
+
+.crc-person-timeline-modal__content {
+  max-height: 70vh;
+  overflow-y: auto;
+}

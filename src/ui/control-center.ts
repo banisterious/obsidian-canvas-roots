@@ -46,6 +46,7 @@ import { renderEventsTab } from '../dates';
 import { renderOrganizationsTab } from '../organizations';
 import { renderStatisticsTab } from '../statistics';
 import { renderPersonTimeline, createTimelineSummary } from '../events/ui/person-timeline';
+import { EventService } from '../events/services/event-service';
 import { AddPersonTypePreviewModal } from './add-person-type-modal';
 import { renderFamilyTimeline, getFamilyTimelineSummary } from '../events/ui/family-timeline';
 import { renderPlaceTimelineCard } from '../events/ui/place-timeline';
@@ -2969,8 +2970,36 @@ export class ControlCenterModal extends Modal {
 			mediaCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
 		}
 
-		// Actions cell (unlinked places badge + open note button)
+		// Actions cell (timeline badge + unlinked places badge + open note button)
 		const actionsCell = row.createEl('td', { cls: 'crc-person-table__td crc-person-table__td--actions' });
+
+		// Timeline badge
+		const eventService = this.plugin.getEventService();
+		if (eventService) {
+			const personLink = `[[${person.file.basename}]]`;
+			const events = eventService.getEventsForPerson(personLink);
+
+			if (events.length > 0) {
+				const summary = createTimelineSummary(events);
+				const timelineBadge = actionsCell.createEl('span', {
+					cls: 'crc-person-list-badge crc-person-list-badge--timeline',
+					attr: {
+						title: summary.dateRange
+							? `${summary.count} events (${summary.dateRange})`
+							: `${summary.count} events`
+					}
+				});
+				const calendarIcon = createLucideIcon('calendar', 12);
+				timelineBadge.appendChild(calendarIcon);
+				timelineBadge.appendText(summary.count.toString());
+
+				// Click to show timeline in modal
+				timelineBadge.addEventListener('click', (e) => {
+					e.stopPropagation();
+					this.showPersonTimelineModal(person.file, person.name, eventService);
+				});
+			}
+		}
 
 		// Check for unlinked places
 		const unlinkedPlaces: { type: string; info: PlaceInfo }[] = [];
@@ -6786,6 +6815,39 @@ export class ControlCenterModal extends Modal {
 				this.showTab('places');
 			}
 		});
+		modal.open();
+	}
+
+	/**
+	 * Show a modal with the person's timeline
+	 */
+	private showPersonTimelineModal(
+		personFile: TFile,
+		personName: string,
+		eventService: EventService
+	): void {
+		const modal = new Modal(this.app);
+		modal.titleEl.setText(`Timeline: ${personName}`);
+		modal.modalEl.addClass('crc-person-timeline-modal');
+
+		const content = modal.contentEl.createDiv({ cls: 'crc-person-timeline-modal__content' });
+
+		renderPersonTimeline(
+			content,
+			personFile,
+			personName,
+			this.app,
+			this.plugin.settings,
+			eventService,
+			{
+				showEmptyState: true,
+				onEventClick: (event) => {
+					modal.close();
+					void this.app.workspace.getLeaf(false).openFile(event.file);
+				}
+			}
+		);
+
 		modal.open();
 	}
 

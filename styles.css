@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-23 23:34:11 UTC
+ * - Generated: 2025-12-24 00:20:48 UTC
  * - Components: 36 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -16435,7 +16435,7 @@ input[type="text"]::-webkit-input-placeholder {
    COMPONENT: EVENTS.CSS
    ========================================================================== */
 
-/* Component Size: 1402 lines, 28.2 KB */
+/* Component Size: 1419 lines, 28.58 KB */
 
 /**
  * Events Styles
@@ -17837,6 +17837,23 @@ input[type="text"]::-webkit-input-placeholder {
 .crc-dropdown-category-header {
   font-weight: var(--font-semibold);
   color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Person Timeline Modal
+   ========================================================================== */
+
+.crc-person-timeline-modal {
+  --dialog-max-width: 600px;
+}
+
+.crc-person-timeline-modal .modal-content {
+  padding: 0;
+}
+
+.crc-person-timeline-modal__content {
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 
@@ -26044,10 +26061,10 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-23 23:34:11 UTC
+ * Build completed: 2025-12-24 00:20:48 UTC
  * Components processed: 36
- * Total lines: 25697
- * Total size: 510.29 KB
+ * Total lines: 25714
+ * Total size: 510.67 KB
  * Build duration: 0.04 seconds
  *
  * Component breakdown:
@@ -26074,7 +26091,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - map-view.css: 1904 lines, 38.98 KB
  * - leaflet-distortable.css: 368 lines, 7.73 KB
  * - date-systems.css: 287 lines, 5.31 KB
- * - events.css: 1402 lines, 28.2 KB
+ * - events.css: 1419 lines, 28.58 KB
  * - timeline-callouts.css: 321 lines, 10.66 KB
  * - organizations.css: 245 lines, 4.36 KB
  * - sources.css: 2659 lines, 53.94 KB
