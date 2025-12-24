@@ -362,4 +362,35 @@
   color: var(--text-normal);
 }
 
+/* Documentation links card */
+.crc-dashboard-docs-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.crc-dashboard-docs-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.crc-dashboard-docs-content {
+  flex: 1;
+}
+
+.crc-dashboard-docs-content .crc-link {
+  color: var(--interactive-accent);
+  text-decoration: none;
+}
+
+.crc-dashboard-docs-content .crc-link:hover {
+  text-decoration: underline;
+}
+
 /* End of dashboard.css */

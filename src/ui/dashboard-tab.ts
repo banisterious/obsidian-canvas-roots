@@ -55,6 +55,9 @@ export function renderDashboardTab(options: DashboardTabOptions): void {
 		renderFirstRunNotice(container, plugin);
 	}
 
+	// Documentation links card
+	renderDocumentationCard(container);
+
 	// Quick Actions section
 	renderQuickActionsSection(container, plugin, app, switchTab, closeModal);
 
@@ -92,6 +95,41 @@ function renderFirstRunNotice(container: HTMLElement, plugin: CanvasRootsPlugin)
 		void plugin.saveSettings();
 		notice.remove();
 	});
+}
+
+const WIKI_BASE = 'https://github.com/banisterious/obsidian-canvas-roots/wiki';
+
+/**
+ * Render the documentation links card
+ */
+function renderDocumentationCard(container: HTMLElement): void {
+	const card = container.createDiv({ cls: 'crc-dashboard-docs-card' });
+
+	// Icon
+	const iconEl = card.createSpan({ cls: 'crc-dashboard-docs-icon' });
+	setLucideIcon(iconEl, 'book-open', 18);
+
+	// Content
+	const content = card.createDiv({ cls: 'crc-dashboard-docs-content' });
+	content.createSpan({ text: 'New to Canvas Roots? Start with ', cls: 'crc-text-muted' });
+
+	const essentialLink = content.createEl('a', {
+		text: 'Essential Properties',
+		href: `${WIKI_BASE}/Essential-Properties`,
+		cls: 'crc-link'
+	});
+	essentialLink.setAttr('target', '_blank');
+
+	content.createSpan({ text: ' or explore the ', cls: 'crc-text-muted' });
+
+	const wikiLink = content.createEl('a', {
+		text: 'full documentation',
+		href: WIKI_BASE,
+		cls: 'crc-link'
+	});
+	wikiLink.setAttr('target', '_blank');
+
+	content.createSpan({ text: '.', cls: 'crc-text-muted' });
 }
 
 /**
