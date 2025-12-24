@@ -18,7 +18,7 @@ const logger = getLogger('GedcomXImporter');
 /**
  * Dynamic block type for person notes
  */
-export type DynamicBlockType = 'timeline' | 'relationships';
+export type DynamicBlockType = 'timeline' | 'relationships' | 'media';
 
 /**
  * GEDCOM X import options

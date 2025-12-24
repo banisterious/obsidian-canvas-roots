@@ -89,7 +89,7 @@ export const DEFAULT_COLUMN_ALIASES: Record<keyof CsvColumnMapping, string[]> = 
 /**
  * Dynamic block type for person notes
  */
-export type DynamicBlockType = 'timeline' | 'relationships';
+export type DynamicBlockType = 'timeline' | 'relationships' | 'media';
 
 /**
  * CSV import options

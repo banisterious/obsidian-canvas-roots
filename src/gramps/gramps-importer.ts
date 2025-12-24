@@ -41,7 +41,7 @@ export interface GrampsImportProgress {
 /**
  * Dynamic block type for person notes
  */
-export type DynamicBlockType = 'timeline' | 'relationships';
+export type DynamicBlockType = 'timeline' | 'relationships' | 'media';
 
 /**
  * Gramps import options

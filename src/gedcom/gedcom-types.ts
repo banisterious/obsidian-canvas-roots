@@ -376,7 +376,7 @@ export interface FilenameFormatOptions {
 /**
  * Dynamic block type for person notes
  */
-export type DynamicBlockType = 'timeline' | 'relationships';
+export type DynamicBlockType = 'timeline' | 'relationships' | 'media';
 
 /**
  * GEDCOM import options (v2)

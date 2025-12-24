@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Universe discoverability** - Users can now discover and create universes from three entry points: command palette, Universes tab tiles, or Statistics tab. Previously the only entry was buried in the Statistics tab.
 
+### Fixed
+
+- **Dynamic media gallery block not created during import** - Fixed an issue where the "Include dynamic content blocks" toggle during GEDCOM and Gramps import would create timeline and relationships blocks but not the media gallery block. The `media` block type was missing from the import configuration.
+
 ---
 
 ## [0.15.1] - 2025-12-23

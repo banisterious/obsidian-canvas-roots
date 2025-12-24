@@ -52,7 +52,7 @@ export class CreatePersonModal extends Modal {
 	private editingFile?: TFile;
 	private propertyAliases: Record<string, string> = {};
 	private includeDynamicBlocks: boolean = false;
-	private dynamicBlockTypes: DynamicBlockType[] = ['timeline', 'relationships'];
+	private dynamicBlockTypes: DynamicBlockType[] = ['timeline', 'relationships', 'media'];
 
 	constructor(
 		app: App,
@@ -113,7 +113,7 @@ export class CreatePersonModal extends Modal {
 		this.familyGraph = options?.familyGraph;
 		this.propertyAliases = options?.propertyAliases || {};
 		this.includeDynamicBlocks = options?.includeDynamicBlocks || false;
-		this.dynamicBlockTypes = options?.dynamicBlockTypes || ['timeline', 'relationships'];
+		this.dynamicBlockTypes = options?.dynamicBlockTypes || ['timeline', 'relationships', 'media'];
 		this.existingUniverses = options?.existingUniverses || [];
 		this.placeGraph = options?.placeGraph;
 		this.settings = options?.settings;
@@ -436,7 +436,7 @@ export class CreatePersonModal extends Modal {
 			// Dynamic blocks toggle (only in create mode)
 			new Setting(form)
 				.setName('Include dynamic blocks')
-				.setDesc('Add timeline and relationships blocks that update automatically')
+				.setDesc('Add timeline, relationships, and media gallery blocks that update automatically')
 				.addToggle(toggle => toggle
 					.setValue(this.includeDynamicBlocks)
 					.onChange(value => {

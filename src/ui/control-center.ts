@@ -4944,7 +4944,7 @@ export class ControlCenterModal extends Modal {
 			let includeDynamicBlocks = false;
 			new Setting(optionsSection)
 				.setName('Include dynamic content blocks')
-				.setDesc('Add timeline and family relationship blocks to person notes (can be frozen to static markdown later)')
+				.setDesc('Add timeline, family relationships, and media gallery blocks to person notes (can be frozen to static markdown later)')
 				.addToggle(toggle => toggle
 					.setValue(includeDynamicBlocks)
 					.onChange(value => {
@@ -5230,7 +5230,7 @@ export class ControlCenterModal extends Modal {
 				filenameFormats,
 				propertyAliases: this.plugin.settings.propertyAliases,
 				includeDynamicBlocks,
-				dynamicBlockTypes: ['timeline', 'relationships'],
+				dynamicBlockTypes: ['timeline', 'relationships', 'media'],
 				onProgress: (progress) => {
 					progressModal.updateProgress({
 						phase: progress.phase,
@@ -9915,7 +9915,7 @@ export class ControlCenterModal extends Modal {
 			// Dynamic content blocks toggle
 			new Setting(optionsSection)
 				.setName('Include dynamic content blocks')
-				.setDesc('Add timeline and family relationship blocks to person notes (can be frozen to static markdown later)')
+				.setDesc('Add timeline, family relationships, and media gallery blocks to person notes (can be frozen to static markdown later)')
 				.addToggle(toggle => toggle
 					.setValue(includeDynamicBlocks)
 					.onChange(value => {
@@ -10019,7 +10019,7 @@ export class ControlCenterModal extends Modal {
 				eventsFolder,
 				propertyAliases: this.plugin.settings.propertyAliases,
 				includeDynamicBlocks,
-				dynamicBlockTypes: ['timeline', 'relationships'],
+				dynamicBlockTypes: ['timeline', 'relationships', 'media'],
 				// Pass media files from .gpkg extraction if available
 				mediaFiles: this.gpkgExtractionResult?.mediaFiles,
 				mediaFolder: this.plugin.settings.mediaFolders[0] || 'Canvas Roots/Media',
