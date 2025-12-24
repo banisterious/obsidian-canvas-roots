@@ -39,6 +39,7 @@ import { REPORT_METADATA, REPORT_CATEGORY_METADATA, getReportsByCategory } from 
 import type { ReportCategory } from '../types/report-types';
 import { ReportGenerationService } from '../services/report-generation-service';
 import { PdfReportRenderer } from '../services/pdf-report-renderer';
+import { OdtGenerator } from '../services/odt-generator';
 import { PersonPickerModal, PersonInfo } from '../../ui/person-picker';
 import { PlacePickerModal, SelectedPlaceInfo } from '../../ui/place-picker';
 import { FolderFilterService } from '../../core/folder-filter';
@@ -66,13 +67,14 @@ export class ReportGeneratorModal extends Modal {
 	private options: ReportGeneratorModalOptions;
 	private reportService: ReportGenerationService;
 	private pdfRenderer: PdfReportRenderer;
+	private odtGenerator: OdtGenerator;
 
 	// Form state
 	private selectedCategory: ReportCategory | 'all' = 'all';
 	private selectedReportType: ReportType = 'family-group-sheet';
 	private selectedPersonCrId: string = '';
 	private selectedPersonName: string = '';
-	private outputMethod: 'vault' | 'download' | 'pdf' = 'vault';
+	private outputMethod: 'vault' | 'download' | 'pdf' | 'odt' = 'vault';
 	private outputFolder: string;
 
 	// UI element references for dynamic updates
@@ -229,6 +231,7 @@ export class ReportGeneratorModal extends Modal {
 		this.options = options;
 		this.reportService = new ReportGenerationService(app, plugin.settings);
 		this.pdfRenderer = new PdfReportRenderer();
+		this.odtGenerator = new OdtGenerator();
 
 		// Initialize output folder from settings
 		this.outputFolder = plugin.settings.reportsFolder || '';
@@ -304,10 +307,11 @@ export class ReportGeneratorModal extends Modal {
 			.addDropdown(dropdown => {
 				dropdown.addOption('vault', 'Save to vault');
 				dropdown.addOption('pdf', 'Download as PDF');
+				dropdown.addOption('odt', 'Download as ODT');
 				dropdown.addOption('download', 'Download as MD');
 				dropdown.setValue(this.outputMethod);
 				dropdown.onChange(value => {
-					this.outputMethod = value as 'vault' | 'download' | 'pdf';
+					this.outputMethod = value as 'vault' | 'download' | 'pdf' | 'odt';
 					this.updateOutputVisibility();
 				});
 			});
@@ -399,19 +403,23 @@ export class ReportGeneratorModal extends Modal {
 	 * Update visibility of output-related UI elements based on output method
 	 */
 	private updateOutputVisibility(): void {
-		const isDownload = this.outputMethod === 'download' || this.outputMethod === 'pdf';
+		const isDownload = this.outputMethod === 'download' || this.outputMethod === 'pdf' || this.outputMethod === 'odt';
 		const isPdf = this.outputMethod === 'pdf';
 
 		// Show/hide privacy message
 		if (this.privacyMessageEl) {
 			this.privacyMessageEl.style.display = isDownload ? 'block' : 'none';
 
-			// Update message text based on PDF vs MD
+			// Update message text based on format
 			const messageSpan = this.privacyMessageEl.querySelector('span:last-child');
 			if (messageSpan) {
-				messageSpan.textContent = isPdf
-					? 'PDF is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.'
-					: 'File is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.';
+				if (isPdf) {
+					messageSpan.textContent = 'PDF is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.';
+				} else if (this.outputMethod === 'odt') {
+					messageSpan.textContent = 'ODT is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.';
+				} else {
+					messageSpan.textContent = 'File is generated locally on your device. No internet connection required. Downloads to your system\'s Downloads folder.';
+				}
 			}
 		}
 
@@ -1721,6 +1729,9 @@ export class ReportGeneratorModal extends Modal {
 			if (this.outputMethod === 'pdf') {
 				// Generate PDF using the structured result data
 				await this.generatePdfFromResult(result);
+			} else if (this.outputMethod === 'odt') {
+				// Generate ODT from markdown content
+				await this.generateOdtFromResult(result);
 			} else if (this.outputMethod === 'download') {
 				this.reportService.downloadReport(result.content, result.suggestedFilename);
 				new Notice('Report downloaded');
@@ -1803,6 +1814,29 @@ export class ReportGeneratorModal extends Modal {
 				await this.pdfRenderer.renderCollectionOverview(result as CollectionOverviewResult, pdfOptions);
 				break;
 		}
+	}
+
+	/**
+	 * Generate ODT from the report result
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Report result types vary by report type; union would be complex
+	private async generateOdtFromResult(result: any): Promise<void> {
+		const metadata = REPORT_METADATA[this.selectedReportType];
+
+		// Extract title from the result or use report metadata
+		const title = result.rootPerson?.name
+			? `${metadata.name}: ${result.rootPerson.name}`
+			: metadata.name;
+
+		const odtOptions = {
+			title,
+			subtitle: result.rootPerson?.name ? `Report for ${result.rootPerson.name}` : undefined,
+			includeCoverPage: false // Keep it simple for Phase 1
+		};
+
+		const blob = await this.odtGenerator.generate(result.content, odtOptions);
+		OdtGenerator.download(blob, result.suggestedFilename);
+		new Notice('ODT report downloaded');
 	}
 
 	/**

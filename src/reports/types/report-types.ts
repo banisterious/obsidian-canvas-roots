@@ -43,7 +43,7 @@ export type ReportCategory =
  */
 export interface ReportOptions {
 	/** Output method */
-	outputMethod: 'vault' | 'download' | 'pdf';
+	outputMethod: 'vault' | 'download' | 'pdf' | 'odt';
 	/** Output folder path (for vault output) */
 	outputFolder?: string;
 	/** Custom filename (without extension) */
