@@ -481,8 +481,26 @@ export class GrampsImporter {
 				const eventsFolder = options.eventsFolder || 'Canvas Roots/Events';
 				await this.ensureFolderExists(eventsFolder);
 
+				// Track seen events to detect duplicates (same type + same persons + same date)
+				const seenEvents = new Set<string>();
+				let duplicateEventsSkipped = 0;
+
 				let eventIndex = 0;
 				for (const [handle, event] of grampsData.events) {
+					// Create a key for duplicate detection: type + sorted person handles + date
+					const personKey = [...event.personHandles].sort().join(',');
+					const eventKey = `${event.type || 'unknown'}|${personKey}|${event.date || ''}`;
+
+					if (seenEvents.has(eventKey)) {
+						// Skip duplicate event
+						duplicateEventsSkipped++;
+						logger.debug('importEvent', `Skipping duplicate event: ${event.type} for ${personKey}`);
+						eventIndex++;
+						reportProgress('events', eventIndex, eventsTotal);
+						continue;
+					}
+					seenEvents.add(eventKey);
+
 					try {
 						await this.importEvent(
 							event,
@@ -503,6 +521,10 @@ export class GrampsImporter {
 					}
 					eventIndex++;
 					reportProgress('events', eventIndex, eventsTotal);
+				}
+
+				if (duplicateEventsSkipped > 0) {
+					logger.info('importFile', `Skipped ${duplicateEventsSkipped} duplicate event(s)`);
 				}
 			}
 
