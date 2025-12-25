@@ -102,18 +102,30 @@ After a GEDCOM import (especially from a file with data quality issues), users f
 
 **UI Design:**
 
-**Wizard Modal:**
-- Multi-step modal with progress indicator (step X of Y)
-- Each step shows: description, preview of changes, "Run" button
-- Steps can be skipped if not applicable (e.g., no date issues detected)
-- Progress persists if wizard is closed and reopened
-- Final summary shows what was fixed
+**Overview Screen:**
+- Compact 5×2 tile grid showing all 10 steps at a glance
+- Each tile shows: step number, short title, status badge (issue count, "Done", "Pending", or "0 issues")
+- Click any tile to view step details
+- Current step highlighted with accent border
+
+**Step Types:**
+
+| Type | Steps | Behavior |
+|------|-------|----------|
+| Review-only | 1 | Generates report for manual review. Issues tagged with which step auto-fixes them. Click row → Person Edit modal; ↗ button → open note in new tab. |
+| Batch-fix | 2-6, 10 | Detect issues, show preview, apply fixes automatically with one click. |
+| Interactive | 7-9 | Require user decisions per item (e.g., picking canonical place name, confirming geocode matches). |
 
 **Step States:**
 - ⏳ Pending — Not yet analyzed
+- 🔢 Ready — Issues found, shows count (e.g., "8 fixes")
 - ✅ Complete — Operation finished
 - ⏭️ Skipped — User chose to skip or no issues found
-- ⚠️ Needs Attention — Issues found, awaiting user action
+
+**Progress Indicator:**
+- Compact horizontal bar on step views showing current position
+- Checkmarks for complete steps, numbers for pending
+- Connects step circles with lines (green when complete)
 
 **Entry Points:**
 - Button in Import Results modal: "Run Cleanup Wizard"
@@ -128,7 +140,13 @@ After a GEDCOM import (especially from a file with data quality issues), users f
 **Preview Mode:**
 - Each step shows what will change before applying
 - Match existing preview patterns (bidirectional fix preview, date normalization preview)
-- Allow selective application within each step
+- Clickable rows open edit modals for quick fixes
+
+**Summary Screen:**
+- Shows completion stats in a grid (fixes applied, steps skipped)
+- Detailed breakdown per step with outcomes
+- "Save Report" button creates markdown note in `Canvas Roots/Reports/Cleanup Summary YYYY-MM-DD.md`
+- Report includes timestamp, summary stats, and per-step details for audit trail
 
 **Phased Implementation:**
 
@@ -155,6 +173,7 @@ After a GEDCOM import (especially from a file with data quality issues), users f
 - State persisted in `plugin.settings.cleanupWizardState`
 
 **Documentation:**
+- See [Post-Import Cleanup Wizard Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/post-import-cleanup-wizard.md) for implementation details
 - See [Data Quality: Post-Import Cleanup Workflow](Data-Quality#post-import-cleanup-workflow) for manual workflow
 
 ---
