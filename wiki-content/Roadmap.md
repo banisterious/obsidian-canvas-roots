@@ -12,6 +12,7 @@ This document outlines planned features for Canvas Roots. For completed features
     - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard)
     - [Source Array Migration](#source-array-migration)
   - [Excalidraw Export Enhancements](#excalidraw-export-enhancements) 📋 Medium
+  - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
@@ -279,6 +280,36 @@ if (ea) {
 
 **Documentation:**
 - See [Excalidraw Export Enhancements Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/excalidraw-export-enhancements.md) for implementation details
+
+---
+
+### Cleanup Wizard Phase 4
+
+**Priority:** 📋 Medium — UX polish and customization for the Post-Import Cleanup Wizard
+
+**Status:** Planning | Depends on v0.17.0 completion
+
+**Summary:** User experience refinements for the Post-Import Cleanup Wizard. These enhancements improve accessibility, allow workflow customization, and add visual polish without changing core functionality.
+
+**Planned Features:**
+
+| Task | Feature | Value |
+|------|---------|-------|
+| 1 | Keyboard Navigation | Arrow keys, Enter/Escape, number shortcuts for accessibility |
+| 2 | Step Transition Animations | Smooth tile expansion, slide transitions, staggered results |
+| 3 | Cleanup Profiles | Save/load named configurations (Full, Quick, Places Only) |
+| 4 | Step Reordering | Drag-drop tiles with dependency validation |
+| 5 | Schema Integration | Hook into future schema validation system |
+
+**Implementation Order:**
+1. Keyboard navigation (high priority, accessibility)
+2. Animations (quick UX win)
+3. Cleanup profiles (power user feature)
+4. Step reordering (complex, may not be needed if profiles suffice)
+5. Schema integration (deferred until schema validation exists)
+
+**Documentation:**
+- See [Cleanup Wizard Phase 4 Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/cleanup-wizard-phase4.md) for detailed specifications
 
 ---
 
