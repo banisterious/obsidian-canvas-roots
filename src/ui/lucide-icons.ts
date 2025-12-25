@@ -365,9 +365,9 @@ export const TAB_CONFIGS: TabConfig[] = [
 	// Output group
 	{
 		id: 'tree-generation',
-		name: 'Canvas Trees',
+		name: 'Visual Trees',
 		icon: 'git-branch',
-		description: 'Generate interactive tree canvases',
+		description: 'Generate visual family tree diagrams',
 		group: 'output'
 	},
 	{
