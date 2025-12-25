@@ -774,22 +774,227 @@ export class CleanupWizardModal extends Modal {
 			return;
 		}
 
-		// Show preview table
+		// Show loading state
+		if (this.state.isPreScanning) {
+			const scanning = container.createDiv({ cls: 'crc-cleanup-scanning' });
+			const spinner = scanning.createDiv({ cls: 'crc-cleanup-spinner' });
+			setIcon(spinner, 'loader-2');
+			scanning.createSpan({ text: 'Detecting issues...' });
+			return;
+		}
+
+		// Render step-specific preview
+		switch (stepConfig.id) {
+			case 'bidirectional':
+				this.renderBidirectionalPreview(container);
+				break;
+			case 'date-normalize':
+				this.renderDatePreview(container);
+				break;
+			case 'gender-normalize':
+				this.renderGenderPreview(container);
+				break;
+			case 'orphan-clear':
+				this.renderOrphanPreview(container);
+				break;
+			default:
+				// Fallback for unimplemented previews
+				this.renderGenericPreview(container, stepConfig, stepState);
+		}
+	}
+
+	/**
+	 * Render preview for Step 2: Bidirectional Relationships
+	 */
+	private renderBidirectionalPreview(container: HTMLElement): void {
+		if (this.bidirectionalIssues.length === 0) {
+			return;
+		}
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+		summary.textContent = `${this.bidirectionalIssues.length} relationship${this.bidirectionalIssues.length === 1 ? '' : 's'} will be fixed:`;
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		// Show first 15 items
+		const maxDisplay = 15;
+		const displayItems = this.bidirectionalIssues.slice(0, maxDisplay);
+		const remaining = this.bidirectionalIssues.length - maxDisplay;
+
+		for (const issue of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row' });
+
+			// Icon based on type
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			if (issue.type === 'missing-child-in-parent') {
+				setIcon(iconEl, 'user-plus');
+			} else if (issue.type === 'missing-parent-in-child') {
+				setIcon(iconEl, 'arrow-up');
+			} else if (issue.type === 'missing-spouse-in-spouse') {
+				setIcon(iconEl, 'heart');
+			} else {
+				setIcon(iconEl, 'alert-triangle');
+			}
+
+			// Description
+			const desc = row.createDiv({ cls: 'crc-cleanup-preview-desc' });
+			desc.textContent = issue.description;
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render preview for Step 3: Date Normalization
+	 */
+	private renderDatePreview(container: HTMLElement): void {
+		if (!this.qualityReport) return;
+
+		const dateIssues = this.qualityReport.issues.filter(i => i.code === 'NON_STANDARD_DATE');
+		if (dateIssues.length === 0) return;
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+		summary.textContent = `${dateIssues.length} date${dateIssues.length === 1 ? '' : 's'} will be normalized to YYYY-MM-DD format:`;
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		const maxDisplay = 15;
+		const displayItems = dateIssues.slice(0, maxDisplay);
+		const remaining = dateIssues.length - maxDisplay;
+
+		for (const issue of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'calendar');
+
+			const content = row.createDiv({ cls: 'crc-cleanup-preview-content' });
+
+			const personName = content.createSpan({ cls: 'crc-cleanup-preview-person' });
+			personName.textContent = issue.person.name || issue.person.file.basename;
+
+			const arrow = content.createSpan({ cls: 'crc-cleanup-preview-arrow' });
+			arrow.textContent = ' → ';
+
+			const change = content.createSpan({ cls: 'crc-cleanup-preview-change' });
+			const oldValue = issue.details?.['value'] as string || '?';
+			const field = issue.details?.['field'] as string || 'date';
+			change.textContent = `${field}: "${oldValue}"`;
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render preview for Step 4: Gender Normalization
+	 */
+	private renderGenderPreview(container: HTMLElement): void {
+		if (!this.qualityReport) return;
+
+		const genderIssues = this.qualityReport.issues.filter(i => i.code === 'INVALID_GENDER');
+		if (genderIssues.length === 0) return;
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+		summary.textContent = `${genderIssues.length} gender value${genderIssues.length === 1 ? '' : 's'} will be normalized:`;
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		const maxDisplay = 15;
+		const displayItems = genderIssues.slice(0, maxDisplay);
+		const remaining = genderIssues.length - maxDisplay;
+
+		for (const issue of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'user');
+
+			const content = row.createDiv({ cls: 'crc-cleanup-preview-content' });
+
+			const personName = content.createSpan({ cls: 'crc-cleanup-preview-person' });
+			personName.textContent = issue.person.name || issue.person.file.basename;
+
+			const arrow = content.createSpan({ cls: 'crc-cleanup-preview-arrow' });
+			arrow.textContent = ': ';
+
+			const change = content.createSpan({ cls: 'crc-cleanup-preview-change' });
+			const currentValue = issue.details?.['value'] as string || '?';
+			change.textContent = `"${currentValue}" → standard format`;
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render preview for Step 5: Orphan References
+	 */
+	private renderOrphanPreview(container: HTMLElement): void {
+		if (!this.qualityReport) return;
+
+		const orphanIssues = this.qualityReport.issues.filter(i => i.category === 'orphan_reference');
+		if (orphanIssues.length === 0) return;
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+		summary.textContent = `${orphanIssues.length} orphan reference${orphanIssues.length === 1 ? '' : 's'} will be cleared:`;
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		const maxDisplay = 15;
+		const displayItems = orphanIssues.slice(0, maxDisplay);
+		const remaining = orphanIssues.length - maxDisplay;
+
+		for (const issue of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'unlink');
+
+			const content = row.createDiv({ cls: 'crc-cleanup-preview-content' });
+
+			const personName = content.createSpan({ cls: 'crc-cleanup-preview-person' });
+			personName.textContent = issue.person.name || issue.person.file.basename;
+
+			const desc = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
+			desc.textContent = `: ${issue.message}`;
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render generic preview for steps without specific implementation
+	 */
+	private renderGenericPreview(
+		container: HTMLElement,
+		stepConfig: WizardStepConfig,
+		stepState: StepState
+	): void {
 		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
 
 		if (stepState.issueCount > 0) {
 			const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
-			summary.textContent = `${stepState.issueCount} ${stepState.issueCount === 1 ? 'item' : 'items'} will be fixed:`;
+			summary.textContent = `${stepState.issueCount} ${stepState.issueCount === 1 ? 'item' : 'items'} will be fixed.`;
 
-			// Placeholder for preview table
-			const table = preview.createDiv({ cls: 'crc-cleanup-preview-table' });
-			const placeholder = table.createDiv({ cls: 'crc-cleanup-placeholder' });
-			placeholder.textContent = `Preview for ${stepConfig.title} will appear here.`;
-		} else if (this.state.isPreScanning) {
-			const scanning = preview.createDiv({ cls: 'crc-cleanup-scanning' });
-			const spinner = scanning.createDiv({ cls: 'crc-cleanup-spinner' });
-			setIcon(spinner, 'loader-2');
-			scanning.createSpan({ text: 'Detecting issues...' });
+			const note = preview.createDiv({ cls: 'crc-cleanup-note' });
+			const noteIcon = note.createDiv({ cls: 'crc-cleanup-note-icon' });
+			setIcon(noteIcon, 'info');
+			note.createSpan({ text: `Detailed preview for ${stepConfig.title} coming in a future update.` });
 		}
 	}
 

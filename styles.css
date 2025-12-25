@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-25 20:22:18 UTC
+ * - Generated: 2025-12-25 20:27:13 UTC
  * - Components: 37 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -677,7 +677,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 10805 lines, 200.64 KB */
+/* Component Size: 10886 lines, 202.01 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -11482,6 +11482,87 @@ settings:
 .crc-btn--small {
   padding: 4px 12px;
   font-size: 12px;
+}
+
+/* Preview List Styles (Batch Steps) */
+.crc-cleanup-preview {
+  margin-top: 8px;
+}
+
+.crc-cleanup-preview-summary {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--text-normal);
+}
+
+.crc-cleanup-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.crc-cleanup-preview-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-cleanup-preview-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-cleanup-preview-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.crc-cleanup-preview-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.crc-cleanup-preview-content {
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.crc-cleanup-preview-desc {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.crc-cleanup-preview-person {
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.crc-cleanup-preview-arrow {
+  color: var(--text-muted);
+}
+
+.crc-cleanup-preview-change {
+  color: var(--text-muted);
+  font-family: var(--font-monospace);
+  font-size: 12px;
+}
+
+.crc-cleanup-preview-more {
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 
@@ -29882,11 +29963,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-25 20:22:18 UTC
+ * Build completed: 2025-12-25 20:27:13 UTC
  * Components processed: 37
- * Total lines: 29526
- * Total size: 583.57 KB
- * Build duration: 0.11 seconds
+ * Total lines: 29607
+ * Total size: 584.95 KB
+ * Build duration: 0.15 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -29897,7 +29978,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 10805 lines, 200.64 KB
+ * - modals.css: 10886 lines, 202.01 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB
