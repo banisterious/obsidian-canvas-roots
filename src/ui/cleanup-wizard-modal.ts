@@ -2025,6 +2025,15 @@ export class CleanupWizardModal extends Modal {
 			return;
 		}
 
+		// Check for unmet dependencies and show warning
+		const stepConfig = WIZARD_STEPS.find(s => s.id === 'geocode');
+		if (stepConfig) {
+			const unmetDeps = this.getUnmetDependencies(stepConfig);
+			if (unmetDeps.length > 0) {
+				this.renderDependencyWarning(container, unmetDeps);
+			}
+		}
+
 		// Check for ungeocoded places
 		if (this.ungeocodedPlaces.length === 0 && this.state.preScanComplete) {
 			const noIssues = container.createDiv({ cls: 'crc-cleanup-no-issues' });
@@ -2362,6 +2371,15 @@ export class CleanupWizardModal extends Modal {
 			return;
 		}
 
+		// Check for unmet dependencies and show warning
+		const stepConfig = WIZARD_STEPS.find(s => s.id === 'place-hierarchy');
+		if (stepConfig) {
+			const unmetDeps = this.getUnmetDependencies(stepConfig);
+			if (unmetDeps.length > 0) {
+				this.renderDependencyWarning(container, unmetDeps);
+			}
+		}
+
 		// Check for places without parent
 		if (this.placesWithoutParent.length === 0 && this.state.preScanComplete) {
 			const noIssues = container.createDiv({ cls: 'crc-cleanup-no-issues' });
@@ -2649,6 +2667,7 @@ export class CleanupWizardModal extends Modal {
 		// Update step state
 		stepState.status = 'complete';
 		stepState.fixCount = successCount;
+		this.recordStepCompletion('place-hierarchy', successCount);
 
 		// Done button
 		const doneContainer = results.createDiv({ cls: 'crc-cleanup-hierarchy-done' });
@@ -3090,6 +3109,7 @@ export class CleanupWizardModal extends Modal {
 			nextBtn.addEventListener('click', () => {
 				if (stepState.status === 'pending') {
 					this.state.steps[this.state.currentStep].status = 'complete';
+					this.recordStepCompletion(stepConfig.id, 0);
 				}
 				this.advanceToNextStep();
 			});
@@ -3171,6 +3191,7 @@ export class CleanupWizardModal extends Modal {
 			if (result) {
 				stepState.status = 'complete';
 				stepState.fixCount = result.modified;
+				this.recordStepCompletion(stepConfig.id, result.modified);
 
 				// Custom notice for bidirectional step to mention conflicts
 				if (stepConfig.id === 'bidirectional') {
