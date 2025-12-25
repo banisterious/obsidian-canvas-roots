@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-25 21:00:10 UTC
+ * - Generated: 2025-12-25 21:07:34 UTC
  * - Components: 37 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -677,7 +677,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 10960 lines, 203.39 KB */
+/* Component Size: 11001 lines, 204.24 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -11598,6 +11598,47 @@ settings:
 
 .crc-cleanup-preview-row--conflict .crc-cleanup-preview-icon {
   color: var(--color-yellow);
+}
+
+.crc-cleanup-preview-conflict-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.crc-cleanup-preview-row--clickable {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.crc-cleanup-preview-row--clickable:hover {
+  background: rgba(var(--color-yellow-rgb), 0.2);
+}
+
+.crc-cleanup-preview-person {
+  font-weight: 500;
+  color: var(--text-accent);
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.crc-cleanup-step-partial-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: rgba(var(--color-green-rgb), 0.1);
+  border-radius: 8px;
+}
+
+.crc-cleanup-step-partial-complete .crc-cleanup-step-complete-icon {
+  color: var(--color-green);
+}
+
+.crc-cleanup-step-partial-complete .crc-cleanup-step-complete-text {
+  color: var(--color-green);
 }
 
 /* Resume Prompt Styles */
@@ -30037,11 +30078,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-25 21:00:10 UTC
+ * Build completed: 2025-12-25 21:07:34 UTC
  * Components processed: 37
- * Total lines: 29681
- * Total size: 586.33 KB
- * Build duration: 0.03 seconds
+ * Total lines: 29722
+ * Total size: 587.18 KB
+ * Build duration: 0.07 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -30052,7 +30093,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 10960 lines, 203.39 KB
+ * - modals.css: 11001 lines, 204.24 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

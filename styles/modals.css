@@ -10919,6 +10919,47 @@
   color: var(--color-yellow);
 }
 
+.crc-cleanup-preview-conflict-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.crc-cleanup-preview-row--clickable {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.crc-cleanup-preview-row--clickable:hover {
+  background: rgba(var(--color-yellow-rgb), 0.2);
+}
+
+.crc-cleanup-preview-person {
+  font-weight: 500;
+  color: var(--text-accent);
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.crc-cleanup-step-partial-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: rgba(var(--color-green-rgb), 0.1);
+  border-radius: 8px;
+}
+
+.crc-cleanup-step-partial-complete .crc-cleanup-step-complete-icon {
+  color: var(--color-green);
+}
+
+.crc-cleanup-step-partial-complete .crc-cleanup-step-complete-text {
+  color: var(--color-green);
+}
+
 /* Resume Prompt Styles */
 .crc-cleanup-resume-prompt {
   display: flex;

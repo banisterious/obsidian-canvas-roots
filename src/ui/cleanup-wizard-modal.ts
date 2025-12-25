@@ -957,6 +957,15 @@ export class CleanupWizardModal extends Modal {
 		stepState: StepState
 	): void {
 		if (stepState.status === 'complete') {
+			// Special handling for Step 2 with conflicts
+			if (stepConfig.id === 'bidirectional') {
+				const conflicts = this.bidirectionalIssues.filter(i => i.type === 'conflicting-parent-claim');
+				if (conflicts.length > 0) {
+					this.renderBidirectionalCompleteWithConflicts(container, stepState.fixCount, conflicts);
+					return;
+				}
+			}
+
 			const complete = container.createDiv({ cls: 'crc-cleanup-step-complete' });
 			const icon = complete.createDiv({ cls: 'crc-cleanup-step-complete-icon' });
 			setIcon(icon, 'check-circle');
@@ -1068,22 +1077,95 @@ export class CleanupWizardModal extends Modal {
 			setIcon(warningIcon, 'alert-triangle');
 			conflictHeader.createSpan({ text: `${conflicts.length} conflict${conflicts.length === 1 ? '' : 's'} require manual resolution:` });
 
+			const conflictHint = conflictSection.createDiv({ cls: 'crc-cleanup-preview-conflict-hint' });
+			conflictHint.textContent = 'Click a row to open the person note for editing.';
+
 			const conflictList = conflictSection.createDiv({ cls: 'crc-cleanup-preview-list' });
 
-			for (const issue of conflicts.slice(0, 5)) {
-				const row = conflictList.createDiv({ cls: 'crc-cleanup-preview-row crc-cleanup-preview-row--conflict' });
+			for (const issue of conflicts.slice(0, 10)) {
+				const row = conflictList.createDiv({ cls: 'crc-cleanup-preview-row crc-cleanup-preview-row--conflict crc-cleanup-preview-row--clickable' });
 
 				const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
 				setIcon(iconEl, 'alert-triangle');
 
+				// Show person name as clickable link (person is the child with conflicting parent claims)
+				const personLink = row.createDiv({ cls: 'crc-cleanup-preview-person' });
+				personLink.textContent = issue.person.name || issue.person.file.basename;
+
 				const desc = row.createDiv({ cls: 'crc-cleanup-preview-desc' });
 				desc.textContent = issue.description;
+
+				// Click to open the person file (the one with conflicting parent claims)
+				row.addEventListener('click', () => {
+					this.close();
+					void this.app.workspace.openLinkText(issue.person.file.path, '', false);
+				});
 			}
 
-			if (conflicts.length > 5) {
+			if (conflicts.length > 10) {
 				const moreEl = conflictList.createDiv({ cls: 'crc-cleanup-preview-more' });
-				moreEl.textContent = `... and ${conflicts.length - 5} more`;
+				moreEl.textContent = `... and ${conflicts.length - 10} more`;
 			}
+		}
+	}
+
+	/**
+	 * Render Step 2 completion view when conflicts remain
+	 */
+	private renderBidirectionalCompleteWithConflicts(
+		container: HTMLElement,
+		fixCount: number,
+		conflicts: BidirectionalInconsistency[]
+	): void {
+		// Show success for auto-fixed items
+		if (fixCount > 0) {
+			const successSection = container.createDiv({ cls: 'crc-cleanup-step-partial-complete' });
+			const successIcon = successSection.createDiv({ cls: 'crc-cleanup-step-complete-icon' });
+			setIcon(successIcon, 'check-circle');
+			successSection.createDiv({
+				cls: 'crc-cleanup-step-complete-text',
+				text: `${fixCount} relationship${fixCount === 1 ? '' : 's'} fixed automatically`
+			});
+		}
+
+		// Show conflicts that need manual resolution
+		const conflictSection = container.createDiv({ cls: 'crc-cleanup-preview-conflicts' });
+
+		const conflictHeader = conflictSection.createDiv({ cls: 'crc-cleanup-preview-conflict-header' });
+		const warningIcon = conflictHeader.createSpan({ cls: 'crc-cleanup-preview-conflict-icon' });
+		setIcon(warningIcon, 'alert-triangle');
+		conflictHeader.createSpan({
+			text: `${conflicts.length} conflict${conflicts.length === 1 ? '' : 's'} require manual resolution`
+		});
+
+		const conflictHint = conflictSection.createDiv({ cls: 'crc-cleanup-preview-conflict-hint' });
+		conflictHint.textContent = 'These people have multiple parents claiming them. Click a row to open the note and correct the parent references.';
+
+		const conflictList = conflictSection.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		for (const issue of conflicts.slice(0, 10)) {
+			const row = conflictList.createDiv({ cls: 'crc-cleanup-preview-row crc-cleanup-preview-row--conflict crc-cleanup-preview-row--clickable' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'alert-triangle');
+
+			// Show person name as clickable link (person is the child with conflicting parent claims)
+			const personLink = row.createDiv({ cls: 'crc-cleanup-preview-person' });
+			personLink.textContent = issue.person.name || issue.person.file.basename;
+
+			const desc = row.createDiv({ cls: 'crc-cleanup-preview-desc' });
+			desc.textContent = issue.description;
+
+			// Click to open the person file
+			row.addEventListener('click', () => {
+				this.close();
+				void this.app.workspace.openLinkText(issue.person.file.path, '', false);
+			});
+		}
+
+		if (conflicts.length > 10) {
+			const moreEl = conflictList.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${conflicts.length - 10} more`;
 		}
 	}
 
