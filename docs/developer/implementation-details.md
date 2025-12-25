@@ -13,6 +13,7 @@ The implementation details have been organized into focused sub-documents for ea
 | [Entity System](implementation/entity-system.md) | Note types, dual storage, schema validation, custom relationship types |
 | [Canvas and Charts](implementation/canvas-and-charts.md) | Canvas generation, family chart layout system, layout engines |
 | [Maps System](implementation/maps-system.md) | Leaflet maps, coordinate systems, geocoding, custom image maps |
+| [Reports System](implementation/reports-system.md) | Report types, PDF rendering, ODT export, report wizard |
 
 ### Data Management
 
