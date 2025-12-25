@@ -530,6 +530,51 @@ The mockup includes:
 - [Roadmap: v0.17.0 Data Cleanup Bundle](../../wiki-content/Roadmap.md#v0170-data-cleanup-bundle) - Release context
 - [Data Quality Wiki](../../wiki-content/Data-Quality.md) - Current manual workflow
 
+## Implementation Status
+
+### Completed Steps
+
+| Step | Status | Notes |
+|------|--------|-------|
+| 1 | ✅ Complete | Quality Report with collapsible categories, clickable rows |
+| 2 | ✅ Complete | Bidirectional relationship fixes with preview |
+| 3 | ✅ Complete | Date normalization, reads raw frontmatter, updates `born`/`died` fields |
+| 4 | ✅ Complete | Gender normalization, reads raw frontmatter, detects non-canonical values |
+| 5 | ✅ Complete | Orphan reference clearing with preview |
+| 6 | ⏳ Pending | Source array migration (service exists, wizard integration TBD) |
+| 7 | ✅ Complete | Place variant standardization with interactive table, select all/deselect, canonical override |
+| 8 | ⏳ Pending | Bulk geocoding (interactive step) |
+| 9 | ⏳ Pending | Place hierarchy enrichment (interactive step) |
+| 10 | ✅ Complete | Nested property flattening with preview |
+
+### Key Implementation Details
+
+**Detection reads raw frontmatter:** Steps 3 and 4 now read directly from `app.metadataCache.getFileCache(file).frontmatter` instead of the PersonNode cache, ensuring:
+- Detection reflects actual on-disk values
+- Already-fixed issues aren't flagged as problems
+- The PersonNode cache's normalization (e.g., `female`→`F`) doesn't hide issues
+
+**Canonical gender values:** M, F, X, U (GEDCOM standard)
+
+**Date fields:** Writes to `born`/`died` (not `birth_date`/`death_date`)
+
+**Clickable rows:** Steps 1, 3, 4, 5, 10 have clickable preview rows that open person notes
+
+**Step 7 Place Variants:** Interactive table with:
+- Select all/deselect all checkbox
+- Per-variant checkbox selection
+- Canonical value dropdown (with "keep as-is" option)
+- Reference count column
+- Strikethrough styling for selected variants
+- Uses existing `findPlaceNameVariants()` from `standardize-place-variants-modal.ts`
+
+### Bug Fixes Applied
+
+- Gender detection now reads raw `sex` frontmatter value (not normalized cache)
+- Date detection now reads raw `born`/`died` frontmatter values
+- Date normalization writes to `born`/`died` fields (was writing to wrong field names)
+- Consolidated frontmatter cache access in `checkDataFormat()` to avoid redundant calls
+
 ## Open Questions
 
 1. **Step reordering:** Should users be able to reorder steps, or is the fixed order essential for data integrity?

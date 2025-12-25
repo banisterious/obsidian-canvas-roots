@@ -11005,3 +11005,92 @@
   color: var(--text-muted);
   max-width: 400px;
 }
+
+/* Place Variants Table (Step 7) */
+.crc-cleanup-variant-table-container {
+  max-height: 350px;
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.crc-cleanup-variant-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.crc-cleanup-variant-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--background-secondary);
+  z-index: 1;
+}
+
+.crc-cleanup-variant-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+}
+
+.crc-cleanup-variant-th-check {
+  width: 40px;
+  text-align: center;
+}
+
+.crc-cleanup-variant-th-count {
+  width: 60px;
+  text-align: center;
+}
+
+.crc-cleanup-variant-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  vertical-align: middle;
+}
+
+.crc-cleanup-variant-row:last-child td {
+  border-bottom: none;
+}
+
+.crc-cleanup-variant-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-cleanup-variant-td-check {
+  text-align: center;
+}
+
+.crc-cleanup-variant-current {
+  color: var(--text-normal);
+}
+
+.crc-cleanup-variant-strike {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.crc-cleanup-variant-canonical {
+  min-width: 150px;
+}
+
+.crc-cleanup-variant-select {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.crc-cleanup-variant-count {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.crc-cleanup-variant-apply {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}

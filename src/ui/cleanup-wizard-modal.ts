@@ -28,6 +28,7 @@ import {
 import { FolderFilterService } from '../core/folder-filter';
 import { getLogger } from '../core/logging';
 import type { CleanupWizardPersistedState } from '../settings';
+import { findPlaceNameVariants, type PlaceVariantMatch } from './standardize-place-variants-modal';
 
 const logger = getLogger('CleanupWizard');
 
@@ -224,6 +225,7 @@ export class CleanupWizardModal extends Modal {
 	// Cached analysis results
 	private qualityReport: DataQualityReport | null = null;
 	private bidirectionalIssues: BidirectionalInconsistency[] = [];
+	private placeVariantMatches: PlaceVariantMatch[] = [];
 
 	constructor(app: App, plugin: CanvasRootsPlugin) {
 		super(app);
@@ -1429,7 +1431,21 @@ export class CleanupWizardModal extends Modal {
 			return;
 		}
 
-		// Placeholder for interactive UI
+		// Route to step-specific rendering
+		switch (stepConfig.id) {
+			case 'place-variants':
+				this.renderPlaceVariantsStep(container, stepState);
+				break;
+			default:
+				// Placeholder for unimplemented interactive steps
+				this.renderInteractiveStepPlaceholder(container, stepConfig);
+		}
+	}
+
+	/**
+	 * Render placeholder for unimplemented interactive steps
+	 */
+	private renderInteractiveStepPlaceholder(container: HTMLElement, stepConfig: WizardStepConfig): void {
 		const interactive = container.createDiv({ cls: 'crc-cleanup-interactive' });
 		const placeholder = interactive.createDiv({ cls: 'crc-cleanup-placeholder' });
 		placeholder.textContent = `Interactive UI for ${stepConfig.title} will be implemented in Phase 2.`;
@@ -1439,6 +1455,272 @@ export class CleanupWizardModal extends Modal {
 		const noteIcon = note.createDiv({ cls: 'crc-cleanup-note-icon' });
 		setIcon(noteIcon, 'info');
 		note.createSpan({ text: 'This step requires manual decisions for each item. You can skip it for now and run it individually later.' });
+	}
+
+	/**
+	 * Render Step 7: Place Variants interactive UI
+	 */
+	private renderPlaceVariantsStep(container: HTMLElement, stepState: StepState): void {
+		if (this.placeVariantMatches.length === 0 && this.state.preScanComplete) {
+			const noIssues = container.createDiv({ cls: 'crc-cleanup-no-issues' });
+			const icon = noIssues.createDiv({ cls: 'crc-cleanup-no-issues-icon' });
+			setIcon(icon, 'check-circle');
+			noIssues.createDiv({ cls: 'crc-cleanup-no-issues-text', text: 'No place name variants found!' });
+			noIssues.createDiv({ cls: 'crc-cleanup-no-issues-hint', text: 'Your place names are already standardized. You can skip to the next step.' });
+			return;
+		}
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+
+		// Summary
+		const totalRefs = this.placeVariantMatches.reduce((sum, m) => sum + m.count, 0);
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+		summary.textContent = `Found ${this.placeVariantMatches.length} place name variant${this.placeVariantMatches.length === 1 ? '' : 's'} across ${totalRefs} reference${totalRefs === 1 ? '' : 's'}.`;
+
+		const hint = preview.createDiv({ cls: 'crc-cleanup-preview-hint' });
+		hint.textContent = 'Select variants to standardize. The canonical form is shown on the right.';
+
+		// Table container
+		const tableContainer = preview.createDiv({ cls: 'crc-cleanup-variant-table-container' });
+		const table = tableContainer.createEl('table', { cls: 'crc-cleanup-variant-table' });
+
+		const thead = table.createEl('thead');
+		const headerRow = thead.createEl('tr');
+		const thCheck = headerRow.createEl('th', { cls: 'crc-cleanup-variant-th-check' });
+
+		// Select all checkbox
+		const selectAllCheckbox = thCheck.createEl('input', { type: 'checkbox' });
+		selectAllCheckbox.checked = true;
+
+		headerRow.createEl('th', { text: 'Current Value' });
+		headerRow.createEl('th', { text: 'Standardize To' });
+		headerRow.createEl('th', { text: 'Refs', cls: 'crc-cleanup-variant-th-count' });
+
+		const tbody = table.createEl('tbody');
+
+		// Track selected variants
+		const selectedVariants = new Set<PlaceVariantMatch>(this.placeVariantMatches);
+		const canonicalOverrides = new Map<PlaceVariantMatch, string>();
+
+		// Render each variant row
+		for (const match of this.placeVariantMatches) {
+			const row = tbody.createEl('tr', { cls: 'crc-cleanup-variant-row' });
+
+			// Checkbox
+			const tdCheck = row.createEl('td', { cls: 'crc-cleanup-variant-td-check' });
+			const checkbox = tdCheck.createEl('input', { type: 'checkbox' });
+			checkbox.checked = true;
+			checkbox.addEventListener('change', () => {
+				if (checkbox.checked) {
+					selectedVariants.add(match);
+				} else {
+					selectedVariants.delete(match);
+				}
+				updateSelectAllCheckbox();
+			});
+
+			// Current value (strikethrough when selected)
+			const tdCurrent = row.createEl('td', { cls: 'crc-cleanup-variant-current' });
+			const currentSpan = tdCurrent.createEl('span', { text: match.variant });
+			if (selectedVariants.has(match)) {
+				currentSpan.addClass('crc-cleanup-variant-strike');
+			}
+
+			// Update strikethrough on checkbox change
+			checkbox.addEventListener('change', () => {
+				currentSpan.toggleClass('crc-cleanup-variant-strike', checkbox.checked);
+			});
+
+			// Canonical dropdown
+			const tdCanonical = row.createEl('td', { cls: 'crc-cleanup-variant-canonical' });
+			const select = tdCanonical.createEl('select', { cls: 'dropdown crc-cleanup-variant-select' });
+
+			// Default canonical option
+			select.createEl('option', { value: match.canonical, text: match.canonical });
+
+			// Keep as-is option
+			if (match.variant !== match.canonical) {
+				select.createEl('option', { value: match.variant, text: `${match.variant} (keep)` });
+			}
+
+			select.addEventListener('change', () => {
+				if (select.value === match.canonical) {
+					canonicalOverrides.delete(match);
+				} else {
+					canonicalOverrides.set(match, select.value);
+				}
+			});
+
+			// Reference count
+			const tdCount = row.createEl('td', { cls: 'crc-cleanup-variant-count' });
+			tdCount.textContent = String(match.count);
+		}
+
+		// Update select all checkbox state
+		const updateSelectAllCheckbox = () => {
+			selectAllCheckbox.checked = selectedVariants.size === this.placeVariantMatches.length;
+			selectAllCheckbox.indeterminate = selectedVariants.size > 0 && selectedVariants.size < this.placeVariantMatches.length;
+		};
+
+		// Select all handler
+		selectAllCheckbox.addEventListener('change', () => {
+			const checkboxes = tbody.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+			checkboxes.forEach((cb, idx) => {
+				cb.checked = selectAllCheckbox.checked;
+				const match = this.placeVariantMatches[idx];
+				if (selectAllCheckbox.checked) {
+					selectedVariants.add(match);
+				} else {
+					selectedVariants.delete(match);
+				}
+			});
+			// Update strikethrough for all rows
+			const currentSpans = tbody.querySelectorAll('.crc-cleanup-variant-current span');
+			currentSpans.forEach(span => {
+				span.toggleClass('crc-cleanup-variant-strike', selectAllCheckbox.checked);
+			});
+		});
+
+		// Apply button (in addition to footer)
+		const applyContainer = preview.createDiv({ cls: 'crc-cleanup-variant-apply' });
+		const applyBtn = applyContainer.createEl('button', {
+			cls: 'crc-btn crc-btn--primary'
+		});
+		const applyIcon = applyBtn.createSpan({ cls: 'crc-btn-icon' });
+		setIcon(applyIcon, 'zap');
+		applyBtn.createSpan({ text: `Standardize ${selectedVariants.size} variants` });
+
+		// Update button text when selection changes
+		const updateApplyButton = () => {
+			const textSpan = applyBtn.querySelector('span:last-child');
+			if (textSpan) {
+				textSpan.textContent = `Standardize ${selectedVariants.size} variant${selectedVariants.size === 1 ? '' : 's'}`;
+			}
+			applyBtn.disabled = selectedVariants.size === 0;
+		};
+
+		// Attach selection change listener
+		tbody.addEventListener('change', updateApplyButton);
+
+		applyBtn.addEventListener('click', async () => {
+			await this.applyPlaceVariantFixes(selectedVariants, canonicalOverrides, stepState);
+		});
+	}
+
+	/**
+	 * Apply place variant fixes
+	 */
+	private async applyPlaceVariantFixes(
+		selectedVariants: Set<PlaceVariantMatch>,
+		canonicalOverrides: Map<PlaceVariantMatch, string>,
+		stepState: StepState
+	): Promise<void> {
+		stepState.status = 'in_progress';
+		this.renderCurrentView();
+
+		let totalUpdated = 0;
+		const errors: string[] = [];
+
+		for (const match of selectedVariants) {
+			const targetCanonical = canonicalOverrides.get(match) || match.canonical;
+
+			// Skip if keeping as-is
+			if (targetCanonical === match.variant) continue;
+
+			try {
+				const updated = await this.updatePlaceReferences(match.variant, targetCanonical, match.files);
+				totalUpdated += updated;
+			} catch (error) {
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				errors.push(`${match.variant}: ${message}`);
+			}
+		}
+
+		stepState.status = 'complete';
+		stepState.fixCount = totalUpdated;
+
+		if (errors.length > 0) {
+			console.error('Errors during variant standardization:', errors);
+			new Notice(`Updated ${totalUpdated} references. ${errors.length} errors occurred.`);
+		} else if (totalUpdated > 0) {
+			new Notice(`Standardized ${totalUpdated} place reference${totalUpdated !== 1 ? 's' : ''}`);
+		} else {
+			new Notice('No changes were needed');
+		}
+
+		this.renderCurrentView();
+	}
+
+	/**
+	 * Update place references in specific files
+	 */
+	private async updatePlaceReferences(oldValue: string, newValue: string, files: import('obsidian').TFile[]): Promise<number> {
+		let updated = 0;
+
+		for (const file of files) {
+			const cache = this.app.metadataCache.getFileCache(file);
+			if (!cache?.frontmatter) continue;
+
+			const fm = cache.frontmatter;
+
+			// Check if any place fields contain the old value (as a component)
+			const fieldsToUpdate: Array<{ field: string; oldVal: string; newVal: string }> = [];
+
+			// Helper to check and queue field updates
+			const checkField = (fieldName: string) => {
+				const value = fm[fieldName];
+				if (typeof value === 'string' && this.containsPlaceVariant(value, oldValue)) {
+					const newFieldValue = this.replacePlaceVariant(value, oldValue, newValue);
+					if (newFieldValue !== value) {
+						fieldsToUpdate.push({ field: fieldName, oldVal: value, newVal: newFieldValue });
+					}
+				}
+			};
+
+			checkField('birth_place');
+			checkField('death_place');
+			checkField('burial_place');
+
+			// Check spouse marriage locations
+			let spouseIndex = 1;
+			while (fm[`spouse${spouseIndex}`] || fm[`spouse${spouseIndex}_id`]) {
+				checkField(`spouse${spouseIndex}_marriage_location`);
+				spouseIndex++;
+			}
+
+			if (fieldsToUpdate.length > 0) {
+				await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+					for (const update of fieldsToUpdate) {
+						frontmatter[update.field] = update.newVal;
+					}
+				});
+				updated += fieldsToUpdate.length;
+			}
+		}
+
+		return updated;
+	}
+
+	/**
+	 * Check if a place value contains the variant (as a standalone component)
+	 */
+	private containsPlaceVariant(value: string, variant: string): boolean {
+		const parts = value.split(',').map(p => p.trim());
+		return parts.some(part => part.toLowerCase() === variant.toLowerCase());
+	}
+
+	/**
+	 * Replace a variant in a place value with the canonical form
+	 */
+	private replacePlaceVariant(value: string, oldVariant: string, newCanonical: string): string {
+		const parts = value.split(',').map(p => p.trim());
+		const newParts = parts.map(part => {
+			if (part.toLowerCase() === oldVariant.toLowerCase()) {
+				return newCanonical;
+			}
+			return part;
+		});
+		return newParts.join(', ');
 	}
 
 	/**
@@ -1753,7 +2035,12 @@ export class CleanupWizardModal extends Modal {
 			this.state.steps[10].issueCount = report.summary.byCategory['nested_property'] || 0;
 			logger.debug('runPreScan', `Step 10 (Nested): ${this.state.steps[10].issueCount} issues`);
 
-			// Steps 6-9 (source migration, place variants, geocode, hierarchy)
+			// Step 7: Place variants
+			this.placeVariantMatches = findPlaceNameVariants(this.app);
+			this.state.steps[7].issueCount = this.placeVariantMatches.length;
+			logger.debug('runPreScan', `Step 7 (Place Variants): ${this.placeVariantMatches.length} issues`);
+
+			// Steps 6, 8, 9 (source migration, geocode, hierarchy)
 			// These require different services - leave as 0 for now (Phase 2)
 
 			this.state.preScanComplete = true;

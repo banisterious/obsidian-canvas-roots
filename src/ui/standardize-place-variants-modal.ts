@@ -111,7 +111,7 @@ const VARIANT_LOOKUP = buildVariantLookup();
 /**
  * A group of place references that use the same variant
  */
-interface PlaceVariantMatch {
+export interface PlaceVariantMatch {
 	/** The variant form found (e.g., "United States of America") */
 	variant: string;
 	/** The canonical form to standardize to (e.g., "USA") */
