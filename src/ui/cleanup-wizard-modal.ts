@@ -27,8 +27,12 @@ import {
 } from '../core/data-quality';
 import { FolderFilterService } from '../core/folder-filter';
 import { getLogger } from '../core/logging';
+import type { CleanupWizardPersistedState } from '../settings';
 
 const logger = getLogger('CleanupWizard');
+
+/** Maximum age of persisted state before it's considered stale (24 hours) */
+const STATE_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Wizard step types
@@ -273,6 +277,20 @@ export class CleanupWizardModal extends Modal {
 		contentEl.empty();
 		contentEl.addClass('crc-cleanup-wizard');
 
+		// Check for persisted state and offer to resume
+		const persistedState = this.getPersistedState();
+		if (persistedState) {
+			this.showResumePrompt(contentEl, persistedState);
+			return;
+		}
+
+		this.initializeWizardUI(contentEl);
+	}
+
+	/**
+	 * Initialize the wizard UI (called on fresh start or after resume decision)
+	 */
+	private initializeWizardUI(contentEl: HTMLElement): void {
 		// Modal header with icon and title
 		const header = contentEl.createDiv({ cls: 'crc-cleanup-wizard-header' });
 
@@ -295,8 +313,192 @@ export class CleanupWizardModal extends Modal {
 		this.renderCurrentView();
 	}
 
+	/**
+	 * Show a prompt to resume or start fresh
+	 */
+	private showResumePrompt(contentEl: HTMLElement, persistedState: CleanupWizardPersistedState): void {
+		// Header
+		const header = contentEl.createDiv({ cls: 'crc-cleanup-wizard-header' });
+		const titleRow = header.createDiv({ cls: 'crc-wizard-title' });
+		const iconEl = titleRow.createDiv({ cls: 'crc-wizard-title-icon' });
+		setIcon(iconEl, 'sparkles');
+		titleRow.createSpan({ text: 'Post-Import Cleanup Wizard' });
+
+		// Resume prompt content
+		const content = contentEl.createDiv({ cls: 'crc-cleanup-wizard-content' });
+		const prompt = content.createDiv({ cls: 'crc-cleanup-resume-prompt' });
+
+		const promptIcon = prompt.createDiv({ cls: 'crc-cleanup-resume-icon' });
+		setIcon(promptIcon, 'clock');
+
+		prompt.createEl('h3', { text: 'Resume Previous Session?' });
+
+		const savedDate = new Date(persistedState.savedAt);
+		const timeAgo = this.formatTimeAgo(savedDate);
+
+		const stats = this.getPersistedStateStats(persistedState);
+		prompt.createEl('p', {
+			text: `You have an incomplete cleanup session from ${timeAgo}. ${stats.completed} of ${stats.total} steps completed.`
+		});
+
+		// Buttons
+		const footer = contentEl.createDiv({ cls: 'crc-cleanup-wizard-footer' });
+		const leftBtns = footer.createDiv({ cls: 'crc-cleanup-footer-left' });
+		const rightBtns = footer.createDiv({ cls: 'crc-cleanup-footer-right' });
+
+		const startFreshBtn = leftBtns.createEl('button', {
+			cls: 'crc-btn crc-btn--secondary',
+			text: 'Start Fresh'
+		});
+		startFreshBtn.addEventListener('click', () => {
+			this.clearPersistedState();
+			this.state = this.getDefaultState();
+			contentEl.empty();
+			this.initializeWizardUI(contentEl);
+		});
+
+		const resumeBtn = rightBtns.createEl('button', {
+			cls: 'crc-btn crc-btn--primary'
+		});
+		const resumeIcon = resumeBtn.createSpan({ cls: 'crc-btn-icon' });
+		setIcon(resumeIcon, 'play');
+		resumeBtn.createSpan({ text: 'Resume' });
+		resumeBtn.addEventListener('click', () => {
+			this.restoreFromPersistedState(persistedState);
+			contentEl.empty();
+			this.initializeWizardUI(contentEl);
+		});
+	}
+
+	/**
+	 * Get persisted state from plugin settings (if valid)
+	 */
+	private getPersistedState(): CleanupWizardPersistedState | null {
+		const saved = this.plugin.settings.cleanupWizardState;
+		if (!saved) return null;
+
+		// Check if state is expired
+		const age = Date.now() - saved.savedAt;
+		if (age > STATE_EXPIRY_MS) {
+			logger.debug('getPersistedState', 'Persisted state is expired, clearing');
+			this.clearPersistedState();
+			return null;
+		}
+
+		// Check if any steps are in progress or complete
+		const hasProgress = Object.values(saved.steps).some(
+			s => s.status === 'complete' || s.status === 'in_progress'
+		);
+		if (!hasProgress) {
+			return null;
+		}
+
+		return saved;
+	}
+
+	/**
+	 * Restore state from persisted data
+	 */
+	private restoreFromPersistedState(persisted: CleanupWizardPersistedState): void {
+		logger.info('restoreFromPersistedState', `Restoring state from step ${persisted.currentStep}`);
+
+		this.state = {
+			currentStep: persisted.currentStep,
+			steps: {},
+			startTime: Date.now(),
+			isPreScanning: false,
+			preScanComplete: true // Assume pre-scan was done in previous session
+		};
+
+		// Restore step states
+		for (const step of WIZARD_STEPS) {
+			const savedStep = persisted.steps[step.number];
+			this.state.steps[step.number] = savedStep ? { ...savedStep } : {
+				status: 'pending',
+				issueCount: 0,
+				fixCount: 0
+			};
+		}
+
+		// Set the correct view based on current step
+		if (persisted.currentStep > 0) {
+			this.currentView = 'step';
+		}
+	}
+
+	/**
+	 * Persist current state to plugin settings
+	 */
+	private async persistState(): Promise<void> {
+		// Don't persist if we're at summary (wizard is complete)
+		if (this.currentView === 'summary') {
+			await this.clearPersistedState();
+			return;
+		}
+
+		const persistedState: CleanupWizardPersistedState = {
+			currentStep: this.state.currentStep,
+			steps: {},
+			savedAt: Date.now()
+		};
+
+		for (const [stepNum, stepState] of Object.entries(this.state.steps)) {
+			persistedState.steps[Number(stepNum)] = {
+				status: stepState.status,
+				issueCount: stepState.issueCount,
+				fixCount: stepState.fixCount,
+				skippedReason: stepState.skippedReason
+			};
+		}
+
+		this.plugin.settings.cleanupWizardState = persistedState;
+		await this.plugin.saveSettings();
+		logger.debug('persistState', `Saved state at step ${this.state.currentStep}`);
+	}
+
+	/**
+	 * Clear persisted state
+	 */
+	private async clearPersistedState(): Promise<void> {
+		this.plugin.settings.cleanupWizardState = undefined;
+		await this.plugin.saveSettings();
+		logger.debug('clearPersistedState', 'Cleared persisted state');
+	}
+
+	/**
+	 * Get stats from persisted state for display
+	 */
+	private getPersistedStateStats(state: CleanupWizardPersistedState): { completed: number; total: number } {
+		let completed = 0;
+		const total = WIZARD_STEPS.length;
+		for (const step of Object.values(state.steps)) {
+			if (step.status === 'complete' || step.status === 'skipped') {
+				completed++;
+			}
+		}
+		return { completed, total };
+	}
+
+	/**
+	 * Format a date as relative time (e.g., "2 hours ago")
+	 */
+	private formatTimeAgo(date: Date): string {
+		const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+
+		if (seconds < 60) return 'just now';
+		if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+		if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+		return `${Math.floor(seconds / 86400)} days ago`;
+	}
+
 	onClose(): void {
 		const { contentEl } = this;
+
+		// Persist state if wizard is incomplete
+		if (this.currentView !== 'summary') {
+			void this.persistState();
+		}
+
 		contentEl.empty();
 	}
 

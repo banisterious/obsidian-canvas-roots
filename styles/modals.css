@@ -10883,3 +10883,42 @@
   color: var(--text-muted);
   font-style: italic;
 }
+
+/* Resume Prompt Styles */
+.crc-cleanup-resume-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.crc-cleanup-resume-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-secondary);
+  border-radius: 50%;
+  margin-bottom: 16px;
+  color: var(--text-accent);
+}
+
+.crc-cleanup-resume-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.crc-cleanup-resume-prompt h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.crc-cleanup-resume-prompt p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+  max-width: 400px;
+}

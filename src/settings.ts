@@ -351,6 +351,27 @@ export interface CanvasRootsSettings {
 	// Dynamic content settings
 	/** Callout type for frozen media galleries (info, note, etc.) */
 	frozenGalleryCalloutType: string;
+	// Cleanup wizard state (for resuming interrupted wizards)
+	/** Persisted state of the cleanup wizard, if any */
+	cleanupWizardState?: CleanupWizardPersistedState;
+}
+
+/**
+ * Persisted state for the cleanup wizard
+ * Used to resume an interrupted cleanup session
+ */
+export interface CleanupWizardPersistedState {
+	/** Current step number (1-10) */
+	currentStep: number;
+	/** Status and fix count for each step (keyed by step number) */
+	steps: Record<number, {
+		status: 'pending' | 'in_progress' | 'complete' | 'skipped';
+		issueCount: number;
+		fixCount: number;
+		skippedReason?: string;
+	}>;
+	/** When the state was saved */
+	savedAt: number;
 }
 
 /**
