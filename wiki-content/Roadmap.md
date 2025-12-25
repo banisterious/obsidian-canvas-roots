@@ -8,7 +8,6 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
-  - [Import/Export Hub](#importexport-hub) ⚡ High
   - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard) 📋 Medium
   - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
@@ -34,19 +33,11 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.16.0 | [Import/Export Hub](Release-History#importexport-hub-v0160) | Modal-based hub with 7-step import and 6-step export wizards, integrated reference numbering |
 | v0.15.3 | [Visual Tree PDF Quality Improvements](Release-History#visual-tree-pdf-quality-improvements-v0153) | 4× scale rendering for crisp PDF output, aspect ratio preservation |
 | v0.15.3 | [Report Wizard Enhancements](Release-History#report-wizard-enhancements-v0153) | Multi-step wizard with 5 steps, preset system, recent reports tracking |
 | v0.15.3 | [Report Generator ODT Export](Release-History#report-generator-odt-export-v0153) | ODT export for all reports, JSZip-based generation, image embedding |
 | v0.15.2 | [Calendarium Integration Phase 2](Release-History#calendarium-integration-phase-2-v0152) | Display fc-* dated events on timelines, calendar filter dropdown, timeline badges |
-| v0.15.1 | [Family Chart Export Wizard](Release-History#family-chart-export-wizard-v0151) | Multi-step export wizard with presets, PNG/SVG/PDF/ODT formats, progress modal |
-| v0.15.1 | [Family Chart Styling Panel](Release-History#family-chart-styling-panel-v0151) | In-view color theming with 5 presets, custom color picker modal |
-| v0.15.0 | [Universal Media Linking](#universal-media-linking) | Media support for all entities, .gpkg import, dynamic galleries |
-| v0.14.0 | [Visual Tree Charts](Release-History#visual-tree-charts-v0140) | Unified tree wizard for Canvas/PDF, 4 visual tree report types, custom SVG icons |
-| v0.13.6 | [Control Center Dashboard](Release-History#control-center-dashboard-v0136) | Dashboard tab with quick-action tiles, collapsible Vault Health, Recent Files |
-| v0.13.4 | [PDF Report Export](Release-History#pdf-report-export-v0134) | Export reports as styled PDFs with cover page and logo support |
-| v0.13.0 | [Universe Management](Release-History#universe-management-v0130) | First-class universe entity for worldbuilders |
-| v0.12.9 | [Statistics & Reports](Statistics-And-Reports) | Dashboard with metrics, drill-down, and genealogical reports |
-| v0.11.0 | [Export v2](Release-History#export-v2-v0110) | Full entity export with round-trip fidelity |
 
 **Earlier releases:** GEDCOM/Gramps/GEDCOM X import, geographic maps, evidence visualization, custom relationship types, fictional calendars, and more. See [Release History](Release-History) for details.
 
@@ -61,66 +52,6 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
-
----
-
-### Import/Export Hub
-
-**Priority:** ⚡ High — Core data portability with guided wizards
-
-**Summary:** Replace the Import/Export tab in Control Center with a modal-based hub that launches step-by-step wizards for importing and exporting genealogical data. Integrates reference numbering directly into the import flow.
-
-**Problem Statement:**
-
-The current import/export experience is fragmented:
-- **Scattered UI:** Import/export lives in a Control Center tab, but progress displays in separate modals
-- **Disconnected numbering:** Post-import reference numbering is a separate modal, not integrated into the import workflow
-- **Limited guidance:** No step-by-step flow for format selection, options, and preview
-
-**Hub Modal:**
-
-Two-card layout (matching Reports Hub and Media Manager patterns):
-- **Import Card** — Launch import wizard for GEDCOM, Gramps, CSV
-- **Export Card** — Launch export wizard with folder and privacy options
-
-**Import Wizard (7 Steps):**
-
-| Step | Purpose |
-|------|---------|
-| 1. Format | Select GEDCOM 5.5.1, GEDCOM X (JSON), Gramps XML/.gpkg, or CSV |
-| 2. File | Drag-and-drop file picker |
-| 3. Options | Entity types, target folder, conflict handling |
-| 4. Preview | Entity counts, duplicate warnings |
-| 5. Import | Progress with real-time log |
-| 6. Numbering | Optional reference numbering (Ahnentafel, d'Aboville, Henry, Generation) |
-| 7. Complete | Summary with actions |
-
-**Export Wizard (6 Steps):**
-
-| Step | Purpose |
-|------|---------|
-| 1. Format | Select GEDCOM 5.5.1, GEDCOM X (JSON), Gramps XML, or CSV |
-| 2. Folders | Preference folders or custom folder pickers |
-| 3. Options | Privacy controls, inclusions (sources, places, notes, media) |
-| 4. Preview | Entity counts, privacy summary |
-| 5. Export | Progress with real-time log |
-| 6. Complete | Download/save options |
-
-**Key Features:**
-
-- **Gramps media support:** `.gpkg` format includes embedded media, extracted and linked during import
-- **Integrated numbering:** Root person picker with four numbering systems (replaces separate post-import modal)
-- **Privacy controls:** Living person exclusion with redact vs. exclude options, preview warnings
-- **Folder selection:** "Preference folders" uses configured paths; "Specify folders" allows custom selection
-
-**Technical Notes:**
-
-- Reuses existing import/export logic (GEDCOM parsing, export generation)
-- Reuses `ReferenceNumberingService` from `src/core/reference-numbering.ts`
-- New files: `import-export-hub-modal.ts`, `import-wizard-modal.ts`, `export-wizard-modal.ts`
-- Updates `TOOL_CONFIGS` (add hub), removes from `TAB_CONFIGS` (remove tab)
-
-See [Import/Export Hub Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/import-export-hub-plan.md) for implementation details.
 
 ---
 
