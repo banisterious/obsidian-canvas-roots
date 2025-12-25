@@ -519,8 +519,18 @@ export function findPlaceNameVariants(app: App): PlaceVariantMatch[] {
 	const checkPlaceValue = (value: string, file: TFile) => {
 		if (!value || typeof value !== 'string') return;
 
+		// Strip wikilink brackets if present
+		let cleanValue = value;
+		if (cleanValue.startsWith('[[') && cleanValue.endsWith(']]')) {
+			cleanValue = cleanValue.slice(2, -2);
+		} else if (cleanValue.startsWith('[[')) {
+			cleanValue = cleanValue.slice(2);
+		} else if (cleanValue.endsWith(']]')) {
+			cleanValue = cleanValue.slice(0, -2);
+		}
+
 		// Split by comma and check each component
-		const parts = value.split(',').map(p => p.trim());
+		const parts = cleanValue.split(',').map(p => p.trim());
 		for (const part of parts) {
 			const lowerPart = part.toLowerCase();
 			const canonical = VARIANT_LOOKUP.get(lowerPart);

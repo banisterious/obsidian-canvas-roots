@@ -1702,10 +1702,21 @@ export class CleanupWizardModal extends Modal {
 	}
 
 	/**
+	 * Strip wikilink brackets from a place value
+	 */
+	private stripWikilink(value: string): { inner: string; hadBrackets: boolean } {
+		if (value.startsWith('[[') && value.endsWith(']]')) {
+			return { inner: value.slice(2, -2), hadBrackets: true };
+		}
+		return { inner: value, hadBrackets: false };
+	}
+
+	/**
 	 * Check if a place value contains the variant (as a standalone component)
 	 */
 	private containsPlaceVariant(value: string, variant: string): boolean {
-		const parts = value.split(',').map(p => p.trim());
+		const { inner } = this.stripWikilink(value);
+		const parts = inner.split(',').map(p => p.trim());
 		return parts.some(part => part.toLowerCase() === variant.toLowerCase());
 	}
 
@@ -1713,14 +1724,16 @@ export class CleanupWizardModal extends Modal {
 	 * Replace a variant in a place value with the canonical form
 	 */
 	private replacePlaceVariant(value: string, oldVariant: string, newCanonical: string): string {
-		const parts = value.split(',').map(p => p.trim());
+		const { inner, hadBrackets } = this.stripWikilink(value);
+		const parts = inner.split(',').map(p => p.trim());
 		const newParts = parts.map(part => {
 			if (part.toLowerCase() === oldVariant.toLowerCase()) {
 				return newCanonical;
 			}
 			return part;
 		});
-		return newParts.join(', ');
+		const result = newParts.join(', ');
+		return hadBrackets ? `[[${result}]]` : result;
 	}
 
 	/**

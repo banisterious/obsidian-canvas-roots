@@ -409,6 +409,253 @@
 2 DATE 99/99/9999
 1 NOTE ISSUE: Numeric but invalid date
 
+0 NOTE ============================================================
+0 NOTE PERSONS - Non-standard date formats (for Step 3 testing)
+0 NOTE ============================================================
+
+0 @I100@ INDI
+1 NAME American /SlashDate/
+2 GIVN American
+2 SURN SlashDate
+1 SEX M
+1 BIRT
+2 DATE 03/15/1892
+2 PLAC Boston, Massachusetts, USA
+1 DEAT
+2 DATE 12/25/1965
+1 NOTE ISSUE: US-style MM/DD/YYYY dates - should normalize to ISO
+
+0 @I101@ INDI
+1 NAME European /SlashDate/
+2 GIVN European
+2 SURN SlashDate
+1 SEX F
+1 BIRT
+2 DATE 15/03/1895
+2 PLAC London, England
+1 DEAT
+2 DATE 25/12/1970
+1 NOTE ISSUE: European-style DD/MM/YYYY dates - should normalize to ISO
+
+0 @I102@ INDI
+1 NAME Wordy /DateFormat/
+2 GIVN Wordy
+2 SURN DateFormat
+1 SEX M
+1 BIRT
+2 DATE March 15, 1898
+2 PLAC Chicago, Illinois, USA
+1 DEAT
+2 DATE December 25, 1975
+1 NOTE ISSUE: Full month name with comma - should normalize to ISO
+
+0 @I103@ INDI
+1 NAME Short /MonthDate/
+2 GIVN Short
+2 SURN MonthDate
+1 SEX F
+1 BIRT
+2 DATE Mar 15, 1901
+2 PLAC Philadelphia, Pennsylvania, USA
+1 DEAT
+2 DATE Dec 25, 1980
+1 NOTE ISSUE: Abbreviated month with comma - should normalize to ISO
+
+0 @I104@ INDI
+1 NAME ISO /HyphenDate/
+2 GIVN ISO
+2 SURN HyphenDate
+1 SEX M
+1 BIRT
+2 DATE 1904-03-15
+2 PLAC San Francisco, California, USA
+1 DEAT
+2 DATE 1985-12-25
+1 NOTE Already ISO format - should pass through unchanged
+
+0 @I105@ INDI
+1 NAME Mixed /DateFormats/
+2 GIVN Mixed
+2 SURN DateFormats
+1 SEX F
+1 BIRT
+2 DATE 15-Mar-1907
+2 PLAC Seattle, Washington, USA
+1 DEAT
+2 DATE 25-Dec-1990
+1 NOTE ISSUE: DD-Mon-YYYY format - should normalize to ISO
+
+0 @I106@ INDI
+1 NAME Period /Separator/
+2 GIVN Period
+2 SURN Separator
+1 SEX M
+1 BIRT
+2 DATE 15.03.1910
+2 PLAC Berlin, Germany
+1 DEAT
+2 DATE 25.12.1995
+1 NOTE ISSUE: Period-separated European date - should normalize to ISO
+
+0 NOTE ============================================================
+0 NOTE PERSONS - Invalid gender values (for Step 4 testing)
+0 NOTE ============================================================
+
+0 @I110@ INDI
+1 NAME Lowercase /Male/
+2 GIVN Lowercase
+2 SURN Male
+1 SEX m
+1 BIRT
+2 DATE 1 JAN 1970
+2 PLAC New York, USA
+1 NOTE ISSUE: Lowercase 'm' instead of 'M'
+
+0 @I111@ INDI
+1 NAME Lowercase /Female/
+2 GIVN Lowercase
+2 SURN Female
+1 SEX f
+1 BIRT
+2 DATE 1 FEB 1972
+2 PLAC Los Angeles, California, USA
+1 NOTE ISSUE: Lowercase 'f' instead of 'F'
+
+0 @I112@ INDI
+1 NAME Full /MaleWord/
+2 GIVN Full
+2 SURN MaleWord
+1 SEX Male
+1 BIRT
+2 DATE 1 MAR 1974
+2 PLAC Chicago, Illinois, USA
+1 NOTE ISSUE: Full word 'Male' instead of 'M'
+
+0 @I113@ INDI
+1 NAME Full /FemaleWord/
+2 GIVN Full
+2 SURN FemaleWord
+1 SEX Female
+1 BIRT
+2 DATE 1 APR 1976
+2 PLAC Houston, Texas, USA
+1 NOTE ISSUE: Full word 'Female' instead of 'F'
+
+0 @I114@ INDI
+1 NAME Uppercase /MALE/
+2 GIVN Uppercase
+2 SURN MALE
+1 SEX MALE
+1 BIRT
+2 DATE 1 MAY 1978
+2 PLAC Phoenix, Arizona, USA
+1 NOTE ISSUE: All caps 'MALE' instead of 'M'
+
+0 @I115@ INDI
+1 NAME Uppercase /FEMALE/
+2 GIVN Uppercase
+2 SURN FEMALE
+1 SEX FEMALE
+1 BIRT
+2 DATE 1 JUN 1980
+2 PLAC Denver, Colorado, USA
+1 NOTE ISSUE: All caps 'FEMALE' instead of 'F'
+
+0 @I116@ INDI
+1 NAME Unknown /Gender/
+2 GIVN Unknown
+2 SURN Gender
+1 SEX U
+1 BIRT
+2 DATE 1 JUL 1982
+2 PLAC Miami, Florida, USA
+1 NOTE ISSUE: 'U' for unknown - may need normalization
+
+0 @I117@ INDI
+1 NAME Question /Gender/
+2 GIVN Question
+2 SURN Gender
+1 SEX ?
+1 BIRT
+2 DATE 1 AUG 1984
+2 PLAC Atlanta, Georgia, USA
+1 NOTE ISSUE: '?' for unknown gender
+
+0 @I118@ INDI
+1 NAME Missing /Gender/
+2 GIVN Missing
+2 SURN Gender
+1 BIRT
+2 DATE 1 SEP 1986
+2 PLAC Boston, Massachusetts, USA
+1 NOTE ISSUE: No SEX tag at all
+
+0 NOTE ============================================================
+0 NOTE PERSONS - Additional orphan references (for Step 5 testing)
+0 NOTE ============================================================
+
+0 @I120@ INDI
+1 NAME Missing /Father/
+2 GIVN Missing
+2 SURN Father
+1 SEX M
+1 BIRT
+2 DATE 5 MAY 1990
+2 PLAC Portland, Oregon, USA
+1 FAMC @F200@
+1 NOTE ISSUE: References non-existent family @F200@
+
+0 @I121@ INDI
+1 NAME Missing /Spouse/
+2 GIVN Missing
+2 SURN Spouse
+1 SEX F
+1 BIRT
+2 DATE 10 JUN 1992
+2 PLAC Seattle, Washington, USA
+1 FAMS @F201@
+1 NOTE ISSUE: References non-existent family @F201@
+
+0 @I122@ INDI
+1 NAME Multiple /Orphans/
+2 GIVN Multiple
+2 SURN Orphans
+1 SEX M
+1 BIRT
+2 DATE 15 JUL 1994
+2 PLAC Las Vegas, Nevada, USA
+2 SOUR @S100@
+1 FAMC @F202@
+1 FAMS @F203@
+1 NOTE ISSUE: Multiple orphan references - source and two families
+
+0 @I123@ INDI
+1 NAME Source /Orphan/
+2 GIVN Source
+2 SURN Orphan
+1 SEX F
+1 BIRT
+2 DATE 20 AUG 1996
+2 PLAC Austin, Texas, USA
+2 SOUR @S101@
+1 DEAT
+2 DATE 1 JAN 2020
+2 SOUR @S102@
+1 NOTE ISSUE: Multiple orphan source references
+
+0 @I124@ INDI
+1 NAME Adoptive /Family/
+2 GIVN Adoptive
+2 SURN Family
+1 SEX M
+1 BIRT
+2 DATE 25 SEP 1998
+2 PLAC Nashville, Tennessee, USA
+1 FAMC @F204@
+1 ADOP
+2 FAMC @F205@
+1 NOTE ISSUE: Orphan references in both birth and adoptive family links
+
 0 @I78@ INDI
 1 NAME Partial /YearOnly/
 2 GIVN Partial
@@ -587,6 +834,262 @@
 2 DATE 1 JAN 1990
 2 PLAC Kaliningrad, Russia
 1 NOTE Same physical location, different historical names
+
+0 NOTE ============================================================
+0 NOTE PERSONS - Place Name Variants (for Step 7 testing)
+0 NOTE ============================================================
+
+0 @I200@ INDI
+1 NAME Country /Variants/
+2 GIVN Country
+2 SURN Variants
+1 SEX M
+1 BIRT
+2 DATE 1 JAN 1950
+2 PLAC Boston, Massachusetts, United States of America
+1 DEAT
+2 DATE 1 JAN 2020
+2 PLAC New York, New York, US
+1 NOTE ISSUE: Uses "United States of America" and "US" - should standardize to "USA"
+
+0 @I201@ INDI
+1 NAME State /Abbreviation/
+2 GIVN State
+2 SURN Abbreviation
+1 SEX F
+1 BIRT
+2 DATE 15 MAR 1955
+2 PLAC Los Angeles, CA, USA
+1 DEAT
+2 DATE 20 APR 2018
+2 PLAC San Francisco, California, USA
+1 NOTE ISSUE: Uses "CA" and "California" - should standardize
+
+0 @I202@ INDI
+1 NAME UK /Variant/
+2 GIVN UK
+2 SURN Variant
+1 SEX M
+1 BIRT
+2 DATE 10 JUN 1960
+2 PLAC London, England, UK
+1 DEAT
+2 DATE 5 DEC 2015
+2 PLAC Manchester, England, United Kingdom
+1 NOTE ISSUE: Uses "UK" and "United Kingdom" - should standardize
+
+0 @I203@ INDI
+1 NAME New /YorkState/
+2 GIVN New
+2 SURN YorkState
+1 SEX F
+1 BIRT
+2 DATE 22 SEP 1965
+2 PLAC Buffalo, NY, USA
+1 DEAT
+2 DATE 30 NOV 2010
+2 PLAC Rochester, New York, USA
+1 NOTE ISSUE: Uses "NY" and "New York" state abbreviation variants
+
+0 @I204@ INDI
+1 NAME Texas /Abbreviation/
+2 GIVN Texas
+2 SURN Abbreviation
+1 SEX M
+1 BIRT
+2 DATE 4 JUL 1970
+2 PLAC Houston, TX, USA
+1 DEAT
+2 DATE 25 DEC 2019
+2 PLAC Dallas, Texas, USA
+1 NOTE ISSUE: Uses "TX" and "Texas" - should standardize
+
+0 @I205@ INDI
+1 NAME Pennsylvania /Variant/
+2 GIVN Pennsylvania
+2 SURN Variant
+1 SEX F
+1 BIRT
+2 DATE 14 FEB 1975
+2 PLAC Philadelphia, PA, USA
+1 BURI
+2 DATE 20 FEB 2022
+2 PLAC Pittsburgh, Pennsylvania, USA
+1 NOTE ISSUE: Uses "PA" and "Pennsylvania" - should standardize
+
+0 @I206@ INDI
+1 NAME Illinois /Variant/
+2 GIVN Illinois
+2 SURN Variant
+1 SEX M
+1 BIRT
+2 DATE 17 MAR 1980
+2 PLAC Chicago, IL, USA
+1 DEAT
+2 DATE 1 JAN 2023
+2 PLAC Springfield, Illinois, USA
+1 NOTE ISSUE: Uses "IL" and "Illinois" - should standardize
+
+0 @I207@ INDI
+1 NAME Massachusetts /Variant/
+2 GIVN Massachusetts
+2 SURN Variant
+1 SEX F
+1 BIRT
+2 DATE 21 APR 1985
+2 PLAC Boston, MA, USA
+1 DEAT
+2 DATE 15 AUG 2021
+2 PLAC Cambridge, Massachusetts, USA
+1 NOTE ISSUE: Uses "MA" and "Massachusetts" - should standardize
+
+0 @I208@ INDI
+1 NAME Florida /Variant/
+2 GIVN Florida
+2 SURN Variant
+1 SEX M
+1 BIRT
+2 DATE 25 DEC 1962
+2 PLAC Miami, FL, USA
+1 DEAT
+2 DATE 4 JUL 2020
+2 PLAC Orlando, Florida, USA
+1 NOTE ISSUE: Uses "FL" and "Florida" - should standardize
+
+0 @I209@ INDI
+1 NAME Ohio /Variant/
+2 GIVN Ohio
+2 SURN Variant
+1 SEX F
+1 BIRT
+2 DATE 1 JAN 1958
+2 PLAC Cleveland, OH, USA
+1 DEAT
+2 DATE 31 DEC 2017
+2 PLAC Columbus, Ohio, USA
+1 NOTE ISSUE: Uses "OH" and "Ohio" - should standardize
+
+0 @I210@ INDI
+1 NAME Georgia /Variant/
+2 GIVN Georgia
+2 SURN Variant
+1 SEX M
+1 BIRT
+2 DATE 12 OCT 1972
+2 PLAC Atlanta, GA, USA
+1 DEAT
+2 DATE 28 FEB 2023
+2 PLAC Savannah, Georgia, USA
+1 NOTE ISSUE: Uses "GA" and "Georgia" - should standardize
+
+0 @I211@ INDI
+1 NAME Multiple /Marriages/
+2 GIVN Multiple
+2 SURN Marriages
+1 SEX M
+1 BIRT
+2 DATE 5 MAY 1945
+2 PLAC Chicago, Illinois, United States of America
+1 DEAT
+2 DATE 10 OCT 2020
+2 PLAC Miami, FL, US
+1 FAMS @F200@
+1 FAMS @F201@
+1 NOTE ISSUE: Multiple place variants across birth, death, and marriage locations
+
+0 @I212@ INDI
+1 NAME First /MarriageSpouse/
+2 GIVN First
+2 SURN MarriageSpouse
+1 SEX F
+1 BIRT
+2 DATE 8 AUG 1948
+2 PLAC Detroit, MI, USA
+1 FAMS @F200@
+
+0 @I213@ INDI
+1 NAME Second /MarriageSpouse/
+2 GIVN Second
+2 SURN MarriageSpouse
+1 SEX F
+1 BIRT
+2 DATE 12 DEC 1952
+2 PLAC Phoenix, AZ, USA
+1 FAMS @F201@
+
+0 @I214@ INDI
+1 NAME Washington /Variant/
+2 GIVN Washington
+2 SURN Variant
+1 SEX F
+1 BIRT
+2 DATE 4 JUL 1968
+2 PLAC Seattle, WA, USA
+1 DEAT
+2 DATE 1 JAN 2022
+2 PLAC Tacoma, Washington, USA
+1 NOTE ISSUE: Uses "WA" and "Washington" - should standardize
+
+0 @I215@ INDI
+1 NAME Virginia /Variant/
+2 GIVN Virginia
+2 SURN Variant
+1 SEX M
+1 BIRT
+2 DATE 22 FEB 1955
+2 PLAC Richmond, VA, USA
+1 DEAT
+2 DATE 4 JUL 2018
+2 PLAC Norfolk, Virginia, USA
+1 NOTE ISSUE: Uses "VA" and "Virginia" - should standardize
+
+0 @I216@ INDI
+1 NAME North /CarolinaVariant/
+2 GIVN North
+2 SURN CarolinaVariant
+1 SEX F
+1 BIRT
+2 DATE 15 MAR 1978
+2 PLAC Charlotte, NC, USA
+1 DEAT
+2 DATE 20 NOV 2021
+2 PLAC Raleigh, North Carolina, USA
+1 NOTE ISSUE: Uses "NC" and "North Carolina" - should standardize
+
+0 @I217@ INDI
+1 NAME Great /BritainVariant/
+2 GIVN Great
+2 SURN BritainVariant
+1 SEX M
+1 BIRT
+2 DATE 1 JAN 1940
+2 PLAC Edinburgh, Scotland, Great Britain
+1 DEAT
+2 DATE 31 DEC 2010
+2 PLAC Glasgow, Scotland, GB
+1 NOTE ISSUE: Uses "Great Britain" and "GB" - should standardize
+
+0 NOTE ============================================================
+0 NOTE FAMILIES - Place Name Variant Testing
+0 NOTE ============================================================
+
+0 @F200@ FAM
+1 HUSB @I211@
+1 WIFE @I212@
+1 MARR
+2 DATE 15 JUN 1970
+2 PLAC Las Vegas, NV, United States of America
+1 DIV
+2 DATE 1 JAN 1980
+1 NOTE Marriage location has "United States of America" variant
+
+0 @F201@ FAM
+1 HUSB @I211@
+1 WIFE @I213@
+1 MARR
+2 DATE 20 SEP 1985
+2 PLAC Reno, Nevada, US
+1 NOTE Marriage location has "US" variant and "Nevada" spelled out
 
 0 NOTE ============================================================
 0 NOTE FAMILIES

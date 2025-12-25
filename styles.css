@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-25 21:26:20 UTC
+ * - Generated: 2025-12-25 22:27:00 UTC
  * - Components: 37 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -677,7 +677,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 11008 lines, 204.36 KB */
+/* Component Size: 11097 lines, 205.94 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -11685,6 +11685,95 @@ settings:
   font-size: 14px;
   color: var(--text-muted);
   max-width: 400px;
+}
+
+/* Place Variants Table (Step 7) */
+.crc-cleanup-variant-table-container {
+  max-height: 350px;
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.crc-cleanup-variant-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.crc-cleanup-variant-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--background-secondary);
+  z-index: 1;
+}
+
+.crc-cleanup-variant-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+}
+
+.crc-cleanup-variant-th-check {
+  width: 40px;
+  text-align: center;
+}
+
+.crc-cleanup-variant-th-count {
+  width: 60px;
+  text-align: center;
+}
+
+.crc-cleanup-variant-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  vertical-align: middle;
+}
+
+.crc-cleanup-variant-row:last-child td {
+  border-bottom: none;
+}
+
+.crc-cleanup-variant-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.crc-cleanup-variant-td-check {
+  text-align: center;
+}
+
+.crc-cleanup-variant-current {
+  color: var(--text-normal);
+}
+
+.crc-cleanup-variant-strike {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.crc-cleanup-variant-canonical {
+  min-width: 150px;
+}
+
+.crc-cleanup-variant-select {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.crc-cleanup-variant-count {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.crc-cleanup-variant-apply {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 
@@ -30085,11 +30174,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-25 21:26:20 UTC
+ * Build completed: 2025-12-25 22:27:00 UTC
  * Components processed: 37
- * Total lines: 29729
- * Total size: 587.3 KB
- * Build duration: 0.04 seconds
+ * Total lines: 29818
+ * Total size: 588.88 KB
+ * Build duration: 0.05 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -30100,7 +30189,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 11008 lines, 204.36 KB
+ * - modals.css: 11097 lines, 205.94 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB
