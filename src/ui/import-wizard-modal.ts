@@ -1145,6 +1145,28 @@ export class ImportWizardModal extends Modal {
 				text: `${this.getNumberingSystemName()} numbers assigned to ${this.formData.numberingStats.totalAssigned} people from ${this.formData.rootPersonName}`
 			});
 		}
+
+		// Cleanup Wizard prompt
+		const cleanupSection = section.createDiv({ cls: 'crc-import-cleanup-prompt crc-mt-3' });
+		const cleanupNote = cleanupSection.createDiv({ cls: 'crc-import-cleanup-note' });
+		const infoIcon = cleanupNote.createSpan({ cls: 'crc-import-cleanup-note-icon' });
+		setIcon(infoIcon, 'info');
+		cleanupNote.createSpan({
+			text: 'Run the Cleanup Wizard to fix data quality issues like date formats, missing relationships, and place standardization.'
+		});
+
+		const cleanupBtn = cleanupSection.createEl('button', {
+			cls: 'crc-btn crc-btn--secondary crc-mt-2'
+		});
+		const cleanupBtnIcon = cleanupBtn.createSpan({ cls: 'crc-btn-icon' });
+		setIcon(cleanupBtnIcon, 'sparkles');
+		cleanupBtn.createSpan({ text: 'Run Cleanup Wizard' });
+		cleanupBtn.addEventListener('click', () => {
+			this.close();
+			void import('./cleanup-wizard-modal').then(({ CleanupWizardModal }) => {
+				new CleanupWizardModal(this.app, this.plugin).open();
+			});
+		});
 	}
 
 	/**

@@ -9558,6 +9558,35 @@
   height: 18px;
 }
 
+/* Cleanup wizard prompt in import complete */
+.crc-import-cleanup-prompt {
+  padding: 16px;
+  background: var(--background-secondary);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.crc-import-cleanup-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.crc-import-cleanup-note-icon {
+  flex-shrink: 0;
+  color: var(--interactive-accent);
+  margin-top: 2px;
+}
+
+.crc-import-cleanup-note-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
 /* Scope/radio options */
 .crc-wizard-scope-options {
   display: flex;
