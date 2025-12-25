@@ -328,6 +328,8 @@ export class ExportWizardModal extends Modal {
 		// Update step progress indicator
 		this.updateStepProgress();
 
+		let skipFooter = false;
+
 		switch (this.currentStep) {
 			case 0:
 				this.renderStep1Format(this.contentContainer);
@@ -339,7 +341,7 @@ export class ExportWizardModal extends Modal {
 				this.renderStep3Options(this.contentContainer);
 				break;
 			case 3:
-				this.renderStep4Preview(this.contentContainer);
+				skipFooter = this.renderStep4Preview(this.contentContainer);
 				break;
 			case 4:
 				this.renderStep5Export(this.contentContainer);
@@ -349,8 +351,10 @@ export class ExportWizardModal extends Modal {
 				break;
 		}
 
-		// Render footer with navigation buttons
-		this.renderFooter(this.contentContainer);
+		// Render footer with navigation buttons (skip if step is still loading)
+		if (!skipFooter) {
+			this.renderFooter(this.contentContainer);
+		}
 	}
 
 	/**
@@ -525,8 +529,9 @@ export class ExportWizardModal extends Modal {
 
 	/**
 	 * Step 4: Preview
+	 * Returns true if still loading (caller should skip footer rendering)
 	 */
-	private renderStep4Preview(container: HTMLElement): void {
+	private renderStep4Preview(container: HTMLElement): boolean {
 		const section = container.createDiv({ cls: 'crc-export-section' });
 		section.createEl('h3', { text: 'Preview', cls: 'crc-export-section-title' });
 
@@ -535,7 +540,7 @@ export class ExportWizardModal extends Modal {
 			const loadingEl = section.createDiv({ cls: 'crc-export-preview-loading' });
 			loadingEl.textContent = 'Scanning vault...';
 			this.scanVaultForPreview();
-			return;
+			return true; // Still loading, skip footer
 		}
 
 		// Summary card
@@ -578,6 +583,8 @@ export class ExportWizardModal extends Modal {
 		// Ready message
 		const readyEl = section.createDiv({ cls: 'crc-export-preview-ready' });
 		readyEl.createSpan({ text: 'Ready to export. Click Export to proceed.' });
+
+		return false; // Not loading, render footer
 	}
 
 	/**
