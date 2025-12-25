@@ -16,6 +16,7 @@ import { CreateSourceModal } from '../sources/ui/create-source-modal';
 import { CreateOrganizationModal } from '../organizations/ui/create-organization-modal';
 import { ReportWizardModal } from '../reports/ui/report-wizard-modal';
 import { MediaManagerModal } from '../core/ui/media-manager-modal';
+import { ImportExportHubModal } from './import-export-hub-modal';
 import { FamilyGraphService } from '../core/family-graph';
 import { PlaceGraphService } from '../core/place-graph';
 import { EventService } from '../events/services/event-service';
@@ -270,12 +271,13 @@ function renderQuickActionsSection(
 			}
 		},
 		{
-			id: 'import-data',
-			label: 'Import',
-			icon: 'upload',
-			description: 'Import genealogical data',
+			id: 'import-export',
+			label: 'Import/Export',
+			icon: 'arrow-up-down',
+			description: 'Import or export genealogical data',
 			action: () => {
-				switchTab('import-export');
+				closeModal();
+				new ImportExportHubModal(app, plugin).open();
 			}
 		},
 		{
