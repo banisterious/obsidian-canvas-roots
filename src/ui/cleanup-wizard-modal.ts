@@ -285,6 +285,9 @@ export class CleanupWizardModal extends Modal {
 	private hierarchyCreateMissingParents = true;
 	private hierarchyPlacesDirectory = '';
 
+	// Step completion tracking for dependency checks
+	private stepCompletion: Record<string, { completed: boolean; completedAt: number; issuesFixed: number }> = {};
+
 	constructor(app: App, plugin: CanvasRootsPlugin) {
 		super(app);
 		this.plugin = plugin;
@@ -491,6 +494,11 @@ export class CleanupWizardModal extends Modal {
 			};
 		}
 
+		// Restore step completion tracking
+		if (persisted.stepCompletion) {
+			this.stepCompletion = { ...persisted.stepCompletion };
+		}
+
 		// Set the correct view based on current step
 		if (persisted.currentStep > 0) {
 			this.currentView = 'step';
@@ -510,7 +518,8 @@ export class CleanupWizardModal extends Modal {
 		const persistedState: CleanupWizardPersistedState = {
 			currentStep: this.state.currentStep,
 			steps: {},
-			savedAt: Date.now()
+			savedAt: Date.now(),
+			stepCompletion: { ...this.stepCompletion }
 		};
 
 		for (const [stepNum, stepState] of Object.entries(this.state.steps)) {
@@ -534,6 +543,81 @@ export class CleanupWizardModal extends Modal {
 		this.plugin.settings.cleanupWizardState = undefined;
 		await this.plugin.saveSettings();
 		logger.debug('clearPersistedState', 'Cleared persisted state');
+	}
+
+	/**
+	 * Record step completion for dependency tracking
+	 * @param stepId - The step ID (e.g., 'place-variants', 'geocode')
+	 * @param issuesFixed - Number of issues fixed in this step
+	 */
+	private recordStepCompletion(stepId: string, issuesFixed: number): void {
+		this.stepCompletion[stepId] = {
+			completed: true,
+			completedAt: Date.now(),
+			issuesFixed
+		};
+		logger.debug('recordStepCompletion', `Recorded completion for step: ${stepId}`, { issuesFixed });
+	}
+
+	/**
+	 * Check if a step has been completed in this session
+	 * @param stepId - The step ID to check
+	 */
+	private isStepCompleted(stepId: string): boolean {
+		return this.stepCompletion[stepId]?.completed === true;
+	}
+
+	/**
+	 * Get unmet dependencies for a step
+	 * Returns array of step titles that should be completed first
+	 */
+	private getUnmetDependencies(stepConfig: WizardStepConfig): string[] {
+		const unmet: string[] = [];
+
+		// Special dependency chain for place steps: 7 → 7b → 8 → 9
+		if (stepConfig.id === 'geocode') {
+			// Step 8 depends on Step 7 (place-variants) and 7b (place-dedup)
+			if (!this.isStepCompleted('place-variants')) {
+				unmet.push('Step 7: Standardize Place Variants');
+			}
+			// Note: 7b is optional, only warn if variants were run but dedup wasn't
+			if (this.isStepCompleted('place-variants') && !this.isStepCompleted('place-dedup') && this.placeDuplicateGroups.length > 0) {
+				unmet.push('Step 7b: Deduplicate Places');
+			}
+		} else if (stepConfig.id === 'place-hierarchy') {
+			// Step 9 depends on Step 8 (geocode)
+			if (!this.isStepCompleted('geocode')) {
+				unmet.push('Step 8: Bulk Geocode');
+			}
+		}
+
+		return unmet;
+	}
+
+	/**
+	 * Render a dependency warning callout
+	 * @param container - Container element to render into
+	 * @param missingSteps - Array of step names that should be completed first
+	 * @returns The warning element (for potential removal)
+	 */
+	private renderDependencyWarning(container: HTMLElement, missingSteps: string[]): HTMLElement {
+		const warning = container.createDiv({ cls: 'crc-dependency-warning' });
+
+		const iconEl = warning.createSpan({ cls: 'crc-dependency-warning-icon' });
+		setIcon(iconEl, 'alert-triangle');
+
+		const textEl = warning.createSpan({ cls: 'crc-dependency-warning-text' });
+		textEl.setText(`Recommended: Complete ${missingSteps.join(' and ')} first for best results.`);
+
+		const dismissBtn = warning.createEl('button', {
+			text: 'Continue anyway',
+			cls: 'crc-dependency-warning-dismiss'
+		});
+		dismissBtn.addEventListener('click', () => {
+			warning.remove();
+		});
+
+		return warning;
 	}
 
 	/**
@@ -1744,6 +1828,7 @@ export class CleanupWizardModal extends Modal {
 			new Notice(`Found ${this.placeDuplicateGroups.length} duplicate place${this.placeDuplicateGroups.length !== 1 ? 's' : ''} to merge`);
 		} else {
 			stepState.status = 'complete';
+			this.recordStepCompletion('place-variants', stepState.fixCount);
 		}
 
 		this.renderCurrentView();
@@ -1756,6 +1841,9 @@ export class CleanupWizardModal extends Modal {
 		if (this.placeDuplicateGroups.length === 0) {
 			// No duplicates - step is complete
 			stepState.status = 'complete';
+			// Record both place-variants and place-dedup as complete
+			this.recordStepCompletion('place-variants', stepState.fixCount);
+			this.recordStepCompletion('place-dedup', 0);
 			const complete = container.createDiv({ cls: 'crc-cleanup-step-complete' });
 			const icon = complete.createDiv({ cls: 'crc-cleanup-step-complete-icon' });
 			setIcon(icon, 'check-circle');
@@ -1873,6 +1961,8 @@ export class CleanupWizardModal extends Modal {
 		skipBtn.addEventListener('click', () => {
 			this.showDeduplicationStep = false;
 			stepState.status = 'complete';
+			// Record completion (skipped dedup still counts as variants completed)
+			this.recordStepCompletion('place-variants', stepState.fixCount);
 			this.renderCurrentView();
 		});
 	}
@@ -1904,6 +1994,10 @@ export class CleanupWizardModal extends Modal {
 		stepState.status = 'complete';
 		this.showDeduplicationStep = false;
 		this.placeDuplicateGroups = [];
+
+		// Record completion for both variants and dedup
+		this.recordStepCompletion('place-variants', stepState.fixCount);
+		this.recordStepCompletion('place-dedup', totalDeletedFiles);
 
 		if (errors.length > 0) {
 			console.error('Errors during deduplication:', errors);
@@ -2159,6 +2253,7 @@ export class CleanupWizardModal extends Modal {
 		// Update step state
 		stepState.status = 'complete';
 		stepState.fixCount = successCount;
+		this.recordStepCompletion('geocode', successCount);
 
 		// Done button
 		const doneContainer = results.createDiv({ cls: 'crc-cleanup-geocode-done' });

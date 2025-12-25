@@ -372,6 +372,15 @@ export interface CleanupWizardPersistedState {
 	}>;
 	/** When the state was saved */
 	savedAt: number;
+	/** Step completion tracking for dependency checks (keyed by step ID) */
+	stepCompletion?: Record<string, {
+		/** Whether this step was explicitly completed (not just skipped) */
+		completed: boolean;
+		/** Timestamp when completed */
+		completedAt: number;
+		/** Number of issues fixed in this step */
+		issuesFixed: number;
+	}>;
 }
 
 /**
