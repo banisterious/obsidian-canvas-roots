@@ -80,6 +80,8 @@ interface ImportWizardFormData {
 	numberingSystem: NumberingSystem;
 	rootPersonCrId: string | null;
 	rootPersonName: string | null;
+	numberingStats: NumberingStats | null;
+	isAssigningNumbers: boolean;
 
 	// Step 7: Complete
 	importComplete: boolean;
@@ -204,6 +206,8 @@ export class ImportWizardModal extends Modal {
 			numberingSystem: 'none',
 			rootPersonCrId: null,
 			rootPersonName: null,
+			numberingStats: null,
+			isAssigningNumbers: false,
 
 			// Step 7
 			importComplete: false,
@@ -835,9 +839,101 @@ export class ImportWizardModal extends Modal {
 			const rootPersonNote = section.createDiv({ cls: 'crc-import-help-text' });
 			rootPersonNote.textContent = 'Numbers are assigned relative to this person.';
 
-			// TODO: Add person picker component
-			const pickerPlaceholder = section.createDiv({ cls: 'crc-import-person-picker-placeholder' });
-			pickerPlaceholder.textContent = 'Person picker will be implemented here';
+			// Person picker button
+			const pickerContainer = section.createDiv({ cls: 'crc-import-person-picker' });
+
+			if (this.formData.rootPersonName) {
+				// Show selected person
+				const selectedPerson = pickerContainer.createDiv({ cls: 'crc-import-selected-person' });
+				const personIcon = selectedPerson.createDiv({ cls: 'crc-import-selected-person-icon' });
+				setIcon(personIcon, 'user');
+				selectedPerson.createDiv({ cls: 'crc-import-selected-person-name', text: this.formData.rootPersonName });
+
+				const changeBtn = selectedPerson.createEl('button', {
+					cls: 'crc-btn crc-btn--small crc-btn--secondary',
+					text: 'Change'
+				});
+				changeBtn.addEventListener('click', () => this.openPersonPicker());
+			} else {
+				// Show picker button
+				const pickerBtn = pickerContainer.createEl('button', {
+					cls: 'crc-btn crc-btn--secondary'
+				});
+				const btnIcon = pickerBtn.createSpan({ cls: 'crc-btn-icon' });
+				setIcon(btnIcon, 'user-plus');
+				pickerBtn.createSpan({ text: 'Select root person' });
+
+				pickerBtn.addEventListener('click', () => this.openPersonPicker());
+			}
+		}
+	}
+
+	/**
+	 * Open the person picker modal
+	 */
+	private openPersonPicker(): void {
+		const picker = new PersonPickerModal(
+			this.app,
+			(person: PersonInfo) => {
+				this.formData.rootPersonCrId = person.crId;
+				this.formData.rootPersonName = person.name;
+				this.renderCurrentStep();
+			},
+			{
+				title: 'Select root person',
+				subtitle: 'Choose the person to use as the root for numbering'
+			}
+		);
+		picker.open();
+	}
+
+	/**
+	 * Assign reference numbers using the selected system
+	 */
+	private async assignReferenceNumbers(): Promise<void> {
+		if (!this.formData.rootPersonCrId || this.formData.numberingSystem === 'none') {
+			return;
+		}
+
+		this.formData.isAssigningNumbers = true;
+		this.renderCurrentStep();
+
+		try {
+			const numberingService = new ReferenceNumberingService(this.app);
+			let stats: NumberingStats;
+
+			// Map our NumberingSystem to RefNumberingSystem (they're the same values except 'none')
+			const system = this.formData.numberingSystem as RefNumberingSystem;
+
+			switch (system) {
+				case 'ahnentafel':
+					stats = await numberingService.assignAhnentafel(this.formData.rootPersonCrId);
+					break;
+				case 'daboville':
+					stats = await numberingService.assignDAboville(this.formData.rootPersonCrId);
+					break;
+				case 'henry':
+					stats = await numberingService.assignHenry(this.formData.rootPersonCrId);
+					break;
+				case 'generation':
+					stats = await numberingService.assignGeneration(this.formData.rootPersonCrId);
+					break;
+				default:
+					throw new Error(`Unknown numbering system: ${system}`);
+			}
+
+			this.formData.numberingStats = stats;
+			new Notice(`Assigned ${stats.totalAssigned} ${this.getNumberingSystemName()} numbers`);
+
+			// Advance to complete step
+			this.formData.isAssigningNumbers = false;
+			this.currentStep = 6;
+			this.renderCurrentStep();
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			new Notice(`Failed to assign numbers: ${message}`);
+			this.formData.isAssigningNumbers = false;
+			this.renderCurrentStep();
 		}
 	}
 
@@ -879,9 +975,13 @@ export class ImportWizardModal extends Modal {
 		}
 
 		// Numbering result
-		if (this.formData.numberingSystem !== 'none' && this.formData.rootPersonName) {
+		if (this.formData.numberingStats) {
 			const numberingEl = section.createDiv({ cls: 'crc-import-complete-numbering' });
-			numberingEl.innerHTML = `✓ ${this.getNumberingSystemName()} numbers assigned from ${this.formData.rootPersonName}`;
+			const checkIcon = numberingEl.createSpan({ cls: 'crc-import-complete-numbering-icon' });
+			setIcon(checkIcon, 'check');
+			numberingEl.createSpan({
+				text: `${this.getNumberingSystemName()} numbers assigned to ${this.formData.numberingStats.totalAssigned} people from ${this.formData.rootPersonName}`
+			});
 		}
 	}
 
@@ -961,18 +1061,16 @@ export class ImportWizardModal extends Modal {
 			// Step 5 (Numbering): Show Assign Numbers button
 			const assignBtn = rightBtns.createEl('button', {
 				cls: 'crc-btn crc-btn--primary',
-				text: 'Assign Numbers'
+				text: this.formData.isAssigningNumbers ? 'Assigning...' : 'Assign Numbers'
 			});
 
-			if (this.formData.numberingSystem === 'none' || !this.formData.rootPersonCrId) {
+			if (this.formData.numberingSystem === 'none' || !this.formData.rootPersonCrId || this.formData.isAssigningNumbers) {
 				assignBtn.disabled = true;
 				assignBtn.addClass('crc-btn--disabled');
 			}
 
 			assignBtn.addEventListener('click', () => {
-				// TODO: Assign reference numbers
-				this.currentStep = 6;
-				this.renderCurrentStep();
+				this.assignReferenceNumbers();
 			});
 		} else if (this.currentStep === 6) {
 			// Step 6 (Complete): Show Done and Import Another buttons

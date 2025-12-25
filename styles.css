@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-25 00:21:51 UTC
+ * - Generated: 2025-12-25 00:27:52 UTC
  * - Components: 37 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -677,7 +677,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 9419 lines, 175.06 KB */
+/* Component Size: 9478 lines, 176.18 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -9677,6 +9677,65 @@ settings:
 .crc-import-radio-description {
   font-size: 12px;
   color: var(--text-muted);
+}
+
+/* Person picker for numbering */
+.crc-import-person-picker {
+  margin-top: 12px;
+}
+
+.crc-import-selected-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-import-selected-person-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(124, 58, 237, 0.15);
+  border-radius: 50%;
+  color: var(--interactive-accent);
+}
+
+.crc-import-selected-person-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.crc-import-selected-person-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+/* Complete step numbering result */
+.crc-import-complete-numbering {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 8px;
+  margin-top: 16px;
+  color: var(--text-normal);
+}
+
+.crc-import-complete-numbering-icon {
+  color: rgb(74, 222, 128);
+  flex-shrink: 0;
+}
+
+.crc-import-complete-numbering-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Scope/radio options */
@@ -28496,11 +28555,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-25 00:21:51 UTC
+ * Build completed: 2025-12-25 00:27:52 UTC
  * Components processed: 37
- * Total lines: 28140
- * Total size: 557.99 KB
- * Build duration: 0.03 seconds
+ * Total lines: 28199
+ * Total size: 559.12 KB
+ * Build duration: 0.04 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -28511,7 +28570,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 9419 lines, 175.06 KB
+ * - modals.css: 9478 lines, 176.18 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

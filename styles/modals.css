@@ -8998,6 +8998,65 @@
   color: var(--text-muted);
 }
 
+/* Person picker for numbering */
+.crc-import-person-picker {
+  margin-top: 12px;
+}
+
+.crc-import-selected-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-import-selected-person-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(124, 58, 237, 0.15);
+  border-radius: 50%;
+  color: var(--interactive-accent);
+}
+
+.crc-import-selected-person-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.crc-import-selected-person-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+/* Complete step numbering result */
+.crc-import-complete-numbering {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 8px;
+  margin-top: 16px;
+  color: var(--text-normal);
+}
+
+.crc-import-complete-numbering-icon {
+  color: rgb(74, 222, 128);
+  flex-shrink: 0;
+}
+
+.crc-import-complete-numbering-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* Scope/radio options */
 .crc-wizard-scope-options {
   display: flex;
