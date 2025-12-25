@@ -407,7 +407,8 @@ export class CleanupWizardModal extends Modal {
 			steps: {},
 			startTime: Date.now(),
 			isPreScanning: false,
-			preScanComplete: true // Assume pre-scan was done in previous session
+			// Re-run pre-scan to repopulate cached analysis data (bidirectionalIssues, qualityReport)
+			preScanComplete: false
 		};
 
 		// Restore step states
