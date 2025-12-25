@@ -305,13 +305,23 @@ export class GrampsImporter {
 
 			// Create place notes FIRST if requested (so we can link to them from person notes)
 			if (options.createPlaceNotes && grampsData.places.size > 0) {
-				const placesTotal = grampsData.places.size;
+				// Only import places that have ptitle (fully qualified hierarchical names)
+				// Places without ptitle are intermediate hierarchy components (county, state, country)
+				// that shouldn't be imported as standalone notes - their names are already
+				// included in the ptitle of leaf places (e.g., "Atlanta, Fulton County, Georgia, USA")
+				const leafPlaces = Array.from(grampsData.places.entries()).filter(([, place]) => {
+					return place.hasPtitle === true;
+				});
+
+				const placesTotal = leafPlaces.length;
 				reportProgress('places', 0, placesTotal, `Creating ${placesTotal} place notes...`);
 				const placesFolder = options.placesFolder || options.peopleFolder;
 				await this.ensureFolderExists(placesFolder);
 
+				logger.info('importFile', `Filtering places: ${grampsData.places.size} total, ${leafPlaces.length} with ptitle (importing), ${grampsData.places.size - leafPlaces.length} hierarchy components (skipped)`);
+
 				let placeIndex = 0;
-				for (const [handle, place] of grampsData.places) {
+				for (const [handle, place] of leafPlaces) {
 					try {
 						const crId = await this.importPlace(place, placesFolder, options, result.mediaHandleToPath);
 						if (crId !== null) {

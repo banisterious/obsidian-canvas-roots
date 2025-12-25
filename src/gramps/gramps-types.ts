@@ -76,6 +76,10 @@ export interface GrampsPlace {
 	id?: string;
 	name?: string;
 	type?: string;
+	/** Handle link to parent place (for place hierarchy) */
+	parentRef?: string;
+	/** Whether this place has a ptitle (full hierarchical name) */
+	hasPtitle?: boolean;
 	mediaRefs: string[];  // Handle links to media objects
 }
 

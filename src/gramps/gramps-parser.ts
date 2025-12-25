@@ -71,6 +71,10 @@ export interface ParsedGrampsPlace {
 	id?: string;
 	name?: string;
 	type?: string;
+	/** Handle link to parent place (for place hierarchy) */
+	parentRef?: string;
+	/** Whether this place has a ptitle (full hierarchical name) */
+	hasPtitle?: boolean;
 	mediaRefs: string[];
 }
 
@@ -314,6 +318,8 @@ export class GrampsParser {
 				id: grampsPlace.id,
 				name: grampsPlace.name,
 				type: grampsPlace.type,
+				parentRef: grampsPlace.parentRef,
+				hasPtitle: grampsPlace.hasPtitle,
 				mediaRefs: grampsPlace.mediaRefs || []
 			});
 		}
@@ -732,6 +738,10 @@ export class GrampsParser {
 			}
 		});
 
+		// Parse parent place reference (placeref element)
+		const placeRefEl = el.querySelector('placeref');
+		const parentRef = placeRefEl?.getAttribute('hlink') || undefined;
+
 		// Gramps places can have:
 		// - <ptitle> - Full hierarchical name (e.g., "Atlanta, Fulton County, Georgia, USA")
 		// - <pname value="..."> - Individual place name component (e.g., "Atlanta")
@@ -744,6 +754,8 @@ export class GrampsParser {
 			id: el.getAttribute('id') || undefined,
 			name: ptitle || pname || undefined,
 			type: el.getAttribute('type') || undefined,
+			parentRef,
+			hasPtitle: !!ptitle,
 			mediaRefs
 		};
 

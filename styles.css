@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-25 00:59:33 UTC
+ * - Generated: 2025-12-25 01:28:54 UTC
  * - Components: 37 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -677,7 +677,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 9519 lines, 177.02 KB */
+/* Component Size: 9615 lines, 178.83 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -9754,6 +9754,102 @@ settings:
 .crc-import-selected-person-name {
   flex: 1;
   font-weight: 500;
+}
+
+/* Complete step - success message */
+.crc-import-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.crc-import-complete-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(74, 222, 128, 0.15);
+  border-radius: 50%;
+  margin-bottom: 16px;
+  color: rgb(74, 222, 128);
+}
+
+.crc-import-complete-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.crc-import-complete-title {
+  font-size: 1.5em;
+  font-weight: 600;
+  color: var(--text-normal);
+  margin-bottom: 8px;
+}
+
+.crc-import-complete-message {
+  color: var(--text-muted);
+  font-size: 0.95em;
+}
+
+/* Complete step - stats grid */
+.crc-import-complete-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.crc-import-complete-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.crc-import-complete-stat-value {
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.crc-import-complete-stat-value--blue {
+  color: rgb(96, 165, 250);
+}
+
+.crc-import-complete-stat-value--green {
+  color: rgb(74, 222, 128);
+}
+
+.crc-import-complete-stat-value--purple {
+  color: rgb(168, 85, 247);
+}
+
+.crc-import-complete-stat-value--orange {
+  color: rgb(251, 146, 60);
+}
+
+.crc-import-complete-stat-label {
+  font-size: 0.85em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Complete step - skipped duplicates */
+.crc-import-complete-skipped {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(251, 146, 60, 0.1);
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  border-radius: 8px;
+  color: var(--text-normal);
+  text-align: center;
 }
 
 /* Complete step numbering result */
@@ -28596,11 +28692,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-25 00:59:33 UTC
+ * Build completed: 2025-12-25 01:28:54 UTC
  * Components processed: 37
- * Total lines: 28240
- * Total size: 559.95 KB
- * Build duration: 0.05 seconds
+ * Total lines: 28336
+ * Total size: 561.77 KB
+ * Build duration: 0.04 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -28611,7 +28707,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 9519 lines, 177.02 KB
+ * - modals.css: 9615 lines, 178.83 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB
