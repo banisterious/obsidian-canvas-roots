@@ -453,26 +453,27 @@ const WIZARD_STEPS: WizardStepConfig[] = [
 
 **Scope:** Steps 1-5, 10 (person/event cleanup only, no place operations)
 
-### Phase 2: Place Operations
+### Phase 2: Place Operations ✅
 
 **Goal:** Add interactive place steps.
 
 **Tasks:**
-1. Implement Step 7 (Place Variants) interactive UI
-2. Implement Step 8 (Bulk Geocode) with progress
-3. Implement Step 9 (Place Hierarchy) interactive UI
-4. Add dependency checking between place steps
+1. ✅ Implement Step 7 (Place Variants) interactive UI
+2. ✅ Implement Step 7b (Place Deduplication) as follow-up to Step 7
+3. ✅ Implement Step 8 (Bulk Geocode) with progress
+4. ⏳ Implement Step 9 (Place Hierarchy) interactive UI
+5. ⏳ Add dependency checking between place steps
 
-### Phase 3: Smart Analysis
+### Phase 3: Smart Analysis ✅
 
 **Goal:** Pre-scan vault and enable auto-skip.
 
 **Tasks:**
-1. Implement pre-analysis on wizard open
-2. Populate tile badges with issue counts
-3. Auto-skip logic for zero-issue steps
-4. Add state persistence across sessions
-5. Resume interrupted cleanup prompt
+1. ✅ Implement pre-analysis on wizard open
+2. ✅ Populate tile badges with issue counts
+3. ✅ Auto-skip logic for zero-issue steps
+4. ✅ Add state persistence across sessions
+5. ✅ Resume interrupted cleanup prompt
 
 ### Phase 4: Polish & Customization
 
