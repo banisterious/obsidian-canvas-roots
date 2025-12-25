@@ -103,7 +103,7 @@ interface PersonFilterOptions {
 /**
  * Output format
  */
-type OutputFormat = 'canvas' | 'pdf' | 'odt';
+type OutputFormat = 'canvas' | 'excalidraw' | 'pdf' | 'odt';
 
 /**
  * Unified form data for the wizard
@@ -286,7 +286,8 @@ export class UnifiedTreeWizardModal extends Modal {
 	private getStepFlow(): StepConfig[] {
 		const baseSteps = ALL_STEPS.filter(s => ['person', 'tree-type', 'output-format'].includes(s.id));
 
-		if (this.formData.outputFormat === 'canvas') {
+		if (this.formData.outputFormat === 'canvas' || this.formData.outputFormat === 'excalidraw') {
+			// Canvas and Excalidraw share the same options flow
 			return [
 				...baseSteps,
 				ALL_STEPS.find(s => s.id === 'canvas-options')!,
@@ -453,7 +454,7 @@ export class UnifiedTreeWizardModal extends Modal {
 		if (this.currentStepIndex >= 3) {
 			const formatBadge = badgeContainer.createDiv({ cls: 'crc-wizard-chart-badge crc-wizard-chart-badge--secondary' });
 			formatBadge.createSpan({
-				text: this.formData.outputFormat === 'pdf' ? 'PDF' : 'Canvas'
+				text: this.getOutputFormatLabel()
 			});
 		}
 
@@ -908,6 +909,32 @@ export class UnifiedTreeWizardModal extends Modal {
 		canvasCard.addEventListener('click', () => {
 			this.formData.outputFormat = 'canvas';
 			// Reset fan chart if selected (canvas doesn't support it)
+			if (this.formData.treeType === 'fan') {
+				this.formData.treeType = 'ancestors';
+			}
+			this.renderProgress();
+			this.renderCurrentStep();
+		});
+
+		// Excalidraw card
+		const excalidrawCard = formatContainer.createDiv({
+			cls: `crc-wizard-format-card ${this.formData.outputFormat === 'excalidraw' ? 'crc-wizard-format-card--selected' : ''}`
+		});
+
+		const excalidrawIcon = excalidrawCard.createDiv({ cls: 'crc-wizard-format-icon' });
+		excalidrawIcon.appendChild(createLucideIcon('edit', 20));
+
+		const excalidrawInfo = excalidrawCard.createDiv({ cls: 'crc-wizard-format-info' });
+		excalidrawInfo.createDiv({ cls: 'crc-wizard-format-title', text: 'Excalidraw' });
+		excalidrawInfo.createDiv({ cls: 'crc-wizard-format-desc', text: 'Hand-drawn style diagram for annotation' });
+
+		const excalidrawFeatures = excalidrawInfo.createEl('ul', { cls: 'crc-wizard-format-features' });
+		excalidrawFeatures.createEl('li', { text: 'Annotate with drawings and text' });
+		excalidrawFeatures.createEl('li', { text: 'Export to SVG or PNG' });
+
+		excalidrawCard.addEventListener('click', () => {
+			this.formData.outputFormat = 'excalidraw';
+			// Reset fan chart if selected (excalidraw doesn't support it)
 			if (this.formData.treeType === 'fan') {
 				this.formData.treeType = 'ancestors';
 			}
@@ -1436,6 +1463,7 @@ export class UnifiedTreeWizardModal extends Modal {
 			nextBtn.addEventListener('click', () => this.goNext());
 		} else {
 			const buttonText = this.formData.outputFormat === 'canvas' ? 'Generate Canvas' :
+				this.formData.outputFormat === 'excalidraw' ? 'Generate Excalidraw' :
 				this.formData.outputFormat === 'pdf' ? 'Generate PDF' : 'Generate ODT';
 			const generateBtn = rightBtns.createEl('button', {
 				text: buttonText,
@@ -1444,7 +1472,7 @@ export class UnifiedTreeWizardModal extends Modal {
 			generateBtn.prepend(createLucideIcon('sparkles', 16));
 
 			// Disable if requirements not met
-			if (this.formData.outputFormat === 'canvas' && !this.formData.canvasName.trim()) {
+			if ((this.formData.outputFormat === 'canvas' || this.formData.outputFormat === 'excalidraw') && !this.formData.canvasName.trim()) {
 				generateBtn.disabled = true;
 				generateBtn.addClass('cr-btn--disabled');
 			}
@@ -1452,6 +1480,8 @@ export class UnifiedTreeWizardModal extends Modal {
 			generateBtn.addEventListener('click', () => {
 				if (this.formData.outputFormat === 'canvas') {
 					void this.generateCanvas();
+				} else if (this.formData.outputFormat === 'excalidraw') {
+					void this.generateExcalidraw();
 				} else if (this.formData.outputFormat === 'pdf') {
 					void this.generatePdf();
 				} else {
@@ -1648,6 +1678,113 @@ export class UnifiedTreeWizardModal extends Modal {
 		} catch (error) {
 			console.error('Error generating canvas:', error);
 			new Notice('Error generating canvas. Check console for details.');
+		}
+	}
+
+	private async generateExcalidraw(): Promise<void> {
+		if (!this.formData.rootPerson || !this.formData.canvasName.trim()) {
+			new Notice('Please select a root person and enter a name.');
+			return;
+		}
+
+		try {
+			new Notice('Generating Excalidraw...');
+
+			const treeOptions = this.buildTreeOptions();
+			logger.info('unified-wizard', 'Starting Excalidraw generation', treeOptions);
+
+			const familyTree = this.graphService.generateTree(treeOptions);
+
+			if (!familyTree) {
+				new Notice('Failed to generate tree: root person not found');
+				return;
+			}
+
+			// First generate as canvas
+			const canvasOptions: CanvasGenerationOptions = {
+				direction: this.formData.direction,
+				nodeSpacingX: this.plugin.settings.horizontalSpacing,
+				nodeSpacingY: this.plugin.settings.verticalSpacing,
+				layoutType: this.formData.layoutAlgorithm as LayoutType,
+				nodeColorScheme: this.formData.colorScheme,
+				showLabels: true,
+				useFamilyChartLayout: true,
+				parentChildArrowStyle: this.formData.parentChildArrowStyle,
+				spouseArrowStyle: this.formData.spouseArrowStyle,
+				parentChildEdgeColor: this.formData.parentChildEdgeColor,
+				spouseEdgeColor: this.formData.spouseEdgeColor,
+				showSpouseEdges: this.formData.showSpouseEdges,
+				spouseEdgeLabelFormat: this.formData.spouseEdgeLabelFormat,
+				showSourceIndicators: this.plugin.settings.showSourceIndicators,
+				showResearchCoverage: this.plugin.settings.trackFactSourcing
+			};
+
+			const canvasGenerator = new CanvasGenerator();
+			const canvasData = canvasGenerator.generateCanvas(familyTree, canvasOptions);
+
+			// Create temporary canvas file
+			let fileName = this.formData.canvasName.trim();
+			if (!fileName.endsWith('.canvas')) {
+				fileName += '.canvas';
+			}
+
+			const folder = this.formData.saveFolder.trim() ||
+				this.plugin.settings.canvasesFolder ||
+				'Canvas Roots/Canvases';
+
+			await ensureFolderExists(this.app, folder);
+			const canvasPath = normalizePath(`${folder}/${fileName}`);
+			const canvasContent = this.formatCanvasJson(canvasData);
+
+			// Create or update canvas file
+			let canvasFile: TFile;
+			const existingCanvas = this.app.vault.getAbstractFileByPath(canvasPath);
+			if (existingCanvas instanceof TFile) {
+				await this.app.vault.modify(existingCanvas, canvasContent);
+				canvasFile = existingCanvas;
+			} else {
+				canvasFile = await this.app.vault.create(canvasPath, canvasContent);
+			}
+
+			// Convert to Excalidraw
+			const { ExcalidrawExporter } = await import('../../excalidraw/excalidraw-exporter');
+			const excalidrawExporter = new ExcalidrawExporter(this.app);
+
+			const excalidrawResult = await excalidrawExporter.exportToExcalidraw({
+				canvasFile,
+				fileName: fileName.replace('.canvas', ''),
+				preserveColors: true
+			});
+
+			if (excalidrawResult.success && excalidrawResult.excalidrawContent) {
+				const excalidrawPath = canvasPath.replace('.canvas', '.excalidraw.md');
+
+				// Create or update excalidraw file
+				const existingExcalidraw = this.app.vault.getAbstractFileByPath(excalidrawPath);
+				let excalidrawFile: TFile;
+				if (existingExcalidraw instanceof TFile) {
+					await this.app.vault.modify(existingExcalidraw, excalidrawResult.excalidrawContent);
+					excalidrawFile = existingExcalidraw;
+					new Notice(`Updated Excalidraw: ${excalidrawPath}`);
+				} else {
+					excalidrawFile = await this.app.vault.create(excalidrawPath, excalidrawResult.excalidrawContent);
+					new Notice(`Created Excalidraw: ${excalidrawPath}`);
+				}
+
+				if (this.formData.openAfterGenerate) {
+					const leaf = this.app.workspace.getLeaf(false);
+					await leaf.openFile(excalidrawFile);
+				}
+
+				this.options.onComplete?.(excalidrawFile.path);
+				this.close();
+			} else {
+				new Notice(`Excalidraw export failed: ${excalidrawResult.errors?.join(', ') || 'Unknown error'}`);
+			}
+
+		} catch (error) {
+			console.error('Error generating Excalidraw:', error);
+			new Notice('Error generating Excalidraw. Check console for details.');
 		}
 	}
 
@@ -1860,6 +1997,18 @@ export class UnifiedTreeWizardModal extends Modal {
 			case 'ancestors': return 'Pedigree Chart';
 			case 'descendants': return 'Descendant Chart';
 			case 'fan': return 'Fan Chart';
+		}
+	}
+
+	/**
+	 * Get human-readable output format label
+	 */
+	private getOutputFormatLabel(): string {
+		switch (this.formData.outputFormat) {
+			case 'canvas': return 'Canvas';
+			case 'excalidraw': return 'Excalidraw';
+			case 'pdf': return 'PDF';
+			case 'odt': return 'ODT';
 		}
 	}
 }
