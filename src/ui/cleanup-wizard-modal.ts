@@ -1195,6 +1195,9 @@ export class CleanupWizardModal extends Modal {
 		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
 		summary.textContent = `${dateIssues.length} date${dateIssues.length === 1 ? '' : 's'} will be normalized to YYYY-MM-DD format:`;
 
+		const hint = preview.createDiv({ cls: 'crc-cleanup-preview-hint' });
+		hint.textContent = 'Click a row to open the person note for editing.';
+
 		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
 
 		const maxDisplay = 15;
@@ -1202,7 +1205,7 @@ export class CleanupWizardModal extends Modal {
 		const remaining = dateIssues.length - maxDisplay;
 
 		for (const issue of displayItems) {
-			const row = list.createDiv({ cls: 'crc-cleanup-preview-row' });
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row crc-cleanup-preview-row--clickable' });
 
 			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
 			setIcon(iconEl, 'calendar');
@@ -1219,6 +1222,12 @@ export class CleanupWizardModal extends Modal {
 			const oldValue = issue.details?.['value'] as string || '?';
 			const field = issue.details?.['field'] as string || 'date';
 			change.textContent = `${field}: "${oldValue}"`;
+
+			// Click to open the person file
+			row.addEventListener('click', () => {
+				this.close();
+				void this.app.workspace.openLinkText(issue.person.file.path, '', false);
+			});
 		}
 
 		if (remaining > 0) {
@@ -1699,9 +1708,10 @@ export class CleanupWizardModal extends Modal {
 			this.state.steps[2].issueCount = this.bidirectionalIssues.length;
 			logger.debug('runPreScan', `Step 2 (Bidir): ${this.bidirectionalIssues.length} issues`);
 
-			// Step 3: Date issues - using category counts
-			this.state.steps[3].issueCount = report.summary.byCategory['date_inconsistency'] || 0;
-			logger.debug('runPreScan', `Step 3 (Dates): ${this.state.steps[3].issueCount} issues`);
+			// Step 3: Date issues - count NON_STANDARD_DATE code specifically
+			const dateIssues = report.issues.filter(i => i.code === 'NON_STANDARD_DATE');
+			this.state.steps[3].issueCount = dateIssues.length;
+			logger.debug('runPreScan', `Step 3 (Dates): ${dateIssues.length} issues`);
 
 			// Step 4: Gender issues - count INVALID_GENDER code specifically
 			const genderIssues = report.issues.filter(i => i.code === 'INVALID_GENDER');

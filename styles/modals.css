@@ -10926,6 +10926,13 @@
   font-style: italic;
 }
 
+.crc-cleanup-preview-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
 .crc-cleanup-preview-row--clickable {
   cursor: pointer;
   transition: background-color 0.15s ease;
