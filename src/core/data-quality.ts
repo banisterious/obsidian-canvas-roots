@@ -1257,6 +1257,108 @@ export class DataQualityService {
 	}
 
 	/**
+	 * Flatten nested properties in frontmatter
+	 * Converts nested YAML objects to flat dot-notation or underscore-separated keys
+	 * Returns the number of files modified
+	 */
+	async flattenNestedProperties(options: DataQualityOptions = {}): Promise<BatchOperationResult> {
+		const people = this.getPeopleForScope(options);
+		const results: BatchOperationResult = {
+			processed: 0,
+			modified: 0,
+			errors: [],
+		};
+
+		for (const person of people) {
+			// Get the cached frontmatter for this file
+			const cache = this.app.metadataCache.getFileCache(person.file);
+			if (!cache?.frontmatter) {
+				results.processed++;
+				continue;
+			}
+
+			const fm = cache.frontmatter as Record<string, unknown>;
+			const flattenedUpdates: Record<string, unknown> = {};
+			const keysToRemove: string[] = [];
+			let hasNested = false;
+
+			// Check each frontmatter property for nested objects
+			for (const [key, value] of Object.entries(fm)) {
+				// Skip Obsidian's internal 'position' property
+				if (key === 'position') continue;
+
+				if (this.isNestedObject(value)) {
+					hasNested = true;
+					keysToRemove.push(key);
+
+					// Flatten the nested object using underscore separator
+					const flattened = this.flattenObject(value, key);
+					Object.assign(flattenedUpdates, flattened);
+				}
+			}
+
+			if (hasNested) {
+				try {
+					await this.app.fileManager.processFrontMatter(person.file, (frontmatter) => {
+						// Remove nested keys
+						for (const key of keysToRemove) {
+							delete frontmatter[key];
+						}
+						// Add flattened keys
+						Object.assign(frontmatter, flattenedUpdates);
+					});
+					results.modified++;
+				} catch (error) {
+					results.errors.push({
+						file: person.file.path,
+						error: error instanceof Error ? error.message : String(error),
+					});
+				}
+			}
+			results.processed++;
+		}
+
+		logger.info('flatten-nested', `Flattened nested properties: ${results.modified}/${results.processed} files modified`);
+		return results;
+	}
+
+	/**
+	 * Flatten a nested object into a flat object with underscore-separated keys
+	 */
+	private flattenObject(obj: unknown, prefix: string): Record<string, unknown> {
+		const result: Record<string, unknown> = {};
+
+		if (Array.isArray(obj)) {
+			// For arrays, flatten each item if it's an object
+			for (let i = 0; i < obj.length; i++) {
+				const item = obj[i];
+				if (typeof item === 'object' && item !== null && !(item instanceof Date)) {
+					const flattened = this.flattenObject(item, `${prefix}_${i}`);
+					Object.assign(result, flattened);
+				} else {
+					result[`${prefix}_${i}`] = item;
+				}
+			}
+		} else if (typeof obj === 'object' && obj !== null && !(obj instanceof Date)) {
+			for (const [key, value] of Object.entries(obj)) {
+				const newKey = `${prefix}_${key}`;
+				if (typeof value === 'object' && value !== null && !(value instanceof Date) && !Array.isArray(value)) {
+					// Recursively flatten nested objects
+					const flattened = this.flattenObject(value, newKey);
+					Object.assign(result, flattened);
+				} else if (Array.isArray(value)) {
+					// Keep arrays as-is (they're acceptable in frontmatter)
+					result[newKey] = value;
+				} else {
+					result[newKey] = value;
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Detect bidirectional relationship inconsistencies
 	 * Returns array of detected inconsistencies across all person notes
 	 */

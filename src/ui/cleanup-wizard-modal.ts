@@ -797,6 +797,9 @@ export class CleanupWizardModal extends Modal {
 			case 'orphan-clear':
 				this.renderOrphanPreview(container);
 				break;
+			case 'flatten-props':
+				this.renderNestedPropsPreview(container);
+				break;
 			default:
 				// Fallback for unimplemented previews
 				this.renderGenericPreview(container, stepConfig, stepState);
@@ -969,6 +972,48 @@ export class CleanupWizardModal extends Modal {
 
 			const desc = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
 			desc.textContent = `: ${issue.message}`;
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render preview for Step 10: Nested Properties
+	 */
+	private renderNestedPropsPreview(container: HTMLElement): void {
+		if (!this.qualityReport) return;
+
+		const nestedIssues = this.qualityReport.issues.filter(i => i.category === 'nested_property');
+		if (nestedIssues.length === 0) return;
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+		summary.textContent = `${nestedIssues.length} nested propert${nestedIssues.length === 1 ? 'y' : 'ies'} will be flattened:`;
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		const maxDisplay = 15;
+		const displayItems = nestedIssues.slice(0, maxDisplay);
+		const remaining = nestedIssues.length - maxDisplay;
+
+		for (const issue of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'layers');
+
+			const content = row.createDiv({ cls: 'crc-cleanup-preview-content' });
+
+			const personName = content.createSpan({ cls: 'crc-cleanup-preview-person' });
+			personName.textContent = issue.person.name || issue.person.file.basename;
+
+			const propInfo = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
+			const propName = issue.details?.['property'] as string || 'unknown';
+			const nestedKeys = issue.details?.['nestedKeys'] as string || '';
+			propInfo.textContent = `: ${propName} → ${propName}_${nestedKeys.split(', ').join(`, ${propName}_`)}`;
 		}
 
 		if (remaining > 0) {
@@ -1153,7 +1198,10 @@ export class CleanupWizardModal extends Modal {
 				case 'orphan-clear':
 					result = await service.clearOrphanReferences();
 					break;
-				// TODO: Add other batch methods as they're implemented
+				case 'flatten-props':
+					result = await service.flattenNestedProperties();
+					break;
+				// TODO: Add other batch methods as they're implemented (source-migrate)
 				default:
 					// Placeholder for unimplemented methods
 					await new Promise(resolve => setTimeout(resolve, 500));
