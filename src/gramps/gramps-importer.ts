@@ -313,9 +313,13 @@ export class GrampsImporter {
 				let placeIndex = 0;
 				for (const [handle, place] of grampsData.places) {
 					try {
-						await this.importPlace(place, placesFolder, options, result.mediaHandleToPath);
+						const crId = await this.importPlace(place, placesFolder, options, result.mediaHandleToPath);
+						if (crId !== null) {
+							// Place was created
+							result.placeNotesCreated = (result.placeNotesCreated || 0) + 1;
+						}
+						// Always count as imported (even if skipped due to existing)
 						result.placesImported = (result.placesImported || 0) + 1;
-						result.placeNotesCreated = (result.placeNotesCreated || 0) + 1;
 
 						// Store mapping from place name to wikilink for use in person notes
 						if (place.name) {
@@ -974,13 +978,29 @@ export class GrampsImporter {
 
 	/**
 	 * Import a single place
+	 * Returns the cr_id if imported, or null if skipped (already exists)
 	 */
 	private async importPlace(
 		place: ParsedGrampsPlace,
 		placesFolder: string,
 		options: GrampsImportOptions,
 		mediaHandleToPath?: Map<string, string>
-	): Promise<string> {
+	): Promise<string | null> {
+		const placeName = place.name || `Unknown Place (${place.id || place.handle})`;
+
+		// Check if place note already exists (sanitize name same way as createPlaceNote)
+		const sanitizedName = placeName
+			.replace(/^\[\[/, '').replace(/\]\]$/, '')  // Strip wikilink brackets
+			.replace(/[\\/:*?"<>|[\]]/g, '-')           // Remove invalid chars
+			.replace(/\s+/g, ' ')
+			.trim();
+		const expectedPath = normalizePath(`${placesFolder}/${sanitizedName}.md`);
+
+		if (this.app.vault.getAbstractFileByPath(expectedPath)) {
+			logger.debug('importPlace', `Skipping existing place: ${placeName}`);
+			return null;
+		}
+
 		const crId = generateCrId();
 
 		// Resolve media references to wikilinks
@@ -997,7 +1017,7 @@ export class GrampsImporter {
 
 		// Convert Gramps place to PlaceData
 		const placeData: PlaceData = {
-			name: place.name || `Unknown Place (${place.id || place.handle})`,
+			name: placeName,
 			crId: crId,
 			// Map Gramps place type to Canvas Roots place type if possible
 			placeType: this.mapGrampsPlaceType(place.type),
