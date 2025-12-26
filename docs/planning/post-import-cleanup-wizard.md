@@ -1,5 +1,9 @@
 # Post-Import Cleanup Wizard
 
+## Status: ✅ Complete
+
+All 10 wizard steps implemented and tested. See Implementation Progress section for details.
+
 ## Overview
 
 A step-by-step wizard that guides users through the recommended post-import cleanup sequence. After importing a messy GEDCOM file, users currently must navigate multiple Control Center tabs and run operations in the correct order. The wizard consolidates this into a single guided experience.
@@ -611,7 +615,7 @@ The mockup includes:
 | 3 | ✅ Complete | Date normalization, reads raw frontmatter, updates `born`/`died` fields |
 | 4 | ✅ Complete | Gender normalization, reads raw frontmatter, detects non-canonical values |
 | 5 | ✅ Complete | Orphan reference clearing with preview |
-| 6 | ⏳ Pending | Source array migration (service exists, wizard integration TBD) |
+| 6 | ✅ Complete | Source array migration with preview and batch apply |
 | 7 | ✅ Complete | Place variant standardization with interactive table, select all/deselect, canonical override |
 | 8 | ✅ Complete | Bulk geocoding with progress tracking, cancellation, and results summary |
 | 9 | ✅ Complete | Place hierarchy enrichment with settings, progress, and parent creation |

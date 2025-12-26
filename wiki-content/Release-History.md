@@ -8,6 +8,10 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 
 ## Table of Contents
 
+- [v0.17.x](#v017x)
+  - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard-v0170)
+  - [Source Array Migration](#source-array-migration-v0170)
+  - [Migration Notice](#migration-notice-v0170)
 - [v0.16.x](#v016x)
   - [Import/Export Hub](#importexport-hub-v0160)
 - [v0.15.x](#v015x)
@@ -60,6 +64,148 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
   - [Maps Tab](#maps-tab-v062)
   - [Geographic Features](#geographic-features-v060)
   - [Import/Export Enhancements](#importexport-enhancements-v060)
+
+---
+
+## v0.17.x
+
+### Post-Import Cleanup Wizard (v0.17.0)
+
+A 10-step guided wizard that consolidates post-import data quality operations into a single, sequential workflow. After importing a GEDCOM file (especially one with data quality issues), users previously had to navigate multiple Control Center tabs and run operations in the correct order. The wizard provides a unified experience with progress tracking.
+
+**Problem Solved:**
+
+- **Scattered tools:** Cleanup operations were spread across Data Quality, Places, and other tabs
+- **Unknown order:** No guidance on which operations to run first
+- **Manual coordination:** Users had to remember to run each step and track what's done
+
+**Wizard Steps:**
+
+| Step | Operation | Type |
+|------|-----------|------|
+| 1 | Quality Report | Review-only |
+| 2 | Fix Bidirectional Relationships | Batch-fix |
+| 3 | Normalize Date Formats | Batch-fix |
+| 4 | Normalize Gender Values | Batch-fix |
+| 5 | Clear Orphan References | Batch-fix |
+| 6 | Migrate Source Properties | Batch-fix |
+| 7 | Standardize Place Variants | Interactive |
+| 8 | Bulk Geocode | Interactive |
+| 9 | Enrich Place Hierarchy | Interactive |
+| 10 | Flatten Nested Properties | Batch-fix |
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **Overview Grid** | 5×2 tile grid showing all 10 steps with status badges |
+| **Progress Tracking** | Horizontal progress bar with step completion state |
+| **Preview Mode** | Each batch step shows proposed changes before applying |
+| **Session Persistence** | Wizard state saved to resume interrupted cleanup |
+| **Smart Defaults** | Auto-skip steps with zero detected issues |
+| **Summary Report** | Export completion stats to markdown |
+
+**Entry Points:**
+- Import Wizard results: "Run Cleanup Wizard" button
+- Control Center > Data Quality > Quick Start card
+- Command palette: "Canvas Roots: Post-Import Cleanup Wizard"
+
+**Technical Notes:**
+- `CleanupWizardModal` orchestrates the 10-step flow
+- Reuses existing services: `DataQualityService`, `GeocodingService`, `PlaceGraphService`, `SourceMigrationService`
+- State persisted in `plugin.settings.cleanupWizardState`
+
+**Files Added:**
+
+| File | Purpose |
+|------|---------|
+| `src/ui/modals/cleanup-wizard-modal.ts` | Main wizard modal with step navigation |
+| `styles/cleanup-wizard.css` | Wizard-specific styling |
+
+See [Post-Import Cleanup Wizard Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/post-import-cleanup-wizard.md) for implementation details.
+
+---
+
+### Source Array Migration (v0.17.0)
+
+Migration from indexed source properties (`source`, `source_2`, `source_3`) to a YAML array format (`sources: []`). This change improves scalability, simplifies Dataview queries, and aligns with modern frontmatter practices.
+
+**Problem Solved:**
+
+The indexed format had limitations:
+- **Fixed slots:** Only 3 source slots available per entity
+- **Query complexity:** Dataview queries had to check multiple properties
+- **Schema rigidity:** Adding more sources required schema changes
+
+**Format Change:**
+
+```yaml
+# Old format (no longer supported)
+source: "[[Birth Certificate]]"
+source_2: "[[Census 1920]]"
+source_3: "[[Family Bible]]"
+
+# New format (unlimited sources)
+sources:
+  - "[[Birth Certificate]]"
+  - "[[Census 1920]]"
+  - "[[Family Bible]]"
+  - "[[Interview Notes]]"
+```
+
+**Migration Phases:**
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| Phase 1 | Support both formats (read array, fall back to indexed) | ✅ Complete |
+| Phase 2 | Add migration tooling via Cleanup Wizard Step 6 | ✅ Complete |
+| Phase 3 | Deprecate indexed format (console warnings) | ✅ Complete |
+| Phase 4 | Remove indexed format support | ✅ Complete |
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **Wizard Integration** | Step 6 of Cleanup Wizard handles migration |
+| **Preview Mode** | Shows proposed changes before applying |
+| **Batch Processing** | Migrates all notes in one operation |
+| **Merge Support** | Combines indexed sources with existing array |
+| **Legacy Warning** | Console warning for notes still using old format |
+
+**Technical Notes:**
+- `SourceMigrationService` handles detection and migration
+- GEDCOM and Gramps importers now write array format by default
+- Statistics service only reads `sources` array (indexed parsing removed)
+
+**Files Added:**
+
+| File | Purpose |
+|------|---------|
+| `src/sources/services/source-migration-service.ts` | Detection and migration logic |
+
+**Breaking Change:** The indexed format (`source`, `source_2`, etc.) is no longer parsed. Users with legacy notes should run the Cleanup Wizard Step 6 to migrate.
+
+See [Source Array Migration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/source-array-migration.md) for implementation details.
+
+---
+
+### Migration Notice (v0.17.0)
+
+A one-time workspace tab displayed when users upgrade to v0.17.0, informing them about the source array format change and providing a direct path to the Cleanup Wizard.
+
+**Features:**
+- Opens as main workspace tab on first load after upgrade
+- Shows before/after code examples of format change
+- "Open Cleanup Wizard" button for immediate migration
+- "Dismiss" button marks notice as seen
+- Version tracking via `lastSeenVersion` setting
+
+**Files Added:**
+
+| File | Purpose |
+|------|---------|
+| `src/ui/views/migration-notice-view.ts` | Workspace view for upgrade notice |
+| `styles/migration-notice.css` | Notice styling |
 
 ---
 

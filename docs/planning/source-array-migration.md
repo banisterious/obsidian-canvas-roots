@@ -1,5 +1,11 @@
 # Source Property Array Migration
 
+## Status: ✅ Complete
+
+All four phases implemented. See commits:
+- Phase 4: `bbbaefd` - Remove indexed format support
+- Migration notice: `b4bb817` - v0.17.0 upgrade notice
+
 ## Overview
 
 Migrate the existing indexed `source`, `source_2`, `source_3`, etc. pattern to a YAML array format for consistency with the new `media` property and cleaner frontmatter.
@@ -129,3 +135,4 @@ sources:
 ## Related
 
 - [Universal Media Linking](./universal-media-linking.md) - Uses array format from the start
+- [v0.17.0 Migration Notice](./v0170-migration-notice.md) - One-time upgrade notice for users

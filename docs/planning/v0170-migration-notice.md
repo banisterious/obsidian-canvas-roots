@@ -1,8 +1,12 @@
 # v0.17.0 Migration Notice
 
+## Status: ✅ Complete
+
+Implemented in commit `b4bb817`.
+
 ## Overview
 
-Display a one-time workspace leaf when users upgrade to v0.17.0, informing them about the source array migration and providing a direct path to the Cleanup Wizard.
+Display a one-time workspace tab when users upgrade to v0.17.0, informing them about the source array migration and providing a direct path to the Cleanup Wizard.
 
 ## Trigger Condition
 
@@ -14,7 +18,7 @@ After showing, update `lastSeenVersion` to current version.
 
 ## Leaf Design
 
-Opens in the right sidebar as a custom view:
+Opens as a main workspace tab (not sidebar):
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -62,9 +66,8 @@ Opens in the right sidebar as a custom view:
 3. Leaf has custom icon (e.g., `info` or `sparkles`)
 
 ### Button actions:
-- **Open Cleanup Wizard**: Opens `CleanupWizardModal`, closes the leaf
-- **Dismiss**: Closes the leaf, will show again next session until "Don't show again"
-- **Don't show again**: Updates `lastSeenVersion`, closes the leaf permanently
+- **Open Cleanup Wizard**: Opens `CleanupWizardModal`, marks as seen, closes the leaf
+- **Dismiss**: Marks as seen, closes the leaf (won't show again)
 
 ### View registration:
 ```typescript
@@ -96,70 +99,28 @@ interface CanvasRootsSettings {
 }
 ```
 
-## Implementation
+## Implementation ✅
 
-### File: `src/ui/views/migration-notice-view.ts`
+### Files Created/Modified:
+- `src/ui/views/migration-notice-view.ts` - New view class
+- `src/settings.ts` - Added `lastSeenVersion` field
+- `main.ts` - View registration and version check logic
+- `styles/migration-notice.css` - Styling for the notice
+- `build-css.js` - Added migration-notice.css to build order
 
-New view class that:
-- Renders the notice content
-- Handles button clicks
-- Updates settings when dismissed
+### Key Implementation Details:
+- View opens as main workspace tab via `getLeaf('tab')`
+- Registers `canvas-roots:open-cleanup-wizard` workspace event for button action
+- Version check runs on `workspace.onLayoutReady()`
+- Both buttons call `markAsSeen()` before closing
 
-### File: `src/main.ts`
+## Testing ✅
 
-On plugin load:
-```typescript
-async onload() {
-  // ... existing setup
-
-  // Check for version upgrade
-  this.checkVersionUpgrade();
-}
-
-private async checkVersionUpgrade(): Promise<void> {
-  const currentVersion = this.manifest.version;
-  const lastSeen = this.settings.lastSeenVersion;
-
-  // Show notice if upgrading to 0.17.x from earlier version
-  if (this.shouldShowMigrationNotice(lastSeen, currentVersion)) {
-    this.registerView(
-      VIEW_TYPE_MIGRATION_NOTICE,
-      (leaf) => new MigrationNoticeView(leaf, this)
-    );
-
-    // Open in right sidebar
-    const leaf = this.app.workspace.getRightLeaf(false);
-    if (leaf) {
-      await leaf.setViewState({
-        type: VIEW_TYPE_MIGRATION_NOTICE,
-        active: true
-      });
-    }
-  }
-}
-
-private shouldShowMigrationNotice(lastSeen: string | undefined, current: string): boolean {
-  if (!lastSeen) return current.startsWith('0.17');
-
-  // Compare versions: show if lastSeen < 0.17.0 and current >= 0.17.0
-  const lastParts = lastSeen.split('.').map(Number);
-  if (lastParts[0] === 0 && lastParts[1] < 17 && current.startsWith('0.17')) {
-    return true;
-  }
-
-  return false;
-}
-```
-
-## Testing
-
-1. Set `lastSeenVersion` to `0.16.0` in settings
-2. Load plugin with version `0.17.0`
-3. Verify leaf opens in right sidebar
-4. Click "Open Cleanup Wizard" → wizard opens, leaf closes
-5. Reload plugin → leaf should reappear (dismissed, not permanently)
-6. Click "Don't show again" → `lastSeenVersion` updated
-7. Reload plugin → leaf should not appear
+1. Edit `manifest.json` to set version to `0.17.0`
+2. Clear or set `lastSeenVersion` to earlier version in plugin settings
+3. Reload plugin → notice tab opens
+4. Click either button → tab closes, `lastSeenVersion` updated
+5. Reload plugin → notice does not appear again
 
 ## Dependencies
 
