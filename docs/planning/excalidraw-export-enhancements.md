@@ -282,6 +282,81 @@ interface ExcalidrawAutomate {
 | Phase 7: Direct Generation | Low | High | Performance optimization |
 | Phase 8: Export Options | Low | Medium | Power user feature |
 
+## Recommended Release Groupings
+
+Based on priority and dependencies:
+
+| Release | Phases | Theme | Rationale |
+|---------|--------|-------|-----------|
+| v0.18.0 | 1, 2, 3 | Core API + Content + Links | Foundation + immediate user value |
+| v0.19.0 | 4, 5, 6 | Smart Connectors + Styling | Enhanced editing experience |
+| Future | 7, 8 | Performance + Power User | Optimization and advanced features |
+
+**Note:** Phase 7 (Direct Generation) should offer both paths:
+- "Export to Excalidraw" (direct from person data)
+- "Convert Canvas to Excalidraw" (current flow, preserved)
+
+This preserves Canvas as an intermediate artifact for users who want Obsidian-native viewing.
+
+## Additional Enhancement Opportunities
+
+Based on analysis of the Excalidraw plugin's ea-scripts library, the following features could be leveraged for future enhancements:
+
+### Auto Layout (ELK.js Integration)
+
+The `Auto Layout.md` script demonstrates integration with [ELK.js](https://github.com/kieler/elkjs), a powerful graph layout library. This could enable:
+
+- **Alternative layout algorithms:** Layered, radial, tree (mrtree)
+- **User-configurable spacing:** Component, node, and layer spacing
+- **Direction control:** Left-to-right, right-to-left, top-down, bottom-up
+- **Re-layout after editing:** Users could rearrange nodes and apply auto-layout
+
+**Potential Phase 9: ELK.js Layout Integration**
+```typescript
+// Example: Using ELK for genealogy tree layout
+layoutOptionsJson["elk.algorithm"] = "org.eclipse.elk.mrtree"; // Tree layout
+layoutOptionsJson["org.eclipse.elk.direction"] = "DOWN"; // Top-down family tree
+layoutOptionsJson["org.eclipse.elk.spacing.nodeNode"] = "100";
+```
+
+### Elbow Connectors
+
+The `Elbow connectors.md` script converts arrows to right-angle elbow connectors. This could provide:
+
+- **Cleaner orthogonal routing:** More formal genealogy chart appearance
+- **Configurable routing:** Option for curved vs. elbow connectors
+
+### Connect Elements Utility
+
+The `Connect elements.md` script shows a pattern for connecting grouped elements:
+
+- **Group-aware connection:** Identifies largest element in a group for connection point
+- **Style inheritance:** Copies stroke properties from source element
+
+### Box Selected Elements
+
+The `Box Selected Elements.md` script wraps elements in a container:
+
+- **Generation grouping:** Could be used to visually group generations
+- **Family unit highlighting:** Box around nuclear family units
+
+### Fixed Spacing
+
+The `Fixed spacing.md` and `Fixed vertical distance.md` scripts enable:
+
+- **Uniform node spacing:** Ensure consistent gaps between person nodes
+- **Post-generation cleanup:** User can select nodes and apply uniform spacing
+
+### Mindmap Format
+
+The `Mindmap format.md` script provides a complete tree formatting algorithm:
+
+- **Hierarchical layout:** Parent → children with curved connectors
+- **Automatic spacing:** Calculates heights and positions children
+- **Configurable curve styling:** Line curvature and connection points
+
+This could inspire an alternative "family chart" mode distinct from the standard tree layout.
+
 ## Testing Considerations
 
 1. **Fallback testing:** Ensure JSON approach still works when Excalidraw plugin not installed
