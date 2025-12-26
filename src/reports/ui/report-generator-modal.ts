@@ -1247,7 +1247,7 @@ export class ReportGeneratorModal extends Modal {
 								button.setButtonText(place.name);
 								placeSetting.setDesc(`Selected: ${place.name}`);
 							},
-							{ folderFilter }
+							{ folderFilter, plugin: this.plugin }
 						);
 						picker.open();
 					});

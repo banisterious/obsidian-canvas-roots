@@ -6925,6 +6925,7 @@ export class ControlCenterModal extends Modal {
 			familyGraph: this.plugin.createFamilyGraphService(),
 			placeGraph: new PlaceGraphService(this.app),
 			settings: this.plugin.settings,
+			plugin: this.plugin,
 			onCreated: () => {
 				new Notice(`Created place note: ${placeName}`);
 				// Refresh the Places tab

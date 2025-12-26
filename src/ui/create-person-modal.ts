@@ -802,7 +802,8 @@ export class CreatePersonModal extends Modal {
 					}, {
 						placeGraph: this.placeGraph,
 						settings: this.settings,
-						directory: this.directory
+						directory: this.directory,
+						plugin: this.plugin
 					});
 					picker.open();
 				}

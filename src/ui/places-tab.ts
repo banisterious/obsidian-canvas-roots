@@ -52,6 +52,7 @@ export function renderPlacesTab(
 					familyGraph: plugin.createFamilyGraphService(),
 					placeGraph: new PlaceGraphService(plugin.app),
 					settings: plugin.settings,
+					plugin,
 					onCreated: () => showTab('places')
 				}).open();
 			}));
@@ -1346,6 +1347,7 @@ function showQuickCreatePlaceModal(
 		familyGraph: plugin.createFamilyGraphService(),
 		placeGraph: new PlaceGraphService(plugin.app),
 		settings: plugin.settings,
+		plugin,
 		onCreated: () => {
 			new Notice(`Created place note: ${placeName}`);
 			// Refresh the Places tab

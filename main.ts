@@ -692,7 +692,8 @@ export default class CanvasRootsPlugin extends Plugin {
 					directory: this.settings.placesFolder || '',
 					familyGraph: this.createFamilyGraphService(),
 					placeGraph: this.createPlaceGraphService(),
-					settings: this.settings
+					settings: this.settings,
+					plugin: this
 				}).open();
 			}
 		});

@@ -10,6 +10,7 @@ import { PlaceCategory } from '../models/place';
 import { FolderFilterService } from '../core/folder-filter';
 import { CreatePlaceModal } from './create-place-modal';
 import type { CanvasRootsSettings } from '../settings';
+import type CanvasRootsPlugin from '../../main';
 
 /**
  * Place data returned when a place is selected
@@ -61,6 +62,7 @@ export class PlacePickerModal extends Modal {
 	private settings?: CanvasRootsSettings;
 	private loadingEl?: HTMLElement;
 	private directory?: string;
+	private plugin?: CanvasRootsPlugin;
 
 	constructor(
 		app: App,
@@ -70,6 +72,7 @@ export class PlacePickerModal extends Modal {
 			placeGraph?: PlaceGraphService;
 			settings?: CanvasRootsSettings;
 			directory?: string;
+			plugin?: CanvasRootsPlugin;
 		}
 	) {
 		super(app);
@@ -78,6 +81,7 @@ export class PlacePickerModal extends Modal {
 		this.placeGraph = options?.placeGraph;
 		this.settings = options?.settings;
 		this.directory = options?.directory;
+		this.plugin = options?.plugin;
 	}
 
 	onOpen(): void {
@@ -408,6 +412,7 @@ export class PlacePickerModal extends Modal {
 			directory: placesFolder,
 			placeGraph: this.placeGraph,
 			settings: this.settings,
+			plugin: this.plugin,
 			onCreated: (file: TFile) => {
 				// Wait for metadata cache to update before reading frontmatter
 				setTimeout(() => {

@@ -919,6 +919,9 @@ export class ReportWizardModal extends Modal {
 					this.updateFilename();
 					this.renderCurrentStep();
 					resolve();
+				},
+				{
+					plugin: this.plugin
 				}
 			);
 			picker.open();

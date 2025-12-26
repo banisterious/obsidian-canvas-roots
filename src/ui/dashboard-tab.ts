@@ -208,6 +208,7 @@ function renderQuickActionsSection(
 		new CreatePlaceModal(app, {
 			directory: plugin.settings.placesFolder || 'Canvas Roots/Places',
 			settings: plugin.settings,
+			plugin,
 			onCreated: (file) => {
 				// Track the newly created place in recent files
 				const recentService = plugin.getRecentFilesService();

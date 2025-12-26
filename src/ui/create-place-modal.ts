@@ -1223,6 +1223,7 @@ export class CreatePlaceModal extends Modal {
 				familyGraph: this.familyGraph,
 				placeGraph: this.placeGraph,
 				settings: this.settings,
+				plugin: this.plugin,
 				onCreated: (file) => {
 					new Notice(`Created parent place: ${file.basename}`);
 				}
