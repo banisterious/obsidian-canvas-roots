@@ -109,6 +109,13 @@ After selecting, the wizard branches into format-specific steps:
 - Tree statistics (people count, generations, edges)
 - Verify layout before generating
 
+**Excalidraw Style Step (Excalidraw only):**
+- **Drawing style**: Architect (clean lines), Artist (slightly rough), or Cartoonist (hand-drawn)
+- **Font family**: Virgil (handwritten), Cascadia (code), or system fonts
+- **Fill style**: Solid, Hachure (diagonal lines), or Cross-hatch
+- **Stroke style**: Solid, Dashed, or Dotted lines
+- **Node content**: Name only, Name + dates, or Name + dates + places
+
 **Output Step:**
 - Set filename (`.canvas` or `.excalidraw.md`)
 - Choose save folder
@@ -116,8 +123,11 @@ After selecting, the wizard branches into format-specific steps:
 
 **Excalidraw-specific features:**
 - Hand-drawn aesthetic for a more informal look
+- Smart connectors that adapt when you move elements
+- Wiki links on nodes for navigation back to person notes
+- Spouse relationships styled with dashed lines
 - Add annotations and drawings after generation
-- Export to SVG or PNG for sharing
+- Export to SVG or PNG via Excalidraw's native export
 - Requires the [Excalidraw plugin](https://github.com/zsviczian/obsidian-excalidraw-plugin)
 
 ### PDF/ODT Path

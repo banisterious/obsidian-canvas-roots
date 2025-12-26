@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.17.x](#v017x)
+  - [Excalidraw Export Enhancements](#excalidraw-export-enhancements-v0171)
   - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard-v0170)
   - [Source Array Migration](#source-array-migration-v0170)
   - [Migration Notice](#migration-notice-v0170)
@@ -68,6 +69,65 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.17.x
+
+### Excalidraw Export Enhancements (v0.17.1)
+
+Enhanced Excalidraw export with ExcalidrawAutomate API integration, style customization, and improved output quality.
+
+**Problem Solved:**
+
+The previous Excalidraw export was functional but limited:
+- **Manual text sizing:** Text dimensions estimated with character width multiplier, often inaccurate
+- **Static arrows:** Connections didn't adapt when elements were moved in Excalidraw
+- **No wiki links:** Couldn't click nodes to navigate to person notes
+- **No style control:** Fixed visual style with no customization options
+- **Temp file pollution:** Intermediate canvas files left behind after export
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **ExcalidrawAutomate API** | Uses API when available for smart connectors and accurate text measurement |
+| **Smart connectors** | Arrows adapt when elements are moved (API mode) |
+| **Wiki links** | Nodes link to person notes via Excalidraw's link property |
+| **Spouse styling** | Spouse relationships rendered with dashed lines |
+| **Drawing style options** | Architect (clean), Artist (sketchy), Cartoonist (rough) |
+| **Font family options** | Virgil (handwritten), Cascadia (code), system fonts |
+| **Fill/stroke styles** | Solid, hachure, cross-hatch fills; solid, dashed, dotted strokes |
+| **Node content levels** | Name only, name + dates, or name + dates + places |
+| **Dedicated wizard step** | Excalidraw style options in separate step for better UX |
+| **JSON fallback** | Works without Excalidraw plugin using direct JSON generation |
+
+**Wizard Flow (Excalidraw):**
+
+| Step | Content |
+|------|---------|
+| 1 | Select root person |
+| 2 | Choose tree type |
+| 3 | Select output format (Excalidraw) |
+| 4 | Canvas options (scope, colors) |
+| 5 | Preview tree |
+| 6 | Excalidraw style options |
+| 7 | Output settings and generate |
+
+**Files Modified:**
+
+| File | Changes |
+|------|---------|
+| `src/excalidraw/excalidraw-exporter.ts` | API integration, style options, smart connectors |
+| `src/trees/ui/unified-tree-wizard-modal.ts` | Excalidraw style step, form data fields |
+| `src/excalidraw/excalidraw-automate.d.ts` | Type definitions for EA API |
+
+**Bug Fixes:**
+
+- Text centering in Excalidraw boxes
+- Duplicate visible boxes (removed `box` parameter from `addText`)
+- Wiki link brackets appearing in labels (stripped, set via element link property)
+- Temporary canvas file cleanup after export
+- Generate button reactivity on canvas name input
+- Duplicate navigation footer in wizard
+
+---
 
 ### Post-Import Cleanup Wizard (v0.17.0)
 

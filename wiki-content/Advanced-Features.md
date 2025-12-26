@@ -50,23 +50,47 @@ View comprehensive analytics about person notes in any folder.
 
 ## Excalidraw Export
 
-Canvas Roots can export family tree canvases to [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) format, enabling manual annotation, hand-drawn styling, and freeform customization while preserving the genealogical layout.
+Canvas Roots supports Excalidraw in two ways:
 
-### Why Export to Excalidraw?
+1. **Direct generation**: Generate Excalidraw files directly from the Tree Wizard (see [Visual Trees](Visual-Trees#canvasexcalidraw-path))
+2. **Canvas conversion**: Export an existing Canvas file to Excalidraw format (documented below)
+
+Both methods produce editable [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) files with hand-drawn styling, annotation capabilities, and SVG/PNG export.
+
+### Why Use Excalidraw?
 
 Excalidraw provides drawing capabilities not available in standard Canvas:
 
 - **Annotations**: Add handwritten notes, highlights, and comments directly on the tree
 - **Custom styling**: Apply hand-drawn aesthetics, colors, and shapes
+- **Smart connectors**: Connections adapt when you move elements
+- **Wiki links**: Click nodes to navigate to person notes
 - **Additional elements**: Draw family crests, photo frames, decorative borders
 - **Presentation mode**: Create polished diagrams for sharing or presentation
-- **Whiteboard features**: Collaborative editing and real-time drawing
+- **Native export**: Export to SVG or PNG directly from Excalidraw
 
-The export preserves your tree's structure (node positions, colors, connections) while converting to an editable Excalidraw drawing.
+### Direct Generation (Recommended)
 
-### How to Export
+The Tree Wizard can generate Excalidraw files directly, with full control over styling:
 
-**Method 1: Context Menu (Recommended)**
+1. Open the Tree Wizard (Control Center → Visual Trees → New Tree)
+2. Select root person and tree type
+3. Choose **Excalidraw** as output format
+4. Configure canvas options and preview the tree
+5. In the **Excalidraw Style** step, customize:
+   - **Drawing style**: Architect (clean), Artist (sketchy), or Cartoonist (rough)
+   - **Font family**: Virgil, Cascadia, or system fonts
+   - **Fill/stroke styles**: Solid, hachure, cross-hatch; solid, dashed, dotted
+   - **Node content**: Name only, with dates, or with dates and places
+6. Generate the file
+
+This method uses the ExcalidrawAutomate API when available, producing smart connectors that adapt when elements are moved.
+
+### Converting Existing Canvas
+
+If you already have a Canvas file, you can convert it to Excalidraw:
+
+**Method 1: Context Menu**
 1. Right-click on the canvas tab, file, or three-dot menu
 2. Select **"Export to Excalidraw"**
 3. The Excalidraw file opens automatically in a new tab
@@ -83,14 +107,15 @@ The export preserves your tree's structure (node positions, colors, connections)
 - ✅ Node positions (automatically normalized to positive coordinates)
 - ✅ Node sizes and dimensions
 - ✅ Node colors (converted to Excalidraw color scheme)
-- ✅ Person names as text labels
-- ✅ Relationship connections as arrows
-- ✅ Family tree structure and layout
+- ✅ Person names, dates, and places as text labels
+- ✅ Relationship connections as arrows (smart connectors when API available)
+- ✅ Wiki links for navigation back to person notes
+- ✅ Spouse relationships styled with dashed lines
 
 **Converted to Excalidraw Format:**
-- Canvas nodes → Excalidraw rectangles
-- Node labels → Excalidraw text elements
-- Edges → Excalidraw arrows
+- Canvas nodes → Excalidraw rectangles with grouped text
+- Node labels → Multi-line text elements (name, dates, place)
+- Edges → Excalidraw arrows (smart connectors adapt when moved)
 - Colors → Excalidraw-compatible color palette
 
 **File Structure:**
@@ -140,16 +165,22 @@ Once exported, you can:
 
 **Excalidraw file appears blank:**
 - Ensure Excalidraw plugin is installed and up-to-date
-- Check Canvas Roots version (export fixes in v0.2.1+)
-- Try re-exporting the Canvas
+- Try re-exporting or regenerating the file
+
+**Text not centered in boxes:**
+- Update to Canvas Roots v0.17.1+ which fixes text centering issues
 
 **Nodes positioned incorrectly:**
 - Canvas Roots automatically normalizes negative coordinates to positive space
 - If issues persist, try regenerating the Canvas first, then re-export
 
-**Missing connections:**
-- Verify the Canvas tree generated correctly before export
-- Check that all person nodes have valid relationships
+**Missing wiki links:**
+- Wiki links are set on the rectangle element, not inline in text
+- Click the rectangle (not the text) to follow the link
+
+**Connectors don't adapt when moving elements:**
+- Smart connectors require the ExcalidrawAutomate API
+- Ensure Excalidraw plugin is installed; files generated without it use static arrows
 
 ## Split Canvas Wizard
 

@@ -25,9 +25,7 @@ Right-click on any markdown file with a `cr_id` frontmatter property:
 
 | Action | Description |
 |--------|-------------|
-| **Generate tree** | |
-| → Generate Canvas tree | Create a family tree canvas with this person as root |
-| → Generate Excalidraw tree | Create an Excalidraw drawing with this person as root |
+| **Generate visual tree** | Open the Tree Wizard with this person pre-selected |
 | **Edit person** | Open the person editing modal |
 | **Add relationship...** | |
 | → Add parent | Add a father or mother relationship |
@@ -180,7 +178,7 @@ Right-click on any source row:
 
 ## Tips
 
-- **Quick tree generation**: Right-click a person → Generate tree → Generate Canvas tree
+- **Quick tree generation**: Right-click a person → Generate visual tree (opens wizard with person pre-selected)
 - **Bulk property addition**: Select multiple files → right-click → Add essential properties
 - **Fast relationship editing**: Right-click a person → Add relationship → choose type
 - **Canvas updates**: After editing notes, right-click canvas → Regenerate canvas
