@@ -6,20 +6,24 @@ Real-world examples of how people use Canvas Roots for genealogy, worldbuilding,
 
 ## Table of Contents
 
-- [By User Type](#by-user-type)
-- [Community Examples](#community-examples)
-  - [Importing from Genealogy Software](#importing-from-genealogy-software)
-  - [Building a Family Tree from Scratch](#building-a-family-tree-from-scratch)
-  - [Generating a Family Reunion Report](#generating-a-family-reunion-report)
-  - [Visualizing Migration Patterns](#visualizing-migration-patterns)
-  - [Tracking DNA Matches](#tracking-dna-matches)
-  - [Managing a Fantasy Novel's Character Web](#managing-a-fantasy-novels-character-web)
-  - [TTRPG Campaign Dynasty](#ttrpg-campaign-dynasty)
-  - [Researching a Historical Figure](#researching-a-historical-figure)
-  - [Documenting a Local Cemetery](#documenting-a-local-cemetery)
-  - [Exporting to Share with Family](#exporting-to-share-with-family)
-  - [Using Bases for Data Views](#using-bases-for-data-views)
-- [Share Your Story](#share-your-story)
+**Genealogists**
+- [Importing from Genealogy Software](#importing-from-genealogy-software)
+- [Building a Family Tree from Scratch](#building-a-family-tree-from-scratch)
+- [Generating a Family Reunion Report](#generating-a-family-reunion-report)
+- [Visualizing Migration Patterns](#visualizing-migration-patterns)
+- [Tracking DNA Matches](#tracking-dna-matches)
+- [Exporting to Share with Family](#exporting-to-share-with-family)
+- [Using Bases for Data Views](#using-bases-for-data-views)
+
+**Worldbuilders**
+- [Managing a Fantasy Novel's Character Web](#managing-a-fantasy-novels-character-web)
+- [TTRPG Campaign Dynasty](#ttrpg-campaign-dynasty)
+
+**Historians**
+- [Researching a Historical Figure](#researching-a-historical-figure)
+- [Documenting a Local Cemetery](#documenting-a-local-cemetery)
+
+[Share Your Story](#share-your-story)
 
 ---
 
@@ -357,18 +361,20 @@ You have hundreds of person notes and want to filter, sort, and analyze your dat
 
 ---
 
-*Have a use case to share? [Open an issue](https://github.com/banisterious/obsidian-canvas-roots/issues) with the `use-case` label or post in the [Discussions](https://github.com/banisterious/obsidian-canvas-roots/discussions).*
+*Have a use case to share? Post in the [Use Cases discussion category](https://github.com/banisterious/obsidian-canvas-roots/discussions/categories/use-cases)!*
 
 ---
 
 ## Share Your Story
 
-We'd love to feature your workflow! When submitting a use case, consider including:
+We'd love to feature your workflow! [Post in the Use Cases discussion category](https://github.com/banisterious/obsidian-canvas-roots/discussions/categories/use-cases) and consider including:
 
 - What problem were you trying to solve?
 - Which Canvas Roots features did you use?
 - What worked well? Any tips for others?
 - Screenshots or examples (optional but helpful)
+
+Your workflow might be featured on this wiki page!
 
 ---
 
