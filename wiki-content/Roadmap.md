@@ -111,18 +111,20 @@ Dedicated wizard for creating an entire nuclear family at once with a guided ste
 
 | Task | Feature | Value |
 |------|---------|-------|
-| 1 | Keyboard Navigation | Arrow keys, Enter/Escape, number shortcuts for accessibility |
-| 2 | Step Transition Animations | Smooth tile expansion, slide transitions, staggered results |
-| 3 | Cleanup Profiles | Save/load named configurations (Full, Quick, Places Only) |
-| 4 | Step Reordering | Drag-drop tiles with dependency validation |
-| 5 | Schema Integration | Hook into future schema validation system |
+| 1 | Batch Progress Indicators | Progress bars for large batch operations (Steps 2-6, 10) |
+| 2 | Keyboard Navigation | Arrow keys, Enter/Escape, number shortcuts for accessibility |
+| 3 | Step Reordering | Drag-drop tiles with dependency validation |
+| 4 | Cleanup Profiles | Save/load named configurations (Full, Quick, Places Only) |
+| 5 | Step Transition Animations | Smooth tile expansion, slide transitions, staggered results |
+| 6 | Schema Integration | Hook into future schema validation system |
 
 **Implementation Order:**
-1. Keyboard navigation (high priority, accessibility)
-2. Animations (quick UX win)
-3. Cleanup profiles (power user feature)
-4. Step reordering (complex, may not be needed if profiles suffice)
-5. Schema integration (deferred until schema validation exists)
+1. Batch progress indicators (high priority, UX improvement for large vaults)
+2. Keyboard navigation (high priority, accessibility)
+3. Animations (quick UX win)
+4. Cleanup profiles (power user feature)
+5. Step reordering (complex, may not be needed if profiles suffice)
+6. Schema integration (deferred until schema validation exists)
 
 **Documentation:**
 - See [Cleanup Wizard Phase 4 Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/cleanup-wizard-phase4.md) for detailed specifications
