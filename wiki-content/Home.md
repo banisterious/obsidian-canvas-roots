@@ -65,14 +65,14 @@ Track your research with GPS-aligned fact-level source tracking and proof summar
 [Learn about evidence and sources](Evidence-And-Sources)
 
 ### Data Quality Tools
-Keep your family data clean and consistent with validation and batch operations.
+Keep your family data clean and consistent with the Cleanup Wizard and batch operations.
 
+- **Cleanup Wizard** - Guided 10-step workflow for post-import data cleanup
 - **Bidirectional validation** - Detect and fix one-way relationship inconsistencies
-- **Duplicate detection** - Find and merge duplicate person and place records
-- **Batch operations** - Normalize names, remove placeholders, fix orphaned references
-- **Date validation** - Detect impossible dates and logical errors
+- **Source migration** - Convert indexed sources to modern array format
+- **Batch operations** - Normalize dates, sex values, place names, and more
 
-[Manage your data](Data-Management)
+[Manage your data](Data-Quality)
 
 ### Events & Timelines
 Document life events and visualize them chronologically with person, family, and place timelines.
@@ -175,5 +175,5 @@ Adapt Canvas Roots to your existing data structure and terminology.
 
 ---
 
-**Version**: 0.15.3
-**Last Updated**: 2025-12-24
+**Version**: 0.17.0
+**Last Updated**: 2025-12-25
