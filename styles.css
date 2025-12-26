@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-26 15:25:19 UTC
+ * - Generated: 2025-12-26 16:03:43 UTC
  * - Components: 38 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -681,7 +681,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 12142 lines, 225.58 KB */
+/* Component Size: 12213 lines, 227.15 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -12823,6 +12823,77 @@ settings:
 .crc-cleanup-hierarchy-done {
   display: flex;
   justify-content: center;
+}
+
+/* =============================================================================
+   Modal Resume Banner
+   Resume prompt for persisted modal state
+   ============================================================================= */
+
+.cr-modal-resume-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  border-left: 3px solid var(--interactive-accent);
+}
+
+.cr-modal-resume-banner__message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.cr-modal-resume-banner__icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.cr-modal-resume-banner__text {
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+}
+
+.cr-modal-resume-banner__buttons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cr-modal-resume-banner__btn {
+  padding: 4px 12px;
+  font-size: var(--font-ui-smaller);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease;
+}
+
+.cr-modal-resume-banner__btn--discard {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.cr-modal-resume-banner__btn--discard:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.cr-modal-resume-banner__btn--restore {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.cr-modal-resume-banner__btn--restore:hover {
+  background: var(--interactive-accent-hover);
 }
 
 
@@ -31367,11 +31438,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-26 15:25:19 UTC
+ * Build completed: 2025-12-26 16:03:43 UTC
  * Components processed: 38
- * Total lines: 31002
- * Total size: 611.23 KB
- * Build duration: 0.04 seconds
+ * Total lines: 31073
+ * Total size: 612.8 KB
+ * Build duration: 0.03 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -31382,7 +31453,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 12142 lines, 225.58 KB
+ * - modals.css: 12213 lines, 227.15 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB
