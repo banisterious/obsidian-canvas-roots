@@ -415,7 +415,11 @@ export class ExcalidrawExporter {
 		// Check edge sides - spouse relationships often connect from side to side
 		const fromSide = edge.fromSide || '';
 		const toSide = edge.toSide || '';
+
+		logger.debug('export', `Edge relationship detection: fromSide=${fromSide}, toSide=${toSide}, label=${label}`);
+
 		if ((fromSide === 'left' || fromSide === 'right') && (toSide === 'left' || toSide === 'right')) {
+			logger.debug('export', 'Detected spouse relationship (side-to-side)');
 			return 'spouse';
 		}
 		// Parent-child typically goes top-to-bottom
@@ -428,8 +432,9 @@ export class ExcalidrawExporter {
 
 	/**
 	 * Build rich label for node including dates and places
+	 * Note: Wiki links are handled via the element's `link` property, not inline [[]] syntax
 	 */
-	private buildRichLabel(node: CanvasNode, includeWikiLink: boolean): string {
+	private buildRichLabel(node: CanvasNode): string {
 		const details = this.personDetailsCache.get(node.id);
 
 		if (!details) {
@@ -439,12 +444,8 @@ export class ExcalidrawExporter {
 
 		const lines: string[] = [];
 
-		// Name with optional wiki link
-		if (includeWikiLink && details.filePath) {
-			lines.push(`[[${details.name}]]`);
-		} else {
-			lines.push(details.name);
-		}
+		// Name (wiki link is set separately via element's link property)
+		lines.push(details.name);
 
 		// Date line
 		if (details.birthDate || details.deathDate) {
@@ -463,6 +464,17 @@ export class ExcalidrawExporter {
 		}
 
 		return lines.join('\n');
+	}
+
+	/**
+	 * Get wiki link path for a node (for element's link property)
+	 */
+	private getWikiLinkPath(node: CanvasNode): string | null {
+		if (node.type === 'file' && node.file) {
+			// Return the file path without extension for wiki link format
+			return node.file.replace(/\.(md|markdown)$/, '');
+		}
+		return null;
 	}
 
 	/**
@@ -536,13 +548,21 @@ export class ExcalidrawExporter {
 			);
 			nodeIdMap.set(node.id, rectId);
 
+			// Set wiki link on the rectangle element if enabled
+			if (includeWikiLinks) {
+				const linkPath = this.getWikiLinkPath(node);
+				if (linkPath) {
+					const rectElement = ea.getElement(rectId);
+					if (rectElement) {
+						rectElement.link = `[[${linkPath}]]`;
+					}
+				}
+			}
+
 			// Create text label (rich content if enabled)
 			let labelText: string;
 			if (includePersonDetails && this.personDetailsCache.has(node.id)) {
-				labelText = this.buildRichLabel(node, includeWikiLinks);
-			} else if (includeWikiLinks && node.type === 'file' && node.file) {
-				const name = this.extractNodeLabel(node);
-				labelText = `[[${name}]]`;
+				labelText = this.buildRichLabel(node);
 			} else {
 				labelText = this.extractNodeLabel(node);
 			}
@@ -550,18 +570,12 @@ export class ExcalidrawExporter {
 			if (labelText) {
 				ea.style.strokeColor = '#1e1e1e'; // Text always dark
 
-				// Use box parameter to position text within container
+				// Position text centered in the node (don't use box parameter - it creates a visible container)
 				const textId = ea.addText(
-					node.x + offsetX,
-					node.y + offsetY,
+					node.x + offsetX + node.width / 2,
+					node.y + offsetY + node.height / 2,
 					labelText,
 					{
-						box: {
-							topX: node.x + offsetX,
-							topY: node.y + offsetY,
-							width: node.width,
-							height: node.height
-						},
 						textAlign: 'center',
 						textVerticalAlign: 'middle'
 					}
@@ -706,6 +720,10 @@ export class ExcalidrawExporter {
 				: CANVAS_TO_EXCALIDRAW_COLORS['none'];
 
 			const groupId = groupIdMap.get(node.id);
+
+			// Get wiki link path if enabled
+			const linkPath = includeWikiLinks ? this.getWikiLinkPath(node) : null;
+
 			const rectangle = this.createRectangle(
 				excalidrawId,
 				node.x + offsetX,
@@ -720,19 +738,17 @@ export class ExcalidrawExporter {
 					strokeWidth,
 					backgroundColor: shapeBackgroundColor,
 					opacity,
-					groupIds: groupId ? [groupId] : []
+					groupIds: groupId ? [groupId] : [],
+					link: linkPath ? `[[${linkPath}]]` : undefined
 				}
 			);
 			elements.push(rectangle);
 
 			// Create text label (with coordinate offset applied)
-			// Use rich content if enabled
+			// Use rich content if enabled - wiki links are on the rectangle, not in text
 			let labelText: string;
 			if (includePersonDetails && this.personDetailsCache.has(node.id)) {
-				labelText = this.buildRichLabel(node, includeWikiLinks);
-			} else if (includeWikiLinks && node.type === 'file' && node.file) {
-				const name = this.extractNodeLabel(node);
-				labelText = `[[${name}]]`;
+				labelText = this.buildRichLabel(node);
 			} else {
 				labelText = this.extractNodeLabel(node);
 			}
@@ -833,6 +849,7 @@ export class ExcalidrawExporter {
 			backgroundColor?: string;
 			opacity?: number;
 			groupIds?: string[];
+			link?: string;
 		}
 	): ExcalidrawRectangle {
 		return {
@@ -859,7 +876,7 @@ export class ExcalidrawExporter {
 			isDeleted: false,
 			boundElements: null,
 			updated: Date.now(),
-			link: null,
+			link: styleOptions?.link ?? null,
 			locked: false
 		};
 	}
