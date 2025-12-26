@@ -88,7 +88,7 @@ export class CreatePersonModal extends Modal {
 	private editMode: boolean = false;
 	private editingFile?: TFile;
 	private propertyAliases: Record<string, string> = {};
-	private includeDynamicBlocks: boolean = false;
+	private includeDynamicBlocks: boolean = true;
 	private dynamicBlockTypes: DynamicBlockType[] = ['media', 'timeline', 'relationships'];
 
 	// State persistence
@@ -157,7 +157,7 @@ export class CreatePersonModal extends Modal {
 		this.onUpdated = options?.onUpdated;
 		this.familyGraph = options?.familyGraph;
 		this.propertyAliases = options?.propertyAliases || {};
-		this.includeDynamicBlocks = options?.includeDynamicBlocks || false;
+		this.includeDynamicBlocks = options?.includeDynamicBlocks ?? true;
 		this.dynamicBlockTypes = options?.dynamicBlockTypes || ['media', 'timeline', 'relationships'];
 		this.existingUniverses = options?.existingUniverses || [];
 		this.placeGraph = options?.placeGraph;

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.17.2] - 2025-12-26
+
 ### Added
 
 - **Resume unsaved work in create entity modals** - All create entity modals (Person, Place, Event, Organization, Source) now persist form state when closed without saving. When reopened, a banner offers to restore the previous session's data or discard it. State expires after 24 hours. Edit mode is excluded from persistence.
