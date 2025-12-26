@@ -53,6 +53,7 @@ import { MediaService } from './src/core/media-service';
 import { MediaPickerModal } from './src/core/ui/media-picker-modal';
 import { MediaManageModal } from './src/core/ui/media-manage-modal';
 import { CleanupWizardModal } from './src/ui/cleanup-wizard-modal';
+import { MigrationNoticeView, VIEW_TYPE_MIGRATION_NOTICE } from './src/ui/views/migration-notice-view';
 
 const logger = getLogger('CanvasRootsPlugin');
 
@@ -287,6 +288,12 @@ export default class CanvasRootsPlugin extends Plugin {
 			(leaf) => new StatisticsView(leaf, this)
 		);
 
+		// Register migration notice view (for upgrade notifications)
+		this.registerView(
+			VIEW_TYPE_MIGRATION_NOTICE,
+			(leaf) => new MigrationNoticeView(leaf, this)
+		);
+
 		// Register URI protocol handler for opening map at specific coordinates
 		// Usage: obsidian://canvas-roots-map?lat=51.5074&lng=-0.1278&zoom=12
 		this.registerObsidianProtocolHandler('canvas-roots-map', async (params) => {
@@ -357,6 +364,19 @@ export default class CanvasRootsPlugin extends Plugin {
 				new ControlCenterModal(this.app, this, initialTab).open();
 			})
 		);
+
+		// Register workspace event to open Cleanup Wizard
+		// Used by Migration Notice view
+		this.registerEvent(
+			this.app.workspace.on('canvas-roots:open-cleanup-wizard' as 'layout-change', () => {
+				new CleanupWizardModal(this.app, this).open();
+			})
+		);
+
+		// Check for version upgrade and show migration notice if needed
+		this.app.workspace.onLayoutReady(() => {
+			void this.checkVersionUpgrade();
+		});
 
 		// Add command: Generate Tree for Current Note
 		this.addCommand({
@@ -7275,6 +7295,50 @@ export default class CanvasRootsPlugin extends Plugin {
 
 		logger.info('create-all-bases', `Created: ${created.join(', ') || 'none'}, Skipped: ${skipped.join(', ') || 'none'}`);
 		return { created, skipped };
+	}
+
+	/**
+	 * Check if user upgraded to a version that needs a migration notice
+	 * Currently checks for upgrade to v0.17.0 (source array migration)
+	 */
+	private async checkVersionUpgrade(): Promise<void> {
+		const currentVersion = this.manifest.version;
+		const lastSeen = this.settings.lastSeenVersion;
+
+		// Show notice if upgrading to 0.17.x from earlier version (or first install)
+		if (this.shouldShowMigrationNotice(lastSeen, currentVersion)) {
+			// Open migration notice in main workspace
+			const leaf = this.app.workspace.getLeaf('tab');
+			await leaf.setViewState({
+				type: VIEW_TYPE_MIGRATION_NOTICE,
+				active: true
+			});
+		}
+	}
+
+	/**
+	 * Determine if the migration notice should be shown
+	 * Shows when upgrading to 0.17.x from an earlier version
+	 */
+	private shouldShowMigrationNotice(lastSeen: string | undefined, current: string): boolean {
+		// Only show for 0.17.x releases
+		if (!current.startsWith('0.17')) {
+			return false;
+		}
+
+		// Show if no previous version recorded (could be upgrade from pre-tracking)
+		if (!lastSeen) {
+			return true;
+		}
+
+		// Parse versions and compare
+		const lastParts = lastSeen.split('.').map(Number);
+		// Show if last seen was before 0.17.0
+		if (lastParts[0] === 0 && lastParts[1] < 17) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

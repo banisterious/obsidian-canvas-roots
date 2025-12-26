@@ -354,6 +354,9 @@ export interface CanvasRootsSettings {
 	// Cleanup wizard state (for resuming interrupted wizards)
 	/** Persisted state of the cleanup wizard, if any */
 	cleanupWizardState?: CleanupWizardPersistedState;
+	// Version tracking (for migration notices)
+	/** Last plugin version the user has acknowledged (for showing upgrade notices) */
+	lastSeenVersion?: string;
 }
 
 /**

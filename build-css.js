@@ -60,6 +60,7 @@ const CONFIG = {
     'preferences.css',   // Preferences tab
     'tree-output.css',   // Tree output two-panel layout
     'dynamic-content.css', // Dynamic content blocks (timeline, relationships)
+    'migration-notice.css', // Migration notice view (upgrade notifications)
     'animations.css',    // Keyframes and transitions
     'responsive.css',    // Responsive breakpoints
     'theme.css'          // Theme compatibility (last)

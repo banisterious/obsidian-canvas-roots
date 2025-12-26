@@ -1,0 +1,134 @@
+/* Migration Notice View Styles
+ * Used for displaying upgrade notices (e.g., v0.17.0 source migration)
+ */
+
+.cr-migration-notice {
+  padding: var(--cr-spacing-lg);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cr-migration-header {
+  display: flex;
+  align-items: center;
+  gap: var(--cr-spacing-md);
+  margin-bottom: var(--cr-spacing-lg);
+  padding-bottom: var(--cr-spacing-md);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cr-migration-header h2 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.cr-migration-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--interactive-accent);
+}
+
+.cr-migration-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.cr-migration-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cr-spacing-lg);
+}
+
+.cr-migration-section h3 {
+  margin: 0 0 var(--cr-spacing-sm) 0;
+  font-size: 1.1em;
+  color: var(--text-normal);
+}
+
+.cr-migration-section p {
+  margin: 0 0 var(--cr-spacing-md) 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Code comparison block */
+.cr-migration-code {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cr-spacing-md);
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+  padding: var(--cr-spacing-md);
+}
+
+.cr-code-example {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cr-spacing-xs);
+}
+
+.cr-code-label {
+  font-size: 0.85em;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.cr-code-old .cr-code-label {
+  color: var(--text-error);
+}
+
+.cr-code-new .cr-code-label {
+  color: var(--text-success);
+}
+
+.cr-code-example pre {
+  margin: 0;
+  padding: var(--cr-spacing-sm);
+  background: var(--background-primary);
+  border-radius: var(--radius-s);
+  font-family: var(--font-monospace);
+  font-size: 0.9em;
+  line-height: 1.4;
+  overflow-x: auto;
+}
+
+.cr-code-old pre {
+  border-left: 3px solid var(--text-error);
+  opacity: 0.8;
+  text-decoration: line-through;
+  text-decoration-color: var(--text-error);
+}
+
+.cr-code-new pre {
+  border-left: 3px solid var(--text-success);
+}
+
+/* Button row */
+.cr-migration-buttons {
+  display: flex;
+  gap: var(--cr-spacing-md);
+  margin-top: var(--cr-spacing-md);
+  padding-top: var(--cr-spacing-lg);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.cr-migration-buttons button {
+  padding: var(--cr-spacing-sm) var(--cr-spacing-lg);
+  border-radius: var(--radius-m);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cr-migration-buttons .cr-migration-dismiss {
+  background: transparent;
+  border: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.cr-migration-buttons .cr-migration-dismiss:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
