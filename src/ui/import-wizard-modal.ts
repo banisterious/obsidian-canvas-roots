@@ -609,8 +609,7 @@ export class ImportWizardModal extends Modal {
 			setIcon(expandIcon, 'chevron-down');
 
 			// Create collapsible details container
-			const warningDetails = warningEl.createDiv({ cls: 'crc-import-preview-warning-details' });
-			warningDetails.style.display = 'none';
+			const warningDetails = warningEl.createDiv({ cls: 'crc-import-preview-warning-details crc-hidden' });
 			for (const warning of this.formData.parseWarnings.slice(0, 10)) {
 				warningDetails.createDiv({ cls: 'crc-import-preview-warning-detail', text: warning });
 			}
@@ -622,10 +621,10 @@ export class ImportWizardModal extends Modal {
 			}
 
 			// Toggle expansion on click
-			warningHeader.style.cursor = 'pointer';
+			warningHeader.addClass('crc-clickable');
 			warningHeader.addEventListener('click', () => {
-				const isExpanded = warningDetails.style.display !== 'none';
-				warningDetails.style.display = isExpanded ? 'none' : 'block';
+				const isExpanded = !warningDetails.hasClass('crc-hidden');
+				warningDetails.toggleClass('crc-hidden', isExpanded);
 				setIcon(expandIcon, isExpanded ? 'chevron-down' : 'chevron-up');
 			});
 		}

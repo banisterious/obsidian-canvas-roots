@@ -37,6 +37,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Duplicate navigation footer** - Fixed wizard modal showing multiple navigation bars when canvas name was edited.
 
+### Internal
+
+- **ESLint compliance** - Fixed all non-sentence-case lint issues across the codebase:
+  - Replaced TFile casts with instanceof checks
+  - Replaced inline style assignments with CSS classes
+  - Fixed floating promises with void operator
+  - Fixed case declarations in switch blocks
+  - Changed Vault.delete/trash to FileManager.trashFile
+  - Removed unused imports and eslint-disable directives
+  - Added `crc-clickable` CSS utility class
+
 ### Changed
 
 - **Person note context menu** - Simplified to single "Generate visual tree" entry that opens the unified wizard with the person pre-selected.

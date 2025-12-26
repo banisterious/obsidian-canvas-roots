@@ -31,6 +31,7 @@ export class MigrationNoticeView extends ItemView {
 		return 'info';
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async onOpen(): Promise<void> {
 		const container = this.containerEl.children[1];
 		container.empty();
@@ -85,9 +86,9 @@ source_2: "[[Birth Certificate]]"`
 			cls: 'mod-cta',
 			text: 'Open Cleanup Wizard'
 		});
-		wizardBtn.addEventListener('click', async () => {
+		wizardBtn.addEventListener('click', () => {
 			// Mark as seen and close
-			await this.markAsSeen();
+			void this.markAsSeen();
 			this.leaf.detach();
 			// Open the cleanup wizard
 			this.app.workspace.trigger('canvas-roots:open-cleanup-wizard');
@@ -97,8 +98,8 @@ source_2: "[[Birth Certificate]]"`
 			cls: 'cr-migration-dismiss',
 			text: 'Dismiss'
 		});
-		dismissBtn.addEventListener('click', async () => {
-			await this.markAsSeen();
+		dismissBtn.addEventListener('click', () => {
+			void this.markAsSeen();
 			this.leaf.detach();
 		});
 	}

@@ -48,6 +48,10 @@
 }
 
 /* Cursor utilities */
+.crc-clickable {
+  cursor: pointer;
+}
+
 .crc-cursor-grab {
   cursor: grab;
 }

@@ -43,9 +43,7 @@ function initDistortableImagePlugins(): void {
 	}
 
 	// Use require() to load the plugins after setting window.L
-	// eslint-disable-next-line @typescript-eslint/no-require-imports -- Plugins must load synchronously after window.L is set
 	require('leaflet-toolbar');
-	// eslint-disable-next-line @typescript-eslint/no-require-imports -- Plugins must load synchronously after window.L is set
 	require('leaflet-distortableimage');
 
 	distortableImageLoaded = true;

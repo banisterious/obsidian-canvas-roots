@@ -29,11 +29,11 @@ import { FolderFilterService } from '../core/folder-filter';
 import { getLogger } from '../core/logging';
 import type { CleanupWizardPersistedState } from '../settings';
 import { findPlaceNameVariants, findDuplicatePlaceNotes, mergeDuplicatePlaces, type PlaceVariantMatch, type PlaceDuplicateGroup } from './standardize-place-variants-modal';
-import { GeocodingService, type GeocodingResult, type BulkGeocodingResult } from '../maps/services/geocoding-service';
+import { GeocodingService, type GeocodingResult } from '../maps/services/geocoding-service';
 import { PlaceGraphService } from '../core/place-graph';
 import { createPlaceNote, updatePlaceNote, type PlaceData } from '../core/place-note-writer';
 import type { PlaceNode, PlaceType } from '../models/place';
-import { SourceMigrationService, type IndexedSourceNote, type SourceMigrationPreview } from '../sources/services/source-migration-service';
+import { SourceMigrationService, type IndexedSourceNote } from '../sources/services/source-migration-service';
 
 const logger = getLogger('CleanupWizard');
 
@@ -388,8 +388,7 @@ export class CleanupWizardModal extends Modal {
 		titleRow.createSpan({ text: 'Post-Import Cleanup Wizard' });
 
 		// Progress container (used in step view)
-		this.progressContainer = contentEl.createDiv({ cls: 'crc-wizard-progress crc-cleanup-wizard-progress' });
-		this.progressContainer.style.display = 'none';
+		this.progressContainer = contentEl.createDiv({ cls: 'crc-wizard-progress crc-cleanup-wizard-progress crc-hidden' });
 
 		// Content container
 		this.contentContainer = contentEl.createDiv({ cls: 'crc-cleanup-wizard-content' });
@@ -439,7 +438,7 @@ export class CleanupWizardModal extends Modal {
 			text: 'Start Fresh'
 		});
 		startFreshBtn.addEventListener('click', () => {
-			this.clearPersistedState();
+			void this.clearPersistedState();
 			this.state = this.getDefaultState();
 			contentEl.empty();
 			this.initializeWizardUI(contentEl);
@@ -469,7 +468,7 @@ export class CleanupWizardModal extends Modal {
 		const age = Date.now() - saved.savedAt;
 		if (age > STATE_EXPIRY_MS) {
 			logger.debug('getPersistedState', 'Persisted state is expired, clearing');
-			this.clearPersistedState();
+			void this.clearPersistedState();
 			return null;
 		}
 
@@ -701,7 +700,7 @@ export class CleanupWizardModal extends Modal {
 		if (!this.contentContainer || !this.footerContainer || !this.progressContainer) return;
 
 		// Hide step progress in overview
-		this.progressContainer.style.display = 'none';
+		this.progressContainer.addClass('crc-hidden');
 
 		const section = this.contentContainer.createDiv({ cls: 'crc-cleanup-section' });
 
@@ -825,7 +824,7 @@ export class CleanupWizardModal extends Modal {
 				badge.textContent = 'In progress';
 				badge.addClass('crc-cleanup-tile-badge--progress');
 				break;
-			case 'complete':
+			case 'complete': {
 				const checkIcon = badge.createSpan({ cls: 'crc-cleanup-tile-badge-icon' });
 				setIcon(checkIcon, 'check');
 				if (stepState.fixCount > 0) {
@@ -835,6 +834,7 @@ export class CleanupWizardModal extends Modal {
 				}
 				badge.addClass('crc-cleanup-tile-badge--complete');
 				break;
+			}
 			case 'skipped':
 				badge.textContent = 'Skipped';
 				badge.addClass('crc-cleanup-tile-badge--skipped');
@@ -855,7 +855,7 @@ export class CleanupWizardModal extends Modal {
 	private renderStepProgress(): void {
 		if (!this.progressContainer) return;
 		this.progressContainer.empty();
-		this.progressContainer.style.display = 'block';
+		this.progressContainer.removeClass('crc-hidden');
 
 		const stepsRow = this.progressContainer.createDiv({ cls: 'crc-wizard-steps crc-cleanup-progress-steps' });
 
@@ -1085,14 +1085,13 @@ export class CleanupWizardModal extends Modal {
 		setIcon(chevron, 'chevron-right');
 
 		// Collapsible content
-		const content = card.createDiv({ cls: 'crc-cleanup-category-content' });
-		content.style.display = 'none';
+		const content = card.createDiv({ cls: 'crc-cleanup-category-content crc-hidden' });
 
 		// Toggle behavior
 		let isExpanded = false;
 		header.addEventListener('click', () => {
 			isExpanded = !isExpanded;
-			content.style.display = isExpanded ? 'block' : 'none';
+			content.toggleClass('crc-hidden', !isExpanded);
 			chevron.empty();
 			setIcon(chevron, isExpanded ? 'chevron-down' : 'chevron-right');
 			header.toggleClass('crc-cleanup-category-header--expanded', isExpanded);
@@ -1817,7 +1816,7 @@ export class CleanupWizardModal extends Modal {
 
 		// Select all handler
 		selectAllCheckbox.addEventListener('change', () => {
-			const checkboxes = tbody.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+			const checkboxes = tbody.querySelectorAll<HTMLInputElement>('input[type="checkbox"]');
 			checkboxes.forEach((cb, idx) => {
 				cb.checked = selectAllCheckbox.checked;
 				const match = this.placeVariantMatches[idx];
@@ -1855,8 +1854,8 @@ export class CleanupWizardModal extends Modal {
 		// Attach selection change listener
 		tbody.addEventListener('change', updateApplyButton);
 
-		applyBtn.addEventListener('click', async () => {
-			await this.applyPlaceVariantFixes(selectedVariants, canonicalOverrides, stepState);
+		applyBtn.addEventListener('click', () => {
+			void this.applyPlaceVariantFixes(selectedVariants, canonicalOverrides, stepState);
 		});
 	}
 
@@ -2030,8 +2029,8 @@ export class CleanupWizardModal extends Modal {
 		setIcon(applyIcon, 'git-merge');
 		applyBtn.createSpan({ text: `Merge ${this.placeDuplicateGroups.length} duplicate group${this.placeDuplicateGroups.length === 1 ? '' : 's'}` });
 
-		applyBtn.addEventListener('click', async () => {
-			await this.applyPlaceDeduplication(canonicalSelections, stepState);
+		applyBtn.addEventListener('click', () => {
+			void this.applyPlaceDeduplication(canonicalSelections, stepState);
 		});
 
 		// Skip button
@@ -2179,8 +2178,8 @@ export class CleanupWizardModal extends Modal {
 		setIcon(startIcon, 'map');
 		startBtn.createSpan({ text: `Start geocoding ${this.ungeocodedPlaces.length} places` });
 
-		startBtn.addEventListener('click', async () => {
-			await this.startGeocoding(stepState);
+		startBtn.addEventListener('click', () => {
+			void this.startGeocoding(stepState);
 		});
 	}
 
@@ -2556,8 +2555,8 @@ export class CleanupWizardModal extends Modal {
 		setIcon(startIcon, 'git-branch');
 		startBtn.createSpan({ text: `Start enriching ${this.placesWithoutParent.length} places` });
 
-		startBtn.addEventListener('click', async () => {
-			await this.startHierarchyEnrichment(stepState);
+		startBtn.addEventListener('click', () => {
+			void this.startHierarchyEnrichment(stepState);
 		});
 	}
 
@@ -3311,7 +3310,7 @@ export class CleanupWizardModal extends Modal {
 		if (!this.contentContainer || !this.footerContainer || !this.progressContainer) return;
 
 		// Hide step progress
-		this.progressContainer.style.display = 'none';
+		this.progressContainer.addClass('crc-hidden');
 
 		const section = this.contentContainer.createDiv({ cls: 'crc-cleanup-section' });
 
@@ -3326,7 +3325,7 @@ export class CleanupWizardModal extends Modal {
 
 		let totalFixes = 0;
 		let skippedCount = 0;
-		let manualCount = 0;
+		const manualCount = 0;
 
 		for (const step of WIZARD_STEPS) {
 			const stepState = this.state.steps[step.number];
@@ -3360,7 +3359,7 @@ export class CleanupWizardModal extends Modal {
 			const status = row.createDiv({ cls: 'crc-cleanup-breakdown-status' });
 
 			switch (stepState.status) {
-				case 'complete':
+				case 'complete': {
 					const checkIcon = status.createSpan({ cls: 'crc-cleanup-breakdown-icon crc-cleanup-breakdown-icon--complete' });
 					setIcon(checkIcon, 'check');
 					if (stepState.fixCount > 0) {
@@ -3369,11 +3368,13 @@ export class CleanupWizardModal extends Modal {
 						status.createSpan({ text: 'Reviewed' });
 					}
 					break;
-				case 'skipped':
+				}
+				case 'skipped': {
 					const skipIcon = status.createSpan({ cls: 'crc-cleanup-breakdown-icon crc-cleanup-breakdown-icon--skipped' });
 					setIcon(skipIcon, 'skip-forward');
 					status.createSpan({ text: stepState.skippedReason || 'Skipped' });
 					break;
+				}
 				case 'pending':
 					status.createSpan({ text: 'Not started', cls: 'crc-cleanup-breakdown-pending' });
 					break;
@@ -3416,7 +3417,7 @@ export class CleanupWizardModal extends Modal {
 	/**
 	 * Run pre-scan to populate issue counts
 	 */
-	private async runPreScan(): Promise<void> {
+	private runPreScan(): void {
 		this.state.isPreScanning = true;
 		this.renderCurrentView();
 

@@ -1249,10 +1249,10 @@ export class GrampsImporter {
 
 		// Check if file already exists
 		const existingFile = this.app.vault.getAbstractFileByPath(filePath);
-		if (existingFile) {
+		if (existingFile instanceof TFile) {
 			if (options.overwriteExisting) {
 				// Overwrite existing file
-				await this.app.vault.modify(existingFile as TFile, content);
+				await this.app.vault.modify(existingFile, content);
 				logger.debug('importSource', `Overwrote existing source: ${filePath}`);
 			} else {
 				// Skip existing file
@@ -1437,10 +1437,10 @@ export class GrampsImporter {
 
 		// Check if file already exists
 		const existingFile = this.app.vault.getAbstractFileByPath(filePath);
-		if (existingFile) {
+		if (existingFile instanceof TFile) {
 			if (options.overwriteExisting) {
 				// Overwrite existing file
-				await this.app.vault.modify(existingFile as TFile, content);
+				await this.app.vault.modify(existingFile, content);
 				logger.debug('importEvent', `Overwrote existing event: ${filePath}`);
 			} else {
 				// Skip existing file (like places do)

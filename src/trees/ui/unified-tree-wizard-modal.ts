@@ -1907,7 +1907,7 @@ export class UnifiedTreeWizardModal extends Modal {
 				}
 
 				// Delete the temporary canvas file (we only needed it for the export)
-				await this.app.vault.delete(canvasFile);
+				await this.app.fileManager.trashFile(canvasFile);
 
 				if (this.formData.openAfterGenerate) {
 					const leaf = this.app.workspace.getLeaf(false);
@@ -1918,7 +1918,7 @@ export class UnifiedTreeWizardModal extends Modal {
 				this.close();
 			} else {
 				// Clean up temporary canvas file even on failure
-				await this.app.vault.delete(canvasFile);
+				await this.app.fileManager.trashFile(canvasFile);
 				new Notice(`Excalidraw export failed: ${excalidrawResult.errors?.join(', ') || 'Unknown error'}`);
 			}
 

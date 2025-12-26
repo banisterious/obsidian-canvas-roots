@@ -701,7 +701,7 @@ export async function mergeDuplicatePlaces(
 	let deletedFiles = 0;
 	for (const dupFile of duplicateFiles) {
 		try {
-			await app.vault.trash(dupFile, true); // true = use system trash
+			await app.fileManager.trashFile(dupFile);
 			deletedFiles++;
 		} catch (error) {
 			console.error(`Failed to delete duplicate: ${dupFile.path}`, error);

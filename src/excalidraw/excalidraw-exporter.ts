@@ -10,7 +10,7 @@ import { getLogger } from '../core/logging';
 import { getErrorMessage } from '../core/error-utils';
 import type { CanvasData } from '../core/canvas-generator';
 import type { CanvasNode } from '../models/canvas';
-import type { ExcalidrawAutomate, ExcalidrawAutomateElement } from './excalidraw-automate.d';
+import type { ExcalidrawAutomate } from './excalidraw-automate.d';
 
 const logger = getLogger('ExcalidrawExporter');
 
@@ -250,6 +250,22 @@ export class ExcalidrawExporter {
 	}
 
 	/**
+	 * Resolve effective nodeContent from options, supporting deprecated includePersonDetails
+	 */
+	private resolveNodeContent(options: ExcalidrawExportOptions): 'name' | 'name-dates' | 'name-dates-places' {
+		if (options.nodeContent) {
+			return options.nodeContent;
+		}
+		// Support deprecated includePersonDetails for backward compatibility
+		// Access via bracket notation to avoid deprecation warning
+		const legacyOption = (options as unknown as Record<string, unknown>)['includePersonDetails'];
+		if (legacyOption === false) {
+			return 'name';
+		}
+		return 'name-dates-places';
+	}
+
+	/**
 	 * Check if ExcalidrawAutomate API is available
 	 */
 	private getExcalidrawAutomate(): ExcalidrawAutomate | null {
@@ -286,8 +302,9 @@ export class ExcalidrawExporter {
 			logger.info('export', `Loaded canvas with ${canvasData.nodes.length} nodes and ${canvasData.edges.length} edges`);
 
 			// Pre-load person details for all nodes (for rich content)
-			if (options.includePersonDetails !== false) {
-				await this.loadPersonDetails(canvasData.nodes);
+			const nodeContent = this.resolveNodeContent(options);
+			if (nodeContent !== 'name') {
+				this.loadPersonDetails(canvasData.nodes);
 			}
 
 			// Check for ExcalidrawAutomate API
@@ -297,7 +314,7 @@ export class ExcalidrawExporter {
 			if (ea) {
 				// Use API mode for enhanced features
 				new Notice('Converting with ExcalidrawAutomate API...');
-				excalidrawData = await this.convertWithApi(ea, canvasData, options);
+				excalidrawData = this.convertWithApi(ea, canvasData, options);
 				result.usedApi = true;
 			} else {
 				// Fallback to JSON generation
@@ -338,10 +355,10 @@ export class ExcalidrawExporter {
 	/**
 	 * Load person details from frontmatter for all file nodes
 	 */
-	private async loadPersonDetails(nodes: CanvasNode[]): Promise<void> {
+	private loadPersonDetails(nodes: CanvasNode[]): void {
 		for (const node of nodes) {
 			if (node.type === 'file' && node.file) {
-				const details = await this.extractPersonDetails(node.file);
+				const details = this.extractPersonDetails(node.file);
 				if (details) {
 					this.personDetailsCache.set(node.id, details);
 				}
@@ -353,7 +370,7 @@ export class ExcalidrawExporter {
 	/**
 	 * Extract person details from file frontmatter
 	 */
-	private async extractPersonDetails(filePath: string): Promise<PersonDetails | null> {
+	private extractPersonDetails(filePath: string): PersonDetails | null {
 		try {
 			const file = this.app.vault.getAbstractFileByPath(filePath);
 			if (!(file instanceof TFile)) return null;
@@ -395,7 +412,13 @@ export class ExcalidrawExporter {
 		if (typeof date === 'string') return date;
 		if (typeof date === 'number') return String(date);
 		if (date instanceof Date) return date.toLocaleDateString();
-		return String(date);
+		// For objects with toString, try to get a meaningful string
+		if (typeof date === 'object' && date !== null && 'toString' in date) {
+			const str = (date as { toString: () => string }).toString();
+			// Only use if it's not the default "[object Object]"
+			if (!str.startsWith('[object ')) return str;
+		}
+		return undefined;
 	}
 
 	/**
@@ -499,11 +522,11 @@ export class ExcalidrawExporter {
 	 * Convert Canvas data to Excalidraw format using ExcalidrawAutomate API
 	 * This method provides enhanced features: smart connectors, wiki links, grouping
 	 */
-	private async convertWithApi(
+	private convertWithApi(
 		ea: ExcalidrawAutomate,
 		canvasData: CanvasData,
 		options: ExcalidrawExportOptions
-	): Promise<ExcalidrawFile> {
+	): ExcalidrawFile {
 		// Reset EA state
 		ea.reset();
 		ea.setView(null); // API-only mode, no open view required
@@ -522,9 +545,7 @@ export class ExcalidrawExporter {
 		const viewBackgroundColor = options.viewBackgroundColor ?? '#ffffff';
 		const opacity = options.opacity ?? 100;
 		const includeWikiLinks = options.includeWikiLinks !== false;
-		// nodeContent replaces includePersonDetails - support both for backward compatibility
-		const nodeContent: 'name' | 'name-dates' | 'name-dates-places' = options.nodeContent ??
-			(options.includePersonDetails === false ? 'name' : 'name-dates-places');
+		const nodeContent = this.resolveNodeContent(options);
 		const useSmartConnectors = options.useSmartConnectors !== false;
 		const styleSpouseRelationships = options.styleSpouseRelationships !== false;
 		const groupElements = options.groupElements !== false;
@@ -588,8 +609,12 @@ export class ExcalidrawExporter {
 			}
 
 			if (labelText) {
+				// ExcalidrawAutomate API style object - not DOM styles
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 				ea.style.strokeColor = '#1e1e1e'; // Text always dark
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 				ea.style.textAlign = 'center';
+				// eslint-disable-next-line obsidianmd/no-static-styles-assignment
 				ea.style.verticalAlign = 'middle';
 
 				// Calculate text dimensions for centering
@@ -722,9 +747,7 @@ export class ExcalidrawExporter {
 		const viewBackgroundColor = options.viewBackgroundColor ?? '#ffffff';
 		const opacity = options.opacity ?? 100;
 		const includeWikiLinks = options.includeWikiLinks !== false;
-		// nodeContent replaces includePersonDetails - support both for backward compatibility
-		const nodeContent: 'name' | 'name-dates' | 'name-dates-places' = options.nodeContent ??
-			(options.includePersonDetails === false ? 'name' : 'name-dates-places');
+		const nodeContent = this.resolveNodeContent(options);
 		const styleSpouseRelationships = options.styleSpouseRelationships !== false;
 		const groupElements = options.groupElements !== false;
 
