@@ -354,6 +354,17 @@ export interface CanvasRootsSettings {
 	// Cleanup wizard state (for resuming interrupted wizards)
 	/** Persisted state of the cleanup wizard, if any */
 	cleanupWizardState?: CleanupWizardPersistedState;
+	// Create entity modal state (for resuming interrupted creation)
+	/** Persisted state for create person modal */
+	createPersonModalState?: CreateEntityPersistedState;
+	/** Persisted state for create place modal */
+	createPlaceModalState?: CreateEntityPersistedState;
+	/** Persisted state for create event modal */
+	createEventModalState?: CreateEntityPersistedState;
+	/** Persisted state for create organization modal */
+	createOrganizationModalState?: CreateEntityPersistedState;
+	/** Persisted state for create source modal */
+	createSourceModalState?: CreateEntityPersistedState;
 	// Version tracking (for migration notices)
 	/** Last plugin version the user has acknowledged (for showing upgrade notices) */
 	lastSeenVersion?: string;
@@ -384,6 +395,19 @@ export interface CleanupWizardPersistedState {
 		/** Number of issues fixed in this step */
 		issuesFixed: number;
 	}>;
+}
+
+/**
+ * Persisted state for create entity modals
+ * Used to resume interrupted entity creation (person, place, event, etc.)
+ */
+export interface CreateEntityPersistedState {
+	/** Modal type identifier */
+	modalType: 'person' | 'place' | 'event' | 'organization' | 'source';
+	/** Form data as key-value pairs */
+	formData: Record<string, unknown>;
+	/** When the state was saved */
+	savedAt: number;
 }
 
 /**

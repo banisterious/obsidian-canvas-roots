@@ -11,6 +11,8 @@ import { PlaceGraphService } from '../core/place-graph';
 import { PersonPickerModal, PersonInfo } from './person-picker';
 import { PlacePickerModal, SelectedPlaceInfo } from './place-picker';
 import type { CanvasRootsSettings } from '../settings';
+import type CanvasRootsPlugin from '../../main';
+import { ModalStatePersistence, renderResumePromptBanner } from './modal-state-persistence';
 
 /**
  * Relationship field data
@@ -18,6 +20,41 @@ import type { CanvasRootsSettings } from '../settings';
 interface RelationshipField {
 	crId?: string;
 	name?: string;
+}
+
+/**
+ * Form data structure for persistence
+ */
+interface PersonFormData {
+	name: string;
+	sex?: string;
+	birthDate?: string;
+	deathDate?: string;
+	occupation?: string;
+	collection?: string;
+	universe?: string;
+	directory?: string;
+	includeDynamicBlocks?: boolean;
+	// Relationship fields
+	fatherCrId?: string;
+	fatherName?: string;
+	motherCrId?: string;
+	motherName?: string;
+	spouseCrId?: string;
+	spouseName?: string;
+	stepfatherCrId?: string;
+	stepfatherName?: string;
+	stepmotherCrId?: string;
+	stepmotherName?: string;
+	adoptiveFatherCrId?: string;
+	adoptiveFatherName?: string;
+	adoptiveMotherCrId?: string;
+	adoptiveMotherName?: string;
+	// Place fields
+	birthPlaceCrId?: string;
+	birthPlaceName?: string;
+	deathPlaceCrId?: string;
+	deathPlaceName?: string;
 }
 
 /**
@@ -53,6 +90,12 @@ export class CreatePersonModal extends Modal {
 	private propertyAliases: Record<string, string> = {};
 	private includeDynamicBlocks: boolean = false;
 	private dynamicBlockTypes: DynamicBlockType[] = ['timeline', 'relationships', 'media'];
+
+	// State persistence
+	private plugin?: CanvasRootsPlugin;
+	private persistence?: ModalStatePersistence<PersonFormData>;
+	private savedSuccessfully: boolean = false;
+	private resumeBanner?: HTMLElement;
 
 	constructor(
 		app: App,
@@ -104,6 +147,8 @@ export class CreatePersonModal extends Modal {
 			// Place graph for place picker
 			placeGraph?: PlaceGraphService;
 			settings?: CanvasRootsSettings;
+			// Plugin reference for state persistence
+			plugin?: CanvasRootsPlugin;
 		}
 	) {
 		super(app);
@@ -117,6 +162,12 @@ export class CreatePersonModal extends Modal {
 		this.existingUniverses = options?.existingUniverses || [];
 		this.placeGraph = options?.placeGraph;
 		this.settings = options?.settings;
+		this.plugin = options?.plugin;
+
+		// Set up persistence (only in create mode)
+		if (this.plugin && !options?.editFile) {
+			this.persistence = new ModalStatePersistence<PersonFormData>(this.plugin, 'person');
+		}
 
 		// Check for edit mode
 		if (options?.editFile && options?.editPersonData) {
@@ -216,7 +267,50 @@ export class CreatePersonModal extends Modal {
 		titleContainer.appendChild(icon);
 		titleContainer.appendText(this.editMode ? 'Edit person note' : 'Create person note');
 
+		// Check for persisted state (only in create mode)
+		if (this.persistence && !this.editMode) {
+			const existingState = this.persistence.getValidState();
+			if (existingState) {
+				const timeAgo = this.persistence.getTimeAgoString(existingState);
+				this.resumeBanner = renderResumePromptBanner(
+					contentEl,
+					timeAgo,
+					() => {
+						// Discard - clear state and remove banner
+						void this.persistence?.clear();
+						this.resumeBanner?.remove();
+						this.resumeBanner = undefined;
+					},
+					() => {
+						// Restore - populate form with saved data
+						this.restoreFromPersistedState(existingState.formData as PersonFormData);
+						this.resumeBanner?.remove();
+						this.resumeBanner = undefined;
+						// Re-render form with restored data
+						this.renderForm(contentEl);
+					}
+				);
+			}
+		}
+
 		// Form container
+		this.renderForm(contentEl);
+	}
+
+	/**
+	 * Render the form fields
+	 */
+	private renderForm(contentEl: HTMLElement): void {
+		// Remove existing form if re-rendering
+		const existingForm = contentEl.querySelector('.crc-form');
+		if (existingForm) {
+			existingForm.remove();
+		}
+		const existingButtons = contentEl.querySelector('.crc-modal-buttons');
+		if (existingButtons) {
+			existingButtons.remove();
+		}
+
 		const form = contentEl.createDiv({ cls: 'crc-form' });
 
 		// Name (required)
@@ -470,7 +564,104 @@ export class CreatePersonModal extends Modal {
 
 	onClose() {
 		const { contentEl } = this;
+
+		// Persist state if not saved successfully and we have persistence enabled
+		if (this.persistence && !this.editMode && !this.savedSuccessfully) {
+			const formData = this.gatherFormData();
+			if (this.persistence.hasContent(formData)) {
+				void this.persistence.persist(formData);
+			}
+		}
+
 		contentEl.empty();
+	}
+
+	/**
+	 * Gather current form data for persistence
+	 */
+	private gatherFormData(): PersonFormData {
+		return {
+			name: this.personData.name,
+			sex: this.personData.sex,
+			birthDate: this.personData.birthDate,
+			deathDate: this.personData.deathDate,
+			occupation: this.personData.occupation,
+			collection: this.getCollectionValue(),
+			universe: this.getUniverseValue(),
+			directory: this.directory,
+			includeDynamicBlocks: this.includeDynamicBlocks,
+			// Relationship fields
+			fatherCrId: this.fatherField.crId,
+			fatherName: this.fatherField.name,
+			motherCrId: this.motherField.crId,
+			motherName: this.motherField.name,
+			spouseCrId: this.spouseField.crId,
+			spouseName: this.spouseField.name,
+			stepfatherCrId: this.stepfatherField.crId,
+			stepfatherName: this.stepfatherField.name,
+			stepmotherCrId: this.stepmotherField.crId,
+			stepmotherName: this.stepmotherField.name,
+			adoptiveFatherCrId: this.adoptiveFatherField.crId,
+			adoptiveFatherName: this.adoptiveFatherField.name,
+			adoptiveMotherCrId: this.adoptiveMotherField.crId,
+			adoptiveMotherName: this.adoptiveMotherField.name,
+			// Place fields
+			birthPlaceCrId: this.birthPlaceField.crId,
+			birthPlaceName: this.birthPlaceField.name,
+			deathPlaceCrId: this.deathPlaceField.crId,
+			deathPlaceName: this.deathPlaceField.name
+		};
+	}
+
+	/**
+	 * Restore form state from persisted data
+	 */
+	private restoreFromPersistedState(formData: PersonFormData): void {
+		// Basic fields
+		this.personData.name = formData.name || '';
+		this.personData.sex = formData.sex;
+		this.personData.birthDate = formData.birthDate;
+		this.personData.deathDate = formData.deathDate;
+		this.personData.occupation = formData.occupation;
+		this.personData.collection = formData.collection;
+		this.personData.universe = formData.universe;
+		if (formData.directory) {
+			this.directory = formData.directory;
+		}
+		if (formData.includeDynamicBlocks !== undefined) {
+			this.includeDynamicBlocks = formData.includeDynamicBlocks;
+		}
+
+		// Relationship fields
+		if (formData.fatherCrId || formData.fatherName) {
+			this.fatherField = { crId: formData.fatherCrId, name: formData.fatherName };
+		}
+		if (formData.motherCrId || formData.motherName) {
+			this.motherField = { crId: formData.motherCrId, name: formData.motherName };
+		}
+		if (formData.spouseCrId || formData.spouseName) {
+			this.spouseField = { crId: formData.spouseCrId, name: formData.spouseName };
+		}
+		if (formData.stepfatherCrId || formData.stepfatherName) {
+			this.stepfatherField = { crId: formData.stepfatherCrId, name: formData.stepfatherName };
+		}
+		if (formData.stepmotherCrId || formData.stepmotherName) {
+			this.stepmotherField = { crId: formData.stepmotherCrId, name: formData.stepmotherName };
+		}
+		if (formData.adoptiveFatherCrId || formData.adoptiveFatherName) {
+			this.adoptiveFatherField = { crId: formData.adoptiveFatherCrId, name: formData.adoptiveFatherName };
+		}
+		if (formData.adoptiveMotherCrId || formData.adoptiveMotherName) {
+			this.adoptiveMotherField = { crId: formData.adoptiveMotherCrId, name: formData.adoptiveMotherName };
+		}
+
+		// Place fields
+		if (formData.birthPlaceCrId || formData.birthPlaceName) {
+			this.birthPlaceField = { crId: formData.birthPlaceCrId, name: formData.birthPlaceName };
+		}
+		if (formData.deathPlaceCrId || formData.deathPlaceName) {
+			this.deathPlaceField = { crId: formData.deathPlaceCrId, name: formData.deathPlaceName };
+		}
 	}
 
 	// Collection value getter (set by collection field setup)
@@ -711,6 +902,12 @@ export class CreatePersonModal extends Modal {
 			});
 
 			new Notice(`Created person note: ${file.basename}`);
+
+			// Mark as saved successfully and clear persisted state
+			this.savedSuccessfully = true;
+			if (this.persistence) {
+				void this.persistence.clear();
+			}
 
 			if (this.onCreated) {
 				this.onCreated(file);
