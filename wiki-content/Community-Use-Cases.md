@@ -4,6 +4,25 @@ Real-world examples of how people use Canvas Roots for genealogy, worldbuilding,
 
 ---
 
+## Table of Contents
+
+- [By User Type](#by-user-type)
+- [Community Examples](#community-examples)
+  - [Importing from Genealogy Software](#importing-from-genealogy-software)
+  - [Building a Family Tree from Scratch](#building-a-family-tree-from-scratch)
+  - [Generating a Family Reunion Report](#generating-a-family-reunion-report)
+  - [Visualizing Migration Patterns](#visualizing-migration-patterns)
+  - [Tracking DNA Matches](#tracking-dna-matches)
+  - [Managing a Fantasy Novel's Character Web](#managing-a-fantasy-novels-character-web)
+  - [TTRPG Campaign Dynasty](#ttrpg-campaign-dynasty)
+  - [Researching a Historical Figure](#researching-a-historical-figure)
+  - [Documenting a Local Cemetery](#documenting-a-local-cemetery)
+  - [Exporting to Share with Family](#exporting-to-share-with-family)
+  - [Using Bases for Data Views](#using-bases-for-data-views)
+- [Share Your Story](#share-your-story)
+
+---
+
 ## By User Type
 
 ### Genealogists
