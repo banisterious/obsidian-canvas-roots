@@ -11,6 +11,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.17.1] - 2025-12-25
+
+### Added
+
+- **Excalidraw export format** - Generate Tree wizard now supports Excalidraw output. Creates hand-drawn style family tree diagrams using ExcalidrawAutomate API when available, with JSON fallback.
+  - Smart connectors that adapt when elements are moved
+  - Spouse relationships styled with dashed lines
+  - Wiki links on nodes for navigation back to person notes
+  - Rich labels with name, dates, and birthplace
+
+### Fixed
+
+- **Text centering in Excalidraw boxes** - Text labels are now properly centered within node rectangles.
+
+- **Duplicate boxes in Excalidraw output** - Fixed issue where using the EA box parameter created visible text containers alongside rectangles.
+
+- **Wiki link brackets in labels** - Wiki link syntax (`[[Link]]`) is now stripped from text labels; links are set via the element's link property instead.
+
+- **Temporary canvas file cleanup** - Excalidraw export no longer leaves behind an intermediate `.canvas` file.
+
+- **Generate button reactivity** - Canvas name input changes now immediately update the Generate button state.
+
+- **Duplicate navigation footer** - Fixed wizard modal showing multiple navigation bars when canvas name was edited.
+
+### Changed
+
+- **Person note context menu** - Simplified to single "Generate visual tree" entry that opens the unified wizard with the person pre-selected.
+
+- **Default canvas name** - Generate Tree wizard step 6 now pre-populates with "Family Tree" instead of requiring manual entry.
+
+---
+
 ## [0.17.0] - 2025-12-25
 
 ### Added
