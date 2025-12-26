@@ -89,7 +89,7 @@ export class CreatePersonModal extends Modal {
 	private editingFile?: TFile;
 	private propertyAliases: Record<string, string> = {};
 	private includeDynamicBlocks: boolean = false;
-	private dynamicBlockTypes: DynamicBlockType[] = ['timeline', 'relationships', 'media'];
+	private dynamicBlockTypes: DynamicBlockType[] = ['media', 'timeline', 'relationships'];
 
 	// State persistence
 	private plugin?: CanvasRootsPlugin;
@@ -158,7 +158,7 @@ export class CreatePersonModal extends Modal {
 		this.familyGraph = options?.familyGraph;
 		this.propertyAliases = options?.propertyAliases || {};
 		this.includeDynamicBlocks = options?.includeDynamicBlocks || false;
-		this.dynamicBlockTypes = options?.dynamicBlockTypes || ['timeline', 'relationships', 'media'];
+		this.dynamicBlockTypes = options?.dynamicBlockTypes || ['media', 'timeline', 'relationships'];
 		this.existingUniverses = options?.existingUniverses || [];
 		this.placeGraph = options?.placeGraph;
 		this.settings = options?.settings;

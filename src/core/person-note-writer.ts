@@ -126,7 +126,7 @@ export async function createPersonNote(
 		propertyAliases = {},
 		filenameFormat = 'original',
 		includeDynamicBlocks = false,
-		dynamicBlockTypes = ['timeline', 'relationships', 'media']
+		dynamicBlockTypes = ['media', 'timeline', 'relationships']
 	} = options;
 
 	// Helper to get aliased property name

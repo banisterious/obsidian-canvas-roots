@@ -5331,7 +5331,7 @@ export class ControlCenterModal extends Modal {
 				filenameFormats,
 				propertyAliases: this.plugin.settings.propertyAliases,
 				includeDynamicBlocks,
-				dynamicBlockTypes: ['timeline', 'relationships', 'media'],
+				dynamicBlockTypes: ['media', 'timeline', 'relationships'],
 				onProgress: (progress) => {
 					progressModal.updateProgress({
 						phase: progress.phase,
@@ -10119,7 +10119,7 @@ export class ControlCenterModal extends Modal {
 				eventsFolder,
 				propertyAliases: this.plugin.settings.propertyAliases,
 				includeDynamicBlocks,
-				dynamicBlockTypes: ['timeline', 'relationships', 'media'],
+				dynamicBlockTypes: ['media', 'timeline', 'relationships'],
 				// Pass media files from .gpkg extraction if available
 				mediaFiles: this.gpkgExtractionResult?.mediaFiles,
 				mediaFolder: this.plugin.settings.mediaFolders[0] || 'Canvas Roots/Media',
