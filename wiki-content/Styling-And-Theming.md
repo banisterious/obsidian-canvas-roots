@@ -1,12 +1,13 @@
 # Styling & Theming
 
-This page covers how to customize the appearance of your family trees.
+This page covers how to customize the appearance of your family trees and charts.
 
 ---
 
 ## Table of Contents
 
-- [Built-in Canvas Roots Styling](#built-in-canvas-roots-styling)
+- [Canvas Tree Styling](#canvas-tree-styling)
+- [Family Chart View Options](#family-chart-view-options)
 - [Advanced Canvas Plugin](#advanced-canvas-plugin)
 - [Style Settings Plugin](#style-settings-plugin)
 - [CSS Customization](#css-customization)
@@ -14,19 +15,19 @@ This page covers how to customize the appearance of your family trees.
 
 ---
 
-## Built-in Canvas Roots Styling
+## Canvas Tree Styling
 
-Canvas Roots provides styling options within the JSON Canvas standard.
+Canvas Roots provides styling options for generated canvas trees within the JSON Canvas standard.
 
 ### Access Settings
 
-- Control Center → Canvas Settings tab
-- Or: Settings → Canvas Roots → Canvas styling
+- **Control Center** → Visual Trees tab → Styling section
 
 ### Node Coloring Schemes
 
 - **Gender**: Green for male, purple for female (genealogy convention)
 - **Generation**: Different color per generation level (creates visual layers)
+- **Collection**: Different colors for each collection/universe
 - **Monochrome**: No coloring (neutral, clean look)
 
 ### Arrow Styles
@@ -55,10 +56,51 @@ By default, spouse relationships are indicated by positioning only. Optionally s
    - Date and location (e.g., "m. 1985 | Boston, MA")
    - Full details (e.g., "m. 1985 | Boston, MA | div. 1992")
 
+### Source Indicators
+
+Enable "Show source indicators" to display source count badges on nodes (e.g., "📎 3"). This helps identify which ancestors have documented evidence.
+
 ### Applying Styling
 
 - Settings apply to newly generated trees automatically
 - For existing trees: right-click → "Regenerate canvas"
+
+---
+
+## Family Chart View Options
+
+The interactive Family Chart View has its own display options accessible directly in the chart toolbar.
+
+### Color Schemes
+
+Access via the color scheme dropdown in the toolbar:
+
+- **Gender**: Pink for female, blue for male (traditional genealogy colors)
+- **Generation**: Different colors for each generation level
+- **Collection**: Color by collection membership
+- **Monochrome**: Neutral coloring for clean appearance
+
+### Layout Spacing
+
+Access via the layout settings button (gear icon):
+
+- **Compact**: 200px horizontal spacing (best for large trees)
+- **Normal**: 250px horizontal spacing (default)
+- **Spacious**: 350px horizontal spacing (best for readability)
+
+### Display Toggles
+
+Available in the layout settings menu:
+
+- **Show dates**: Toggle birth/death dates on person cards
+- **Show kinship labels**: Display relationship labels ("Parent", "Spouse") on connecting lines
+- **Avatars**: Person cards show thumbnail from the first `media` item
+
+### Customizing Colors
+
+For deeper color customization of the Family Chart, use the [Style Settings plugin](#style-settings-plugin) to adjust card colors, backgrounds, and text colors.
+
+See [Family Chart View](Family-Chart-View) for complete documentation
 
 ## Advanced Canvas Plugin
 
@@ -125,14 +167,59 @@ Customize colors for source quality indicators and research coverage:
 | Moderate coverage color | Research coverage between 50-74% | Amber (`#f59e0b`) |
 | Needs research color | Research coverage below 50% | Red (`#ef4444`) |
 
+### Timeline Callouts
+
+Customize the appearance of exported markdown timelines that use `[!cr-timeline]` callouts:
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Enable wide timeline mode | Expands readable line width for timeline notes | Off |
+| Wide timeline width | Width when wide mode is enabled | `1200px` |
+| Year/title text color | Color for year labels | `#e5e5e5` |
+| Year/title font size | Font size for year labels | `1.5em` |
+| Year column width | Width of the year column | `150px` |
+| Vertical line color | Color of the timeline spine | `#525252` |
+| Vertical line width | Thickness of the timeline spine | `4px` |
+| Event dot size | Size of event markers | `32px` |
+| Event dot border width | Border thickness on event markers | `6px` |
+| Event card background | Background color for event cards | `#404040` |
+| Event card border radius | Corner rounding for event cards | `1rem` |
+
+**Event type colors** (dot colors for specific event types):
+
+| Setting | Default |
+|---------|---------|
+| Birth event dot color | Green (`#4ade80`) |
+| Death event dot color | Gray (`#6b7280`) |
+| Marriage event dot color | Pink (`#f472b6`) |
+| Default event dot color | Blue (`#60a5fa`) |
+
+### Frozen Media Gallery
+
+Customize the appearance of frozen media galleries that use `[!info|cr-frozen-gallery]` callouts. These settings are inspired by [MCL Gallery Cards](https://github.com/efemkay/obsidian-modular-css-layout) by Faiz Khuzaimah.
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Gallery gap | Space between images | `5px` |
+| Image max height | Maximum height for gallery images | `200px` |
+| Image max width | Maximum width for gallery images | `250px` |
+| Image border radius | Corner rounding for images | `8px` |
+| Image fit mode | How images fill their container | `cover` |
+| Gallery background | Background color behind the gallery | Transparent |
+
+**Image fit mode options:**
+- `cover` - Fill container, crop if needed (default)
+- `contain` - Fit entire image, may have empty space
+- `fill` - Stretch to fill container
+- `none` - Display at natural size
+
 ### Canvas Node Dimensions
 
 Node width, height, and spacing for generated canvas trees are not CSS-controlled. These settings are configured in:
 
-- **Plugin settings:** Settings → Canvas Roots → Canvas Output
-- **Control Center:** Canvas Settings tab
+- **Control Center** → Visual Trees tab → Layout section
 
-The Style Settings panel includes an informational note pointing to these locations.
+The Style Settings panel includes an informational note pointing to this location.
 
 ## CSS Customization
 
