@@ -70,7 +70,9 @@ source_repository: "Ancestry.com"
 source_repository_url: "https://www.ancestry.com/..."
 collection: "1900 United States Federal Census"
 location: "New York, Kings County, Brooklyn"
-media: "[[attachments/Census 1900 Smith p1.jpg]]"
+media:
+  - "[[attachments/Census 1900 Smith p1.jpg]]"
+  - "[[attachments/Census 1900 Smith p2.jpg]]"
 confidence: high
 ---
 
@@ -99,7 +101,7 @@ See [Bulk Source Image Import](#bulk-source-image-import) below for importing mu
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `type` | string | Yes | Always `"source"` |
+| `cr_type` | string | Yes | Always `"source"` |
 | `cr_id` | string | Yes | Unique identifier |
 | `title` | string | Yes | Descriptive title |
 | `source_type` | enum | Yes | Type of source (see below) |
@@ -109,8 +111,7 @@ See [Bulk Source Image Import](#bulk-source-image-import) below for importing mu
 | `source_repository_url` | string | No | URL to online source |
 | `collection` | string | No | Collection or record group name |
 | `location` | string | No | Geographic location of record |
-| `media` | wikilink | No | Primary media file |
-| `media_2`, `media_3`, etc. | wikilink | No | Additional media files |
+| `media` | array | No | Array of media file wikilinks |
 | `confidence` | enum | No | `high`, `medium`, `low`, `unknown` |
 
 ### Source Types
@@ -429,7 +430,7 @@ Review your selections before applying:
 
 Click **Link media** to apply changes. The wizard:
 1. Updates each source note's frontmatter with media wikilinks
-2. Uses `media` for first image, `media_2`, `media_3`, etc. for additional
+2. Adds images to the `media` array property
 3. Shows progress and results
 
 ### Tips for Best Results
@@ -440,7 +441,7 @@ Click **Link media** to apply changes. The wizard:
 
 **Manual selection:** For images with generic names like `Document (3).jpg` or `Voice Memo 2020-03-15.jpg`, you'll need to manually select the correct source from the dropdown.
 
-**Multiple images per source:** You can link multiple images to the same source note. Each additional image uses the next available `media_N` slot.
+**Multiple images per source:** You can link multiple images to the same source note. Each additional image is appended to the `media` array.
 
 ### Confidence Levels
 

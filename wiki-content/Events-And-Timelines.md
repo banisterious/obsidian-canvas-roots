@@ -78,7 +78,7 @@ Additional notes about this event...
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `type` | string | Yes | Always `"event"` |
+| `cr_type` | string | Yes | Always `"event"` |
 | `cr_id` | string | Yes | Unique identifier |
 | `title` | string | Yes | Display title for the event |
 | `event_type` | enum | Yes | Type of event (see Event Types below) |

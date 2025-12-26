@@ -66,7 +66,7 @@ universe: westeros
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `type` | string | Yes | Must be `organization` |
+| `cr_type` | string | Yes | Must be `organization` |
 | `cr_id` | string | Yes | Unique identifier (auto-generated) |
 | `name` | string | Yes | Organization display name |
 | `org_type` | string | Yes | Category (see types below) |

@@ -42,7 +42,7 @@ Schema notes use flat frontmatter properties (Obsidian best practice) with the s
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `type` | `string` | Yes | Must be `"schema"` |
+| `cr_type` | `string` | Yes | Must be `"schema"` |
 | `cr_id` | `string` | Yes | Unique identifier |
 | `name` | `string` | Yes | Display name |
 | `description` | `string` | No | Optional description |
