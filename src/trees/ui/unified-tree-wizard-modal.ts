@@ -256,7 +256,7 @@ export class UnifiedTreeWizardModal extends Modal {
 			largeTreeHandling: 'auto-page-size',
 
 			// Output defaults
-			canvasName: '',
+			canvasName: 'Family Tree',
 			saveFolder: plugin.settings.canvasesFolder || '',
 			openAfterGenerate: true,
 			pdfTitle: ''
@@ -759,7 +759,8 @@ export class UnifiedTreeWizardModal extends Modal {
 
 			row.addEventListener('click', () => {
 				this.formData.rootPerson = person;
-				if (!this.formData.canvasName) {
+				// Auto-populate canvas name if it's empty or still the default
+				if (!this.formData.canvasName || this.formData.canvasName === 'Family Tree') {
 					this.formData.canvasName = `${person.name} - Family Tree`;
 				}
 				if (!this.formData.pdfTitle) {
@@ -1212,7 +1213,11 @@ export class UnifiedTreeWizardModal extends Modal {
 			.addText(text => text
 				.setPlaceholder('Family Tree')
 				.setValue(this.formData.canvasName)
-				.onChange(value => { this.formData.canvasName = value; }));
+				.onChange(value => {
+					this.formData.canvasName = value;
+					// Re-render navigation to update generate button state
+					this.renderNavigation();
+				}));
 
 		new Setting(form)
 			.setName('Save location')
@@ -1431,6 +1436,12 @@ export class UnifiedTreeWizardModal extends Modal {
 
 	private renderNavigation(): void {
 		if (!this.contentContainer) return;
+
+		// Remove existing nav if present (for reactivity updates)
+		const existingNav = this.contentContainer.querySelector('.cr-wizard-nav');
+		if (existingNav) {
+			existingNav.remove();
+		}
 
 		const nav = this.contentContainer.createDiv({ cls: 'cr-wizard-nav' });
 		const flow = this.getStepFlow();
@@ -1701,6 +1712,7 @@ export class UnifiedTreeWizardModal extends Modal {
 			}
 
 			// First generate as canvas
+			// For Excalidraw export, always include spouse edges so they can be styled differently
 			const canvasOptions: CanvasGenerationOptions = {
 				direction: this.formData.direction,
 				nodeSpacingX: this.plugin.settings.horizontalSpacing,
@@ -1713,7 +1725,7 @@ export class UnifiedTreeWizardModal extends Modal {
 				spouseArrowStyle: this.formData.spouseArrowStyle,
 				parentChildEdgeColor: this.formData.parentChildEdgeColor,
 				spouseEdgeColor: this.formData.spouseEdgeColor,
-				showSpouseEdges: this.formData.showSpouseEdges,
+				showSpouseEdges: true, // Always include spouse edges for Excalidraw (enables dashed styling)
 				spouseEdgeLabelFormat: this.formData.spouseEdgeLabelFormat,
 				showSourceIndicators: this.plugin.settings.showSourceIndicators,
 				showResearchCoverage: this.plugin.settings.trackFactSourcing
@@ -1771,6 +1783,9 @@ export class UnifiedTreeWizardModal extends Modal {
 					new Notice(`Created Excalidraw: ${excalidrawPath}`);
 				}
 
+				// Delete the temporary canvas file (we only needed it for the export)
+				await this.app.vault.delete(canvasFile);
+
 				if (this.formData.openAfterGenerate) {
 					const leaf = this.app.workspace.getLeaf(false);
 					await leaf.openFile(excalidrawFile);
@@ -1779,6 +1794,8 @@ export class UnifiedTreeWizardModal extends Modal {
 				this.options.onComplete?.(excalidrawFile.path);
 				this.close();
 			} else {
+				// Clean up temporary canvas file even on failure
+				await this.app.vault.delete(canvasFile);
 				new Notice(`Excalidraw export failed: ${excalidrawResult.errors?.join(', ') || 'Unknown error'}`);
 			}
 

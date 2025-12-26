@@ -1767,55 +1767,15 @@ export default class CanvasRootsPlugin extends Plugin {
 									.setIcon('git-fork')
 									.setSubmenu();
 
-								// Generate tree submenu
+								// Generate visual tree (opens wizard with person pre-selected)
 								submenu.addItem((subItem) => {
-									const generateTreeSubmenu: Menu = subItem
-										.setTitle('Generate tree')
+									subItem
+										.setTitle('Generate visual tree')
 										.setIcon('git-fork')
-										.setSubmenu();
-
-									// Open in family chart (interactive view, no file created)
-									generateTreeSubmenu.addItem((genItem) => {
-										genItem
-											.setTitle('Open in family chart')
-											.setIcon('git-fork')
-											.onClick(async () => {
-												// Try cache first, fall back to reading file directly
-												let crId = this.app.metadataCache.getFileCache(file)?.frontmatter?.cr_id;
-												if (!crId) {
-													// Fallback: read frontmatter directly from file
-													const content = await this.app.vault.read(file);
-													const match = content.match(/^cr_id:\s*["']?([^"'\n]+)["']?\s*$/m);
-													crId = match?.[1];
-												}
-												if (crId) {
-													await this.activateFamilyChartView(crId);
-												} else {
-													new Notice('Could not find cr_id for this person note');
-												}
-											});
-									});
-
-									generateTreeSubmenu.addSeparator();
-
-									generateTreeSubmenu.addItem((genItem) => {
-										genItem
-											.setTitle('Generate Canvas tree')
-											.setIcon('layout')
-											.onClick(() => {
-												const modal = new ControlCenterModal(this.app, this);
-												modal.openWithPerson(file);
-											});
-									});
-
-									generateTreeSubmenu.addItem((genItem) => {
-										genItem
-											.setTitle('Generate Excalidraw tree')
-											.setIcon('pencil')
-											.onClick(async () => {
-												await this.generateExcalidrawTreeForPerson(file);
-											});
-									});
+										.onClick(() => {
+											const modal = new ControlCenterModal(this.app, this);
+											modal.openWithPerson(file);
+										});
 								});
 
 								submenu.addItem((subItem) => {
@@ -2296,7 +2256,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu with prefix
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Generate family tree')
+									.setTitle('Canvas Roots: Generate visual tree')
 									.setIcon('git-fork')
 									.onClick(() => {
 										const modal = new ControlCenterModal(this.app, this);

@@ -431,6 +431,18 @@ export class ExcalidrawExporter {
 	}
 
 	/**
+	 * Strip wiki link syntax from a string
+	 * Converts [[Link]] or [[Link|Display]] to just the display text
+	 */
+	private stripWikiLinks(text: string): string {
+		if (!text) return text;
+		// Handle [[Link|Display]] format - use Display
+		// Handle [[Link]] format - use Link
+		return text.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2')
+			.replace(/\[\[([^\]]+)\]\]/g, '$1');
+	}
+
+	/**
 	 * Build rich label for node including dates and places
 	 * Note: Wiki links are handled via the element's `link` property, not inline [[]] syntax
 	 */
@@ -445,12 +457,13 @@ export class ExcalidrawExporter {
 		const lines: string[] = [];
 
 		// Name (wiki link is set separately via element's link property)
-		lines.push(details.name);
+		// Strip any wiki link syntax from the name
+		lines.push(this.stripWikiLinks(details.name));
 
 		// Date line
 		if (details.birthDate || details.deathDate) {
-			const birth = details.birthDate || '?';
-			const death = details.deathDate || '';
+			const birth = this.stripWikiLinks(details.birthDate || '?');
+			const death = this.stripWikiLinks(details.deathDate || '');
 			if (death) {
 				lines.push(`${birth} – ${death}`);
 			} else {
@@ -458,9 +471,9 @@ export class ExcalidrawExporter {
 			}
 		}
 
-		// Place (if available)
+		// Place (if available) - strip wiki links
 		if (details.birthPlace) {
-			lines.push(details.birthPlace);
+			lines.push(this.stripWikiLinks(details.birthPlace));
 		}
 
 		return lines.join('\n');
@@ -569,11 +582,31 @@ export class ExcalidrawExporter {
 
 			if (labelText) {
 				ea.style.strokeColor = '#1e1e1e'; // Text always dark
+				ea.style.textAlign = 'center';
+				ea.style.verticalAlign = 'middle';
 
-				// Position text centered in the node (don't use box parameter - it creates a visible container)
+				// Calculate text dimensions for centering
+				// Note: We cannot use ea.measureText() as it requires an active view
+				// Using the same estimation as JSON fallback mode
+				const lines = labelText.split('\n');
+				const maxLineLength = Math.max(...lines.map(l => l.length));
+				const charWidthMultiplier = 0.6;
+				const lineHeightMultiplier = 1.25;
+				const estimatedTextWidth = maxLineLength * fontSize * charWidthMultiplier;
+				const estimatedTextHeight = lines.length * fontSize * lineHeightMultiplier;
+
+				// Calculate centered position within the node
+				// Position the text so its center aligns with the rectangle's center
+				const nodeCenterX = node.x + offsetX + node.width / 2;
+				const nodeCenterY = node.y + offsetY + node.height / 2;
+				const textX = nodeCenterX - estimatedTextWidth / 2;
+				const textY = nodeCenterY - estimatedTextHeight / 2;
+
+				// Add text at the calculated centered position
+				// Do NOT use the box parameter as it creates a visible container
 				const textId = ea.addText(
-					node.x + offsetX + node.width / 2,
-					node.y + offsetY + node.height / 2,
+					textX,
+					textY,
 					labelText,
 					{
 						textAlign: 'center',
@@ -602,7 +635,7 @@ export class ExcalidrawExporter {
 				? CANVAS_TO_EXCALIDRAW_COLORS[edge.color] || CANVAS_TO_EXCALIDRAW_COLORS['none']
 				: CANVAS_TO_EXCALIDRAW_COLORS['none'];
 
-			// Determine relationship type for styling
+			// Determine relationship type for styling (spouse edges = side-to-side, parent-child = top-to-bottom)
 			const relType = this.getRelationshipType(edge);
 			const isSpouse = relType === 'spouse' && styleSpouseRelationships;
 
@@ -758,15 +791,17 @@ export class ExcalidrawExporter {
 				textIdMap.set(node.id, textId);
 				const textElement = this.createText(
 					textId,
-					node.x + offsetX + node.width / 2,
-					node.y + offsetY + node.height / 2,
+					node.x + offsetX,
+					node.y + offsetY,
 					labelText,
 					fontSize,
 					excalidrawId, // container ID
 					{
 						fontFamily,
 						opacity,
-						groupIds: groupId ? [groupId] : []
+						groupIds: groupId ? [groupId] : [],
+						containerWidth: node.width,
+						containerHeight: node.height
 					}
 				);
 				elements.push(textElement);
@@ -895,19 +930,62 @@ export class ExcalidrawExporter {
 			fontFamily?: ExcalidrawFontFamily;
 			opacity?: number;
 			groupIds?: string[];
+			containerWidth?: number;
+			containerHeight?: number;
 		}
 	): ExcalidrawText {
 		// Handle multi-line text for rich labels
 		const lines = text.split('\n');
 		const maxLineLength = Math.max(...lines.map(l => l.length));
-		const textWidth = maxLineLength * fontSize * 0.6; // Approximate width
-		const textHeight = fontSize * 1.2 * lines.length; // Account for multiple lines
+
+		// Estimate text dimensions based on font size
+		// Virgil (hand-drawn) font is quite wide - measured at approximately 0.6 per character
+		// Line height in Excalidraw is fontSize * lineHeight property (default 1.25)
+		const charWidthMultiplier = 0.6;
+		const lineHeightMultiplier = 1.25;
+
+		// Calculate actual rendered dimensions
+		const estimatedTextWidth = maxLineLength * fontSize * charWidthMultiplier;
+		const estimatedTextHeight = lines.length * fontSize * lineHeightMultiplier;
+
+		// Calculate text position
+		let textX: number;
+		let textY: number;
+		let textWidth: number;
+		let textHeight: number;
+
+		if (styleOptions?.containerWidth && styleOptions?.containerHeight) {
+			// Center text within the container
+			// x,y are the container's top-left corner
+			textWidth = estimatedTextWidth;
+			textHeight = estimatedTextHeight;
+
+			// Center horizontally and vertically within container
+			// containerWidth/Height are the rectangle dimensions
+			// We position the text so its center aligns with the rectangle's center
+			const containerCenterX = x + styleOptions.containerWidth / 2;
+			const containerCenterY = y + styleOptions.containerHeight / 2;
+			textX = containerCenterX - textWidth / 2;
+			textY = containerCenterY - textHeight / 2;
+
+			logger.debug('export', `Text positioning: text="${text.substring(0, 20)}...", fontSize=${fontSize}, ` +
+				`maxLineLen=${maxLineLength}, lines=${lines.length}, ` +
+				`estWidth=${textWidth.toFixed(1)}, estHeight=${textHeight.toFixed(1)}, ` +
+				`container=${styleOptions.containerWidth}x${styleOptions.containerHeight}, ` +
+				`pos=(${textX.toFixed(1)}, ${textY.toFixed(1)})`);
+		} else {
+			// Legacy behavior: x,y is the desired center point
+			textWidth = estimatedTextWidth;
+			textHeight = estimatedTextHeight;
+			textX = x - textWidth / 2;
+			textY = y - textHeight / 2;
+		}
 
 		return {
 			id,
 			type: 'text',
-			x: x - textWidth / 2,
-			y: y - textHeight / 2,
+			x: textX,
+			y: textY,
 			width: textWidth,
 			height: textHeight,
 			angle: 0,
