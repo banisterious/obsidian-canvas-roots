@@ -16,19 +16,20 @@ import { isPersonNote, isEventNote } from '../../utils/note-type-detection';
 
 const logger = getLogger('SourceMigration');
 
-/** Track if deprecation warning has been shown (only warn once per session) */
-let deprecationWarningShown = false;
+/** Track if legacy format warning has been shown (only warn once per session) */
+let legacyWarningShown = false;
 
 /**
- * Log a deprecation warning for indexed source properties
+ * Log a warning for legacy indexed source properties
+ * These are no longer supported but can still be migrated via the wizard
  */
-function logDeprecationWarning(count: number): void {
-	if (deprecationWarningShown) return;
-	deprecationWarningShown = true;
+function logLegacyFormatWarning(count: number): void {
+	if (legacyWarningShown) return;
+	legacyWarningShown = true;
 
 	console.warn(
-		`[Canvas Roots] Deprecated: Found ${count} note(s) using indexed source properties ` +
-		`(source, source_2, source_3...). This format is deprecated and will be removed in a future version. ` +
+		`[Canvas Roots] Found ${count} note(s) using legacy indexed source properties ` +
+		`(source, source_2, source_3...). This format is no longer supported. ` +
 		`Use the Cleanup Wizard (Step 6) to migrate to the array format (sources: [...]).`
 	);
 }
@@ -149,7 +150,7 @@ export class SourceMigrationService {
 
 		// Log deprecation warning if indexed sources were found
 		if (results.length > 0) {
-			logDeprecationWarning(results.length);
+			logLegacyFormatWarning(results.length);
 		}
 
 		return results;

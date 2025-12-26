@@ -415,8 +415,8 @@ export class StatisticsService {
 			const fm = cache.frontmatter;
 			// Check if it's an event note
 			if (fm.cr_type === 'event' || cache.tags?.some(t => t.tag === '#event')) {
-				// Check for source field
-				if (!fm.source && !fm.sources && !fm.source_id) {
+				// Check for sources array
+				if (!fm.sources || (Array.isArray(fm.sources) && fm.sources.length === 0)) {
 					count++;
 				}
 			}
@@ -601,14 +601,8 @@ export class StatisticsService {
 			// Check for source references in various fields
 			const sourceRefs: string[] = [];
 
-			if (fm.source) {
-				sourceRefs.push(...this.extractSourceRefs(fm.source));
-			}
 			if (fm.sources) {
 				sourceRefs.push(...this.extractSourceRefs(fm.sources));
-			}
-			if (fm.source_id) {
-				sourceRefs.push(...this.extractSourceRefs(fm.source_id));
 			}
 
 			// Count each reference
@@ -973,7 +967,7 @@ export class StatisticsService {
 
 			const fm = cache.frontmatter;
 			if (fm.cr_type === 'event' || cache.tags?.some(t => t.tag === '#event')) {
-				if (!fm.source && !fm.sources && !fm.source_id) {
+				if (!fm.sources || (Array.isArray(fm.sources) && fm.sources.length === 0)) {
 					unsourced.push(file);
 				}
 			}

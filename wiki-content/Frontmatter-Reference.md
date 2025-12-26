@@ -562,7 +562,7 @@ sources:
   - "[[Birth Certificate - John Smith]]"
 ```
 
-> **Note:** An older indexed format (`source`, `source_2`, `source_3`...) is deprecated but still supported for backwards compatibility. Use the Cleanup Wizard (Step 6: Source Migration) to convert existing notes to the array format.
+> **Note:** An older indexed format (`source`, `source_2`, `source_3`...) is no longer supported as of v0.17.0. If you have notes using this format, use the Cleanup Wizard (Step 6: Source Migration) to convert them to the array format.
 
 ---
 

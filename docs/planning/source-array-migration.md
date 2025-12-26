@@ -79,27 +79,22 @@ sources:
    - Added `sources` to supported property aliases list
    - Added deprecation note pointing to Cleanup Wizard Step 6
 
-### Phase 4: Remove Indexed Support
-1. Remove indexed format parsing (major version bump)
-2. Final cleanup of legacy code
+### Phase 4: Remove Indexed Support ✅
+1. ✅ Remove indexed format parsing from statistics-service.ts
+2. ✅ Update warning message to indicate format is no longer supported
+3. ✅ Update documentation to reflect removal
 
 ## Considerations
 
-### Backwards Compatibility
-- Must support both formats during transition period
-- Gramps import currently uses indexed format - needs update
-- External tools/scripts may depend on indexed format
+### Backwards Compatibility (Resolved)
+- ✅ Transition period complete - indexed format no longer parsed
+- ✅ Gramps and GEDCOM importers already write array format
+- ✅ Migration wizard available for users with legacy notes
 
-### Property Name
-- Option A: Keep `source` (singular) for array property
-- Option B: Use `sources` (plural) for array property - **Recommended**
+### Property Name (Decided)
+- Using `sources` (plural) for the array property
   - Clearer semantic meaning
   - Avoids confusion with single vs. multiple
-
-### Timing
-- Should be done AFTER Universal Media Linking is stable
-- Allows learning from media array implementation
-- Reduces risk of simultaneous breaking changes
 
 ## Implementation Notes
 
