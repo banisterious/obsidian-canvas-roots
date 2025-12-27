@@ -5658,9 +5658,21 @@ export default class CanvasRootsPlugin extends Plugin {
 	}
 
 	private createPersonNote() {
-		// Open Control Center to the Data Entry tab
-		const modal = new ControlCenterModal(this.app, this);
-		modal.openToTab('data-entry');
+		const familyGraph = this.createFamilyGraphService();
+
+		new CreatePersonModal(this.app, {
+			directory: this.settings.peopleFolder || '',
+			familyGraph,
+			propertyAliases: this.settings.propertyAliases,
+			plugin: this,
+			onCreated: (file) => {
+				// Track the newly created person in recent files
+				const recentService = this.getRecentFilesService();
+				if (recentService) {
+					void recentService.trackFile(file, 'person');
+				}
+			}
+		}).open();
 	}
 
 	private async generateAllTrees() {

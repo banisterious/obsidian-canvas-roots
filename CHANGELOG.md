@@ -9,15 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- **Control Center Tools icons and order** - Updated icons: Reports now uses `file-text`, Statistics uses `chart-bar-decreasing`. Reordered tools to: Templates, Media Manager, Family Chart, Import/Export, Reports, Statistics.
-
 ### Fixed
 
-- **Source Media Linker showing already-linked images** - The Link Media to Sources wizard now excludes images that are already attached to a source note. Previously, images would appear in the list even after being linked, requiring manual tracking of which files had been processed.
-
-- **Townships incorrectly flagged as non-standard place types** - Townships are now recognized as valid administrative divisions and will no longer appear in the "Standardize place types" cleanup wizard. Added `township` as a built-in place type at hierarchy level 6 (below county), appropriate for US Midwest/Northeast civil townships.
+- **"Create person note" command opening retired tab** - The command palette "Canvas Roots: Create person note" command now directly opens the Create Person modal instead of attempting to open the retired Data Entry tab in Control Center.
 
 ---
 
@@ -36,6 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Research Level in Bases** - Person bases include "By research level" grouped view, "Needs research" filtered view (Level ≤ 2), and "Not assessed" filtered view for tracking research progress across your tree.
 
 - **Media folder selection for Gramps .gpkg import** - When importing `.gpkg` files with bundled media, a dropdown in the Preview step lets you choose the destination folder: configured media folders from Preferences, the default `Canvas Roots/Media`, or a custom path. Option to preserve the original folder structure from the package.
+
+### Changed
+
+- **Control Center Tools icons and order** - Updated icons: Reports now uses `file-text`, Statistics uses `chart-bar-decreasing`. Reordered tools to: Templates, Media Manager, Family Chart, Import/Export, Reports, Statistics.
+
+### Fixed
+
+- **Source Media Linker showing already-linked images** - The Link Media to Sources wizard now excludes images that are already attached to a source note. Previously, images would appear in the list even after being linked, requiring manual tracking of which files had been processed.
+
+- **Townships incorrectly flagged as non-standard place types** - Townships are now recognized as valid administrative divisions and will no longer appear in the "Standardize place types" cleanup wizard. Added `township` as a built-in place type at hierarchy level 6 (below county), appropriate for US Midwest/Northeast civil townships.
 
 ---
 
