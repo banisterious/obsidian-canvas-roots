@@ -92,7 +92,9 @@ enum ResearchLevel {
 - [ ] `src/reports/research-gaps-report.ts` - Add filtering/sorting
 - [ ] `src/ui/research-gaps-modal.ts` - Add filter controls
 
-### Phase 4: Canvas Tree Visualization (Optional)
+### Phase 4: Canvas Tree Visualization (Deferred)
+
+**Status:** Deferred — Nice-to-have, may conflict with existing indicators
 
 **Color-code tree nodes by research level:**
 
@@ -103,10 +105,11 @@ enum ResearchLevel {
 | 4-5 | Green | Well researched |
 | 6 | Blue/Gold | Complete biography |
 
-**Implementation:**
+**Implementation considerations:**
 - Add setting to enable/disable research level coloring
 - Apply as CSS class or inline style to canvas nodes
-- Consider as alternative to source count indicators (user choice)
+- May conflict or overlap with existing source count indicators
+- Need toggle or combined view to avoid visual clutter
 
 **Files to update:**
 - [ ] `src/settings.ts` - Add toggle setting
@@ -153,12 +156,32 @@ Level 6: Biography - Full narrative with historical context
 
 **Add research_level to Person base views:**
 
-- "By Research Level" grouped view
+- "By Research Level" grouped view (priority)
 - "Needs Research" filtered view (Level 0-2)
 - "Well Documented" filtered view (Level 4+)
 
 **Files to update:**
 - [ ] `src/bases/templates/person-base-template.ts` - Add views
+
+---
+
+## Import Support
+
+**GEDCOM/Gramps import:**
+
+Research level should be importable from GEDCOM/Gramps custom attributes. Users may have tracked this in:
+- GEDCOM `_RESEARCH_LEVEL` or similar custom tag
+- Gramps custom person attributes
+
+**Implementation:**
+- Add optional mapping in import settings
+- Allow user to specify which custom attribute maps to `research_level`
+- Validate imported values are 0-6
+
+**Files to update:**
+- [ ] `src/gedcom/gedcom-parser.ts` - Parse custom tags
+- [ ] `src/gramps/gramps-parser.ts` - Parse custom attributes
+- [ ] `src/ui/import-wizard-modal.ts` - Add mapping option
 
 ---
 
@@ -175,15 +198,15 @@ Level 6: Biography - Full narrative with historical context
 
 ## Open Questions
 
+### Resolved
+
 1. **Should there be an "unknown/not assessed" state separate from Level 0?**
-   - Level 0 means "we know this person exists but don't know their name"
-   - "Not assessed" means "we haven't evaluated the research level yet"
-   - Could use `null`/undefined for "not assessed" vs explicit `0` for "unidentified"
+   → Yes. Use `null`/undefined for "not assessed" vs explicit `0` for "unidentified ancestor."
 
 2. **Auto-calculation vs manual entry?**
-   - Could potentially auto-suggest a level based on filled properties
-   - But research level is about *exhaustiveness*, not just data presence
-   - Recommendation: Manual entry only, but could show hints
+   → Manual entry only. Research level is a qualitative judgment about exhaustiveness, not just data completeness.
+
+### Still Open
 
 3. **Should this integrate with proof summaries?**
    - Level 5 requires a written proof summary
@@ -210,8 +233,12 @@ Level 6: Biography - Full narrative with historical context
 1. **Phase 1: Property Support** - Low effort, foundation
 2. **Phase 2: Edit Modal** - Medium effort, primary UI
 3. **Phase 3: Research Gaps Report** - Medium effort, high value
-4. **Phase 4: Canvas Visualization** - Lower priority, nice-to-have
+4. **Phase 4: Canvas Visualization** - Deferred, may conflict with existing indicators
 
 Phases 1-2 could ship together as minimum viable feature.
 Phase 3 adds significant value for research prioritization.
-Phase 4 is optional enhancement.
+Phase 4 deferred pending evaluation of visual indicator conflicts.
+
+**Additional work (can be done in parallel):**
+- Bases "By Research Level" grouped view (with Phase 1)
+- Import support for GEDCOM/Gramps custom attributes (after Phase 1)
