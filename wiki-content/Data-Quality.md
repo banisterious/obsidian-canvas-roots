@@ -296,7 +296,22 @@ Combines separate place notes that represent the same location.
 
 ### Standardize Place Types
 
-Converts generic place types (like "locality") to specific types (city, town, village).
+Converts generic place types to specific settlement types. This tool flags places with ambiguous types that typically need human review.
+
+**Types flagged for review:**
+- `locality` — Generic term often assigned during import
+- `municipality` — Administrative term that varies by country
+- `hamlet` — May be better classified as village
+- `settlement` — Generic term needing specificity
+
+**Standard types to convert to:**
+- `city` — Large urban area, typically >10,000 population
+- `town` — Medium settlement, typically 1,000–10,000 population
+- `village` — Small rural settlement, typically <1,000 population
+
+**Types NOT flagged:**
+- `township` — Recognized as a valid US administrative division (Midwest/Northeast civil townships)
+- All other built-in types (country, state, county, district, etc.)
 
 ## GEDCOM Import Quality Preview
 
