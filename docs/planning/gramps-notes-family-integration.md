@@ -58,6 +58,24 @@ A Gramps user provided detailed feedback suggesting:
 
 **Takeaway:** This is a power user. Simpler users may still benefit from Phase 1's embedded approach, but the phased plan is validated — each phase serves real needs.
 
+**Additional feedback (2025-12-27):** https://gramps.discourse.group/t/genealogy-research-in-obsidian-for-those-who-want-to-try/8926/8
+
+Same user shared screenshots of their Obsidian vault structure:
+
+| Observation | Details | Implication |
+|-------------|---------|-------------|
+| **"More is less" philosophy** | Advocates importing everything from GEDCOM/Gramps — users can discover new relationships in Obsidian that genealogy software can't show | Validates preserving all data; don't filter during import |
+| **Numbered folder prefixes** | Uses `10. People`, `20. Families & Kinships`, `30. Events`, etc. for ordering | Consider optional numbered prefix support |
+| **Extended entity types** | Has `Ships & Vessels`, `Companies` as separate folders beyond our standard types | Organization entity can cover Companies; Ships could be custom type |
+| **Research Logs** | Dedicated `Research Logs for People` folder with per-person logs | Potential future entity type; relates to Research Tracking in Roadmap |
+| **"People of Interest"** | Separates main research subjects from peripheral people | Could use `status` field or collections to distinguish |
+| **Rich person note sections** | Family & Kinship (with Foster Parents, Grand Parents subsections), History, Events, Occupations, Notes | Our dynamic blocks cover some; person note templates could help |
+| **Status property** | Uses `status: Object of Research` in frontmatter | Not currently in our schema; could add |
+| **Multiple alias variants** | Stores many name variations | Aligns with our existing `aliases` field |
+| **Hierarchical archives** | Organizes by country code + repository (NO/SAO = Norway/State Archive Oslo) | Aligns with our place hierarchy and source organization |
+
+**Takeaway:** This user operates at power-user level, using tools outside intended purpose. Their elaborate structure is aspirational rather than minimum requirement, but validates our phased approach and "preserve everything" principle.
+
 ---
 
 ## Background Research
@@ -269,13 +287,9 @@ The `priv` attribute on Gramps notes indicates private/sensitive content.
 4. **Default behavior?**
    → Notes import enabled by default (valuable data); Family entity and separate files are opt-in
 
-### Still Open
-
-1. **How to handle styled/formatted notes?**
-   - Gramps notes can have `<style>` elements for formatting
-   - Convert to Markdown formatting?
-   - Strip formatting and import plain text only?
-   - Start with plain text, add formatting support later?
+5. **How to handle styled/formatted notes?**
+   → Phase 1: Import plain text only
+   → Phase 2+: Add style conversion for basic types (bold, italic, strikethrough, links)
 
    **Gramps style types** (from `StyledTextTagType`):
    | Type | Markdown equivalent |
@@ -289,16 +303,18 @@ The `priv` attribute on Gramps notes indicates private/sensitive content.
    | LINK | `[text](url)` |
    | FONTFACE, FONTSIZE, FONTCOLOR, HIGHLIGHT | Skip (no Markdown equivalent) |
 
-   **Recommendation:** Phase 1 imports plain text only; Phase 2+ adds style conversion for basic types (bold, italic, strikethrough, links)
+6. **The `format` attribute**
+   → `format="0"` (FLOWED) → normal Markdown text
+   → `format="1"` (FORMATTED) → wrap in code fence or preserve whitespace
 
-2. ~~**The `format` attribute**~~ **RESOLVED**
-   - `format="0"` = **FLOWED** — Normal paragraphs separated by newlines
-   - `format="1"` = **FORMATTED** — Preformatted text, preserve whitespace (like `<pre>` or code blocks)
-   - **Implementation:** FLOWED → normal Markdown text; FORMATTED → wrap in code fence or preserve with `&nbsp;`/hard breaks
+7. **Note tags (`tagref`)**
+   → Store in frontmatter array: `gramps_tags: [research, todo]`
+   → Preserves data without polluting Obsidian tag namespace
+   → Users can convert to Obsidian tags manually if desired
 
-3. **Note tags (`tagref`)**
-   - Should Gramps note tags become Obsidian tags?
-   - How to namespace them to avoid conflicts?
+### Still Open
+
+*None currently — all questions resolved.*
 
 ### Resolved by User Feedback
 
