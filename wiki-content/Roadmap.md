@@ -13,7 +13,6 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Inclusive Parent Relationships](#inclusive-parent-relationships) 📋 Medium
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
-  - [Research Level Property](#research-level-property) 📋 Medium
   - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
   - [Custom Relationships on Canvas Trees](#custom-relationships-on-canvas-trees) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
@@ -39,6 +38,7 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.17.5 | [Research Level Property](Release-History#research-level-property-v0175) | Track research progress with 7-level GPS-based system, Edit Modal selector, Research Gaps Report integration |
 | v0.17.1 | [Excalidraw Export Enhancements](Release-History#excalidraw-export-enhancements-v0171) | ExcalidrawAutomate API integration, smart connectors, wiki links, style customization |
 | v0.17.0 | [Post-Import Cleanup Wizard](Release-History#post-import-cleanup-wizard-v0170) | 10-step guided wizard for post-import data quality (relationships, dates, genders, places, sources) |
 | v0.17.0 | [Source Array Migration](Release-History#source-array-migration-v0170) | Migrate indexed source properties to YAML array format with wizard integration |
@@ -240,43 +240,6 @@ This duality creates complexity in base templates (requires formula workarounds)
 
 **Documentation:**
 - See [Gramps Notes & Family Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/gramps-notes-family-integration.md) for detailed specifications
-
----
-
-### Research Level Property
-
-**Priority:** 📋 Medium — Simple property with high research planning value
-
-**Status:** Planning
-
-**Summary:** Add a `research_level` property to Person notes to track research progress toward GPS-compliant documentation. Based on Yvette Hoitink's "Six Levels of Ancestral Profiles" system, this provides a simple way to identify which ancestors need more research.
-
-**Research Levels:**
-
-| Level | Name | Description |
-|-------|------|-------------|
-| 0 | Unidentified | Ancestor exists but no name established (placeholder) |
-| 1 | Name Only | Name known, appears in others' records, no vital dates |
-| 2 | Vital Statistics | Birth, marriage, death dates researched |
-| 3 | Life Events | Occupations, residences, children, spouses documented |
-| 4 | Extended Records | Property, military, religion, legal records researched |
-| 5 | GPS Complete | Exhaustive research complete, written proof summary exists |
-| 6 | Biography | Full narrative biography with historical context |
-
-**Phased Implementation:**
-
-| Phase | Feature | Description |
-|-------|---------|-------------|
-| 1 | Property Support | Add `research_level` to Person frontmatter schema |
-| 2 | Edit Modal | Add research level selector to Edit Person modal |
-| 3 | Research Gaps Report | Filter/sort by research level, show statistics |
-| 4 | Canvas Visualization | Optional color-coding of tree nodes by research level |
-
-Phases 1-2 ship together as minimum viable feature. Phase 3 adds significant value for research prioritization. Phase 4 is an optional enhancement.
-
-**Documentation:**
-- See [Research Level Property Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/research-level-property.md) for detailed specifications
-- Based on [Hoitink's Six Levels of Ancestral Profiles](https://www.dutchgenealogy.nl/six-levels-ancestral-profiles/)
 
 ---
 

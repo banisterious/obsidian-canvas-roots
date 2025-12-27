@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.17.x](#v017x)
+  - [Research Level Property](#research-level-property-v0175)
   - [Excalidraw Export Enhancements](#excalidraw-export-enhancements-v0171)
   - [Post-Import Cleanup Wizard](#post-import-cleanup-wizard-v0170)
   - [Source Array Migration](#source-array-migration-v0170)
@@ -69,6 +70,60 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.17.x
+
+### Research Level Property (v0.17.5)
+
+A `research_level` property for Person notes to track research progress toward GPS-compliant documentation. Based on Yvette Hoitink's "Six Levels of Ancestral Profiles" system.
+
+**Problem Solved:**
+
+Genealogists need a way to track how thoroughly each ancestor has been researched, supporting the GPS principle of "reasonably exhaustive research." Previously, there was no standardized way to indicate which ancestors need more work.
+
+**Research Levels:**
+
+| Level | Name | Description |
+|-------|------|-------------|
+| 0 | Unidentified | Ancestor exists but no name established (placeholder) |
+| 1 | Name Only | Name known, appears in others' records, no vital dates |
+| 2 | Vital Statistics | Birth, marriage, death dates researched |
+| 3 | Life Events | Occupations, residences, children, spouses documented |
+| 4 | Extended Records | Property, military, religion, legal records researched |
+| 5 | GPS Complete | Exhaustive research complete, written proof summary exists |
+| 6 | Biography | Full narrative biography with historical context |
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **Edit Modal Selector** | Dropdown in Create/Edit Person modal to set research level |
+| **Research Gaps Report** | Filter/sort by level, show statistics by level range |
+| **Bases Views** | "By research level" grouped view, "Needs research" filtered view |
+| **GEDCOM Export** | `_RESEARCH_LEVEL` custom tag |
+| **Gramps Export** | `<attribute type="Research Level">` element |
+| **Round-trip Import** | Both formats import back into `research_level` property |
+
+**UI Integration:**
+
+The research level selector appears in the Edit Person modal when `trackFactSourcing` is enabled in settings. The "(Not assessed)" option allows distinguishing between "not yet evaluated" and "Level 0 (Unidentified)".
+
+**Files Modified:**
+
+| File | Changes |
+|------|---------|
+| `src/types/frontmatter.ts` | ResearchLevel type, RESEARCH_LEVELS metadata |
+| `src/core/person-note-writer.ts` | researchLevel in PersonData |
+| `src/ui/create-person-modal.ts` | Dropdown selector |
+| `src/core/family-graph.ts` | researchLevel in PersonNode |
+| `src/reports/services/gaps-report-generator.ts` | Filtering, sorting, statistics |
+| `src/gedcom/gedcom-exporter.ts` | `_RESEARCH_LEVEL` export |
+| `src/gramps/gramps-exporter.ts` | "Research Level" attribute export |
+| `src/gedcom/gedcom-parser-v2.ts` | Import parsing |
+| `src/gramps/gramps-parser.ts` | Import parsing |
+| `src/constants/base-template.ts` | Bases views |
+
+See [Research Level Property Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/research-level-property.md) for implementation details.
+
+---
 
 ### Excalidraw Export Enhancements (v0.17.1)
 
