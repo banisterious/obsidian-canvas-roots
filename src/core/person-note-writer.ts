@@ -95,7 +95,7 @@ export interface CreatePersonNoteOptions {
 	filenameFormat?: FilenameFormat;
 	/** Include dynamic content blocks in the note body */
 	includeDynamicBlocks?: boolean;
-	/** Which dynamic block types to include (default: ['timeline', 'relationships']) */
+	/** Which dynamic block types to include (default: ['media', 'timeline', 'relationships']) */
 	dynamicBlockTypes?: DynamicBlockType[];
 }
 

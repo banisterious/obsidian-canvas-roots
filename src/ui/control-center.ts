@@ -2200,7 +2200,7 @@ export class ControlCenterModal extends Modal {
 						familyGraph,
 						propertyAliases: this.plugin.settings.propertyAliases,
 						includeDynamicBlocks: false,
-						dynamicBlockTypes: ['timeline', 'relationships'],
+						dynamicBlockTypes: ['media', 'timeline', 'relationships'],
 						existingUniverses: allUniverses,
 						plugin: this.plugin,
 						onCreated: () => {
