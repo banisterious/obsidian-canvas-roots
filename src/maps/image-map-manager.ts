@@ -12,15 +12,30 @@ import * as L from 'leaflet';
 import { getLogger } from '../core/logging';
 import type { CustomMapConfig, ImageCorners } from './types/map-types';
 import { isMapNote } from '../utils/note-type-detection';
+import { resolveImageToUrl } from '../utils/wikilink-resolver';
 
 // Initialize logger early so it can be used by helper functions
 const logger = getLogger('ImageMapManager');
 
 /**
  * Safely convert frontmatter value to string
+ * Handles wikilinks that YAML parsed as nested arrays: [[path]] becomes [["path"]]
  */
 function fmToString(value: unknown, fallback = ''): string {
 	if (value === undefined || value === null) return fallback;
+
+	// Handle wikilinks parsed as nested arrays by YAML
+	// [[path/to/file]] in YAML becomes [["path/to/file"]] (nested array)
+	if (Array.isArray(value)) {
+		if (value.length === 1 && Array.isArray(value[0]) && value[0].length === 1) {
+			// This is a wikilink: [[path]] parsed as [["path"]]
+			// Reconstruct it as a wikilink string
+			return `[[${value[0][0]}]]`;
+		}
+		// Other array types - stringify
+		return JSON.stringify(value);
+	}
+
 	if (typeof value === 'object' && value !== null) return JSON.stringify(value);
 	// At this point, value is a primitive
 	return String(value as string | number | boolean | bigint | symbol);
@@ -496,24 +511,17 @@ export class ImageMapManager {
 
 	/**
 	 * Get a data URL for an image in the vault
+	 * Supports both plain paths and wikilink format ([[path/to/image.jpg]])
 	 */
 	private async getImageUrl(imagePath: string): Promise<string | null> {
 		try {
-			const file = this.app.vault.getAbstractFileByPath(imagePath);
-			if (file && file instanceof TFile) {
-				const arrayBuffer = await this.app.vault.readBinary(file);
-				const blob = new Blob([arrayBuffer]);
-				return URL.createObjectURL(blob);
+			// Use wikilink resolver which handles both plain paths and [[wikilinks]]
+			const url = await resolveImageToUrl(this.app, imagePath);
+			if (url) {
+				return url;
 			}
 
-			// Try with vault adapter directly
-			const exists = await this.app.vault.adapter.exists(imagePath);
-			if (exists) {
-				const data = await this.app.vault.adapter.readBinary(imagePath);
-				const blob = new Blob([data]);
-				return URL.createObjectURL(blob);
-			}
-
+			logger.warn('get-image-url', `Could not resolve image path: ${imagePath}`);
 			return null;
 		} catch (error) {
 			logger.error('get-image-url', `Failed to get image URL for ${imagePath}`, { error });

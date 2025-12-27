@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Pixel coordinate support in Create Place modal** - When creating fictional, mythological, or legendary places, the modal now shows pixel coordinate fields (X/Y) instead of geographic coordinates. These coordinates are used for pixel-based custom maps.
 
+- **Wikilink support for custom map images** - Map image paths can now use wikilink syntax (`[[path/to/image.png]]`), allowing Obsidian to automatically update paths when images are moved or renamed. The Create Map modal now stores image paths as wikilinks by default.
+
+- **Map auto-refresh on note changes** - Maps now automatically refresh when place or person notes are modified, using Obsidian's metadata cache events for reliable change detection.
+
 ### Fixed
 
 - **Custom maps not appearing in gallery after creation** - Fixed issue where newly created custom maps wouldn't appear in the Control Center Maps tab gallery. The gallery now correctly detects maps using the `cr_type: map` frontmatter property in addition to the legacy `type: map` format.

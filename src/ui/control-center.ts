@@ -36,6 +36,7 @@ import { PlaceNetworkModal } from './place-network-modal';
 import { TemplateSnippetsModal } from './template-snippets-modal';
 import { CreatePersonModal } from './create-person-modal';
 import { CreateMapModal } from './create-map-modal';
+import { resolvePathToFile } from '../utils/wikilink-resolver';
 import { renderWorldMapPreview } from '../maps/ui/world-map-preview';
 import { BulkGeocodeModal } from '../maps/ui/bulk-geocode-modal';
 import { CreateSchemaModal } from './create-schema-modal';
@@ -6266,8 +6267,9 @@ export class ControlCenterModal extends Modal {
 
 			// Try to load image preview
 			if (mapNote.imagePath) {
-				const imageFile = this.app.vault.getAbstractFileByPath(mapNote.imagePath);
-				if (imageFile instanceof TFile) {
+				// Use wikilink resolver to handle both plain paths and [[wikilinks]]
+				const imageFile = resolvePathToFile(this.app, mapNote.imagePath);
+				if (imageFile) {
 					const imgUrl = this.app.vault.getResourcePath(imageFile);
 					const img = thumbnail.createEl('img', {
 						attr: {
@@ -6459,10 +6461,25 @@ export class ControlCenterModal extends Modal {
 			const frontmatter = cache?.frontmatter;
 
 			if (frontmatter?.cr_type === 'map' || frontmatter?.type === 'map') {
+				// Get raw image value - may be string, nested array (YAML [[path]]), or quoted wikilink
+				const rawImage = frontmatter.image || frontmatter.image_path || frontmatter.imagePath;
+				let imagePath: string | undefined;
+
+				if (rawImage) {
+					// Handle wikilinks parsed as nested arrays by YAML
+					// [[path/to/file]] becomes [["path/to/file"]] in memory
+					if (Array.isArray(rawImage) && rawImage.length === 1 &&
+						Array.isArray(rawImage[0]) && rawImage[0].length === 1) {
+						imagePath = `[[${rawImage[0][0]}]]`;
+					} else if (typeof rawImage === 'string') {
+						imagePath = rawImage;
+					}
+				}
+
 				maps.push({
 					name: frontmatter.name || file.basename,
 					filePath: file.path,
-					imagePath: frontmatter.image || frontmatter.image_path || frontmatter.imagePath,
+					imagePath,
 					universe: frontmatter.universe,
 					id: frontmatter.map_id
 				});

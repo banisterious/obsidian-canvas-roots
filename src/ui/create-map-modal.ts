@@ -5,6 +5,7 @@
 
 import { App, Modal, Setting, TFile, Notice, normalizePath } from 'obsidian';
 import { createLucideIcon } from './lucide-icons';
+import { isWikilink, extractWikilinkPath, toWikilink } from '../utils/wikilink-resolver';
 
 /**
  * Safely convert frontmatter value to string
@@ -254,10 +255,13 @@ export class CreateMapModal extends Modal {
 
 		imagePathSetting.addText(text => {
 			this.imagePathInput = text.inputEl;
+			// Display the path without wikilink brackets for readability
+			const displayPath = extractWikilinkPath(this.mapData.imagePath);
 			text.setPlaceholder('e.g., assets/maps/middle-earth.jpg')
-				.setValue(this.mapData.imagePath)
+				.setValue(displayPath)
 				.onChange(value => {
-					this.mapData.imagePath = value;
+					// If user manually types a path, convert to wikilink
+					this.mapData.imagePath = isWikilink(value) ? value : toWikilink(value);
 				});
 		});
 
@@ -449,8 +453,11 @@ export class CreateMapModal extends Modal {
 
 		// Create a simple file picker modal
 		const picker = new ImagePickerModal(this.app, imageFiles, (selectedPath) => {
-			this.mapData.imagePath = selectedPath;
+			// Store as wikilink format so Obsidian can auto-update when file moves
+			const wikilink = toWikilink(selectedPath);
+			this.mapData.imagePath = wikilink;
 			if (this.imagePathInput) {
+				// Display the path without brackets for readability
 				this.imagePathInput.value = selectedPath;
 			}
 		});
@@ -600,12 +607,17 @@ export class CreateMapModal extends Modal {
 		// Helper to get aliased property name
 		const prop = (canonical: string) => getWriteProperty(canonical, this.propertyAliases);
 
+		// Quote the image path if it's a wikilink to prevent YAML from parsing [[...]] as array
+		const imagePath = this.mapData.imagePath.startsWith('[[')
+			? `"${this.mapData.imagePath}"`
+			: this.mapData.imagePath;
+
 		const lines: string[] = [
 			`${prop('cr_type')}: map`,
 			`map_id: ${this.mapData.mapId}`,
 			`${prop('name')}: ${this.mapData.name}`,
 			`${prop('universe')}: ${this.mapData.universe}`,
-			`image: ${this.mapData.imagePath}`,
+			`image: ${imagePath}`,
 			`coordinate_system: ${this.mapData.coordinateSystem}`
 		];
 
