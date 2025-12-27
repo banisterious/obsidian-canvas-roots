@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Research Level in Bases** - Person bases include "By research level" grouped view, "Needs research" filtered view (Level ≤ 2), and "Not assessed" filtered view for tracking research progress across your tree.
 
+- **Media folder selection for Gramps .gpkg import** - When importing `.gpkg` files with bundled media, a dropdown in the Preview step lets you choose the destination folder: configured media folders from Preferences, the default `Canvas Roots/Media`, or a custom path. Option to preserve the original folder structure from the package.
+
 ---
 
 ## [0.17.4] - 2025-12-27

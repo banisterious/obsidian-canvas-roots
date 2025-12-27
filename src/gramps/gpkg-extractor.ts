@@ -186,6 +186,7 @@ export async function extractGpkg(
 		if (isTarFile(decompressed)) {
 			logger.debug('extractGpkg', 'Decompressed data is a tar archive, extracting...');
 			const tarFiles = extractTar(decompressed);
+			logger.debug('extractGpkg', `Tar contains ${tarFiles.size} entries: ${Array.from(tarFiles.keys()).slice(0, 20).join(', ')}${tarFiles.size > 20 ? '...' : ''}`);
 
 			// Find the Gramps XML file in the tar
 			let grampsXml: string | null = null;
@@ -240,6 +241,10 @@ export async function extractGpkg(
 
 	// Load the ZIP
 	const zip = await JSZip.loadAsync(data);
+
+	// Log all files in the ZIP for debugging
+	const allPaths = Object.keys(zip.files);
+	logger.debug('extractGpkg', `ZIP contains ${allPaths.length} entries: ${allPaths.slice(0, 20).join(', ')}${allPaths.length > 20 ? '...' : ''}`);
 
 	// Find the Gramps XML file
 	// It's typically named data.gramps or [filename].gramps at the root

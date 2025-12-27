@@ -55,6 +55,8 @@ interface ImportWizardFormData {
 	importSources: boolean;
 	importEvents: boolean;
 	importMedia: boolean;
+	mediaFolder: string;
+	preserveMediaFolderStructure: boolean;
 	includeDynamicBlocks: boolean;
 	targetFolder: string;
 	conflictHandling: ConflictHandling;
@@ -183,6 +185,8 @@ export class ImportWizardModal extends Modal {
 			importSources: true,
 			importEvents: true,
 			importMedia: true,
+			mediaFolder: this.plugin?.settings?.mediaFolders?.[0] || 'Canvas Roots/Media',
+			preserveMediaFolderStructure: false,
 			includeDynamicBlocks: true,
 			targetFolder: this.plugin?.settings?.peopleFolder || 'People',
 			conflictHandling: 'skip',
@@ -595,6 +599,110 @@ export class ImportWizardModal extends Modal {
 			}
 		}
 
+		// Media folder selection (only show for Gramps with media files)
+		if (this.formData.format === 'gramps' &&
+			this.formData.importMedia &&
+			this.formData.gpkgExtractionResult &&
+			this.formData.gpkgExtractionResult.mediaFiles.size > 0) {
+
+			const mediaCount = this.formData.gpkgExtractionResult.mediaFiles.size;
+			const mediaFolderSection = section.createDiv({ cls: 'crc-import-media-folder-section crc-mt-3' });
+			mediaFolderSection.createEl('h4', {
+				text: `Media destination (${mediaCount} files)`,
+				cls: 'crc-import-options-title'
+			});
+
+			const mediaFolderRow = mediaFolderSection.createDiv({ cls: 'crc-import-option-row' });
+			const mediaFolderSelect = mediaFolderRow.createEl('select', { cls: 'crc-import-select' });
+
+			// Build folder options
+			const settings = this.plugin?.settings;
+			const configuredFolders = settings?.mediaFolders?.filter((f: string) => f.trim()) || [];
+			const defaultFolder = 'Canvas Roots/Media';
+
+			// Option 1: Configured folders from settings
+			for (const folder of configuredFolders) {
+				const option = mediaFolderSelect.createEl('option', { value: folder, text: folder });
+				if (this.formData.mediaFolder === folder) {
+					option.selected = true;
+				}
+			}
+
+			// Option 2: Default folder (if not in configured list)
+			if (!configuredFolders.includes(defaultFolder)) {
+				const option = mediaFolderSelect.createEl('option', {
+					value: defaultFolder,
+					text: `${defaultFolder} (default)`
+				});
+				if (this.formData.mediaFolder === defaultFolder) {
+					option.selected = true;
+				}
+			}
+
+			// Option 3: Custom folder
+			const customOption = mediaFolderSelect.createEl('option', { value: '__custom__', text: 'Custom folder...' });
+			const isCustom = !configuredFolders.includes(this.formData.mediaFolder) &&
+				this.formData.mediaFolder !== defaultFolder;
+			if (isCustom) {
+				customOption.selected = true;
+			}
+
+			// Custom folder input (hidden by default)
+			const customFolderRow = mediaFolderSection.createDiv({ cls: 'crc-import-option-row crc-mt-1' });
+			const customFolderInput = customFolderRow.createEl('input', {
+				type: 'text',
+				cls: 'crc-import-input',
+				placeholder: 'Enter custom folder path',
+				value: isCustom ? this.formData.mediaFolder : ''
+			});
+			customFolderRow.style.display = isCustom ? 'block' : 'none';
+
+			mediaFolderSelect.addEventListener('change', () => {
+				if (mediaFolderSelect.value === '__custom__') {
+					customFolderRow.style.display = 'block';
+					customFolderInput.focus();
+				} else {
+					customFolderRow.style.display = 'none';
+					this.formData.mediaFolder = mediaFolderSelect.value;
+				}
+			});
+
+			customFolderInput.addEventListener('input', () => {
+				this.formData.mediaFolder = customFolderInput.value || defaultFolder;
+			});
+
+			// Checkbox to preserve folder structure from .gpkg
+			const preserveStructureRow = mediaFolderSection.createDiv({ cls: 'crc-import-option-row crc-mt-2' });
+			const preserveCheckbox = preserveStructureRow.createEl('input', {
+				type: 'checkbox',
+				cls: 'crc-import-checkbox'
+			});
+			preserveCheckbox.id = 'preserve-media-structure';
+			preserveCheckbox.checked = this.formData.preserveMediaFolderStructure;
+
+			const preserveLabel = preserveStructureRow.createEl('label', {
+				cls: 'crc-import-checkbox-label',
+				text: 'Preserve folder structure from package'
+			});
+			preserveLabel.setAttribute('for', 'preserve-media-structure');
+
+			// Show example of original paths
+			const examplePaths = Array.from(this.formData.gpkgExtractionResult.mediaFiles.keys()).slice(0, 2);
+			if (examplePaths.length > 0) {
+				const exampleEl = mediaFolderSection.createDiv({ cls: 'crc-import-option-hint crc-mt-1' });
+				const firstPath = examplePaths[0];
+				const pathParts = firstPath.split('/');
+				if (pathParts.length > 1) {
+					const folderPath = pathParts.slice(0, -1).join('/');
+					exampleEl.textContent = `e.g., ${this.formData.mediaFolder}/${folderPath}/...`;
+				}
+			}
+
+			preserveCheckbox.addEventListener('change', () => {
+				this.formData.preserveMediaFolderStructure = preserveCheckbox.checked;
+			});
+		}
+
 		// Show warnings if any
 		if (this.formData.parseWarnings.length > 0) {
 			const warningEl = section.createDiv({ cls: 'crc-import-preview-warning' });
@@ -880,7 +988,8 @@ export class ImportWizardModal extends Modal {
 					includeDynamicBlocks: this.formData.includeDynamicBlocks,
 					// Pass media files from .gpkg extraction if available
 					mediaFiles: this.formData.gpkgExtractionResult?.mediaFiles,
-					mediaFolder: settings.mediaFolders?.[0] || 'Canvas Roots/Media',
+					mediaFolder: this.formData.mediaFolder,
+					preserveMediaFolderStructure: this.formData.preserveMediaFolderStructure,
 					extractMedia: this.formData.importMedia && this.formData.gpkgExtractionResult !== null,
 					onProgress: (progress) => {
 						// Update UI based on progress

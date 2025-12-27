@@ -9918,8 +9918,16 @@ export class ControlCenterModal extends Modal {
 				}
 
 				// Extract the package
-				this.gpkgExtractionResult = await extractGpkg(arrayBuffer, file.name);
-				content = this.gpkgExtractionResult.grampsXml;
+				try {
+					logger.info('gramps', 'About to call extractGpkg...');
+					this.gpkgExtractionResult = await extractGpkg(arrayBuffer, file.name);
+					logger.info('gramps', 'extractGpkg returned successfully');
+					content = this.gpkgExtractionResult.grampsXml;
+					logger.info('gramps', `Extraction result: grampsXml.length=${this.gpkgExtractionResult.grampsXml.length}, mediaFiles type=${typeof this.gpkgExtractionResult.mediaFiles}, isMap=${this.gpkgExtractionResult.mediaFiles instanceof Map}, size=${this.gpkgExtractionResult.mediaFiles?.size}`);
+				} catch (extractError) {
+					logger.error('gramps', 'extractGpkg threw an error:', extractError);
+					throw extractError;
+				}
 
 				// Show extraction info
 				if (this.gpkgExtractionResult.mediaFiles.size > 0) {
@@ -9939,6 +9947,9 @@ export class ControlCenterModal extends Modal {
 				});
 				return;
 			}
+
+			// Small delay to allow the loading message to render before heavy parsing
+			await new Promise(resolve => setTimeout(resolve, 50));
 
 			const importer = new GrampsImporter(this.app);
 			const analysis = importer.analyzeFile(content);
@@ -10032,8 +10043,10 @@ export class ControlCenterModal extends Modal {
 			let preserveMediaStructure = this.plugin.settings.preserveMediaFolderStructure;
 			let selectedMediaFolder = this.plugin.settings.mediaFolders[0] || 'Canvas Roots/Media';
 			let customMediaFolder = '';
+			logger.info('gramps', `Checking gpkgExtractionResult: exists=${!!this.gpkgExtractionResult}, mediaFiles=${this.gpkgExtractionResult?.mediaFiles?.size ?? 0}`);
 			if (this.gpkgExtractionResult && this.gpkgExtractionResult.mediaFiles.size > 0) {
 				const mediaCount = this.gpkgExtractionResult.mediaFiles.size;
+				logger.debug('gramps', `Rendering media folder settings for ${mediaCount} media files`);
 
 				// Build media folder options from settings
 				const mediaFolderOptions: Record<string, string> = {};
@@ -10169,6 +10182,10 @@ export class ControlCenterModal extends Modal {
 			}
 
 			logger.info('gramps', `Starting Gramps import: ${file.name} to ${destFolder}`);
+			logger.debug('gramps', `Content length: ${content.length} characters`);
+
+			// Small delay to ensure modal is fully rendered before heavy processing
+			await new Promise(resolve => setTimeout(resolve, 100));
 
 			// Disable bidirectional sync during import to prevent duplicate relationships
 			this.plugin.disableBidirectionalSync();

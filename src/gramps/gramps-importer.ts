@@ -241,6 +241,8 @@ export class GrampsImporter {
 		try {
 			// Validate Gramps XML first
 			reportProgress('validating', 0, 1, 'Validating Gramps XML file…');
+			// Small delay to allow UI to repaint before synchronous validation
+			await new Promise(resolve => setTimeout(resolve, 50));
 			const validation = GrampsParser.validate(content);
 			result.validation = validation;
 
@@ -259,6 +261,8 @@ export class GrampsImporter {
 
 			// Parse Gramps XML
 			reportProgress('parsing', 0, 1, 'Parsing Gramps XML file…');
+			// Small delay to allow UI to repaint before synchronous parsing blocks the thread
+			await new Promise(resolve => setTimeout(resolve, 50));
 			const grampsData = GrampsParser.parse(content);
 			reportProgress('parsing', 1, 1, `Parsed ${grampsData.persons.size} individuals`);
 

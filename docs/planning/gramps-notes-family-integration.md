@@ -46,12 +46,17 @@ A Gramps user provided detailed feedback suggesting:
 7. **Privacy flag handling** — Respect private flags, especially for synced vaults
 8. **Link back to Gramps** — Obsidian files as media objects in Gramps
 
-**Pending questions for the user:**
-- How often are notes shared across multiple entities?
-- What's the typical use case for family-level notes?
-- Is the workflow one-time import or ongoing sync?
-- What triggers marking notes as private?
-- Do they use Obsidian Sync or publish their vault?
+**User feedback received (2025-12-27):** See `docs/user-feedback/user-feedback-03.md`
+
+| Question | Answer | Implication |
+|----------|--------|-------------|
+| Notes shared across entities? | **Yes, frequently.** Uses `[[{doc}\|Alias]]` format with redundant "Notes" sections for control. | Phase 4 (separate note files) important for this user |
+| Family notes use case? | Same as any entity — info that can't attach elsewhere, research docs, links | Phase 3 (Family entity) needed |
+| One-time import or sync? | **Advanced hybrid.** Obsidian is "hub" connecting tools; plans Python scripts for bi-directional sync | Phase 5 eventually needed; preserve handles |
+| Privacy flag triggers? | Manual control preferred; just add the YAML key for extensibility | Phase 1 approach is correct |
+| Obsidian Sync / publishing? | No Sync; looking at export-to-website plugins; wants total control over what leaves computer | Privacy flag as frontmatter sufficient |
+
+**Takeaway:** This is a power user. Simpler users may still benefit from Phase 1's embedded approach, but the phased plan is validated — each phase serves real needs.
 
 ---
 
@@ -272,22 +277,38 @@ The `priv` attribute on Gramps notes indicates private/sensitive content.
    - Strip formatting and import plain text only?
    - Start with plain text, add formatting support later?
 
-2. **Note sharing patterns?**
-   - Waiting for user feedback on how often notes are shared across entities
-   - If rare, embedded approach is fine
-   - If common, separate files become more important
+   **Gramps style types** (from `StyledTextTagType`):
+   | Type | Markdown equivalent |
+   |------|---------------------|
+   | BOLD | `**text**` |
+   | ITALIC | `*text*` |
+   | UNDERLINE | `<u>text</u>` (HTML) or skip |
+   | STRIKETHROUGH | `~~text~~` |
+   | SUPERSCRIPT | `<sup>text</sup>` |
+   | SUBSCRIPT | `<sub>text</sub>` |
+   | LINK | `[text](url)` |
+   | FONTFACE, FONTSIZE, FONTCOLOR, HIGHLIGHT | Skip (no Markdown equivalent) |
 
-3. **The `format` attribute**
-   - What does `format="0"` vs `format="1"` indicate?
-   - Needs research in Gramps documentation
+   **Recommendation:** Phase 1 imports plain text only; Phase 2+ adds style conversion for basic types (bold, italic, strikethrough, links)
 
-4. **Note tags (`tagref`)**
+2. ~~**The `format` attribute**~~ **RESOLVED**
+   - `format="0"` = **FLOWED** — Normal paragraphs separated by newlines
+   - `format="1"` = **FORMATTED** — Preformatted text, preserve whitespace (like `<pre>` or code blocks)
+   - **Implementation:** FLOWED → normal Markdown text; FORMATTED → wrap in code fence or preserve with `&nbsp;`/hard breaks
+
+3. **Note tags (`tagref`)**
    - Should Gramps note tags become Obsidian tags?
    - How to namespace them to avoid conflicts?
 
+### Resolved by User Feedback
+
+4. **Note sharing patterns?**
+   → **Frequently shared.** User uses wikilinks with aliases and redundant "Notes" sections.
+   → Phase 4 (separate note files) is important for power users; Phase 1 still valuable for simpler workflows.
+
 5. **Family entity adoption**
-   - Depends on user feedback about family note usage
-   - May be needed regardless for proper Gramps round-tripping
+   → **Needed.** User treats family notes same as any other entity type.
+   → Phase 3 should proceed as planned.
 
 ---
 
@@ -365,3 +386,7 @@ The Smith family emigrated from Ireland during the famine years.
 - [Gramps XML Format](https://www.gramps-project.org/wiki/index.php/Gramps_XML)
 - [grampsxml.dtd on GitHub](https://github.com/gramps-project/gramps/blob/master/data/grampsxml.dtd)
 - [Forum Discussion](https://gramps.discourse.group/t/genealogy-research-in-obsidian-for-those-who-want-to-try/8926/4)
+- Local Gramps source: `external/gramps/` (cloned for research)
+  - `gramps/gen/lib/note.py` — Note class with FLOWED/FORMATTED constants
+  - `gramps/gen/lib/styledtexttagtype.py` — Style tag types (BOLD, ITALIC, etc.)
+  - `data/grampsxml.dtd` — XML schema definition
