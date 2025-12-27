@@ -250,7 +250,10 @@ The `priv` attribute on Gramps notes indicates private/sensitive content.
 ### Resolved
 
 1. **Where should notes appear in person notes?**
-   → Bottom of note content (after dynamic blocks), as "## Notes" section
+   → Phase 1: Bottom of note content (after dynamic blocks), as "## Notes" section
+   → Phase 4: Separate note files with full metadata in frontmatter (user-preferred approach for round-tripping)
+
+   *Note: Phase 1's embedded approach trades some metadata fidelity for simplicity. Users needing full Gramps metadata preservation (handles, per-note privacy flags) should use Phase 4.*
 
 2. **How to handle multiple notes per person?**
    → Separate subsections by note type
