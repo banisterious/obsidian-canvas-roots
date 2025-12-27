@@ -6458,7 +6458,7 @@ export class ControlCenterModal extends Modal {
 			const cache = this.app.metadataCache.getFileCache(file);
 			const frontmatter = cache?.frontmatter;
 
-			if (frontmatter?.type === 'map') {
+			if (frontmatter?.cr_type === 'map' || frontmatter?.type === 'map') {
 				maps.push({
 					name: frontmatter.name || file.basename,
 					filePath: file.path,

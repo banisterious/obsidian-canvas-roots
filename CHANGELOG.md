@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Custom maps not appearing in gallery after creation** - Fixed issue where newly created custom maps wouldn't appear in the Control Center Maps tab gallery. The gallery now correctly detects maps using the `cr_type: map` frontmatter property in addition to the legacy `type: map` format.
+
 ---
 
 ## [0.17.8] - 2025-12-27
