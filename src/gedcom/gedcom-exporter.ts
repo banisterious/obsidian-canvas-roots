@@ -692,6 +692,11 @@ export class GedcomExporter {
 			}
 		}
 
+		// Research level (0-6 based on Hoitink's Six Levels)
+		if (person.researchLevel !== undefined) {
+			lines.push(`1 _RESEARCH_LEVEL ${person.researchLevel}`);
+		}
+
 		return lines;
 	}
 

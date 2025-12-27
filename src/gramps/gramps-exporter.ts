@@ -992,6 +992,11 @@ ${families.xml}
 				personLines.push('      <attribute type="Gender Identity" value="' + this.escapeXml(genderIdentity) + '"/>');
 			}
 
+			// Add research_level as attribute (0-6 based on Hoitink's Six Levels)
+			if (person.researchLevel !== undefined) {
+				personLines.push('      <attribute type="Research Level" value="' + person.researchLevel + '"/>');
+			}
+
 			// Add family back-references (childof and parentin)
 			// childof: families where this person is a child
 			// parentin: families where this person is a parent (father or mother)

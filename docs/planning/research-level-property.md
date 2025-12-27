@@ -171,6 +171,23 @@ Level 6: Biography - Full narrative with historical context
 
 ---
 
+## Export Support ✅
+
+**Status:** Complete
+
+Research level is exported to both GEDCOM and Gramps formats as custom tags/attributes:
+
+| Format | Tag/Attribute | Example |
+|--------|---------------|---------|
+| **GEDCOM** | `_RESEARCH_LEVEL` | `1 _RESEARCH_LEVEL 3` |
+| **Gramps XML** | `attribute type="Research Level"` | `<attribute type="Research Level" value="3"/>` |
+
+**Files updated:**
+- [x] `src/gedcom/gedcom-exporter.ts` - Added `_RESEARCH_LEVEL` custom tag
+- [x] `src/gramps/gramps-exporter.ts` - Added "Research Level" attribute
+
+---
+
 ## Import Support
 
 **GEDCOM/Gramps import:**
@@ -244,6 +261,7 @@ Research level should be importable from GEDCOM/Gramps custom attributes. Users 
 **Completed additional work:**
 - ✅ Bases "By Research Level" grouped view (shipped with Phase 1)
 - ✅ Settings integration: UI hidden when `trackFactSourcing` disabled
+- ✅ Export support for GEDCOM (`_RESEARCH_LEVEL`) and Gramps (`attribute type="Research Level"`)
 
 **Remaining work:**
 - Import support for GEDCOM/Gramps custom attributes (future)
