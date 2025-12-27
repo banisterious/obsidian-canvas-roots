@@ -21,6 +21,7 @@
 ### Exploration
 - [Family Chart View](Family-Chart-View)
 - [Geographic Features](Geographic-Features)
+- [Custom Maps](Custom-Maps)
 - [Relationship Tools](Relationship-Tools)
 - [Custom Relationships](Custom-Relationships)
 - [Context Menus](Context-Menus)
