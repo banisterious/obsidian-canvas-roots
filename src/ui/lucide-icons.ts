@@ -267,7 +267,7 @@ export const TOOL_CONFIGS: ToolConfig[] = [
 	{
 		id: 'reports',
 		name: 'Reports',
-		icon: 'bar-chart',
+		icon: 'file-text',
 		description: 'Narrative reports and visual charts'
 	},
 	{
