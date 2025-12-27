@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Create Person modal crash with array collection property** - Fixed TypeError when opening the Create Person modal if any person note had a `collection` property stored as an array instead of a string. The modal now safely handles array-type collection values.
 
+- **Gramps import: events at same place incorrectly deduplicated** - Fixed issue where multiple events of the same type, with the same participants, on the same date, but at different places were incorrectly treated as duplicates. The deduplication key now includes place name, ensuring events like multiple residence records are imported correctly.
+
 ---
 
 ## [0.17.6] - 2025-12-27
