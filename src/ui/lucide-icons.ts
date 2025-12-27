@@ -265,16 +265,16 @@ export const TOOL_CONFIGS: ToolConfig[] = [
 		description: 'Open interactive family chart view'
 	},
 	{
-		id: 'reports',
-		name: 'Reports',
-		icon: 'file-text',
-		description: 'Narrative reports and visual charts'
-	},
-	{
 		id: 'import-export',
 		name: 'Import/Export',
 		icon: 'arrow-up-down',
 		description: 'Import and export genealogical data'
+	},
+	{
+		id: 'reports',
+		name: 'Reports',
+		icon: 'file-text',
+		description: 'Narrative reports and visual charts'
 	},
 	{
 		id: 'statistics',
