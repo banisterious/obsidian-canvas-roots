@@ -370,21 +370,23 @@ export class CreatePersonModal extends Modal {
 		// Death place (link field)
 		this.createPlaceField(form, 'Death place', this.deathPlaceField);
 
-		// Research level
-		new Setting(form)
-			.setName('Research level')
-			.setDesc('Research progress toward GPS-compliant documentation')
-			.addDropdown(dropdown => {
-				dropdown.addOption('', '(Not assessed)');
-				for (const [level, info] of Object.entries(RESEARCH_LEVELS)) {
-					dropdown.addOption(level, `${level} - ${info.name}`);
-				}
-				dropdown
-					.setValue(this.personData.researchLevel?.toString() || '')
-					.onChange(value => {
-						this.personData.researchLevel = value ? parseInt(value) as ResearchLevel : undefined;
-					});
-			});
+		// Research level (only shown when Research Tools are enabled)
+		if (this.settings?.trackFactSourcing) {
+			new Setting(form)
+				.setName('Research level')
+				.setDesc('Research progress toward GPS-compliant documentation')
+				.addDropdown(dropdown => {
+					dropdown.addOption('', '(Not assessed)');
+					for (const [level, info] of Object.entries(RESEARCH_LEVELS)) {
+						dropdown.addOption(level, `${level} - ${info.name}`);
+					}
+					dropdown
+						.setValue(this.personData.researchLevel?.toString() || '')
+						.onChange(value => {
+							this.personData.researchLevel = value ? parseInt(value) as ResearchLevel : undefined;
+						});
+				});
+		}
 
 		// Relationship fields section header
 		const relSection = form.createDiv({ cls: 'crc-relationship-section' });

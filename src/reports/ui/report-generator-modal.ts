@@ -993,45 +993,47 @@ export class ReportGeneratorModal extends Modal {
 					});
 			});
 
-		// Research level section
-		new Setting(this.optionsContainer)
-			.setName('Research level filter')
-			.setHeading();
+		// Research level section (only shown when Research Tools are enabled)
+		if (this.plugin.settings.trackFactSourcing) {
+			new Setting(this.optionsContainer)
+				.setName('Research level filter')
+				.setHeading();
 
-		new Setting(this.optionsContainer)
-			.setName('Maximum research level')
-			.setDesc('Only include people at or below this level (empty = all)')
-			.addDropdown(dropdown => {
-				dropdown.addOption('', 'All levels');
-				dropdown.addOption('2', 'Level 0-2 (Needs work)');
-				dropdown.addOption('4', 'Level 0-4 (Not yet complete)');
-				dropdown.addOption('0', 'Level 0 only (Unidentified)');
-				dropdown.addOption('1', 'Level 0-1 (Minimal info)');
-				dropdown.setValue(this.gapsReportOptions.researchLevelMax?.toString() ?? '');
-				dropdown.onChange(value => {
-					this.gapsReportOptions.researchLevelMax = value ? parseInt(value) : undefined;
+			new Setting(this.optionsContainer)
+				.setName('Maximum research level')
+				.setDesc('Only include people at or below this level (empty = all)')
+				.addDropdown(dropdown => {
+					dropdown.addOption('', 'All levels');
+					dropdown.addOption('2', 'Level 0-2 (Needs work)');
+					dropdown.addOption('4', 'Level 0-4 (Not yet complete)');
+					dropdown.addOption('0', 'Level 0 only (Unidentified)');
+					dropdown.addOption('1', 'Level 0-1 (Minimal info)');
+					dropdown.setValue(this.gapsReportOptions.researchLevelMax?.toString() ?? '');
+					dropdown.onChange(value => {
+						this.gapsReportOptions.researchLevelMax = value ? parseInt(value) : undefined;
+					});
 				});
-			});
 
-		new Setting(this.optionsContainer)
-			.setName('Include unassessed')
-			.setDesc('Include people without a research level set')
-			.addToggle(toggle => {
-				toggle.setValue(this.gapsReportOptions.includeUnassessed)
-					.onChange(value => {
-						this.gapsReportOptions.includeUnassessed = value;
-					});
-			});
+			new Setting(this.optionsContainer)
+				.setName('Include unassessed')
+				.setDesc('Include people without a research level set')
+				.addToggle(toggle => {
+					toggle.setValue(this.gapsReportOptions.includeUnassessed)
+						.onChange(value => {
+							this.gapsReportOptions.includeUnassessed = value;
+						});
+				});
 
-		new Setting(this.optionsContainer)
-			.setName('Sort by research level')
-			.setDesc('Show people with lowest research level first')
-			.addToggle(toggle => {
-				toggle.setValue(this.gapsReportOptions.sortByResearchLevel)
-					.onChange(value => {
-						this.gapsReportOptions.sortByResearchLevel = value;
-					});
-			});
+			new Setting(this.optionsContainer)
+				.setName('Sort by research level')
+				.setDesc('Show people with lowest research level first')
+				.addToggle(toggle => {
+					toggle.setValue(this.gapsReportOptions.sortByResearchLevel)
+						.onChange(value => {
+							this.gapsReportOptions.sortByResearchLevel = value;
+						});
+				});
+		}
 	}
 
 	/**
