@@ -1,0 +1,230 @@
+# Inclusive Parent Relationships
+
+Planning document for adding gender-neutral parent relationship support.
+
+- **Status:** Planning
+- **GitHub Issue:** #TBD
+- **Created:** 2025-12-27
+- **Updated:** 2025-12-27
+
+---
+
+## Overview
+
+Some users have nonbinary parents or prefer gender-neutral terminology. Currently, the plugin only supports gendered parent fields (father/mother), which doesn't accommodate all family structures.
+
+**Goal:** Add opt-in support for gender-neutral parent relationships while preserving the existing father/mother fields for users who prefer them.
+
+---
+
+## User Request
+
+> "What if one or both parents are nonbinary? Could you add a 'Parent' option to father/mother?"
+
+This is a reasonable request that aligns with the plugin's goal of supporting diverse family structures.
+
+---
+
+## Design Principles
+
+1. **Opt-in, not replacement** - Don't remove or replace father/mother; add alongside
+2. **Configurable** - Let users customize the label to their preference
+3. **Non-disruptive** - Users with traditional setups shouldn't notice any change
+4. **Coexistent** - A person can have a father, a mother, AND parents (e.g., for blended families or to represent the same people differently)
+
+---
+
+## Proposed Settings
+
+### Setting 1: Enable Inclusive Parent Relationships
+
+| Property | Value |
+|----------|-------|
+| Name | `enableInclusiveParents` |
+| Type | Toggle (boolean) |
+| Default | `false` (off) |
+| Location | Settings > Preferences |
+
+**When enabled:**
+- Shows a "Parent" (or custom label) field in Create/Edit Person modal
+- Adds `parents` and `parents_id` properties to person schema
+- Includes parents in relationship displays and family graph
+
+**When disabled:**
+- No UI changes
+- Existing father/mother fields work as before
+
+### Setting 2: Parent Field Label
+
+| Property | Value |
+|----------|-------|
+| Name | `parentFieldLabel` |
+| Type | Text input |
+| Default | `"Parent"` |
+| Location | Settings > Preferences (only shown when Setting 1 is enabled) |
+
+**Purpose:** Customize the label shown in the UI for the gender-neutral parent field.
+
+**Examples:**
+- "Parent" (default)
+- "Progenitor"
+- "Guardian"
+- "Sire"
+- "Creator"
+- Any user-defined term
+
+---
+
+## Schema Changes
+
+### New Frontmatter Properties
+
+```yaml
+# Person note frontmatter
+parents:
+  - "[[Alex Smith]]"
+  - "[[Jordan Smith]]"
+parents_id:
+  - "I0045"
+  - "I0046"
+```
+
+### Property Definitions
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `parents` | array of wikilinks | Gender-neutral parent references |
+| `parents_id` | array of strings | Canvas Roots IDs for parents |
+
+### Relationship to Existing Properties
+
+The `parents` array is **independent** of `father`/`mother`:
+- A person can have `father`, `mother`, AND `parents`
+- They represent different ways to model the same or different relationships
+- No automatic syncing between them (user decides how to use)
+
+**Use cases:**
+- User prefers gender-neutral terms → use only `parents`
+- User has one gendered and one non-gendered parent → use `father` + `parents`
+- User migrating from father/mother → can use both during transition
+
+---
+
+## UI Changes
+
+### Create/Edit Person Modal
+
+When `enableInclusiveParents` is enabled, add a new section:
+
+```
+┌─────────────────────────────────────────────┐
+│ Parents                                      │
+│ ┌─────────────────────────────────────────┐ │
+│ │ [Parent picker - multi-select]          │ │
+│ └─────────────────────────────────────────┘ │
+│                                              │
+│ Father                                       │
+│ ┌─────────────────────────────────────────┐ │
+│ │ [Father picker]                         │ │
+│ └─────────────────────────────────────────┘ │
+│                                              │
+│ Mother                                       │
+│ ┌─────────────────────────────────────────┐ │
+│ │ [Mother picker]                         │ │
+│ └─────────────────────────────────────────┘ │
+└─────────────────────────────────────────────┘
+```
+
+**Field placement options:**
+1. **Above father/mother** - Emphasizes the gender-neutral option
+2. **Below father/mother** - Keeps existing fields in familiar position
+3. **Separate section** - "Gender-Neutral Parents" collapsible section
+
+Recommended: Option 1 (above), with the custom label from Setting 2.
+
+### Inline Creation (Phase 1 of Create Person Enhancements)
+
+When creating a parent inline:
+- "Create new parent" option in parents picker
+- No gender pre-fill (unlike father/mother which pre-fill sex)
+- Returns to modal with new person linked in `parents` array
+
+---
+
+## Implementation Plan
+
+### Phase 1: Settings and Schema
+
+1. Add `enableInclusiveParents` toggle to settings
+2. Add `parentFieldLabel` text setting (conditional visibility)
+3. Add `parents` and `parents_id` to person schema
+4. Update Frontmatter Reference documentation
+
+### Phase 2: Create/Edit Modal
+
+1. Add parents field to CreatePersonModal (when enabled)
+2. Implement multi-select person picker for parents
+3. Support inline creation of new parents
+4. Handle saving/loading of `parents` array
+
+### Phase 3: Family Graph Integration
+
+1. Update FamilyGraphService to recognize `parents` relationships
+2. Include parents in ancestor/descendant calculations
+3. Display parents in relationship views
+4. Consider parents for bidirectional linking
+
+### Phase 4: Bidirectional Linking
+
+1. When person A has `parents: [[B]]`, optionally add A to B's `child` array
+2. Consider whether parent→child linking should be automatic or manual
+3. Handle the asymmetry (parent is gender-neutral, but child→parent could be father/mother)
+
+---
+
+## Open Questions
+
+1. **Bidirectional linking behavior**
+   - Should adding someone as a `parent` automatically add the child to their `child` array?
+   - If yes, this creates consistency. If no, user has more control.
+
+2. **Canvas visualization**
+   - How should parents appear on canvas? Same as father/mother but with different label?
+   - Should there be a visual distinction?
+
+3. **Property alias interaction**
+   - Should `parentFieldLabel` also rename the frontmatter property, or just the UI label?
+   - Recommendation: UI label only, keep `parents` as canonical property name for consistency
+
+4. **Migration path**
+   - Should we offer a tool to convert father/mother to parents?
+   - Probably not needed - users can use both systems as they prefer
+
+5. **Gramps/GEDCOM import**
+   - These formats use gendered parent roles (HUSB/WIFE, father/mother)
+   - Import should continue using father/mother; users can manually adjust
+   - Future: option to import all parents as gender-neutral?
+
+---
+
+## Implementation Checklist
+
+- [ ] Add `enableInclusiveParents` setting
+- [ ] Add `parentFieldLabel` setting (conditional)
+- [ ] Add `parents` and `parents_id` to person schema
+- [ ] Update CreatePersonModal with parents field
+- [ ] Implement multi-select parents picker
+- [ ] Update FamilyGraphService for parents relationships
+- [ ] Update bidirectional linker (if applicable)
+- [ ] Update Frontmatter Reference documentation
+- [ ] Update Data Entry documentation
+- [ ] Add CHANGELOG entry
+- [ ] Test with various family configurations
+
+---
+
+## Related Documents
+
+- [Create Person Enhancements](./create-person-enhancements.md) - Inline creation features
+- [Frontmatter Reference](../../wiki-content/Frontmatter-Reference.md) - Property documentation
+- [Data Entry](../../wiki-content/Data-Entry.md) - Modal documentation

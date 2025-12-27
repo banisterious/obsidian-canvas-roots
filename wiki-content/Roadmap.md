@@ -10,6 +10,7 @@ This document outlines planned features for Canvas Roots. For completed features
 - [Planned Features](#planned-features)
   - [Create Person Enhancements](#create-person-enhancements) 📋 Medium
   - [Event Person Property Consolidation](#event-person-property-consolidation) 📋 Medium
+  - [Inclusive Parent Relationships](#inclusive-parent-relationships) 📋 Medium
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
   - [Research Level Property](#research-level-property) 📋 Medium
@@ -131,6 +132,48 @@ This duality creates complexity in base templates (requires formula workarounds)
 
 **Documentation:**
 - See [Event Person Property Consolidation Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/event-person-property-consolidation.md) for detailed specifications
+
+---
+
+### Inclusive Parent Relationships
+
+**Priority:** 📋 Medium — Gender-neutral parent support for diverse families
+
+**Status:** Planning
+
+**The Problem:** Currently, the plugin only supports gendered parent fields (father/mother). Users with nonbinary parents or those who prefer gender-neutral terminology have no way to represent these relationships.
+
+**Goal:** Add opt-in support for gender-neutral parent relationships while preserving the existing father/mother fields for users who prefer them.
+
+**Design Principles:**
+- Opt-in, not replacement — don't remove or replace father/mother
+- Configurable label — let users customize the terminology
+- Non-disruptive — users with traditional setups won't notice any change
+- Coexistent — a person can have father, mother, AND parents
+
+**Settings:**
+
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
+| Enable Inclusive Parents | Toggle | Off | Show gender-neutral parent field in modals |
+| Parent Field Label | Text | "Parent" | Customize the UI label (e.g., "Progenitor", "Guardian") |
+
+**Schema:**
+- New `parents` array property (wikilinks)
+- New `parents_id` array property (Canvas Roots IDs)
+- Independent of father/mother — can use either or both
+
+**Phased Implementation:**
+
+| Phase | Feature | Description |
+|-------|---------|-------------|
+| 1 | Settings & Schema | Add toggle, label setting, and new properties |
+| 2 | Create/Edit Modal | Add parents field with multi-select picker |
+| 3 | Family Graph | Include parents in relationship displays and calculations |
+| 4 | Bidirectional Linking | Optionally sync parent→child relationships |
+
+**Documentation:**
+- See [Inclusive Parent Relationships Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/inclusive-parent-relationships.md) for detailed specifications
 
 ---
 
