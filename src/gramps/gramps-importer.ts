@@ -1444,7 +1444,10 @@ export class GrampsImporter {
 		const content = frontmatterLines.join('\n') + body;
 
 		// Create file
-		const fileName = this.slugify(title) + '.md';
+		// Include date in filename to distinguish multiple events of the same type with the same participants
+		// e.g., "Residence of John Doe (2025-01-01)" vs "Residence of John Doe (2025-02-01)"
+		const fileNameBase = event.date ? `${title} (${event.date})` : title;
+		const fileName = this.slugify(fileNameBase) + '.md';
 		const filePath = normalizePath(`${eventsFolder}/${fileName}`);
 
 		// Check if file already exists
