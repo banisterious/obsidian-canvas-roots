@@ -178,16 +178,13 @@ export class MapDataService {
 		this.placeByNameCache.clear();
 
 		const placesFolder = this.plugin.settings.placesFolder;
-		if (!placesFolder) {
-			logger.debug('no-places-folder', 'No places folder configured');
-			return;
-		}
 
 		const files = this.plugin.app.vault.getMarkdownFiles();
 
 		for (const file of files) {
-			// Only process files in places folder
-			if (!file.path.startsWith(placesFolder)) continue;
+			// Process files in places folder OR any file that is a place note
+			// This ensures fictional places outside the places folder are still included
+			const inPlacesFolder = placesFolder && file.path.startsWith(placesFolder);
 
 			let fm: Record<string, unknown> | undefined;
 

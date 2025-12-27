@@ -1169,11 +1169,13 @@ export class MapView extends ItemView {
 	 * Register event handlers for file changes
 	 */
 	private registerEventHandlers(): void {
-		// Refresh when files change
+		// Refresh when metadata cache is updated (fires after frontmatter is parsed)
+		// This is more reliable than vault.on('modify') which fires before cache updates
 		this.registerEvent(
-			this.plugin.app.vault.on('modify', (file) => {
+			this.plugin.app.metadataCache.on('changed', (file) => {
 				// Only refresh if a person or place note changed
 				if (this.isRelevantFile(file.path)) {
+					logger.debug('metadata-changed', `Refreshing map due to change in ${file.path}`);
 					void this.refreshData();
 				}
 			})
@@ -1181,16 +1183,34 @@ export class MapView extends ItemView {
 	}
 
 	/**
-	 * Check if a file path is relevant to the map (person or place note)
+	 * Check if a file path is relevant to the map (person, place, or map note)
 	 */
 	private isRelevantFile(path: string): boolean {
 		const peopleFolder = this.plugin.settings.peopleFolder;
 		const placesFolder = this.plugin.settings.placesFolder;
+		const mapsFolder = this.plugin.settings.mapsFolder;
 
-		return Boolean(
+		// Check if file is in a relevant folder
+		if (
 			(peopleFolder && path.startsWith(peopleFolder)) ||
-			(placesFolder && path.startsWith(placesFolder))
-		);
+			(placesFolder && path.startsWith(placesFolder)) ||
+			(mapsFolder && path.startsWith(mapsFolder))
+		) {
+			return true;
+		}
+
+		// Also check if it's a place/person/map note by cr_type
+		// This catches notes outside the configured folders
+		const file = this.plugin.app.vault.getAbstractFileByPath(path);
+		if (file && 'extension' in file && file.extension === 'md') {
+			const cache = this.plugin.app.metadataCache.getCache(path);
+			const crType = cache?.frontmatter?.cr_type;
+			if (crType === 'person' || crType === 'place' || crType === 'map') {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
