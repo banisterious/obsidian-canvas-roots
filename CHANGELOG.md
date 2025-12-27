@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.17.7] - 2025-12-27
+
+### Changed
+
+- **Events base: unified Person(s) column** - The events base template now uses a single "Person(s)" column that displays clickable links for both single-person events (`person` property) and multi-person events (`persons` property). Previously, these were separate columns or the multi-person events didn't display properly.
+
+---
+
 ## [0.17.6] - 2025-12-27
 
 ### Fixed
