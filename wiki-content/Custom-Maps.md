@@ -42,7 +42,7 @@ Each custom map is stored as a note with `cr_type: map` frontmatter, containing 
 | Field | Required | Description |
 |-------|----------|-------------|
 | **Map name** | Yes | Display name (e.g., "Middle-earth", "Colonial Virginia") |
-| **Map image** | Yes | Click "Browse" to select an image from your vault |
+| **Map image** | Yes | Click "Browse" to select an image from your vault. Stored as a wikilink so Obsidian auto-updates the path if you move the image. |
 | **Universe** | No | Group related maps (e.g., "tolkien", "got", "colonial-america") |
 | **Coordinate system** | Yes | Geographic (lat/lng) or Pixel — see [Coordinate Systems](#coordinate-systems) |
 | **Bounds/Dimensions** | Yes | Define the coordinate space for your map |
@@ -134,7 +134,7 @@ Corner positions are saved as flat properties in your map note's frontmatter:
 cr_type: map
 map_id: middle-earth
 name: Middle-earth
-image: assets/maps/middle-earth.jpg
+image: "[[assets/maps/middle-earth.jpg]]"
 bounds:
   north: 50
   south: -50
@@ -288,7 +288,7 @@ cr_type: map
 map_id: my-custom-map          # Unique identifier
 name: My Custom Map            # Display name
 universe: my-world             # Optional: group with places
-image: path/to/map-image.jpg   # Path to image in vault
+image: "[[path/to/map-image.jpg]]"   # Wikilink to image (auto-updates if moved)
 
 # Geographic coordinate system
 coordinate_system: geographic
