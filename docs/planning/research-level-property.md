@@ -1,10 +1,10 @@
 # Research Level Property
 
-**Status:** In Progress (Phases 1-3 Complete)
-**Target Version:** TBD
-**Created:** 2025-12-26
-**Source:** GitHub Discussion #38
-**Branch:** `feature/research-level-property`
+- **Status:** In Progress (Phases 1-3 Complete)
+- **Target Version:** TBD
+- **Created:** 2025-12-26
+- **Source:** GitHub Discussion #38
+- **Branch:** `feature/research-level-property`
 
 ---
 
