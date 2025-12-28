@@ -178,6 +178,67 @@ export interface SourceSummaryOptions extends ReportOptions {
 }
 
 /**
+ * Timeline export format types
+ */
+export type TimelineExportFormat =
+	| 'markdown_table'
+	| 'markdown_callout'
+	| 'markdown_list'
+	| 'markdown_dataview'
+	| 'canvas'
+	| 'excalidraw'
+	| 'pdf'
+	| 'odt';
+
+/**
+ * Canvas/Excalidraw layout styles
+ */
+export type TimelineLayoutStyle = 'horizontal' | 'vertical' | 'gantt';
+
+/**
+ * Canvas/Excalidraw color schemes
+ */
+export type TimelineColorScheme = 'event_type' | 'category' | 'confidence' | 'monochrome';
+
+/**
+ * Options for Canvas export format
+ */
+export interface TimelineCanvasExportOptions {
+	/** Layout style */
+	layoutStyle: TimelineLayoutStyle;
+	/** Color scheme */
+	colorScheme: TimelineColorScheme;
+	/** Include ordering edges (before/after relationships) */
+	includeOrderingEdges: boolean;
+	/** Node dimensions */
+	nodeWidth?: number;
+	nodeHeight?: number;
+	/** Spacing between nodes */
+	spacingX?: number;
+	spacingY?: number;
+}
+
+/**
+ * Options for Excalidraw export format
+ */
+export interface TimelineExcalidrawExportOptions extends TimelineCanvasExportOptions {
+	/** Drawing style */
+	drawingStyle: 'architect' | 'artist' | 'cartoonist';
+	/** Font family */
+	fontFamily: string;
+	/** Stroke width */
+	strokeWidth: 'thin' | 'normal' | 'bold' | 'extra-bold';
+}
+
+/**
+ * Options for Markdown callout format
+ */
+export interface TimelineCalloutExportOptions {
+	/** Callout type name (e.g., 'cr-timeline', 'timeline', 'event', or custom) */
+	calloutType: string;
+}
+
+/**
  * Options for Timeline Report
  */
 export interface TimelineReportOptions extends ReportOptions {
@@ -199,6 +260,16 @@ export interface TimelineReportOptions extends ReportOptions {
 	includeDescriptions: boolean;
 	/** Universe filter (optional) */
 	universeCrId?: string;
+	/** Group/faction filter (optional) */
+	groupFilter?: string;
+	/** Export format (default: markdown_table for backwards compatibility) */
+	format?: TimelineExportFormat;
+	/** Canvas-specific options */
+	canvasOptions?: TimelineCanvasExportOptions;
+	/** Excalidraw-specific options */
+	excalidrawOptions?: TimelineExcalidrawExportOptions;
+	/** Callout-specific options */
+	calloutOptions?: TimelineCalloutExportOptions;
 }
 
 /**
