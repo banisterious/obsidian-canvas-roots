@@ -114,7 +114,6 @@ export class FamilyCreationWizardModal extends Modal {
 	// Persistence
 	private persistence: ModalStatePersistence<SerializableWizardState>;
 	private completedSuccessfully: boolean = false;
-	private resumeBanner?: HTMLElement;
 
 	constructor(app: App, plugin: CanvasRootsPlugin, directory?: string) {
 		super(app);
@@ -138,35 +137,20 @@ export class FamilyCreationWizardModal extends Modal {
 	}
 
 	onOpen(): void {
-		const { contentEl } = this;
 		this.modalEl.addClass('crc-family-wizard-modal');
 
 		// Check for existing state to resume
 		const existingState = this.persistence.getValidState();
 		if (existingState && this.hasContent(existingState.formData as unknown as SerializableWizardState)) {
-			const timeAgo = this.persistence.getTimeAgoString(existingState);
-			this.resumeBanner = renderResumePromptBanner(
-				contentEl,
-				timeAgo,
-				() => {
-					// Discard - clear state and remove banner
-					void this.persistence.clear();
-					this.resumeBanner?.remove();
-					this.resumeBanner = undefined;
-					this.render();
-				},
-				() => {
-					// Restore - populate form with saved data
-					this.restoreFromPersistedState(existingState.formData as unknown as SerializableWizardState);
-					this.resumeBanner?.remove();
-					this.resumeBanner = undefined;
-					this.render();
-				}
-			);
+			// Store the state for rendering the banner
+			this.pendingResumeState = existingState;
 		}
 
 		this.render();
 	}
+
+	// Pending resume state (set in onOpen, cleared after user chooses)
+	private pendingResumeState: ReturnType<ModalStatePersistence<SerializableWizardState>['getValidState']> = null;
 
 	onClose(): void {
 		const { contentEl } = this;
@@ -187,6 +171,27 @@ export class FamilyCreationWizardModal extends Modal {
 	private render(): void {
 		const { contentEl } = this;
 		contentEl.empty();
+
+		// Show resume banner if there's pending state
+		if (this.pendingResumeState) {
+			const timeAgo = this.persistence.getTimeAgoString(this.pendingResumeState);
+			renderResumePromptBanner(
+				contentEl,
+				timeAgo,
+				() => {
+					// Discard - clear state and re-render
+					void this.persistence.clear();
+					this.pendingResumeState = null;
+					this.render();
+				},
+				() => {
+					// Restore - populate form with saved data
+					this.restoreFromPersistedState(this.pendingResumeState!.formData as unknown as SerializableWizardState);
+					this.pendingResumeState = null;
+					this.render();
+				}
+			);
+		}
 
 		switch (this.currentStep) {
 			case 'start':
@@ -562,8 +567,7 @@ export class FamilyCreationWizardModal extends Modal {
 				this.currentStep = 'step2';
 				this.render();
 			},
-			nextLabel: 'Next: Add Spouse',
-			nextDisabled: !this.state.centralPerson?.name.trim()
+			nextLabel: 'Next: Add Spouse'
 		});
 	}
 
@@ -1377,64 +1381,88 @@ export class FamilyCreationWizardModal extends Modal {
 	 * Link all relationships after people are created
 	 */
 	private async linkRelationships(): Promise<void> {
-		// Get central person cr_id
+		// Get central person info
 		let centralCrId: string;
+		let centralName: string;
 		let centralSex: string;
+		let centralFile: TFile | undefined;
 
 		if (this.state.mode === 'existing' && this.state.existingCentralPerson) {
 			centralCrId = this.state.existingCentralPerson.crId;
+			centralName = this.state.existingCentralPerson.name;
 			centralSex = this.state.existingCentralPerson.sex || '';
+			centralFile = this.state.existingCentralPerson.file;
 		} else if (this.state.centralPerson?.crId) {
 			centralCrId = this.state.centralPerson.crId;
+			centralName = this.state.centralPerson.name;
 			centralSex = this.state.centralPerson.sex || '';
+			centralFile = this.state.centralPerson.file;
 		} else {
 			return;
 		}
 
-		// Link spouses
+		// Collect all children info for parent linking
+		const childCrIds = this.state.children
+			.filter(c => c.crId)
+			.map(c => c.crId!);
+		const childNames = this.state.children
+			.filter(c => c.crId)
+			.map(c => c.name);
+
+		// Link spouses (bidirectional)
 		for (const spouse of this.state.spouses) {
 			if (spouse.file && spouse.crId) {
 				// Add central person as spouse of spouse
 				await updatePersonNote(this.app, spouse.file, {
-					spouseCrId: [centralCrId]
+					spouseCrId: [centralCrId],
+					spouseName: [centralName]
 				});
-				// Add spouse to central person (if created in this session)
-				if (this.state.centralPerson?.file) {
-					await updatePersonNote(this.app, this.state.centralPerson.file, {
-						spouseCrId: [spouse.crId]
+				// Add spouse to central person
+				if (centralFile) {
+					await updatePersonNote(this.app, centralFile, {
+						spouseCrId: [spouse.crId],
+						spouseName: [spouse.name]
 					});
-				} else if (this.state.existingCentralPerson?.file) {
-					await updatePersonNote(this.app, this.state.existingCentralPerson.file, {
-						spouseCrId: [spouse.crId]
+				}
+
+				// Add children to spouse
+				if (childCrIds.length > 0 && spouse.file) {
+					await updatePersonNote(this.app, spouse.file, {
+						childCrId: childCrIds,
+						childName: childNames
 					});
 				}
 			}
 		}
 
-		// Link children
+		// Link children (bidirectional)
 		for (const child of this.state.children) {
 			if (child.file && child.crId) {
 				// Set parent based on central person's sex
 				if (centralSex === 'male') {
 					await updatePersonNote(this.app, child.file, {
-						fatherCrId: centralCrId
+						fatherCrId: centralCrId,
+						fatherName: centralName
 					});
 				} else if (centralSex === 'female') {
 					await updatePersonNote(this.app, child.file, {
-						motherCrId: centralCrId
+						motherCrId: centralCrId,
+						motherName: centralName
 					});
 				}
 
-				// Also link spouses as parents
+				// Also link spouses as parents of children
 				for (const spouse of this.state.spouses) {
-					if (spouse.crId) {
+					if (spouse.crId && child.file) {
 						if (spouse.sex === 'male') {
 							await updatePersonNote(this.app, child.file, {
-								fatherCrId: spouse.crId
+								fatherCrId: spouse.crId,
+								fatherName: spouse.name
 							});
 						} else if (spouse.sex === 'female') {
 							await updatePersonNote(this.app, child.file, {
-								motherCrId: spouse.crId
+								motherCrId: spouse.crId,
+								motherName: spouse.name
 							});
 						}
 					}
@@ -1442,29 +1470,61 @@ export class FamilyCreationWizardModal extends Modal {
 			}
 		}
 
-		// Link parents
+		// Add children to central person (reciprocal of parent links on children)
+		if (childCrIds.length > 0 && centralFile) {
+			await updatePersonNote(this.app, centralFile, {
+				childCrId: childCrIds,
+				childName: childNames
+			});
+		}
+
+		// Link parents (bidirectional)
 		if (this.state.father?.crId) {
 			// Set father on central person
-			if (this.state.centralPerson?.file) {
-				await updatePersonNote(this.app, this.state.centralPerson.file, {
-					fatherCrId: this.state.father.crId
+			if (centralFile) {
+				await updatePersonNote(this.app, centralFile, {
+					fatherCrId: this.state.father.crId,
+					fatherName: this.state.father.name
 				});
-			} else if (this.state.existingCentralPerson?.file) {
-				await updatePersonNote(this.app, this.state.existingCentralPerson.file, {
-					fatherCrId: this.state.father.crId
+			}
+			// Add central person as child of father
+			if (this.state.father.file) {
+				await updatePersonNote(this.app, this.state.father.file, {
+					childCrId: [centralCrId],
+					childName: [centralName]
 				});
 			}
 		}
 
 		if (this.state.mother?.crId) {
 			// Set mother on central person
-			if (this.state.centralPerson?.file) {
-				await updatePersonNote(this.app, this.state.centralPerson.file, {
-					motherCrId: this.state.mother.crId
+			if (centralFile) {
+				await updatePersonNote(this.app, centralFile, {
+					motherCrId: this.state.mother.crId,
+					motherName: this.state.mother.name
 				});
-			} else if (this.state.existingCentralPerson?.file) {
-				await updatePersonNote(this.app, this.state.existingCentralPerson.file, {
-					motherCrId: this.state.mother.crId
+			}
+			// Add central person as child of mother
+			if (this.state.mother.file) {
+				await updatePersonNote(this.app, this.state.mother.file, {
+					childCrId: [centralCrId],
+					childName: [centralName]
+				});
+			}
+		}
+
+		// Link father and mother as spouses to each other
+		if (this.state.father?.crId && this.state.mother?.crId) {
+			if (this.state.father.file) {
+				await updatePersonNote(this.app, this.state.father.file, {
+					spouseCrId: [this.state.mother.crId],
+					spouseName: [this.state.mother.name]
+				});
+			}
+			if (this.state.mother.file) {
+				await updatePersonNote(this.app, this.state.mother.file, {
+					spouseCrId: [this.state.father.crId],
+					spouseName: [this.state.father.name]
 				});
 			}
 		}
