@@ -13,7 +13,6 @@ import { CreatePersonModal } from './create-person-modal';
 import { CreatePlaceModal } from './create-place-modal';
 import { CreateEventModal } from '../events/ui/create-event-modal';
 import { CreateSourceModal } from '../sources/ui/create-source-modal';
-import { CreateOrganizationModal } from '../organizations/ui/create-organization-modal';
 import { ReportWizardModal } from '../reports/ui/report-wizard-modal';
 import { MediaManagerModal } from '../core/ui/media-manager-modal';
 import { ImportExportHubModal } from './import-export-hub-modal';
@@ -220,17 +219,6 @@ function renderQuickActionsSection(
 		}).open();
 	};
 
-	// Helper to open create organization modal
-	const openCreateOrganization = () => {
-		closeModal();
-		new CreateOrganizationModal(app, plugin, {
-			onSuccess: () => {
-				// Note: We can't track the file here since the modal doesn't pass it back
-				// The file tracking could be added to the modal itself if needed
-			}
-		}).open();
-	};
-
 	// Define the 12 tiles
 	const tiles: DashboardTile[] = [
 		{
@@ -321,11 +309,14 @@ function renderQuickActionsSection(
 			}
 		},
 		{
-			id: 'create-organization',
-			label: 'Organization',
-			icon: 'building',
-			description: 'Create a new organization note',
-			action: openCreateOrganization
+			id: 'reports',
+			label: 'Reports',
+			icon: 'file-text',
+			description: 'Generate timeline and narrative reports',
+			action: () => {
+				closeModal();
+				new ReportWizardModal(plugin).open();
+			}
 		},
 		{
 			id: 'family-chart',
