@@ -2,10 +2,10 @@
 
 Planning document for enhancing person creation and editing workflows.
 
-**Status:** Planning
-**GitHub Issue:** #TBD
-**Created:** 2025-12-18
-**Updated:** 2025-12-26
+- **Status:** Planning (Phase 1 scoped for v0.18.1)
+- **GitHub Issue:** #TBD
+- **Created:** 2025-12-18
+- **Updated:** 2025-12-28
 
 ---
 
@@ -28,7 +28,7 @@ The current workflow forces users into a tedious loop:
 
 ---
 
-## Phase 1: Inline Person Creation ✅ Planned
+## Phase 1: Inline Person Creation (v0.18.1)
 
 Allow creating new family members directly from within the Create/Edit Person modal.
 
@@ -46,35 +46,88 @@ When selecting a father, mother, spouse, or child, offer a "Create new person" o
    - Father picker: "Create new father" option
    - Mother picker: "Create new mother" option
    - Spouse picker: "Create new spouse" option
-   - Children picker: "Create new child" option
+   - (Children picker deferred to Phase 2)
 
 2. **Smart defaults for new inline persons**
    - Creating a father → pre-fill `sex: male`
    - Creating a mother → pre-fill `sex: female`
-   - Creating a child → pre-fill parent link back to current person
-   - Creating a spouse → pre-fill spouse link back to current person
+   - Creating a spouse → no sex pre-fill (unknown)
 
-3. **Streamlined sub-modal**
-   - Minimal fields: name, sex (pre-filled where applicable), birth date (optional)
-   - "Create and link" button returns to parent modal
-   - Skip the full modal complexity for quick inline creation
+3. **Simplified sub-modal (QuickCreatePersonModal)**
+   - Fields: name (required), sex (pre-filled where applicable), birth date (optional)
+   - "Create and link" button creates note and returns to parent modal
+   - No relationship fields in sub-modal (avoids nesting complexity)
+   - Uses same directory as parent modal context
+
+### Design Decisions
+
+1. **Sub-modal is simplified, not full CreatePersonModal**
+   - Rationale: Full modal would allow infinite nesting (create father → create father's father → etc.)
+   - Quick create covers 90% of use cases; user can edit full details later
+   - Matches PlacePickerModal's inline create pattern
+
+2. **Single-level nesting only (v1)**
+   - Sub-modal does not offer its own "Create new" options
+   - User creates one person, returns to parent, can repeat as needed
+   - Future: Could allow deeper nesting if requested
+
+3. **No "recent creations" section (v1)**
+   - Keep UI simple initially
+   - Sort by "recently modified" already surfaces new people
+   - Future: Add if users request it
+
+### UI Flow
+
+```
+CreatePersonModal
+  └── Father field → [Link] button
+        └── PersonPickerModal
+              ├── Search existing people
+              ├── [+ Create new father] ← NEW
+              │     └── QuickCreatePersonModal (name, sex=male, birth date)
+              │           └── [Create and link] → creates note, returns PersonInfo
+              └── Select existing person
+```
 
 ### Implementation Notes
 
-- Extend PersonPickerModal to include "Create new..." option at top/bottom
-- Sub-modal can be a simplified version of CreatePersonModal
-- On sub-modal completion, refresh the picker and auto-select the new person
-- Bidirectional linking happens automatically via existing linker
+- Add `onCreateNew?: (context: RelationshipContext) => void` callback to PersonPickerModal
+- New `QuickCreatePersonModal` class - minimal fields, single "Create and link" button
+- Context passed to callback includes: relationship type, parent person's cr_id, suggested sex
+- On creation: write note via `createPersonNote()`, return `PersonInfo` to picker
+- Picker auto-selects newly created person and closes
 
-### Open Questions
+### Implementation Checklist
 
-1. Should the sub-modal be a full CreatePersonModal or a simplified "quick create" version?
-2. How deep should nesting go? (Creating a child, then creating that child's spouse, etc.)
-3. Should we show a "recent creations" section in the picker for easy access to just-created people?
+#### Phase 1a: QuickCreatePersonModal
+- [ ] Create `src/ui/quick-create-person-modal.ts`
+- [ ] Minimal form: name (required), sex dropdown, birth date (optional)
+- [ ] Accept `suggestedSex` and `directory` options
+- [ ] "Create and link" button calls `createPersonNote()` and returns `PersonInfo`
+- [ ] Add styles to `styles.css` (reuse existing `.crc-form` classes)
+
+#### Phase 1b: PersonPickerModal Enhancement
+- [ ] Add `onCreateNew` callback option to `PersonPickerModal` constructor
+- [ ] Add `RelationshipContext` interface: `{ relationshipType, suggestedSex?, parentCrId?, directory? }`
+- [ ] Render "+ Create new person" button at top of results (or in header)
+- [ ] Button click opens `QuickCreatePersonModal` with context
+- [ ] On sub-modal close with result, call `onSelect` with new `PersonInfo`
+
+#### Phase 1c: CreatePersonModal Integration
+- [ ] Update `createRelationshipField()` to pass `onCreateNew` to picker
+- [ ] Map field type to suggested sex: father→male, mother→female, spouse→undefined
+- [ ] Pass current directory to quick create modal
+- [ ] Test: create person, add father via picker, create new father inline
+
+#### Phase 1d: Step/Adoptive Parents
+- [ ] Extend to stepfather, stepmother, adoptive father, adoptive mother fields
+- [ ] Same pattern: pre-fill sex based on field type
 
 ---
 
 ## Phase 2: Add Children Section to Edit Modal
+
+> **Depends on:** Phase 1 (uses inline creation pattern). Can be implemented in same release.
 
 Add the ability to view and manage children directly from the Edit Person modal.
 
@@ -117,7 +170,9 @@ Add the ability to view and manage children directly from the Edit Person modal.
 
 ---
 
-## Phase 3: "Add Another" Flow (Future)
+## Phase 3: "Add Another" Flow
+
+> **Depends on:** Phase 1. Can be implemented alongside Phase 2 if desired.
 
 After creating a person, offer quick actions to continue building the family.
 
@@ -140,6 +195,8 @@ This keeps the user in a "family building" flow without requiring them to naviga
 ---
 
 ## Phase 4: Family Creation Wizard (Future)
+
+> **Standalone feature:** Does not depend on Phases 1-3. Addresses a different use case (batch family creation from scratch).
 
 A dedicated wizard for creating an entire nuclear family at once.
 
@@ -194,6 +251,18 @@ This becomes valuable when:
 - Grouped related fields logically:
   - Birth date + Birth place
   - Death date + Death place
+
+---
+
+## Known Limitations to Address
+
+### Multiple Spouses in Edit Modal
+
+The current CreatePersonModal only handles a single spouse field, with a comment: "For now, only handle first spouse in the modal." This is a separate issue from the inline creation workflow but should be addressed:
+
+- **Current state:** Only first spouse shown/editable in modal
+- **Desired state:** Multi-select spouse field (similar to planned children section)
+- **When to fix:** Could be bundled with Phase 2 (children section uses same multi-select pattern)
 
 ---
 
