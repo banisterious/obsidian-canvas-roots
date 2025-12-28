@@ -2,10 +2,10 @@
 
 Planning document for merging timeline export functionality from the Events tab into the unified Reports system.
 
-**Status:** Planning
-**GitHub Issue:** #TBD
-**Priority:** Medium
-**Created:** 2025-12-27
+- **Status:** Planning
+- **GitHub Issue:** #TBD
+- **Priority:** Medium
+- **Created:** 2025-12-27
 
 ---
 
