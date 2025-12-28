@@ -52,7 +52,10 @@ import {
 	PlaceSummaryResult,
 	MediaInventoryResult,
 	UniverseOverviewResult,
-	CollectionOverviewResult
+	CollectionOverviewResult,
+	TimelineExportFormat,
+	TimelineLayoutStyle,
+	TimelineColorScheme
 } from '../types/report-types';
 import { UnifiedTreeWizardModal } from '../../trees/ui/unified-tree-wizard-modal';
 
@@ -189,6 +192,29 @@ interface WizardFormData {
 
 	// Step 2: Vault Options
 	outputFolder: string;
+
+	// Timeline-specific options
+	timelineFormat: TimelineExportFormat;
+	timelineGrouping: 'none' | 'by_year' | 'by_decade' | 'by_person' | 'by_place';
+	timelineIncludeDescriptions: boolean;
+	// Timeline: Canvas/Excalidraw options
+	timelineLayoutStyle: TimelineLayoutStyle;
+	timelineColorScheme: TimelineColorScheme;
+	timelineIncludeOrderingEdges: boolean;
+	// Timeline: Excalidraw-specific options
+	excalidrawDrawingStyle: 'architect' | 'artist' | 'cartoonist';
+	excalidrawFontFamily: string;
+	excalidrawStrokeWidth: 'thin' | 'normal' | 'bold' | 'extra-bold';
+	// Timeline: Callout options
+	timelineCalloutType: string;
+	// Timeline: Filters
+	timelineDateFrom: string;
+	timelineDateTo: string;
+	timelineEventTypes: string[];
+	timelinePersonFilter: string[];
+	timelinePlaceFilter: string[];
+	timelineIncludeChildPlaces: boolean;
+	timelineGroupFilter: string;
 }
 
 /**
@@ -291,7 +317,30 @@ export class ReportWizardModal extends Modal {
 			odtCoverNotes: '',
 
 			// Vault options
-			outputFolder: this.plugin.settings.reportsFolder || ''
+			outputFolder: this.plugin.settings.reportsFolder || '',
+
+			// Timeline-specific options
+			timelineFormat: 'markdown_table',
+			timelineGrouping: 'by_year',
+			timelineIncludeDescriptions: true,
+			// Timeline: Canvas/Excalidraw options
+			timelineLayoutStyle: 'horizontal',
+			timelineColorScheme: 'event_type',
+			timelineIncludeOrderingEdges: false,
+			// Timeline: Excalidraw-specific options
+			excalidrawDrawingStyle: 'artist',
+			excalidrawFontFamily: 'Virgil',
+			excalidrawStrokeWidth: 'normal',
+			// Timeline: Callout options
+			timelineCalloutType: 'cr-timeline',
+			// Timeline: Filters
+			timelineDateFrom: '',
+			timelineDateTo: '',
+			timelineEventTypes: [],
+			timelinePersonFilter: [],
+			timelinePlaceFilter: [],
+			timelineIncludeChildPlaces: true,
+			timelineGroupFilter: ''
 		};
 	}
 
@@ -1627,6 +1676,13 @@ export class ReportWizardModal extends Modal {
 			reportType === 'descendant-tree-pdf' ||
 			reportType === 'hourglass-tree-pdf' ||
 			reportType === 'fan-chart-pdf';
+	}
+
+	/**
+	 * Check if current report type is a timeline report
+	 */
+	private isTimelineReport(): boolean {
+		return this.formData.reportType === 'timeline-report';
 	}
 
 	/**
