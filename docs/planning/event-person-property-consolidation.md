@@ -5,7 +5,7 @@ Planning document for consolidating `person` and `persons` event properties into
 - **Status:** Planning
 - **GitHub Issue:** #TBD
 - **Created:** 2025-12-27
-- **Updated:** 2025-12-27
+- **Updated:** 2025-12-28
 
 ---
 
@@ -19,9 +19,14 @@ Currently, event notes use two different properties to track participants:
 This duality creates complexity in:
 - Base templates (requires formula to coalesce both properties)
 - Importers (must decide which property to populate)
+- Services (must check both properties when filtering/reading)
 - User understanding (which property to use when?)
 
 **Goal:** Consolidate to a single `persons` array property that works for all events.
+
+**Decision:** Keep `persons` as the property name (not `participants`) since:
+- Matches existing usage in the codebase
+- The base template already uses `participant` as a *formula* name, so renaming to `participants` would cause confusion
 
 ---
 
@@ -77,13 +82,17 @@ Single-participant events simply have an array with one element.
 
 ## Migration Strategy
 
-### Phase 1: Update Importers
+### Phase 1: Update Importers and Services
 
-Update Gramps and GEDCOM importers to always use `persons` array:
+Update all code that writes event properties to always use `persons` array.
 
-**Files to modify:**
-- `src/gramps/gramps-parser.ts`
-- `src/gedcom/gedcom-parser.ts`
+**Importers to modify:**
+- `src/gramps/gramps-parser.ts` — Gramps XML import
+- `src/gedcom/gedcom-importer-v2.ts` — GEDCOM import (note: `gedcom-parser.ts` mentioned in original doc doesn't exist; v2 is the active importer)
+- `src/gedcomx/gedcomx-importer.ts` — GEDCOM X import (if it handles events)
+
+**Services to modify:**
+- `src/events/services/event-service.ts` — Creates and updates event notes; currently writes both `person` and `persons`
 
 **Change:**
 - Single-participant events: `persons: ["[[Person]]"]` instead of `person: "[[Person]]"`
@@ -91,14 +100,18 @@ Update Gramps and GEDCOM importers to always use `persons` array:
 
 ### Phase 2: Update Base Templates
 
-Simplify the events base template formula:
+Simplify the events base template formula and clean up deprecated references.
 
-**Before:**
+**File:** `src/constants/events-base-template.ts`
+
+**Formula change:**
+
+Before:
 ```yaml
 participant: 'if(${person}, ${person}, ${persons}.map([value, html(...)]).flat().slice(0, -1))'
 ```
 
-**After:**
+After:
 ```yaml
 participant: '${persons}.map([value, html("<span style=\"margin-left:-0.25em\">,</span>")]).flat().slice(0, -1)'
 ```
@@ -108,7 +121,27 @@ Or even simpler if Bases handles single-element arrays gracefully:
 participant: '${persons}'
 ```
 
-### Phase 3: Migration Tool
+**Other template changes:**
+- Remove `note.${person}` from `visibleProperties` (line 57) — keep only `formula.participant`
+- Remove `note.${person}` property definition (lines 85-86)
+- Update "By Person" view (lines 140-147) — currently filters on `!${person}.isEmpty()`, needs to filter on `persons` instead or use the participant formula
+
+### Phase 3: Update Reading Code
+
+After migration, services that read events can be simplified to only check `persons`. During transition, they should continue checking both.
+
+**Files that read both properties:**
+- `src/events/services/event-service.ts` — `getEventsForPerson()`, `getUniquePeople()`, `getEventsByPerson()`
+- `src/events/services/timeline-canvas-exporter.ts` — Filters events by person, gets person for labels
+- `src/events/services/timeline-markdown-exporter.ts` — May also reference person property
+- `src/reports/services/place-summary-generator.ts` — `getEventParticipants()` reads both `event.person` and `event.persons`
+
+**Transition approach:**
+1. Keep reading both properties during migration period
+2. After sufficient time (2-3 versions), simplify to only read `persons`
+3. Log deprecation warning if `person` property is encountered
+
+### Phase 4: Migration Tool
 
 Add a cleanup wizard step or standalone migration command:
 
@@ -122,7 +155,7 @@ Add a cleanup wizard step or standalone migration command:
 - Standalone command: "Canvas Roots: Migrate event person properties"
 - Run automatically on plugin load with user confirmation
 
-### Phase 4: Update Documentation
+### Phase 5: Update Documentation
 
 - Frontmatter Reference: Remove `person`, document `persons` as the canonical property
 - Migration notes in CHANGELOG
@@ -148,17 +181,15 @@ Users with property aliases for `person` should be notified and guided to update
 
 ## Open Questions
 
-1. **Property name**: Keep `persons` or rename to `participants`?
-   - `persons` matches existing usage
-   - `participants` is more descriptive but a longer word
+1. ~~**Property name**: Keep `persons` or rename to `participants`?~~ **Resolved:** Keep `persons` (see Decision in Overview)
 
 2. **Migration timing**: When to run the migration?
    - On plugin update (risky, could surprise users)
    - Manual command (requires user action)
-   - Cleanup Wizard integration (natural place for data fixes)
+   - Cleanup Wizard integration (natural place for data fixes) ← **Recommended**
 
 3. **Deprecation period**: How long to support reading `person`?
-   - Forever (just stop writing it)
+   - Forever (just stop writing it) ← **Recommended** for simplicity
    - 2-3 versions with deprecation warning
    - Remove after major version bump
 
@@ -166,10 +197,27 @@ Users with property aliases for `person` should be notified and guided to update
 
 ## Implementation Checklist
 
-- [ ] Update `gramps-parser.ts` to use `persons` for all events
-- [ ] Update `gedcom-parser.ts` to use `persons` for all events
-- [ ] Add migration command/wizard step
-- [ ] Update events base template
+### Phase 1: Update Writers
+- [ ] Update `src/gramps/gramps-parser.ts` to use `persons` for all events
+- [ ] Update `src/gedcom/gedcom-importer-v2.ts` to use `persons` for all events
+- [ ] Check `src/gedcomx/gedcomx-importer.ts` for event handling
+- [ ] Update `src/events/services/event-service.ts` to write only `persons`
+
+### Phase 2: Update Base Template
+- [ ] Simplify `participant` formula in `src/constants/events-base-template.ts`
+- [ ] Remove `note.${person}` from visible properties
+- [ ] Update "By Person" view to use `persons`
+
+### Phase 3: Update Readers (optional cleanup)
+- [ ] Simplify `src/events/services/event-service.ts` to read only `persons`
+- [ ] Simplify `src/events/services/timeline-canvas-exporter.ts`
+- [ ] Simplify `src/reports/services/place-summary-generator.ts`
+
+### Phase 4: Migration Tool
+- [ ] Add migration step to Cleanup Wizard
+- [ ] Or: Add standalone "Migrate event person properties" command
+
+### Phase 5: Documentation
 - [ ] Update Frontmatter Reference documentation
 - [ ] Add CHANGELOG entry
 - [ ] Test with existing vaults containing both property types
