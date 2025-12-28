@@ -14,9 +14,9 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
   - [Draggable Place Markers](#draggable-place-markers) 💡 Low
-  - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
   - [Custom Relationships on Canvas Trees](#custom-relationships-on-canvas-trees) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
+  - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
 - [Future Considerations](#future-considerations)
   - [Ghost Nodes for Unresolved Links](#ghost-nodes-for-unresolved-links)
@@ -277,44 +277,6 @@ This duality creates complexity in base templates (requires formula workarounds)
 
 ---
 
-### Universe Management Enhancements
-
-**Priority:** 💡 Low — Advanced features for power users
-
-**Status:** ✅ Core implementation complete | Phase 4 enhancements planned
-
-**Summary:** Additional enhancements to the universe management system. The core universe management features are complete—universe entity type, Universes tab in Control Center, Statistics integration, Guide tab documentation, Create Universe wizard, and context menu actions. These enhancements add power-user features for advanced workflows.
-
-**Current Implementation (Complete):**
-
-- Universe as first-class entity type (`cr_type: universe`)
-- UniverseService with CRUD operations, aggregation, orphan detection
-- Universes tab in Control Center (conditional visibility)
-- Create Universe wizard with guided setup
-- Statistics → Universes section with entity counts and drill-down
-- Guide tab → Universe notes documentation
-- Context menu: "Add essential universe properties"
-- Universes base template with 12 pre-configured views
-
-**Planned Enhancements:**
-
-| Feature | Description |
-|---------|-------------|
-| Universe dashboard | Enhanced overview with visual entity counts, quick access to related entities |
-| Universe-scoped filtering | Filter quick switcher and searches by universe |
-| Batch operations | Move entities between universes, bulk universe assignment |
-
-**When This Becomes Relevant:**
-
-These enhancements become valuable when users have:
-- Multiple universes with many entities each
-- Need to reorganize entities between universes
-- Want streamlined navigation within a single universe context
-
-See [Universe Management Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/universe-management.md) for implementation details.
-
----
-
 ### Custom Relationships on Canvas Trees
 
 **Priority:** 💡 Low — Worldbuilder feature for non-biological lineages
@@ -423,6 +385,44 @@ See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#ca
 **Future Consideration:** Per-calendar frontmatter fields (e.g., `mycalendar-date` instead of `fc-calendar` + `fc-date`) to allow one note to have dates across multiple calendars.
 
 See [Calendarium Integration Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/calendarium-integration.md) for implementation details.
+
+---
+
+### Universe Management Enhancements
+
+**Priority:** 💡 Low — Advanced features for power users
+
+**Status:** ✅ Core implementation complete | Phase 4 enhancements planned
+
+**Summary:** Additional enhancements to the universe management system. The core universe management features are complete—universe entity type, Universes tab in Control Center, Statistics integration, Guide tab documentation, Create Universe wizard, and context menu actions. These enhancements add power-user features for advanced workflows.
+
+**Current Implementation (Complete):**
+
+- Universe as first-class entity type (`cr_type: universe`)
+- UniverseService with CRUD operations, aggregation, orphan detection
+- Universes tab in Control Center (conditional visibility)
+- Create Universe wizard with guided setup
+- Statistics → Universes section with entity counts and drill-down
+- Guide tab → Universe notes documentation
+- Context menu: "Add essential universe properties"
+- Universes base template with 12 pre-configured views
+
+**Planned Enhancements:**
+
+| Feature | Description |
+|---------|-------------|
+| Universe dashboard | Enhanced overview with visual entity counts, quick access to related entities |
+| Universe-scoped filtering | Filter quick switcher and searches by universe |
+| Batch operations | Move entities between universes, bulk universe assignment |
+
+**When This Becomes Relevant:**
+
+These enhancements become valuable when users have:
+- Multiple universes with many entities each
+- Need to reorganize entities between universes
+- Want streamlined navigation within a single universe context
+
+See [Universe Management Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/universe-management.md) for implementation details.
 
 ---
 
