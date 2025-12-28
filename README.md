@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.18.0-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.18.1-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** brings professional genealogical tools to Obsidian—import, organize, visualize, and share family histories and fictional worlds without leaving your vault. From GEDCOM imports to PDF reports, interactive charts to map views, manage your research with the power of linked Markdown notes. Built for genealogists, historians, writers, and world-builders.
 
@@ -60,6 +60,7 @@
 | **Staging Workflow** | Isolated staging folder for safe import processing |
 | **[Data Quality Tools](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Quality)** | Quality scores, 15+ issue types, batch normalization |
 | **Post-Import Cleanup Wizard** | 10-step guided workflow for data quality after import (dates, genders, relationships, places, sources) |
+| **Family Creation Wizard** | 5-step guided workflow for creating interconnected family groups with automatic bidirectional relationship linking |
 | **[Schema Validation](https://github.com/banisterious/obsidian-canvas-roots/wiki/Schema-Validation)** | User-defined schemas with required properties, type validation, enum constraints, and custom rules |
 | **Generate Place Notes** | Batch create place notes from references in person/event notes with hierarchy linking |
 | **[Dynamic Note Content](https://github.com/banisterious/obsidian-canvas-roots/wiki/Dynamic-Note-Content)** | Live-rendered timeline, relationships, and media gallery blocks within person notes |

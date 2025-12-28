@@ -11,6 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.18.1] - 2025-12-28
+
+### Added
+
+- **Family Creation Wizard** - New 5-step wizard for creating interconnected family groups. Start from scratch by creating a central person, or build around an existing person in your vault. Add spouses, children, and parents with automatic bidirectional relationship linking. Access via command palette ("Canvas Roots: Create family wizard"), Dashboard tile, People tab actions, or folder context menu.
+
+- **Inline person creation in Edit Modal** - Create new people directly from relationship fields (spouse, father, mother, children) without leaving the Edit Modal. Click the "+" button next to any relationship field to open a mini-form, enter basic details, and the new person is created and linked automatically.
+
+- **Children management in Edit Modal** - New "Children" section in the Edit Modal displays existing children and allows adding new ones via person picker or inline creation. Children are stored using `child` (display names) and `children_id` (cr_id references) array properties.
+
+- **"Add Another" flow for Create Person modal** - After creating a person, choose "Create & Add Another" to immediately create another person in the same folder, or use "Create & Open" to create and navigate to the new note.
+
+- **Nickname property support** - New `nickname` frontmatter property for person notes, displayed in Edit Modal header alongside the formal name. Useful for informal names, pet names, or alternate identities.
+
+- **Folder context menu integration** - Right-click on people folders to access "Create person" and "Create family" actions directly, with the selected folder pre-populated as the destination.
+
+- **State persistence for Family Wizard** - If the Family Creation Wizard is accidentally closed, your progress is saved. When reopening, you'll see a prompt to restore or discard the previous session.
+
+### Changed
+
+- **Edit Modal relationship fields** - Relationship fields (spouse, father, mother) now show inline "Create new" buttons that open a mini-form for creating and linking new people without leaving the modal.
+
+### Fixed
+
+- **Family Wizard relationship merging** - When building a family around an existing person who already has relationships, new relationships are now merged with existing ones instead of overwriting them.
+
+---
+
 ## [0.18.0] - 2025-12-28
 
 ### Changed
