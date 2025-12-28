@@ -28,9 +28,20 @@ import { FamilyGraphService } from '../../core/family-graph';
 import { FolderFilterService } from '../../core/folder-filter';
 import { EventService } from '../../events/services/event-service';
 import { EventNote } from '../../events/types/event-types';
+import { TimelineCanvasExporter, TimelineCanvasOptions } from '../../events/services/timeline-canvas-exporter';
 import { getLogger } from '../../core/logging';
 
 const logger = getLogger('TimelineGenerator');
+
+/**
+ * Result type for canvas/excalidraw exports
+ */
+export interface TimelineVisualExportResult {
+	success: boolean;
+	path?: string;
+	error?: string;
+	warnings?: string[];
+}
 
 /**
  * Generator for Timeline reports
@@ -141,6 +152,52 @@ export class TimelineGenerator {
 			entries,
 			groupedEntries
 		};
+	}
+
+	/**
+	 * Export timeline to Obsidian Canvas format
+	 *
+	 * This creates a visual canvas file with positioned event nodes.
+	 */
+	async exportToCanvas(options: TimelineReportOptions): Promise<TimelineVisualExportResult> {
+		logger.info('exportToCanvas', 'Exporting timeline to Canvas', { options });
+
+		// Initialize services
+		const eventService = new EventService(this.app, this.settings);
+
+		// Get all events
+		let events = eventService.getAllEvents();
+
+		// Apply filters
+		events = this.applyFilters(events, options);
+
+		if (events.length === 0) {
+			return { success: false, error: 'No events to export after filtering' };
+		}
+
+		// Build canvas options from report options
+		const canvasOptions: TimelineCanvasOptions = {
+			title: 'Timeline Report',
+			colorScheme: options.canvasOptions?.colorScheme || 'event_type',
+			layoutStyle: options.canvasOptions?.layoutStyle || 'horizontal',
+			nodeWidth: options.canvasOptions?.nodeWidth || 200,
+			nodeHeight: options.canvasOptions?.nodeHeight || 100,
+			spacingX: options.canvasOptions?.spacingX || 50,
+			spacingY: options.canvasOptions?.spacingY || 50,
+			includeOrderingEdges: options.canvasOptions?.includeOrderingEdges ?? true,
+			groupByPerson: options.grouping === 'by_person',
+			filterGroup: options.groupFilter
+		};
+
+		// Convert person filter CR IDs to wikilinks if needed
+		if (options.personFilter && options.personFilter.length > 0) {
+			// Use first person for single-person filter
+			canvasOptions.filterPerson = `[[${options.personFilter[0]}]]`;
+		}
+
+		// Use the existing canvas exporter
+		const canvasExporter = new TimelineCanvasExporter(this.app, this.settings);
+		return canvasExporter.exportToCanvas(events, canvasOptions);
 	}
 
 	/**
