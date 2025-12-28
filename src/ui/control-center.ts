@@ -416,10 +416,10 @@ export class ControlCenterModal extends Modal {
 				void this.plugin.activateFamilyChartView(undefined, true, true);
 				this.close();
 				break;
-			case 'reports':
-				// Import and open reports hub modal
-				void import('./reports-hub-modal').then(({ ReportsHubModal }) => {
-					new ReportsHubModal(this.app, this.plugin).open();
+			case 'create-family':
+				// Import and open family creation wizard
+				void import('./family-creation-wizard').then(({ FamilyCreationWizardModal }) => {
+					new FamilyCreationWizardModal(this.app, this.plugin).open();
 				});
 				break;
 			case 'import-export':
@@ -429,7 +429,7 @@ export class ControlCenterModal extends Modal {
 				});
 				break;
 			case 'statistics':
-				// Open statistics view leaf
+				// Open statistics view leaf (includes access to reports)
 				void this.plugin.activateStatisticsView();
 				this.close();
 				break;
@@ -2208,6 +2208,17 @@ export class ControlCenterModal extends Modal {
 							this.showTab('people');
 						}
 					}).open();
+				}));
+
+		new Setting(actionsContent)
+			.setName('Create family group')
+			.setDesc('Use the wizard to create multiple family members at once')
+			.addButton(button => button
+				.setButtonText('Create family')
+				.onClick(() => {
+					void import('./family-creation-wizard').then(({ FamilyCreationWizardModal }) => {
+						new FamilyCreationWizardModal(this.app, this.plugin).open();
+					});
 				}));
 
 		new Setting(actionsContent)

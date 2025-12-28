@@ -17,6 +17,7 @@ import { CreateOrganizationModal } from '../organizations/ui/create-organization
 import { ReportWizardModal } from '../reports/ui/report-wizard-modal';
 import { MediaManagerModal } from '../core/ui/media-manager-modal';
 import { ImportExportHubModal } from './import-export-hub-modal';
+import { FamilyCreationWizardModal } from './family-creation-wizard';
 import { FamilyGraphService } from '../core/family-graph';
 import { PlaceGraphService } from '../core/place-graph';
 import { EventService } from '../events/services/event-service';
@@ -254,20 +255,20 @@ function renderQuickActionsSection(
 			action: openCreateSource
 		},
 		{
-			id: 'generate-report',
-			label: 'Report',
-			icon: 'bar-chart',
-			description: 'Generate a genealogical report',
+			id: 'create-family',
+			label: 'Family',
+			icon: 'users',
+			description: 'Create a family group with wizard',
 			action: () => {
 				closeModal();
-				new ReportWizardModal(plugin).open();
+				new FamilyCreationWizardModal(app, plugin).open();
 			}
 		},
 		{
-			id: 'open-statistics',
-			label: 'Statistics',
-			icon: 'bar-chart-2',
-			description: 'Open Statistics Dashboard view',
+			id: 'statistics-reports',
+			label: 'Stats & Reports',
+			icon: 'chart-bar-decreasing',
+			description: 'Statistics dashboard and report generation',
 			action: () => {
 				closeModal();
 				void plugin.activateStatisticsView();

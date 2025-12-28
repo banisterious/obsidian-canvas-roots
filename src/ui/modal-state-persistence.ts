@@ -8,7 +8,7 @@
 import type CanvasRootsPlugin from '../../main';
 import type { CreateEntityPersistedState } from '../settings';
 
-export type ModalType = 'person' | 'place' | 'event' | 'organization' | 'source';
+export type ModalType = 'person' | 'place' | 'event' | 'organization' | 'source' | 'family-wizard';
 
 /**
  * Settings key type for modal state properties
@@ -18,7 +18,8 @@ type ModalStateSettingsKey =
 	| 'createPlaceModalState'
 	| 'createEventModalState'
 	| 'createOrganizationModalState'
-	| 'createSourceModalState';
+	| 'createSourceModalState'
+	| 'familyWizardModalState';
 
 /**
  * Map modal types to their settings keys
@@ -28,7 +29,8 @@ const MODAL_SETTINGS_KEYS: Record<ModalType, ModalStateSettingsKey> = {
 	place: 'createPlaceModalState',
 	event: 'createEventModalState',
 	organization: 'createOrganizationModalState',
-	source: 'createSourceModalState'
+	source: 'createSourceModalState',
+	'family-wizard': 'familyWizardModalState'
 };
 
 /**

@@ -365,6 +365,8 @@ export interface CanvasRootsSettings {
 	createOrganizationModalState?: CreateEntityPersistedState;
 	/** Persisted state for create source modal */
 	createSourceModalState?: CreateEntityPersistedState;
+	/** Persisted state for family wizard modal */
+	familyWizardModalState?: CreateEntityPersistedState;
 	// Version tracking (for migration notices)
 	/** Last plugin version the user has acknowledged (for showing upgrade notices) */
 	lastSeenVersion?: string;
@@ -403,7 +405,7 @@ export interface CleanupWizardPersistedState {
  */
 export interface CreateEntityPersistedState {
 	/** Modal type identifier */
-	modalType: 'person' | 'place' | 'event' | 'organization' | 'source';
+	modalType: 'person' | 'place' | 'event' | 'organization' | 'source' | 'family-wizard';
 	/** Form data as key-value pairs */
 	formData: Record<string, unknown>;
 	/** When the state was saved */

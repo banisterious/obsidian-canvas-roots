@@ -271,16 +271,16 @@ export const TOOL_CONFIGS: ToolConfig[] = [
 		description: 'Import and export genealogical data'
 	},
 	{
-		id: 'reports',
-		name: 'Reports',
-		icon: 'file-text',
-		description: 'Narrative reports and visual charts'
+		id: 'statistics',
+		name: 'Statistics & Reports',
+		icon: 'chart-bar-decreasing',
+		description: 'Data analysis, statistics dashboard, and reports'
 	},
 	{
-		id: 'statistics',
-		name: 'Statistics',
-		icon: 'chart-bar-decreasing',
-		description: 'Open the statistics dashboard'
+		id: 'create-family',
+		name: 'Create Family',
+		icon: 'users',
+		description: 'Create a family group with wizard'
 	}
 ];
 

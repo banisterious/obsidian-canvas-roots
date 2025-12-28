@@ -413,6 +413,17 @@ export default class CanvasRootsPlugin extends Plugin {
 			}
 		});
 
+		// Add command: Create Family Wizard
+		this.addCommand({
+			id: 'create-family-wizard',
+			name: 'Create family wizard',
+			callback: () => {
+				void import('./src/ui/family-creation-wizard').then(({ FamilyCreationWizardModal }) => {
+					new FamilyCreationWizardModal(this.app, this).open();
+				});
+			}
+		});
+
 		// Add command: Create Event Note
 		this.addCommand({
 			id: 'create-event-note',
@@ -3166,6 +3177,17 @@ export default class CanvasRootsPlugin extends Plugin {
 										});
 								});
 
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Create family')
+										.setIcon('users')
+										.onClick(() => {
+											void import('./src/ui/family-creation-wizard').then(({ FamilyCreationWizardModal }) => {
+												new FamilyCreationWizardModal(this.app, this, file.path).open();
+											});
+										});
+								});
+
 								submenu.addSeparator();
 
 								submenu.addItem((subItem) => {
@@ -3708,6 +3730,17 @@ export default class CanvasRootsPlugin extends Plugin {
 											plugin: this
 										});
 										modal.open();
+									});
+							});
+
+							menu.addItem((item) => {
+								item
+									.setTitle('Canvas Roots: Create family')
+									.setIcon('users')
+									.onClick(() => {
+										void import('./src/ui/family-creation-wizard').then(({ FamilyCreationWizardModal }) => {
+											new FamilyCreationWizardModal(this.app, this, file.path).open();
+										});
 									});
 							});
 

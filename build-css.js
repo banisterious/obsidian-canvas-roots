@@ -57,6 +57,7 @@ const CONFIG = {
     'statistics.css',    // Statistics tab and view
     'dashboard.css',     // Dashboard tab (Control Center home)
     'universe-wizard.css', // Universe setup wizard modal
+    'family-wizard.css', // Family creation wizard modal
     'preferences.css',   // Preferences tab
     'tree-output.css',   // Tree output two-panel layout
     'dynamic-content.css', // Dynamic content blocks (timeline, relationships)
