@@ -14,6 +14,7 @@ interface RelationshipSnapshot {
 	mother?: string;
 	spouse?: string | string[];
 	children?: string | string[];
+	child?: string | string[];  // Actual property name in frontmatter
 	// Indexed spouse properties
 	[key: `spouse${number}`]: string | undefined;
 }
@@ -268,6 +269,20 @@ export class BidirectionalLinker {
 				await this.removeSpouseLink(previousSpouse, personFile, personName, personCrId);
 			}
 		}
+
+		// Check for deleted children relationships
+		// When a parent removes a child, clear the child's father/mother field
+		const previousChildren = this.extractChildLinks(previousSnapshot.child);
+		const currentChildren = this.extractChildLinks(currentFrontmatter.child);
+
+		// Get parent's sex to know which field to clear (father or mother)
+		const parentSex = currentFrontmatter.sex || currentFrontmatter.gender;
+
+		for (const previousChild of previousChildren) {
+			if (!currentChildren.includes(previousChild)) {
+				await this.removeParentFromChild(previousChild, personFile, personName, personCrId, parentSex);
+			}
+		}
 	}
 
 	/**
@@ -290,14 +305,40 @@ export class BidirectionalLinker {
 	}
 
 	/**
+	 * Extract child links as array from child property (handles both single and array format)
+	 */
+	private extractChildLinks(child: unknown): string[] {
+		if (!child) return [];
+		if (typeof child === 'string') return [child];
+		if (Array.isArray(child)) {
+			const result: string[] = [];
+			for (const item of child) {
+				const link = this.extractStringLink(item);
+				if (link) result.push(link);
+			}
+			return result;
+		}
+		// Handle object with link property
+		const link = this.extractStringLink(child);
+		return link ? [link] : [];
+	}
+
+	/**
 	 * Update the relationship snapshot for a person
 	 */
 	private updateSnapshot(filePath: string, frontmatter: PersonFrontmatter): void {
+		// Extract child property - may come from index signature with broader type
+		const childValue = frontmatter['child'];
+		const childSnapshot = (typeof childValue === 'string' || Array.isArray(childValue))
+			? childValue as string | string[]
+			: undefined;
+
 		const snapshot: RelationshipSnapshot = {
 			father: frontmatter.father,
 			mother: frontmatter.mother,
 			spouse: frontmatter.spouse,
-			children: frontmatter.children
+			children: frontmatter.children,
+			child: childSnapshot  // Capture child array for deletion detection
 		};
 
 		// Capture indexed spouse properties
@@ -662,6 +703,95 @@ export class BidirectionalLinker {
 			childFile: childFile.path,
 			childName,
 			childCrId
+		});
+	}
+
+	/**
+	 * Remove parent reference from a child's father/mother field (handles deletion sync)
+	 * When a parent removes a child from their child array, clear the child's father/mother field
+	 *
+	 * @param childLink Wikilink to child
+	 * @param parentFile Parent's file
+	 * @param parentName Parent's name
+	 * @param parentCrId Parent's cr_id
+	 * @param parentSex Parent's sex (male/female) - determines which field to clear
+	 */
+	private async removeParentFromChild(
+		childLink: unknown,
+		parentFile: TFile,
+		parentName: string,
+		parentCrId: string,
+		parentSex?: string
+	): Promise<void> {
+		const childFile = this.resolveLink(childLink, parentFile);
+		if (!childFile) {
+			logger.warn('bidirectional-linking', 'Child file not found for parent deletion sync', {
+				childLink,
+				parentFile: parentFile.path
+			});
+			return;
+		}
+
+		// Determine which parent field to clear based on parent's sex
+		let parentField: 'father' | 'mother' | undefined;
+		let parentIdField: 'father_id' | 'mother_id' | undefined;
+
+		if (parentSex === 'male') {
+			parentField = 'father';
+			parentIdField = 'father_id';
+		} else if (parentSex === 'female') {
+			parentField = 'mother';
+			parentIdField = 'mother_id';
+		} else {
+			// Unknown sex - log warning and skip
+			logger.debug('bidirectional-linking', 'Parent sex unknown, skipping child parent field removal', {
+				parentFile: parentFile.path,
+				childFile: childFile.path,
+				parentSex
+			});
+			return;
+		}
+
+		// Verify the child's parent field actually points to this parent before clearing
+		const childCache = this.app.metadataCache.getFileCache(childFile);
+		if (!childCache?.frontmatter) {
+			logger.warn('bidirectional-linking', 'Child has no frontmatter for parent removal', {
+				childFile: childFile.path
+			});
+			return;
+		}
+
+		const childFm = childCache.frontmatter;
+		const existingParent = childFm[parentField];
+		const existingParentId = childFm[parentIdField];
+
+		// Check if the child's parent field matches this parent
+		const isLinkedByName = existingParent &&
+			(String(existingParent).includes(parentName) || String(existingParent).includes(parentFile.basename));
+		const isLinkedByCrId = existingParentId === parentCrId;
+
+		if (!isLinkedByName && !isLinkedByCrId) {
+			logger.debug('bidirectional-linking', 'Child parent field does not match removed parent, skipping', {
+				childFile: childFile.path,
+				parentField,
+				existingParent,
+				existingParentId,
+				parentName,
+				parentCrId
+			});
+			return;
+		}
+
+		// Remove the parent field and id from the child
+		await this.removeField(childFile, parentField);
+		await this.removeField(childFile, parentIdField);
+
+		logger.info('bidirectional-linking', 'Removed parent from child (deletion sync)', {
+			childFile: childFile.path,
+			parentFile: parentFile.path,
+			parentField,
+			parentName,
+			parentCrId
 		});
 	}
 
