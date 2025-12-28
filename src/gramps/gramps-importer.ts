@@ -1401,10 +1401,8 @@ export class GrampsImporter {
 			frontmatterLines.push(`${prop('date')}: ${event.date}`);
 		}
 
-		// Add person references
-		if (personWikilinks.length === 1) {
-			frontmatterLines.push(`${prop('person')}: "${personWikilinks[0]}"`);
-		} else if (personWikilinks.length > 1) {
+		// Add person references - always use persons array for consistency
+		if (personWikilinks.length > 0) {
 			frontmatterLines.push(`${prop('persons')}:`);
 			for (const p of personWikilinks) {
 				frontmatterLines.push(`  - "${p}"`);

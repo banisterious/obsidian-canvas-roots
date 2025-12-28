@@ -867,13 +867,11 @@ export class GedcomImporterV2 {
 			title = `${eventTypeLabel} of ${personName}`;
 		}
 
-		// Build person reference(s)
-		let person: string | undefined;
-		let persons: string[] | undefined;
+		// Build person reference(s) - always use persons array for consistency
+		const persons: string[] = [];
 
 		if (event.isFamilyEvent) {
 			// Family events have multiple persons
-			persons = [];
 			if (event.spouse1Ref) {
 				const notePath = gedcomToNotePath.get(event.spouse1Ref);
 				if (notePath) {
@@ -889,11 +887,11 @@ export class GedcomImporterV2 {
 				}
 			}
 		} else if (individual) {
-			// Individual event has one person
+			// Individual event has one person (stored as single-element array)
 			const notePath = gedcomToNotePath.get(individual.id);
 			if (notePath) {
 				const baseName = notePath.replace(/\.md$/, '').split('/').pop() || '';
-				person = baseName;
+				persons.push(baseName);
 			}
 		}
 
@@ -931,8 +929,7 @@ export class GedcomImporterV2 {
 			datePrecision: event.datePrecision,
 			date: event.date,
 			dateEnd: event.dateEnd,
-			person,
-			persons: persons && persons.length > 0 ? persons : undefined,
+			persons: persons.length > 0 ? persons : undefined,
 			place: placeValue, // May be undefined if using wikilink
 			description: event.description || `Imported from GEDCOM`,
 			confidence: 'unknown' as EventConfidence
@@ -1008,9 +1005,6 @@ export class GedcomImporterV2 {
 		}
 		if (data.dateEnd) {
 			lines.push(`date_end: ${data.dateEnd}`);
-		}
-		if (data.person) {
-			lines.push(`person: "[[${data.person}]]"`);
 		}
 		if (data.persons && data.persons.length > 0) {
 			lines.push(`persons:`);

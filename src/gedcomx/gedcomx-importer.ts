@@ -976,9 +976,10 @@ export class GedcomXImporter {
 			frontmatterLines.push(`date: "${eventInfo.date.replace(/"/g, '\\"')}"`);
 		}
 
-		// Add person reference
+		// Add person reference - always use persons array for consistency
 		if (eventInfo.personName) {
-			frontmatterLines.push(`person: "${eventInfo.personName.replace(/"/g, '\\"')}"`);
+			frontmatterLines.push(`persons:`);
+			frontmatterLines.push(`  - "${eventInfo.personName.replace(/"/g, '\\"')}"`);
 		}
 
 		// Add place (as wikilink if place note exists)

@@ -401,11 +401,14 @@ export class EventService {
 		if (data.dateEnd) {
 			frontmatterLines.push(`${prop('date_end')}: ${data.dateEnd}`);
 		}
-		if (data.person) {
-			frontmatterLines.push(`${prop('person')}: "${formatWikilink(data.person)}"`);
+		// Always use persons array for consistency
+		// If data.person is provided (legacy), convert to persons array
+		const allPersons = data.persons?.slice() || [];
+		if (data.person && !allPersons.includes(data.person)) {
+			allPersons.unshift(data.person);
 		}
-		if (data.persons && data.persons.length > 0) {
-			const formattedPersons = data.persons.map(p => formatWikilink(p));
+		if (allPersons.length > 0) {
+			const formattedPersons = allPersons.map(p => formatWikilink(p));
 			frontmatterLines.push(`${prop('persons')}:`);
 			for (const p of formattedPersons) {
 				frontmatterLines.push(`  - "${p}"`);
@@ -515,19 +518,20 @@ export class EventService {
 					delete frontmatter.date_end;
 				}
 			}
-			if (data.person !== undefined) {
-				if (data.person) {
-					frontmatter.person = formatWikilink(data.person);
-				} else {
-					delete frontmatter.person;
+			// Always use persons array for consistency
+			// If data.person is provided (legacy), convert to persons array
+			if (data.person !== undefined || data.persons !== undefined) {
+				const allPersons = data.persons?.slice() || [];
+				if (data.person && !allPersons.includes(data.person)) {
+					allPersons.unshift(data.person);
 				}
-			}
-			if (data.persons !== undefined) {
-				if (data.persons && data.persons.length > 0) {
-					frontmatter.persons = data.persons.map(p => formatWikilink(p));
+				if (allPersons.length > 0) {
+					frontmatter.persons = allPersons.map(p => formatWikilink(p));
 				} else {
 					delete frontmatter.persons;
 				}
+				// Always remove the old person property during updates
+				delete frontmatter.person;
 			}
 			if (data.place !== undefined) {
 				if (data.place) {

@@ -68,7 +68,7 @@ formulas:
   year_only: 'if(${date}, ${date}.year, "")'
   has_sources: 'if(${sources}, "Yes", "No")'
   is_dated: 'if(${date}, "Dated", "Relative only")'
-  participant: 'if(${person}, ${person}, ${persons}.map([value, html("<span style=\\"margin-left:-0.25em\\">,</span>")]).flat().slice(0, -1))'
+  participant: 'if(${persons}, ${persons}.map([value, html("<span style=\\"margin-left:-0.25em\\">,</span>")]).flat().slice(0, -1), if(${person}, ${person}, ""))'
 properties:
   ${cr_id}:
     displayName: ID
@@ -138,10 +138,11 @@ views:
   - name: By Person
     type: table
     filters:
-      and:
+      or:
+        - '!${persons}.isEmpty()'
         - '!${person}.isEmpty()'
     groupBy:
-      property: note.${person}
+      property: note.${persons}
       direction: ASC
     order:
       - note.${date}
