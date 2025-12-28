@@ -1541,7 +1541,11 @@ export class ReportWizardModal extends Modal {
 
 	private renderStep4(container: HTMLElement): void {
 		// Estimate panel (summary of what will be generated)
-		this.renderEstimatePanel(container);
+		if (this.isTimelineReport()) {
+			this.renderTimelineEstimatePanel(container);
+		} else {
+			this.renderEstimatePanel(container);
+		}
 
 		container.createEl('hr', { cls: 'cr-report-separator' });
 
@@ -1549,6 +1553,93 @@ export class ReportWizardModal extends Modal {
 		const filenameSection = container.createDiv({ cls: 'cr-report-section' });
 		filenameSection.createEl('h3', { text: 'Filename', cls: 'cr-report-section-title' });
 		this.renderFilenameSection(filenameSection);
+	}
+
+	/**
+	 * Render timeline-specific estimate panel with data quality insights
+	 */
+	private renderTimelineEstimatePanel(container: HTMLElement): void {
+		const section = container.createDiv({ cls: 'cr-report-section' });
+		section.createEl('h3', { text: 'Summary', cls: 'cr-report-section-title' });
+
+		const panel = section.createDiv({ cls: 'cr-report-estimate-panel' });
+
+		// Format
+		const formatRow = panel.createDiv({ cls: 'cr-report-estimate-row' });
+		formatRow.createSpan({ cls: 'cr-report-estimate-label', text: 'Format:' });
+		formatRow.createSpan({ cls: 'cr-report-estimate-value', text: this.getFormatDisplayName() });
+
+		// Grouping
+		const groupingRow = panel.createDiv({ cls: 'cr-report-estimate-row' });
+		groupingRow.createSpan({ cls: 'cr-report-estimate-label', text: 'Grouping:' });
+		const groupingLabels: Record<string, string> = {
+			'none': 'None',
+			'by_year': 'By year',
+			'by_decade': 'By decade',
+			'by_person': 'By person',
+			'by_place': 'By place'
+		};
+		groupingRow.createSpan({
+			cls: 'cr-report-estimate-value',
+			text: groupingLabels[this.formData.timelineGrouping] || 'None'
+		});
+
+		// Filters summary (if any filters are set)
+		const hasFilters = this.formData.timelineDateFrom || this.formData.timelineDateTo ||
+			this.formData.timelineEventTypes.length > 0 || this.formData.timelinePersonFilter.length > 0 ||
+			this.formData.timelinePlaceFilter.length > 0;
+		if (hasFilters) {
+			const filtersRow = panel.createDiv({ cls: 'cr-report-estimate-row' });
+			filtersRow.createSpan({ cls: 'cr-report-estimate-label', text: 'Filters:' });
+			const filterParts: string[] = [];
+			if (this.formData.timelineDateFrom || this.formData.timelineDateTo) {
+				const from = this.formData.timelineDateFrom || '...';
+				const to = this.formData.timelineDateTo || '...';
+				filterParts.push(`${from} to ${to}`);
+			}
+			if (this.formData.timelineEventTypes.length > 0) {
+				filterParts.push(`${this.formData.timelineEventTypes.length} event types`);
+			}
+			if (this.formData.timelinePersonFilter.length > 0) {
+				filterParts.push(`${this.formData.timelinePersonFilter.length} people`);
+			}
+			if (this.formData.timelinePlaceFilter.length > 0) {
+				filterParts.push(`${this.formData.timelinePlaceFilter.length} places`);
+			}
+			filtersRow.createSpan({ cls: 'cr-report-estimate-value', text: filterParts.join(', ') });
+		}
+
+		// Data quality insights (collapsible section)
+		this.renderTimelineDataQualitySection(section);
+	}
+
+	/**
+	 * Render data quality insights section for timeline reports
+	 */
+	private renderTimelineDataQualitySection(container: HTMLElement): void {
+		const detailsEl = container.createEl('details', { cls: 'cr-report-data-quality' });
+
+		const summary = detailsEl.createEl('summary', { cls: 'cr-report-data-quality-summary' });
+		summary.appendChild(createLucideIcon('alert-triangle', 16));
+		summary.createSpan({ text: 'Data Quality Insights' });
+
+		const content = detailsEl.createDiv({ cls: 'cr-report-data-quality-content' });
+
+		// Note: In a full implementation, these would be calculated from actual data
+		// For now, we show placeholder guidance text
+		const placeholderMsg = content.createDiv({ cls: 'cr-report-data-quality-placeholder' });
+		placeholderMsg.createEl('p', {
+			text: 'Data quality insights will be calculated during generation.'
+		});
+		placeholderMsg.createEl('p', {
+			text: 'The report will include warnings for:',
+			cls: 'cr-report-data-quality-subtitle'
+		});
+
+		const list = placeholderMsg.createEl('ul', { cls: 'cr-report-data-quality-list' });
+		list.createEl('li', { text: 'Timeline gaps (5+ year periods with no events)' });
+		list.createEl('li', { text: 'Unsourced events (events without citations)' });
+		list.createEl('li', { text: 'Orphan events (events not linked to any person)' });
 	}
 
 	/**
@@ -1599,6 +1690,19 @@ export class ReportWizardModal extends Modal {
 	 * Get display name for current output format
 	 */
 	private getFormatDisplayName(): string {
+		// For timeline reports, use timeline-specific format names
+		if (this.isTimelineReport()) {
+			switch (this.formData.timelineFormat) {
+				case 'canvas': return 'Canvas';
+				case 'excalidraw': return 'Excalidraw';
+				case 'pdf': return 'PDF Document';
+				case 'odt': return 'ODT Document';
+				case 'markdown_callout': return 'Vertical Timeline (Callout)';
+				case 'markdown_table': return 'Markdown Table';
+				case 'markdown_list': return 'Simple List';
+				case 'markdown_dataview': return 'Dataview Query';
+			}
+		}
 		switch (this.formData.outputFormat) {
 			case 'vault': return 'Save to Vault';
 			case 'pdf': return 'PDF Document';
