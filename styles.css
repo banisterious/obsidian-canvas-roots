@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-28 19:11:57 UTC
+ * - Generated: 2025-12-28 19:24:14 UTC
  * - Components: 38 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -681,7 +681,7 @@ settings:
    COMPONENT: MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 12306 lines, 229.08 KB */
+/* Component Size: 12489 lines, 232.93 KB */
 
 /* ==========================================================================
    Canvas Roots Control Center - Styling
@@ -12987,6 +12987,189 @@ settings:
 
 .cr-modal-resume-banner__btn--restore:hover {
   background: var(--interactive-accent-hover);
+}
+
+/* ==========================================================================
+   Spouses Multi-Select Field (similar to children field)
+   ========================================================================== */
+
+.crc-spouses-field {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-secondary);
+}
+
+.crc-spouses-field__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.crc-spouses-field__label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.crc-spouses-field__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crc-spouses-field__empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.crc-spouses-field__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--background-primary);
+  border-radius: var(--radius-s);
+}
+
+.crc-spouses-field__name {
+  font-size: 14px;
+  color: var(--text-normal);
+}
+
+/* ==========================================================================
+   Post-Create Actions Panel (Add Another Flow)
+   ========================================================================== */
+
+/* Success title styling */
+.crc-modal-title--success {
+  color: var(--text-success);
+}
+
+.crc-modal-title--success svg {
+  color: var(--text-success);
+}
+
+/* Created person info section */
+.crc-post-create-info {
+  text-align: center;
+  padding: 16px 0 24px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  margin-bottom: 24px;
+}
+
+.crc-post-create-info__name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-normal);
+  margin-bottom: 8px;
+}
+
+.crc-post-create-info__hint {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Actions section */
+.crc-post-create-actions {
+  padding: 0 0 24px;
+}
+
+.crc-post-create-actions__header {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+}
+
+.crc-post-create-actions__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* Action buttons */
+.crc-post-create-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 16px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.crc-post-create-action-btn:hover {
+  background: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+}
+
+.crc-post-create-action-btn svg {
+  color: var(--interactive-accent);
+}
+
+.crc-post-create-action-btn span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+/* ==========================================================================
+   Parent Type Choice (for Add Parent flow)
+   ========================================================================== */
+
+.crc-parent-type-choice {
+  padding: 24px 0;
+  text-align: center;
+}
+
+.crc-parent-type-choice__hint {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.crc-parent-type-choice__grid {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.crc-parent-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 32px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 120px;
+}
+
+.crc-parent-type-btn:hover {
+  background: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+}
+
+.crc-parent-type-btn svg {
+  color: var(--interactive-accent);
+}
+
+.crc-parent-type-btn span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-normal);
 }
 
 
@@ -31668,11 +31851,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-28 19:11:57 UTC
+ * Build completed: 2025-12-28 19:24:14 UTC
  * Components processed: 38
- * Total lines: 31303
- * Total size: 617.57 KB
- * Build duration: 0.03 seconds
+ * Total lines: 31486
+ * Total size: 621.41 KB
+ * Build duration: 0.04 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -31683,7 +31866,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - nodes.css: 12 lines, 0.3 KB
  * - edges.css: 4 lines, 0.07 KB
  * - settings.css: 131 lines, 3.53 KB
- * - modals.css: 12306 lines, 229.08 KB
+ * - modals.css: 12489 lines, 232.93 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 84 lines, 1.47 KB

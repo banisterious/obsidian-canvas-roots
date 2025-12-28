@@ -179,21 +179,26 @@ Add the ability to view and manage children directly from the Edit Person modal.
 
 ---
 
-## Phase 3: "Add Another" Flow
+## Phase 3: "Add Another" Flow ✅ (v0.18.1)
 
-> **Depends on:** Phase 1. Can be implemented alongside Phase 2 if desired.
+> **Status:** Implemented
 
-After creating a person, offer quick actions to continue building the family.
+After creating a person, the modal now shows quick actions to continue building the family.
 
-### Concept
+### Implementation
 
-When user clicks "Create" (not "Create and Close"), show options:
-- **Add spouse** → Opens spouse picker/creator, then returns
-- **Add child** → Opens child picker/creator, then returns
-- **Add parent** → Opens parent picker/creator, then returns
-- **Done** → Closes modal
+When user clicks "Create person":
+1. Person note is created and opened
+2. Modal transforms to show "Person created!" success message
+3. Three action buttons appear: **Add spouse**, **Add child**, **Add parent**
+4. **Done** button closes the modal
 
-This keeps the user in a "family building" flow without requiring them to navigate back to find the person they just created.
+Each action opens a person picker (with inline creation support via Phase 1):
+- Add spouse → Opens spouse picker, adds to created person's `spouse` array
+- Add child → Opens child picker, adds to created person's `child` array
+- Add parent → Shows father/mother choice, then opens parent picker
+
+After adding a relationship, the user returns to the action panel to add more or click Done.
 
 ### Benefits
 

@@ -115,6 +115,11 @@ export class CreatePersonModal extends Modal {
 	private savedSuccessfully: boolean = false;
 	private resumeBanner?: HTMLElement;
 
+	// Post-create state (for "Add Another" flow)
+	private createdFile?: TFile;
+	private createdPersonCrId?: string;
+	private createdPersonName?: string;
+
 	constructor(
 		app: App,
 		options?: {
@@ -1177,6 +1182,289 @@ export class CreatePersonModal extends Modal {
 	}
 
 	/**
+	 * Render post-create actions panel (for "Add Another" flow)
+	 * Shows quick action buttons to continue building family after person creation
+	 */
+	private renderPostCreateActions(contentEl: HTMLElement): void {
+		// Clear existing content
+		contentEl.empty();
+
+		// Success header
+		const header = contentEl.createDiv({ cls: 'crc-modal-header' });
+		const titleContainer = header.createDiv({ cls: 'crc-modal-title crc-modal-title--success' });
+		const icon = createLucideIcon('check-circle', 24);
+		titleContainer.appendChild(icon);
+		titleContainer.appendText('Person created!');
+
+		// Created person info
+		const infoSection = contentEl.createDiv({ cls: 'crc-post-create-info' });
+		infoSection.createDiv({
+			cls: 'crc-post-create-info__name',
+			text: this.createdPersonName || 'Unknown'
+		});
+		infoSection.createDiv({
+			cls: 'crc-post-create-info__hint',
+			text: 'Continue building the family or close this dialog'
+		});
+
+		// Action buttons
+		const actionsSection = contentEl.createDiv({ cls: 'crc-post-create-actions' });
+		actionsSection.createEl('h4', {
+			text: 'Add to this person:',
+			cls: 'crc-post-create-actions__header'
+		});
+
+		const actionsGrid = actionsSection.createDiv({ cls: 'crc-post-create-actions__grid' });
+
+		// Add spouse button
+		this.createActionButton(actionsGrid, 'heart', 'Add spouse', () => {
+			this.openPostCreatePicker('spouse');
+		});
+
+		// Add child button
+		this.createActionButton(actionsGrid, 'baby', 'Add child', () => {
+			this.openPostCreatePicker('child');
+		});
+
+		// Add parent button
+		this.createActionButton(actionsGrid, 'users', 'Add parent', () => {
+			this.openPostCreatePicker('parent');
+		});
+
+		// Done button (closes modal)
+		const buttonContainer = contentEl.createDiv({ cls: 'crc-modal-buttons' });
+		const doneBtn = buttonContainer.createEl('button', {
+			text: 'Done',
+			cls: 'crc-btn crc-btn--primary'
+		});
+		doneBtn.addEventListener('click', () => {
+			this.close();
+		});
+	}
+
+	/**
+	 * Create an action button for post-create actions
+	 */
+	private createActionButton(
+		container: HTMLElement,
+		iconName: 'heart' | 'baby' | 'users',
+		label: string,
+		onClick: () => void
+	): void {
+		const btn = container.createEl('button', {
+			cls: 'crc-post-create-action-btn'
+		});
+		const icon = createLucideIcon(iconName, 20);
+		btn.appendChild(icon);
+		btn.createSpan({ text: label });
+		btn.addEventListener('click', onClick);
+	}
+
+	/**
+	 * Open a person picker for post-create relationship addition
+	 */
+	private openPostCreatePicker(relationshipType: 'spouse' | 'child' | 'parent'): void {
+		if (!this.createdPersonCrId || !this.createdFile) {
+			new Notice('Error: No person context available');
+			return;
+		}
+
+		// Determine context based on relationship type
+		let suggestedSex: 'male' | 'female' | undefined;
+		let pickerTitle: string;
+		let relationshipLabel: string;
+
+		if (relationshipType === 'parent') {
+			// For parent, we'll show two options (father and mother)
+			// First, ask which parent type
+			this.showParentTypeSelector();
+			return;
+		} else if (relationshipType === 'spouse') {
+			pickerTitle = 'Select spouse';
+			relationshipLabel = 'spouse';
+		} else {
+			pickerTitle = 'Select child';
+			relationshipLabel = 'child';
+		}
+
+		const createContext: RelationshipContext = {
+			relationshipType: relationshipLabel,
+			suggestedSex,
+			parentCrId: this.createdPersonCrId,
+			directory: this.directory
+		};
+
+		const picker = new PersonPickerModal(this.app, async (person: PersonInfo) => {
+			await this.addRelationshipToCreatedPerson(relationshipType, person);
+			// Return to post-create actions after adding relationship
+			this.renderPostCreateActions(this.contentEl);
+		}, {
+			title: pickerTitle,
+			subtitle: 'Select an existing person or create a new one',
+			createContext: createContext,
+			onCreateNew: () => {
+				// Callback signals inline creation support
+			},
+			plugin: this.plugin
+		});
+		picker.open();
+	}
+
+	/**
+	 * Show selector for parent type (father/mother)
+	 */
+	private showParentTypeSelector(): void {
+		// Create a simple modal-like overlay within our modal
+		const { contentEl } = this;
+		const existingContent = contentEl.innerHTML;
+
+		contentEl.empty();
+
+		const header = contentEl.createDiv({ cls: 'crc-modal-header' });
+		const titleContainer = header.createDiv({ cls: 'crc-modal-title' });
+		const icon = createLucideIcon('users', 24);
+		titleContainer.appendChild(icon);
+		titleContainer.appendText('Add parent');
+
+		const choiceSection = contentEl.createDiv({ cls: 'crc-parent-type-choice' });
+		choiceSection.createDiv({
+			cls: 'crc-parent-type-choice__hint',
+			text: 'Which parent do you want to add?'
+		});
+
+		const choiceGrid = choiceSection.createDiv({ cls: 'crc-parent-type-choice__grid' });
+
+		// Father button
+		const fatherBtn = choiceGrid.createEl('button', {
+			cls: 'crc-parent-type-btn'
+		});
+		const fatherIcon = createLucideIcon('user', 20);
+		fatherBtn.appendChild(fatherIcon);
+		fatherBtn.createSpan({ text: 'Father' });
+		fatherBtn.addEventListener('click', () => {
+			this.openParentPicker('father');
+		});
+
+		// Mother button
+		const motherBtn = choiceGrid.createEl('button', {
+			cls: 'crc-parent-type-btn'
+		});
+		const motherIcon = createLucideIcon('user', 20);
+		motherBtn.appendChild(motherIcon);
+		motherBtn.createSpan({ text: 'Mother' });
+		motherBtn.addEventListener('click', () => {
+			this.openParentPicker('mother');
+		});
+
+		// Back button
+		const buttonContainer = contentEl.createDiv({ cls: 'crc-modal-buttons' });
+		const backBtn = buttonContainer.createEl('button', {
+			text: 'Back',
+			cls: 'crc-btn'
+		});
+		backBtn.addEventListener('click', () => {
+			this.renderPostCreateActions(contentEl);
+		});
+	}
+
+	/**
+	 * Open parent picker for specific parent type
+	 */
+	private openParentPicker(parentType: 'father' | 'mother'): void {
+		const suggestedSex = parentType === 'father' ? 'male' : 'female';
+
+		const createContext: RelationshipContext = {
+			relationshipType: parentType,
+			suggestedSex,
+			parentCrId: this.createdPersonCrId,
+			directory: this.directory
+		};
+
+		const picker = new PersonPickerModal(this.app, async (person: PersonInfo) => {
+			await this.addRelationshipToCreatedPerson(parentType, person);
+			// Return to post-create actions after adding parent
+			this.renderPostCreateActions(this.contentEl);
+		}, {
+			title: `Select ${parentType}`,
+			subtitle: 'Select an existing person or create a new one',
+			createContext: createContext,
+			onCreateNew: () => {
+				// Callback signals inline creation support
+			},
+			plugin: this.plugin
+		});
+		picker.open();
+	}
+
+	/**
+	 * Add a relationship to the created person's note
+	 */
+	private async addRelationshipToCreatedPerson(
+		relationshipType: 'spouse' | 'child' | 'father' | 'mother',
+		person: PersonInfo
+	): Promise<void> {
+		if (!this.createdFile) {
+			new Notice('Error: No file to update');
+			return;
+		}
+
+		try {
+			const data: Partial<PersonData> = {};
+
+			if (relationshipType === 'spouse') {
+				// Add to spouse array
+				// First, read existing spouses from the file
+				const cache = this.app.metadataCache.getFileCache(this.createdFile);
+				const existingSpouseIds = cache?.frontmatter?.spouse_id || [];
+				const existingSpouseNames = cache?.frontmatter?.spouse || [];
+
+				// Normalize to arrays
+				const spouseIds = Array.isArray(existingSpouseIds) ? [...existingSpouseIds] : existingSpouseIds ? [existingSpouseIds] : [];
+				const spouseNames = Array.isArray(existingSpouseNames) ? [...existingSpouseNames] : existingSpouseNames ? [existingSpouseNames] : [];
+
+				// Add new spouse if not already present
+				if (!spouseIds.includes(person.crId)) {
+					spouseIds.push(person.crId);
+					spouseNames.push(person.name);
+				}
+
+				data.spouseCrId = spouseIds;
+				data.spouseName = spouseNames;
+			} else if (relationshipType === 'child') {
+				// Add to child array
+				const cache = this.app.metadataCache.getFileCache(this.createdFile);
+				const existingChildIds = cache?.frontmatter?.child_id || [];
+				const existingChildNames = cache?.frontmatter?.child || [];
+
+				// Normalize to arrays
+				const childIds = Array.isArray(existingChildIds) ? [...existingChildIds] : existingChildIds ? [existingChildIds] : [];
+				const childNames = Array.isArray(existingChildNames) ? [...existingChildNames] : existingChildNames ? [existingChildNames] : [];
+
+				// Add new child if not already present
+				if (!childIds.includes(person.crId)) {
+					childIds.push(person.crId);
+					childNames.push(person.name);
+				}
+
+				data.childCrId = childIds;
+				data.childName = childNames;
+			} else if (relationshipType === 'father') {
+				data.fatherCrId = person.crId;
+				data.fatherName = person.name;
+			} else if (relationshipType === 'mother') {
+				data.motherCrId = person.crId;
+				data.motherName = person.name;
+			}
+
+			await updatePersonNote(this.app, this.createdFile, data);
+			new Notice(`Added ${relationshipType}: ${person.name}`);
+		} catch (error) {
+			console.error(`Failed to add ${relationshipType}:`, error);
+			new Notice(`Failed to add ${relationshipType}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+	}
+
+	/**
 	 * Create the person note
 	 */
 	private async createPerson(): Promise<void> {
@@ -1285,7 +1573,15 @@ export class CreatePersonModal extends Modal {
 				this.onCreated(file);
 			}
 
-			this.close();
+			// Store created person info for post-create actions
+			this.createdFile = file;
+			this.createdPersonName = this.personData.name;
+			// Get cr_id from the file's frontmatter
+			const cache = this.app.metadataCache.getFileCache(file);
+			this.createdPersonCrId = cache?.frontmatter?.cr_id || data.crId;
+
+			// Show post-create actions instead of closing
+			this.renderPostCreateActions(this.contentEl);
 		} catch (error) {
 			console.error('Failed to create person note:', error);
 			new Notice(`Failed to create person note: ${error instanceof Error ? error.message : 'Unknown error'}`);
