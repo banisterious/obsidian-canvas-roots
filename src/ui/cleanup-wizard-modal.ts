@@ -1,7 +1,7 @@
 /**
  * Post-Import Cleanup Wizard Modal
  *
- * A 10-step wizard for post-import data cleanup operations.
+ * An 11-step wizard for post-import data cleanup operations.
  *
  * Step 1: Quality Report — Review data quality issues (review-only)
  * Step 2: Bidirectional Relationships — Fix parent-child link consistency (batch)
@@ -13,6 +13,7 @@
  * Step 8: Bulk Geocode — Add coordinates to places (interactive)
  * Step 9: Place Hierarchy — Build containment chains (interactive)
  * Step 10: Flatten Properties — Fix nested frontmatter (batch)
+ * Step 11: Event Person Migration — Convert person to persons array (batch)
  */
 
 import { App, Modal, Notice, setIcon, TFile } from 'obsidian';
@@ -34,6 +35,7 @@ import { PlaceGraphService } from '../core/place-graph';
 import { createPlaceNote, updatePlaceNote, type PlaceData } from '../core/place-note-writer';
 import type { PlaceNode, PlaceType } from '../models/place';
 import { SourceMigrationService, type IndexedSourceNote } from '../sources/services/source-migration-service';
+import { EventPersonMigrationService, type LegacyPersonEventNote } from '../events/services/event-person-migration-service';
 
 const logger = getLogger('CleanupWizard');
 
@@ -247,6 +249,18 @@ const WIZARD_STEPS: WizardStepConfig[] = [
 		detectMethod: 'detectNestedProperties',
 		applyMethod: 'flattenProperties',
 		dependencies: []
+	},
+	{
+		id: 'event-person-migrate',
+		number: 11,
+		title: 'Migrate Event Person Properties',
+		shortTitle: 'Event Persons',
+		description: 'Convert singular person property to persons array format.',
+		type: 'batch',
+		service: 'EventPersonMigrationService',
+		detectMethod: 'detectLegacyPersonProperty',
+		applyMethod: 'migrateToArrayFormat',
+		dependencies: [6]
 	}
 ];
 
@@ -289,6 +303,10 @@ export class CleanupWizardModal extends Modal {
 	// Source migration state
 	private sourceMigrationService: SourceMigrationService | null = null;
 	private indexedSourceNotes: IndexedSourceNote[] = [];
+
+	// Event person migration state
+	private eventPersonMigrationService: EventPersonMigrationService | null = null;
+	private legacyPersonEventNotes: LegacyPersonEventNote[] = [];
 
 	// Step completion tracking for dependency checks
 	private stepCompletion: Record<string, { completed: boolean; completedAt: number; issuesFixed: number }> = {};
@@ -336,6 +354,16 @@ export class CleanupWizardModal extends Modal {
 			this.sourceMigrationService = new SourceMigrationService(this.app, this.plugin.settings);
 		}
 		return this.sourceMigrationService;
+	}
+
+	/**
+	 * Initialize the EventPersonMigrationService (lazy initialization)
+	 */
+	private getEventPersonMigrationService(): EventPersonMigrationService {
+		if (!this.eventPersonMigrationService) {
+			this.eventPersonMigrationService = new EventPersonMigrationService(this.app, this.plugin.settings);
+		}
+		return this.eventPersonMigrationService;
 	}
 
 	/**
@@ -859,8 +887,9 @@ export class CleanupWizardModal extends Modal {
 
 		const stepsRow = this.progressContainer.createDiv({ cls: 'crc-wizard-steps crc-cleanup-progress-steps' });
 
-		// Show 10 step dots (more compact than numbered circles)
-		for (let i = 1; i <= 10; i++) {
+		// Show step dots (more compact than numbered circles)
+		const totalSteps = WIZARD_STEPS.length;
+		for (let i = 1; i <= totalSteps; i++) {
 			const stepState = this.state.steps[i];
 			const dot = stepsRow.createDiv({ cls: 'crc-cleanup-progress-dot' });
 
@@ -873,7 +902,7 @@ export class CleanupWizardModal extends Modal {
 			}
 
 			// Connector line (except after last)
-			if (i < 10) {
+			if (i < totalSteps) {
 				const connector = stepsRow.createDiv({ cls: 'crc-cleanup-progress-connector' });
 				if (stepState.status === 'complete' || stepState.status === 'skipped') {
 					connector.addClass('crc-cleanup-progress-connector--done');
@@ -883,7 +912,7 @@ export class CleanupWizardModal extends Modal {
 
 		// Step label
 		const stepLabel = this.progressContainer.createDiv({ cls: 'crc-cleanup-step-label' });
-		stepLabel.textContent = `Step ${this.state.currentStep} of 10`;
+		stepLabel.textContent = `Step ${this.state.currentStep} of ${totalSteps}`;
 	}
 
 	/**
@@ -1210,6 +1239,9 @@ export class CleanupWizardModal extends Modal {
 				break;
 			case 'flatten-props':
 				this.renderNestedPropsPreview(container);
+				break;
+			case 'event-person-migrate':
+				this.renderEventPersonMigrationPreview(container);
 				break;
 			default:
 				// Fallback for unimplemented previews
@@ -1614,6 +1646,53 @@ export class CleanupWizardModal extends Modal {
 			row.addEventListener('click', () => {
 				this.close();
 				void this.app.workspace.openLinkText(issue.person.file.path, '', false);
+			});
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render preview for Step 11: Event Person Migration
+	 */
+	private renderEventPersonMigrationPreview(container: HTMLElement): void {
+		if (this.legacyPersonEventNotes.length === 0) return;
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+		summary.textContent = `${this.legacyPersonEventNotes.length} event note${this.legacyPersonEventNotes.length === 1 ? '' : 's'} will be migrated:`;
+
+		const hint = preview.createDiv({ cls: 'crc-cleanup-preview-hint' });
+		hint.textContent = 'The singular "person" property will be converted to a "persons" array.';
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		const maxDisplay = 15;
+		const displayItems = this.legacyPersonEventNotes.slice(0, maxDisplay);
+		const remaining = this.legacyPersonEventNotes.length - maxDisplay;
+
+		for (const note of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row crc-cleanup-preview-row--clickable' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'calendar');
+
+			const content = row.createDiv({ cls: 'crc-cleanup-preview-content' });
+
+			const fileName = content.createSpan({ cls: 'crc-cleanup-preview-person' });
+			fileName.textContent = note.file.basename;
+
+			const desc = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
+			const personName = note.personValue.replace(/\[\[|\]\]/g, '');
+			desc.textContent = `: person → persons["${personName}"]`;
+
+			// Click to open the file
+			row.addEventListener('click', () => {
+				this.close();
+				void this.app.workspace.openLinkText(note.file.path, '', false);
 			});
 		}
 
@@ -3271,6 +3350,16 @@ export class CleanupWizardModal extends Modal {
 					};
 					break;
 				}
+				case 'event-person-migrate': {
+					const eventPersonMigrationService = this.getEventPersonMigrationService();
+					const migrationResult = await eventPersonMigrationService.migrateToArrayFormat(this.legacyPersonEventNotes);
+					result = {
+						processed: migrationResult.processed,
+						modified: migrationResult.modified,
+						errors: migrationResult.errors
+					};
+					break;
+				}
 				default:
 					// Placeholder for unimplemented methods
 					await new Promise(resolve => setTimeout(resolve, 500));
@@ -3493,6 +3582,12 @@ export class CleanupWizardModal extends Modal {
 			this.indexedSourceNotes = sourceMigrationService.detectIndexedSources();
 			this.state.steps[6].issueCount = this.indexedSourceNotes.length;
 			logger.debug('runPreScan', `Step 6 (Sources): ${this.indexedSourceNotes.length} notes with indexed sources`);
+
+			// Step 11: Event person migration (person → persons array)
+			const eventPersonMigrationService = this.getEventPersonMigrationService();
+			this.legacyPersonEventNotes = eventPersonMigrationService.detectLegacyPersonProperty();
+			this.state.steps[11].issueCount = this.legacyPersonEventNotes.length;
+			logger.debug('runPreScan', `Step 11 (Event Persons): ${this.legacyPersonEventNotes.length} events with legacy person property`);
 
 			this.state.preScanComplete = true;
 			logger.info('runPreScan', 'Pre-scan complete');

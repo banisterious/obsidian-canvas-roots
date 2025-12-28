@@ -61,7 +61,8 @@ title: "Birth of John Smith"
 event_type: birth
 date: 1850-03-15
 date_precision: exact
-person: "[[John Smith]]"
+persons:
+  - "[[John Smith]]"
 place: "[[Dublin, Ireland]]"
 sources:
   - "[[1850 Birth Certificate]]"
@@ -85,8 +86,7 @@ Additional notes about this event...
 | `date` | string | Yes | Event date (ISO format or fictional calendar) |
 | `date_precision` | enum | Yes | How precise the date is |
 | `date_end` | string | No | End date for ranges |
-| `person` | wikilink | No | Primary person involved |
-| `persons` | wikilink[] | No | Multiple people (for marriages, etc.) |
+| `persons` | wikilink[] | No | People involved in the event |
 | `place` | wikilink | No | Where the event occurred |
 | `sources` | wikilink[] | No | Sources documenting this event |
 | `confidence` | enum | No | `high`, `medium`, `low`, `unknown` |
@@ -97,6 +97,8 @@ Additional notes about this event...
 | `timeline` | wikilink | No | Parent timeline note |
 | `sort_order` | number | No | Computed sort value for ordering |
 | `groups` | string[] | No | Groups/factions involved (for filtering) |
+
+> **Note (v0.18.0):** All events now use the `persons` array property. Single-participant events simply have an array with one element (e.g., `persons: ["[[John Smith]]"]`). The legacy `person` property is deprecated but still read for backward compatibility.
 
 ### Event Types
 
@@ -522,10 +524,11 @@ When multiple sources document the same event:
 
 ### Multi-Person Events
 
-For events involving multiple people (marriages, etc.):
+All events use the `persons` array (as of v0.18.0):
 
-- Use the `persons` array
-- The event appears in both people's timelines
+- Single-participant events: `persons: ["[[John Smith]]"]`
+- Multi-participant events: `persons: ["[[John Smith]]", "[[Jane Doe]]"]`
+- The event appears in all linked people's timelines
 
 ### Relative Ordering
 

@@ -11,6 +11,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.18.0] - 2025-12-28
+
+### Changed
+
+- **Event person property consolidation** - Event notes now use a single `persons` array property for all event types, replacing the previous dual-property approach (`person` for single-participant events, `persons` for multi-participant events). This simplifies data management and enables multi-participant support for all event types.
+
+  **Old format (deprecated):**
+  ```yaml
+  # Single-participant event
+  person: "[[John Smith]]"
+
+  # Multi-participant event
+  persons:
+    - "[[John Smith]]"
+    - "[[Jane Doe]]"
+  ```
+
+  **New format (all events):**
+  ```yaml
+  persons:
+    - "[[John Smith]]"
+  ```
+
+### Added
+
+- **Event person migration step in Cleanup Wizard** - Step 11 in the Post-Import Cleanup Wizard detects and migrates event notes using the legacy `person` property to the `persons` array format. Includes preview with merge detection for notes that have both properties.
+
+- **Migration notice for v0.18.0** - Users upgrading from v0.17.x see a one-time notice explaining the event person property change with examples and a link to the Cleanup Wizard.
+
+### Migration
+
+The legacy `person` property continues to be read for backward compatibility. To migrate existing notes:
+
+1. Open the Cleanup Wizard (Control Center → Data Quality → Cleanup Wizard, or command palette)
+2. Navigate to Step 11: "Migrate Event Person Properties"
+3. Review detected notes and click "Apply All" to migrate
+
+---
+
 ## [0.17.9] - 2025-12-27
 
 ### Added

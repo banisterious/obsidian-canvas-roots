@@ -2,7 +2,7 @@
 
 Planning document for consolidating `person` and `persons` event properties into a single unified property.
 
-- **Status:** Planning
+- **Status:** In Progress (Phase 1, 2, 4 Complete)
 - **GitHub Issue:** #TBD
 - **Created:** 2025-12-27
 - **Updated:** 2025-12-28
@@ -197,25 +197,25 @@ Users with property aliases for `person` should be notified and guided to update
 
 ## Implementation Checklist
 
-### Phase 1: Update Writers
-- [ ] Update `src/gramps/gramps-parser.ts` to use `persons` for all events
-- [ ] Update `src/gedcom/gedcom-importer-v2.ts` to use `persons` for all events
-- [ ] Check `src/gedcomx/gedcomx-importer.ts` for event handling
-- [ ] Update `src/events/services/event-service.ts` to write only `persons`
+### Phase 1: Update Writers ✅
+- [x] Update `src/gramps/gramps-importer.ts` to use `persons` for all events
+- [x] Update `src/gedcom/gedcom-importer-v2.ts` to use `persons` for all events
+- [x] Update `src/gedcomx/gedcomx-importer.ts` for event handling
+- [x] Update `src/events/services/event-service.ts` to write only `persons`
 
-### Phase 2: Update Base Template
-- [ ] Simplify `participant` formula in `src/constants/events-base-template.ts`
-- [ ] Remove `note.${person}` from visible properties
-- [ ] Update "By Person" view to use `persons`
+### Phase 2: Update Base Template ✅
+- [x] Update `participant` formula in `src/constants/events-base-template.ts` for backward compat
+- [x] Update "By Person" view to check both `persons` and `person` properties
 
 ### Phase 3: Update Readers (optional cleanup)
 - [ ] Simplify `src/events/services/event-service.ts` to read only `persons`
 - [ ] Simplify `src/events/services/timeline-canvas-exporter.ts`
 - [ ] Simplify `src/reports/services/place-summary-generator.ts`
 
-### Phase 4: Migration Tool
-- [ ] Add migration step to Cleanup Wizard
-- [ ] Or: Add standalone "Migrate event person properties" command
+### Phase 4: Migration Tool ✅
+- [x] Add migration step to Cleanup Wizard (Step 11)
+- [x] Add one-time migration notice for v0.18.0 upgrades
+- [x] Create `src/events/services/event-person-migration-service.ts`
 
 ### Phase 5: Documentation
 - [ ] Update Frontmatter Reference documentation

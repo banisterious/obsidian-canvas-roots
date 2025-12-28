@@ -1263,9 +1263,10 @@ Canvas Roots includes built-in event types organized by category. Custom types c
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `person` | `string` | Primary person involved (wikilink) | `"[[John Smith]]"` |
-| `persons` | `string[]` | Multiple people involved | `["[[John Smith]]", "[[Jane Doe]]"]` |
+| `persons` | `string[]` | People involved in the event (wikilink array) | `["[[John Smith]]"]` or `["[[John Smith]]", "[[Jane Doe]]"]` |
 | `place` | `string` | Where the event occurred (wikilink) | `"[[London]]"` |
+
+> **Note:** As of v0.18.0, all events use the `persons` array property. Single-participant events simply have an array with one element. The legacy `person` (singular) property is deprecated but still read for backward compatibility. Use the Cleanup Wizard (Step 11) to migrate existing notes.
 
 ### Sources and Confidence
 
@@ -1328,7 +1329,8 @@ title: Birth of John Smith
 event_type: birth
 date: "1850-03-15"
 date_precision: exact
-person: "[[John Smith]]"
+persons:
+  - "[[John Smith]]"
 place: "[[London]]"
 sources:
   - "[[Birth Certificate - John Smith]]"

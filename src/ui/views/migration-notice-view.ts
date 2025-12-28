@@ -1,9 +1,12 @@
 /**
  * Migration Notice View
  *
- * Displays a one-time notice when users upgrade to v0.17.0,
- * informing them about the source array migration and providing
- * a direct path to the Cleanup Wizard.
+ * Displays a one-time notice when users upgrade to versions with breaking changes,
+ * informing them about data migrations and providing a path to the Cleanup Wizard.
+ *
+ * Supported migrations:
+ * - v0.17.0: Source property format (source, source_2 → sources array)
+ * - v0.18.0: Event person property (person → persons array)
  */
 
 import { ItemView, WorkspaceLeaf, setIcon } from 'obsidian';
@@ -11,12 +14,20 @@ import type CanvasRootsPlugin from '../../../main';
 
 export const VIEW_TYPE_MIGRATION_NOTICE = 'canvas-roots-migration-notice';
 
+/**
+ * Migration type for the notice
+ */
+type MigrationType = 'sources' | 'event-persons';
+
 export class MigrationNoticeView extends ItemView {
 	private plugin: CanvasRootsPlugin;
+	private migrationType: MigrationType;
 
 	constructor(leaf: WorkspaceLeaf, plugin: CanvasRootsPlugin) {
 		super(leaf);
 		this.plugin = plugin;
+		// Determine which migration to show based on current version
+		this.migrationType = this.determineMigrationType();
 	}
 
 	getViewType(): string {
@@ -24,11 +35,26 @@ export class MigrationNoticeView extends ItemView {
 	}
 
 	getDisplayText(): string {
+		const version = this.plugin.manifest.version;
+		if (version.startsWith('0.18')) {
+			return 'Canvas Roots v0.18.0';
+		}
 		return 'Canvas Roots v0.17.0';
 	}
 
 	getIcon(): string {
 		return 'info';
+	}
+
+	/**
+	 * Determine which migration notice to show based on plugin version
+	 */
+	private determineMigrationType(): MigrationType {
+		const version = this.plugin.manifest.version;
+		if (version.startsWith('0.18')) {
+			return 'event-persons';
+		}
+		return 'sources';
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
@@ -37,6 +63,85 @@ export class MigrationNoticeView extends ItemView {
 		container.empty();
 		container.addClass('cr-migration-notice');
 
+		if (this.migrationType === 'event-persons') {
+			this.renderEventPersonsMigration(container);
+		} else {
+			this.renderSourcesMigration(container);
+		}
+	}
+
+	/**
+	 * Render the v0.18.0 event persons migration notice
+	 */
+	private renderEventPersonsMigration(container: Element): void {
+		// Header
+		const header = container.createDiv({ cls: 'cr-migration-header' });
+		const iconEl = header.createSpan({ cls: 'cr-migration-icon' });
+		setIcon(iconEl, 'sparkles');
+		header.createEl('h2', { text: "What's New in v0.18.0" });
+
+		// Content
+		const content = container.createDiv({ cls: 'cr-migration-content' });
+
+		// Event person format change section
+		const section = content.createDiv({ cls: 'cr-migration-section' });
+		section.createEl('h3', { text: 'Event Person Property Consolidation' });
+
+		section.createEl('p', {
+			text: 'Event notes now use a single "persons" array property instead of separate "person" and "persons" properties. This simplifies data management and enables multi-person events for all event types.'
+		});
+
+		// Code comparison
+		const codeBlock = section.createDiv({ cls: 'cr-migration-code' });
+
+		const oldCode = codeBlock.createDiv({ cls: 'cr-code-example cr-code-old' });
+		oldCode.createEl('div', { cls: 'cr-code-label', text: 'Old format (deprecated)' });
+		oldCode.createEl('pre', {
+			text: `# Single-person event
+person: "[[John Smith]]"
+
+# Multi-person event
+persons:
+  - "[[John Smith]]"
+  - "[[Jane Doe]]"`
+		});
+
+		const newCode = codeBlock.createDiv({ cls: 'cr-code-example cr-code-new' });
+		newCode.createEl('div', { cls: 'cr-code-label', text: 'New format (all events)' });
+		newCode.createEl('pre', {
+			text: `persons:
+  - "[[John Smith]]"
+
+# or for multi-person events:
+persons:
+  - "[[John Smith]]"
+  - "[[Jane Doe]]"`
+		});
+
+		// Benefits section
+		const benefitsSection = content.createDiv({ cls: 'cr-migration-section' });
+		benefitsSection.createEl('h3', { text: 'Benefits' });
+
+		const benefitsList = benefitsSection.createEl('ul');
+		benefitsList.createEl('li', { text: 'Consistent property name across all event types' });
+		benefitsList.createEl('li', { text: 'Any event can have multiple participants without schema changes' });
+		benefitsList.createEl('li', { text: 'Simpler queries in Obsidian Bases and Dataview' });
+
+		// Action section
+		const actionSection = content.createDiv({ cls: 'cr-migration-section' });
+		actionSection.createEl('h3', { text: 'Action Recommended' });
+		actionSection.createEl('p', {
+			text: 'If you have event notes using the old "person" property, run the Cleanup Wizard to migrate them automatically. New imports will use the array format.'
+		});
+
+		// Buttons
+		this.renderButtons(content);
+	}
+
+	/**
+	 * Render the v0.17.0 sources migration notice
+	 */
+	private renderSourcesMigration(container: Element): void {
 		// Header
 		const header = container.createDiv({ cls: 'cr-migration-header' });
 		const iconEl = header.createSpan({ cls: 'cr-migration-icon' });
@@ -80,6 +185,13 @@ source_2: "[[Birth Certificate]]"`
 		});
 
 		// Buttons
+		this.renderButtons(content);
+	}
+
+	/**
+	 * Render the action buttons
+	 */
+	private renderButtons(content: Element): void {
 		const buttons = content.createDiv({ cls: 'cr-migration-buttons' });
 
 		const wizardBtn = buttons.createEl('button', {

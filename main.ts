@@ -7288,11 +7288,18 @@ export default class CanvasRootsPlugin extends Plugin {
 
 	/**
 	 * Determine if the migration notice should be shown
-	 * Shows when upgrading to 0.17.x from an earlier version
+	 * Shows when upgrading to versions with breaking changes:
+	 * - 0.17.x: Source array migration
+	 * - 0.18.x: Event person→persons migration
 	 */
 	private shouldShowMigrationNotice(lastSeen: string | undefined, current: string): boolean {
-		// Only show for 0.17.x releases
-		if (!current.startsWith('0.17')) {
+		// Parse current version
+		const currentParts = current.split('.').map(Number);
+		const currentMinor = currentParts[1] || 0;
+
+		// Only show for specific versions with migrations
+		const hasMigration = currentMinor === 17 || currentMinor === 18;
+		if (!hasMigration) {
 			return false;
 		}
 
@@ -7301,10 +7308,13 @@ export default class CanvasRootsPlugin extends Plugin {
 			return true;
 		}
 
-		// Parse versions and compare
+		// Parse last seen version and compare
 		const lastParts = lastSeen.split('.').map(Number);
-		// Show if last seen was before 0.17.0
-		if (lastParts[0] === 0 && lastParts[1] < 17) {
+		const lastMinor = lastParts[1] || 0;
+
+		// Show if upgrading to a version with migration from an earlier version
+		// e.g., upgrading from 0.16.x to 0.17.x, or from 0.17.x to 0.18.x
+		if (lastMinor < currentMinor) {
 			return true;
 		}
 
