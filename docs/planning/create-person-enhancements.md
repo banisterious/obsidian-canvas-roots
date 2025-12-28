@@ -124,6 +124,11 @@ CreatePersonModal
 - [ ] Extend to stepfather, stepmother, adoptive father, adoptive mother fields
 - [ ] Same pattern: pre-fill sex based on field type
 
+#### Phase 1e: Folder Context Menu
+- [ ] Add "Create person" to People folder context menu (Canvas Roots submenu)
+- [ ] Pass clicked folder path as `directory` option to CreatePersonModal
+- [ ] Works for People folder and any subfolder within it
+
 ---
 
 ## Phase 2: Add Children Section to Edit Modal
