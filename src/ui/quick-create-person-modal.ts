@@ -6,6 +6,7 @@
 
 import { App, Modal, Setting, Notice, normalizePath } from 'obsidian';
 import { createPersonNote, PersonData } from '../core/person-note-writer';
+import { generateCrId } from '../core/uuid';
 import { createLucideIcon } from './lucide-icons';
 import { PersonInfo } from './person-picker';
 import type CanvasRootsPlugin from '../../main';
@@ -208,9 +209,14 @@ export class QuickCreatePersonModal extends Modal {
 				}
 			}
 
+			// Generate cr_id upfront so we have it for the callback
+			// (metadataCache may not be updated immediately after file creation)
+			const crId = generateCrId();
+
 			// Build person data
 			const personData: PersonData = {
-				name: this.name.trim()
+				name: this.name.trim(),
+				crId: crId
 			};
 
 			if (this.nickname) {
@@ -233,11 +239,7 @@ export class QuickCreatePersonModal extends Modal {
 				dynamicBlockTypes: ['media', 'timeline', 'relationships']
 			});
 
-			// Get the cr_id from the created file
-			const cache = this.app.metadataCache.getFileCache(file);
-			const crId = cache?.frontmatter?.cr_id || '';
-
-			// Build PersonInfo to return
+			// Build PersonInfo to return (use the crId we generated)
 			const personInfo: PersonInfo = {
 				name: this.name.trim(),
 				crId: crId,
