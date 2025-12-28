@@ -10,6 +10,7 @@ This document outlines planned features for Canvas Roots. For completed features
 - [Planned Features](#planned-features)
   - [Create Person Enhancements](#create-person-enhancements) 📋 Medium
   - [Event Person Property Consolidation](#event-person-property-consolidation) 📋 Medium
+  - [Timeline Export Consolidation](#timeline-export-consolidation) 📋 Medium
   - [Inclusive Parent Relationships](#inclusive-parent-relationships) 📋 Medium
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
@@ -133,6 +134,48 @@ This duality creates complexity in base templates (requires formula workarounds)
 
 **Documentation:**
 - See [Event Person Property Consolidation Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/event-person-property-consolidation.md) for detailed specifications
+
+---
+
+### Timeline Export Consolidation
+
+**Priority:** 📋 Medium — Unified timeline export experience
+
+**Status:** Planning
+
+**The Problem:** Timeline exports currently exist in two places with different capabilities:
+- **Events tab → Export card**: Canvas, Excalidraw, 4 markdown formats, styling options
+- **Reports → Timeline**: PDF, ODT, advanced filters, grouping options
+
+Users must navigate between two UIs to access the full range of export options.
+
+**Goal:** Consolidate all timeline export functionality into the Reports system, creating a single comprehensive experience with all 8 formats and unified options.
+
+**Consolidated Features:**
+
+| Category | Formats |
+|----------|---------|
+| Visual exports | Canvas, Excalidraw |
+| Documents | PDF, ODT |
+| Markdown | Vertical timeline (callouts), Table, Simple list, Dataview query |
+
+**Unified Options:**
+- All filters from both systems (person, event type, group, place, universe, date range)
+- Canvas/Excalidraw styling (layouts, colors, drawing styles)
+- PDF/ODT options (page size, cover pages)
+- Grouping (none, year, decade, person, place)
+- Data quality insights (gaps, unsourced events, orphans)
+
+**Phased Implementation:**
+
+| Phase | Description |
+|-------|-------------|
+| 1 | Add Canvas, Excalidraw, and additional markdown formats to Reports Timeline |
+| 2 | Redesign wizard steps for format selection and format-specific options |
+| 3 | Add deprecation notice to Events tab Export card, then remove |
+
+**Documentation:**
+- See [Timeline Export Consolidation Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/timeline-export-consolidation.md) for detailed specifications
 
 ---
 
