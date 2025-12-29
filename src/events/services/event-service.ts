@@ -82,6 +82,7 @@ function fmToStringArray(value: unknown): string[] {
 
 /**
  * Format a wikilink - ensure it has [[ ]] brackets
+ * If the input is already a wikilink, return as-is
  */
 function formatWikilink(value: string): string {
 	const trimmed = value.trim();
@@ -89,6 +90,31 @@ function formatWikilink(value: string): string {
 		return trimmed;
 	}
 	return `[[${trimmed}]]`;
+}
+
+/**
+ * Create a wikilink with proper handling of duplicate filenames
+ * Uses [[basename|name]] format when basename differs from name
+ * @param name The display name
+ * @param file The file to link to (optional, if available)
+ * @param app The Obsidian app instance for file resolution
+ */
+function createSmartWikilink(name: string, file: TFile | null, app: App): string {
+	// If file is provided and basename differs from name, use alias format
+	if (file && file.basename !== name) {
+		return `[[${file.basename}|${name}]]`;
+	}
+
+	// Try to resolve the name to a file if not provided
+	if (!file) {
+		const resolvedFile = app.metadataCache.getFirstLinkpathDest(name, '');
+		if (resolvedFile && resolvedFile.basename !== name) {
+			return `[[${resolvedFile.basename}|${name}]]`;
+		}
+	}
+
+	// Standard format
+	return `[[${name}]]`;
 }
 
 /**
@@ -408,17 +434,17 @@ export class EventService {
 			allPersons.unshift(data.person);
 		}
 		if (allPersons.length > 0) {
-			const formattedPersons = allPersons.map(p => formatWikilink(p));
+			const formattedPersons = allPersons.map(p => createSmartWikilink(p, null, this.app));
 			frontmatterLines.push(`${prop('persons')}:`);
 			for (const p of formattedPersons) {
 				frontmatterLines.push(`  - "${p}"`);
 			}
 		}
 		if (data.place) {
-			frontmatterLines.push(`${prop('place')}: "${formatWikilink(data.place)}"`);
+			frontmatterLines.push(`${prop('place')}: "${createSmartWikilink(data.place, null, this.app)}"`);
 		}
 		if (data.sources && data.sources.length > 0) {
-			const formattedSources = data.sources.map(s => formatWikilink(s));
+			const formattedSources = data.sources.map(s => createSmartWikilink(s, null, this.app));
 			frontmatterLines.push(`${prop('sources')}:`);
 			for (const s of formattedSources) {
 				frontmatterLines.push(`  - "${s}"`);
@@ -440,21 +466,21 @@ export class EventService {
 			frontmatterLines.push(`${prop('date_system')}: ${data.dateSystem}`);
 		}
 		if (data.before && data.before.length > 0) {
-			const formattedBefore = data.before.map(b => formatWikilink(b));
+			const formattedBefore = data.before.map(b => createSmartWikilink(b, null, this.app));
 			frontmatterLines.push(`${prop('before')}:`);
 			for (const b of formattedBefore) {
 				frontmatterLines.push(`  - "${b}"`);
 			}
 		}
 		if (data.after && data.after.length > 0) {
-			const formattedAfter = data.after.map(a => formatWikilink(a));
+			const formattedAfter = data.after.map(a => createSmartWikilink(a, null, this.app));
 			frontmatterLines.push(`${prop('after')}:`);
 			for (const a of formattedAfter) {
 				frontmatterLines.push(`  - "${a}"`);
 			}
 		}
 		if (data.timeline) {
-			frontmatterLines.push(`${prop('timeline')}: "${formatWikilink(data.timeline)}"`);
+			frontmatterLines.push(`${prop('timeline')}: "${createSmartWikilink(data.timeline, null, this.app)}"`);
 		}
 		if (data.groups && data.groups.length > 0) {
 			frontmatterLines.push(`${prop('groups')}:`);
