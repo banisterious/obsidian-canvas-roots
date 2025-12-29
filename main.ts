@@ -1967,6 +1967,22 @@ export default class CanvasRootsPlugin extends Plugin {
 										});
 								});
 
+								// Open in family chart
+								submenu.addItem((subItem) => {
+									subItem
+										.setTitle('Open in family chart')
+										.setIcon('git-fork')
+										.onClick(async () => {
+											const cache = this.app.metadataCache.getFileCache(file);
+											const crId = cache?.frontmatter?.cr_id;
+											if (crId) {
+												await this.activateFamilyChartView(crId);
+											} else {
+												new Notice('Could not find cr_id for this person note');
+											}
+										});
+								});
+
 								// Calculate relationship
 								submenu.addItem((subItem) => {
 									subItem
