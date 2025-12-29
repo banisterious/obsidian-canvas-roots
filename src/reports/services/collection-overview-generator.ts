@@ -15,6 +15,7 @@ import type {
 import { FamilyGraphService, PersonNode } from '../../core/family-graph';
 import { FolderFilterService } from '../../core/folder-filter';
 import { getLogger } from '../../core/logging';
+import { extractWikilinkPath } from '../../utils/wikilink-resolver';
 
 const logger = getLogger('CollectionOverviewGenerator');
 
@@ -363,11 +364,7 @@ export class CollectionOverviewGenerator {
 	 * Extract the name from a wikilink
 	 */
 	private extractLinkName(link: string): string {
-		let name = link.replace(/^\[\[/, '').replace(/\]\]$/, '');
-		if (name.includes('|')) {
-			name = name.split('|')[0];
-		}
-		return name.trim();
+		return extractWikilinkPath(link);
 	}
 
 	/**

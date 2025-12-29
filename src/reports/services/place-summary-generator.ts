@@ -19,6 +19,7 @@ import { FolderFilterService } from '../../core/folder-filter';
 import { EventService } from '../../events/services/event-service';
 import { PlaceNode } from '../../models/place';
 import { getLogger } from '../../core/logging';
+import { extractWikilinkPath } from '../../utils/wikilink-resolver';
 
 const logger = getLogger('PlaceSummaryGenerator');
 
@@ -343,11 +344,7 @@ export class PlaceSummaryGenerator {
 	 * Extract the name from a wikilink
 	 */
 	private extractLinkName(link: string): string {
-		let name = link.replace(/^\[\[/, '').replace(/\]\]$/, '');
-		if (name.includes('|')) {
-			name = name.split('|')[0];
-		}
-		return name.trim();
+		return extractWikilinkPath(link);
 	}
 
 	/**

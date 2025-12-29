@@ -14,6 +14,7 @@ import type {
 } from '../types/report-types';
 import { SourceService } from '../../sources/services/source-service';
 import { getLogger } from '../../core/logging';
+import { extractWikilinkPath } from '../../utils/wikilink-resolver';
 
 const logger = getLogger('MediaInventoryGenerator');
 
@@ -211,13 +212,8 @@ export class MediaInventoryGenerator {
 	private normalizeMediaPath(path: string): string | null {
 		if (!path) return null;
 
-		// Remove wikilink brackets
-		let normalized = path.replace(/^\[\[/, '').replace(/\]\]$/, '');
-
-		// Handle aliases [[path|alias]]
-		if (normalized.includes('|')) {
-			normalized = normalized.split('|')[0];
-		}
+		// Extract path from wikilink (handles brackets and alias format)
+		const normalized = extractWikilinkPath(path);
 
 		// Try to find the file
 		const file = this.app.metadataCache.getFirstLinkpathDest(normalized, '');
