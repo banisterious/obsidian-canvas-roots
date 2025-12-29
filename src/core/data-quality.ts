@@ -810,7 +810,7 @@ export class DataQualityService {
 			// Skip Obsidian's internal 'position' property
 			if (key === 'position') continue;
 
-			if (this.isNestedObject(value)) {
+			if (this.isNestedObject(value, key)) {
 				const nestedKeys = this.getNestedKeys(value);
 				issues.push({
 					code: 'NESTED_PROPERTY',
@@ -887,12 +887,16 @@ export class DataQualityService {
 	/**
 	 * Check if a value is a nested object (not a primitive or array of primitives)
 	 */
-	private isNestedObject(value: unknown): boolean {
+	private isNestedObject(value: unknown, key?: string): boolean {
 		if (value === null || value === undefined) return false;
 		if (typeof value !== 'object') return false;
 
 		// Date objects are not considered nested
 		if (value instanceof Date) return false;
+
+		// Whitelist intentional schema-defined nested structures
+		if (key === 'sourced_facts') return false;  // GPS research tracking
+		if (key === 'evidence') return false;       // Evidence documentation
 
 		// Arrays of primitives are fine
 		if (Array.isArray(value)) {
@@ -1328,7 +1332,7 @@ export class DataQualityService {
 				// Skip Obsidian's internal 'position' property
 				if (key === 'position') continue;
 
-				if (this.isNestedObject(value)) {
+				if (this.isNestedObject(value, key)) {
 					hasNested = true;
 					keysToRemove.push(key);
 
