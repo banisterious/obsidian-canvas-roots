@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.18.x](#v018x)
+  - [Timeline Export Consolidation](#timeline-export-consolidation-v0182)
   - [Create Person Enhancements](#create-person-enhancements-v0181)
   - [Event Person Property Consolidation](#event-person-property-consolidation-v0180)
 - [v0.17.x](#v017x)
@@ -73,6 +74,59 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.18.x
+
+### Timeline Export Consolidation (v0.18.2)
+
+Consolidated all timeline export functionality from the Events tab Export card into the unified Reports wizard, creating a single comprehensive experience with all 8 export formats.
+
+**Problem Solved:**
+
+Timeline exports existed in two separate locations with different capabilities:
+
+| Location | Formats | Strengths | Weaknesses |
+|----------|---------|-----------|------------|
+| Events tab → Export card | Canvas, Excalidraw, 4 markdown formats | Visual exports, styling options | No PDF/ODT, no date range filter |
+| Reports → Timeline | PDF, ODT, markdown table | Document exports, advanced filters | No Canvas/Excalidraw, limited markdown |
+
+Users had to navigate between two different UIs to access the full range of export options.
+
+**Solution:**
+
+All timeline export capabilities are now unified in **Statistics & Reports → Reports → Timeline**:
+
+| Category | Formats |
+|----------|---------|
+| Visual exports | Canvas, Excalidraw (requires Excalidraw plugin) |
+| Documents | PDF, ODT |
+| Markdown | Vertical timeline (callouts), Table, Simple list, Dataview query |
+
+**Consolidated Features:**
+
+| Feature | Source |
+|---------|--------|
+| All filters | Person, event type, group, place, universe, date range |
+| Canvas/Excalidraw styling | Layout (horizontal/vertical/Gantt), color scheme, ordering edges |
+| Excalidraw drawing options | Style, font, stroke width |
+| PDF/ODT options | Page size, date format, cover page |
+| Grouping options | None, by year, by decade, by person, by place |
+| Data quality insights | Timeline gaps, unsourced events, orphan events |
+
+**Implementation Phases:**
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | Add Canvas, Excalidraw, and additional markdown formats to Reports Timeline | ✓ Complete |
+| 2 | Redesign wizard steps for format selection and format-specific options | ✓ Complete |
+| 3 | Add deprecation notice to Events tab Export card | ✓ Complete |
+
+**Deprecation Notice:**
+
+The Events tab Export card now displays a notice directing users to the Reports wizard. The Export card will be removed in a future release.
+
+**Documentation:**
+- See [Timeline Export Consolidation Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/timeline-export-consolidation.md) for detailed specifications
+
+---
 
 ### Create Person Enhancements (v0.18.1)
 
