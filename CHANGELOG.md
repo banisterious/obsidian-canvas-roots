@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **CSS Architecture Refactoring** - Improved maintainability and organization of the plugin's CSS codebase:
+  - **Split massive modals.css** (12,488 lines) into 6 focused component files organized by functional domain:
+    - `control-center.css` (5,675 lines) - Core Control Center UI (tabs, navigation, cards)
+    - `import-export-wizard.css` (1,778 lines) - Import/Export wizard modals
+    - `cleanup-wizard.css` (2,134 lines) - Cleanup wizard with all 9 steps
+    - `media-modals.css` (1,427 lines) - Media picker, manager, gallery, bulk link modals
+    - `place-modals.css` (933 lines) - Place creation, standardization, merge, and network modals
+    - `entity-create-modals.css` (542 lines) - Person picker and entity creation forms
+  - **Removed 5 empty/unused CSS files** - Deleted `canvas.css`, `edges.css`, `theme.css`, `nodes.css`, and `animations.css` that contained no meaningful styles
+
+### Fixed
+
+- **CSS duplicate definitions** - Resolved critical CSS conflicts that could cause unpredictable styling behavior:
+  - `.cr-progress-bar` - Removed duplicate definition, now uses modifier classes (--good, --medium, --bad)
+  - `.crc-field-list` - Converted to scoped selectors to prevent conflicts between different contexts
+  - `.cr-modal-buttons` - Consolidated to single base definition in `base.css`
+
 ---
 
 ## [0.18.3] - 2025-12-29
