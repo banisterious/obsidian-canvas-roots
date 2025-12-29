@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.18.3] - 2025-12-29
+
 ### Fixed
 
 - **Wikilink handling for duplicate names** - The plugin now properly handles entities with duplicate names (e.g., "John Doe 1.md" for a person named "John Doe") throughout the codebase using Obsidian's wikilink alias format `[[filename|display name]]`. This fixes:
