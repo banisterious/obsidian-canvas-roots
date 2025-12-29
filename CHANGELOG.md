@@ -11,6 +11,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.18.2] - 2025-12-28
+
+### Added
+
+- **Timeline Export Consolidation** - All 8 timeline export formats are now available from a single location: **Statistics & Reports → Reports → Timeline**. This consolidates functionality that was previously split between the Events tab Export card and the Reports wizard.
+
+  **Unified formats:**
+  - Visual exports: Canvas, Excalidraw (requires Excalidraw plugin)
+  - Documents: PDF, ODT
+  - Markdown: Vertical timeline (callouts), Table, Simple list, Dataview query
+
+  **Consolidated options:**
+  - All filters from both systems (person, event type, group, place, universe, date range)
+  - Canvas/Excalidraw styling (layout, color scheme, ordering edges)
+  - Excalidraw drawing options (style, font, stroke width)
+  - PDF/ODT options (page size, date format, cover page)
+  - Grouping options (none, by year, by decade, by person, by place)
+  - Data quality insights (timeline gaps, unsourced events, orphan events)
+
+- **Deprecation notice on Events tab Export card** - The Export card in Control Center → Events now displays a notice directing users to the unified Reports wizard. The Export card will be removed in a future release.
+
+### Fixed
+
+- **Excalidraw timeline exports showing raw file paths** - Event nodes in Excalidraw exports now display formatted labels (e.g., "BIRTH of John Smith (1850)") instead of raw file paths like "People/events/birth-john-smith.md".
+
+- **Excalidraw text positioning** - Text labels in Excalidraw exports are now properly centered within their containing rectangles.
+
+- **ODT table column misalignment with wikilinks** - Fixed an issue where wikilinks with aliases (e.g., `[[file|display]]`) would cause table columns to misalign in ODT exports. The pipe character inside wikilinks is no longer incorrectly treated as a cell delimiter.
+
+- **Canvas year markers in timeline exports** - Year marker text nodes now display properly formatted year labels instead of placeholder text.
+
+- **Intermediate canvas file cleanup** - When exporting to Excalidraw format, the intermediate canvas file is now automatically deleted after successful conversion.
+
+---
+
 ## [0.18.1] - 2025-12-28
 
 ### Added
