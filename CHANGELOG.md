@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Research gaps counting bug** - Fixed inflated unsourced facts count in Control Center Research Gaps widget:
+  - Previously counted all facts as "unsourced" for every person note in the vault, even those without GPS tracking enabled
+  - Now only counts unsourced facts for people who have the `sourced_facts` property (actively using GPS tracking)
+  - Example: With 24 people using GPS tracking and 7 fact types, the count was showing 169 unsourced facts (24×7), even though many people had complete tracking
+
 ---
 
 ## [0.18.5] - 2025-12-29

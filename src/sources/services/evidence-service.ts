@@ -155,11 +155,14 @@ export class EvidenceService {
 			}
 
 			// Count unsourced and weakly sourced facts
-			for (const fact of coverage.facts) {
-				if (fact.status === 'unsourced') {
-					summary.unsourcedByFact[fact.factKey]++;
-				} else if (fact.status === 'weakly-sourced') {
-					summary.weaklySourcedByFact[fact.factKey]++;
+			// ONLY for people who have started GPS tracking (have sourced_facts property)
+			if (hasTracking) {
+				for (const fact of coverage.facts) {
+					if (fact.status === 'unsourced') {
+						summary.unsourcedByFact[fact.factKey]++;
+					} else if (fact.status === 'weakly-sourced') {
+						summary.weaklySourcedByFact[fact.factKey]++;
+					}
 				}
 			}
 
