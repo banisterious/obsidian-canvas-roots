@@ -7,6 +7,7 @@ import { App, Modal, Setting, TFile, Notice } from 'obsidian';
 import type { CanvasRootsSettings } from '../../settings';
 import { createLucideIcon } from '../../ui/lucide-icons';
 import { PersonPickerModal, PersonInfo } from '../../ui/person-picker';
+import { RelationshipContext } from '../../ui/quick-create-person-modal';
 import { EventService } from '../services/event-service';
 import {
 	CreateEventData,
@@ -549,7 +550,16 @@ export class CreateEventModal extends Modal {
 					setting.setDesc(description);
 					updateButton(false);
 				} else {
-					// Open person picker
+					// Open person picker with create context
+					const directory = this.settings.peopleFolder || '';
+
+					const createContext: RelationshipContext = {
+						relationshipType: 'event_person',
+						suggestedSex: undefined,
+						parentCrId: undefined,
+						directory: directory
+					};
+
 					const picker = new PersonPickerModal(this.app, (person: PersonInfo) => {
 						this.person = person.name;
 						this.personCrId = person.crId;
@@ -557,6 +567,13 @@ export class CreateEventModal extends Modal {
 						inputEl.addClass('crc-input--linked');
 						setting.setDesc(`Linked to: ${person.name}`);
 						updateButton(true);
+					}, {
+						title: 'Select person',
+						createContext: createContext,
+						onCreateNew: () => {
+							// Callback signals inline creation support
+						},
+						plugin: this.plugin
 					});
 					picker.open();
 				}
