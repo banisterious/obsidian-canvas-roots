@@ -20,6 +20,7 @@ import type { SourceNote } from '../sources/types/source-types';
 import { PlaceGraphService } from '../core/place-graph';
 import type { PlaceNode } from '../models/place';
 import type { CanvasRootsSettings } from '../settings';
+import { extractWikilinkPath } from '../utils/wikilink-resolver';
 
 const logger = getLogger('GrampsExporter');
 
@@ -554,7 +555,7 @@ ${families.xml}
 
 			// Add place if present
 			if (event.place) {
-				const placeName = event.place.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+				const placeName = extractWikilinkPath(event.place);
 				const placeHandle = this.getOrCreatePlace(placeName, context);
 				eventLines.push(`      <place hlink="${placeHandle}"/>`);
 			}
@@ -960,7 +961,7 @@ ${families.xml}
 
 				// Check if person is referenced in event.person field
 				if (event.person) {
-					const personLink = event.person.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+					const personLink = extractWikilinkPath(event.person);
 					if (personLink === person.name || personLink === person.file.basename) {
 						isLinked = true;
 					}
@@ -969,7 +970,7 @@ ${families.xml}
 				// Check if person is in event.persons array
 				if (!isLinked && event.persons) {
 					for (const p of event.persons) {
-						const personLink = p.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+						const personLink = extractWikilinkPath(p);
 						if (personLink === person.name || personLink === person.file.basename) {
 							isLinked = true;
 							break;
@@ -1608,10 +1609,8 @@ ${families.xml}
 	 * Handles formats like [[Source Name]] or [[Source Name|Display]]
 	 */
 	private extractSourceCrId(wikilink: string): string | null {
-		// Remove wikilink brackets
-		const cleanLink = wikilink.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
-		// Remove display text after pipe
-		const linkPath = cleanLink.split('|')[0].trim();
+		// Extract link path (handles alias format automatically)
+		const linkPath = extractWikilinkPath(wikilink);
 
 		// Try to find source by title (file name without extension)
 		if (this.sourceService) {
