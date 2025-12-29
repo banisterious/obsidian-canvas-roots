@@ -125,7 +125,7 @@ export class TimelineGenerator {
 		const format: TimelineExportFormat = options.format || 'markdown_table';
 
 		// Generate content based on format
-		const content = await this.generateContent(
+		const content = this.generateContent(
 			format,
 			events,
 			dateRange,
@@ -304,15 +304,15 @@ export class TimelineGenerator {
 	/**
 	 * Generate content based on the selected format
 	 */
-	private async generateContent(
+	private generateContent(
 		format: TimelineExportFormat,
-		events: EventNote[],
+		_events: EventNote[],
 		dateRange: { from?: string; to?: string },
 		summary: { eventCount: number; participantCount: number; placeCount: number },
 		entries: TimelineEntry[],
 		groupedEntries: Record<string, TimelineEntry[]> | undefined,
 		options: TimelineReportOptions
-	): Promise<string> {
+	): string {
 		switch (format) {
 			case 'markdown_table':
 				return this.generateMarkdownTable(dateRange, summary, entries, groupedEntries, options);

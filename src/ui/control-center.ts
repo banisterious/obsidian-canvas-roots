@@ -13244,7 +13244,7 @@ class ConfirmationModal extends Modal {
 /**
  * Modal for reviewing cross-import duplicate matches
  */
-class CrossImportReviewModal extends Modal {
+class _CrossImportReviewModal extends Modal {
 	private matches: CrossImportMatch[];
 	private crossImportService: CrossImportDetectionService;
 	private currentIndex: number = 0;

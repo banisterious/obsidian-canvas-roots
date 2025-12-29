@@ -330,7 +330,7 @@ export class BidirectionalLinker {
 		// Extract child property - may come from index signature with broader type
 		const childValue = frontmatter['child'];
 		const childSnapshot = (typeof childValue === 'string' || Array.isArray(childValue))
-			? childValue as string | string[]
+			? childValue
 			: undefined;
 
 		const snapshot: RelationshipSnapshot = {

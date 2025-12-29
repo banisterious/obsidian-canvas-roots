@@ -1044,7 +1044,6 @@ export class CreatePersonModal extends Modal {
 			.setDesc('Link to an existing person or create a new one');
 
 		let inputEl: HTMLInputElement;
-		let linkBtnEl: HTMLButtonElement;
 
 		setting.addText(text => {
 			inputEl = text.inputEl;
@@ -1054,7 +1053,6 @@ export class CreatePersonModal extends Modal {
 		});
 
 		setting.addButton(button => {
-			linkBtnEl = button.buttonEl;
 			const icon = createLucideIcon('link', 16);
 			button.buttonEl.empty();
 			button.buttonEl.appendChild(icon);
@@ -1294,10 +1292,11 @@ export class CreatePersonModal extends Modal {
 			directory: this.directory
 		};
 
-		const picker = new PersonPickerModal(this.app, async (person: PersonInfo) => {
-			await this.addRelationshipToCreatedPerson(relationshipType, person);
-			// Return to post-create actions after adding relationship
-			this.renderPostCreateActions(this.contentEl);
+		const picker = new PersonPickerModal(this.app, (person: PersonInfo) => {
+			void this.addRelationshipToCreatedPerson(relationshipType, person).then(() => {
+				// Return to post-create actions after adding relationship
+				this.renderPostCreateActions(this.contentEl);
+			});
 		}, {
 			title: pickerTitle,
 			subtitle: 'Select an existing person or create a new one',
@@ -1316,7 +1315,7 @@ export class CreatePersonModal extends Modal {
 	private showParentTypeSelector(): void {
 		// Create a simple modal-like overlay within our modal
 		const { contentEl } = this;
-		const existingContent = contentEl.innerHTML;
+		const _existingContent = contentEl.innerHTML;
 
 		contentEl.empty();
 
@@ -1380,10 +1379,11 @@ export class CreatePersonModal extends Modal {
 			directory: this.directory
 		};
 
-		const picker = new PersonPickerModal(this.app, async (person: PersonInfo) => {
-			await this.addRelationshipToCreatedPerson(parentType, person);
-			// Return to post-create actions after adding parent
-			this.renderPostCreateActions(this.contentEl);
+		const picker = new PersonPickerModal(this.app, (person: PersonInfo) => {
+			void this.addRelationshipToCreatedPerson(parentType, person).then(() => {
+				// Return to post-create actions after adding parent
+				this.renderPostCreateActions(this.contentEl);
+			});
 		}, {
 			title: `Select ${parentType}`,
 			subtitle: 'Select an existing person or create a new one',

@@ -761,7 +761,7 @@ export class ExcalidrawExporter {
 				// Estimate text dimensions for centering
 				// Split by existing newlines and apply wrapping
 				const rawLines = labelText.split('\n');
-				let wrappedLines: string[] = [];
+				const wrappedLines: string[] = [];
 				for (const line of rawLines) {
 					if (line.length <= wrapAt) {
 						wrappedLines.push(line);

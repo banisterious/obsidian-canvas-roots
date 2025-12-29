@@ -1012,7 +1012,7 @@ export class FamilyCreationWizardModal extends Modal {
 		this.renderTreeNode(centralRow, centralName, centralSex, true);
 
 		if (this.state.spouses.length > 0) {
-			const spouseConnector = centralRow.createDiv({ cls: 'crc-wizard-spouse-connector' });
+			centralRow.createDiv({ cls: 'crc-wizard-spouse-connector' });
 			this.state.spouses.forEach((spouse, index) => {
 				if (index > 0) {
 					centralRow.createDiv({ cls: 'crc-wizard-spouse-connector' });
