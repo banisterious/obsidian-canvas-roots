@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Bidirectional linking for spouse's children** - Fixed critical regression where children added to a parent would not be automatically linked to the parent's spouse:
+  - When adding a child to a parent who has a spouse, the child is now automatically linked to both parents, and both parents get the child in their `children_id` arrays
+  - Implemented by suspending the background `BidirectionalLinker` service during manual relationship updates to prevent interference
+  - Example: Creating Father, adding Mother as spouse, then adding children now correctly links all family members bidirectionally
+
+- **Double bracket issue in child names** - Fixed bug where child names would accumulate multiple layers of brackets (e.g., `[[[[Child Name]]]]`):
+  - Added `stripWikilink()` helper function to remove existing brackets before `createSmartWikilink()` adds new ones
+  - Prevents bracket duplication when reading existing child names from frontmatter and re-writing them
+
+- **Missing "Link" text on spouse button** - Added "Link" text label to spouse link button in create person modal (was showing only icon)
+
 ---
 
 ## [0.18.4] - 2025-12-29
