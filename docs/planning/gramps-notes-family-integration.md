@@ -2,11 +2,11 @@
 
 Planning document for Gramps notes import/export and potentially introducing a Family entity type.
 
-**Status:** Planning
-**GitHub Issue:** #TBD
-**Priority:** Medium
-**Created:** 2025-12-26
-**Updated:** 2025-12-27
+- **Status:** Planning
+- **GitHub Issue:** [#36](https://github.com/banisterious/obsidian-canvas-roots/issues/36)
+- **Priority:** Medium
+- **Created:** 2025-12-26
+- **Updated:** 2025-12-28
 
 ---
 
