@@ -8,6 +8,7 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
+  - [Media Upload and Management Enhancement](#media-upload-and-management-enhancement) ⚡ High
   - [Inclusive Parent Relationships](#inclusive-parent-relationships) 📋 Medium
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
@@ -59,6 +60,52 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
+
+---
+
+### Media Upload and Management Enhancement
+
+**Priority:** ⚡ High — Enable direct file upload for streamlined media workflow
+
+**Status:** Planning
+
+**The Problem:** Users can link existing vault files to entities (people, places, events), but cannot upload new files directly from the plugin. This requires manual file management outside of Canvas Roots, breaking the workflow when users want to attach scanned documents, photos, or certificates to their research.
+
+**Goal:** Add file upload capability to media management system with both standalone (Dashboard) and inline (context menu) workflows.
+
+**User Request:** "Can't link the Birth Certificate or picture" — user attempted to link media files that weren't yet in their vault.
+
+**Proposed Solution:**
+
+**Phase 1: Dashboard Enhancement (6-tile layout)**
+- Expand Media Manager from 4 tiles to 6 tiles in 3×2 grid
+- Add "Upload Media" tile for standalone file upload with optional entity linking
+- Add "Link Media" tile for media-first workflow (pick files → pick entities)
+- Rename "Bulk Link Media" to "Bulk Link to Entities" for clarity
+- Layout: Top row = browse/discover (read), bottom row = add/link (write)
+
+**Phase 2: Context Menu Enhancement**
+- Add "Upload files..." button to MediaPickerModal (similar to PlacePickerModal's "Create new place")
+- Inline upload workflow: right-click entity → Media → Link media → Upload files → auto-select uploaded files
+- Streamlined single-entity workflow
+
+**Phase 3: Upload Features**
+- Drag-and-drop file upload
+- Multiple file selection
+- Destination folder configuration (respects media folder settings)
+- Auto-rename collision handling
+- File type validation
+- Progress indicators for large files
+
+**Implementation Phases:**
+1. New MediaUploadModal with basic upload
+2. Add 5th and 6th tiles to MediaManagerModal
+3. Reorganize into 3×2 grid
+4. Add inline upload to MediaPickerModal
+5. Polish: drag-drop, advanced settings, collision handling
+
+**Documentation:**
+- See [Media Upload Enhancement Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/media-upload-enhancement.md) for detailed specifications
 
 ---
 
