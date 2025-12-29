@@ -20,6 +20,7 @@ import { PlaceGraphService } from '../core/place-graph';
 import type { PlaceNode } from '../models/place';
 import type { CanvasRootsSettings } from '../settings';
 import { RelationshipService } from '../relationships/services/relationship-service';
+import { extractWikilinkPath } from '../utils/wikilink-resolver';
 
 const logger = getLogger('GedcomExporter');
 
@@ -1233,7 +1234,7 @@ export class GedcomExporter {
 		const personEvents = events.filter(event => {
 			// Check if person is referenced in event.person field
 			if (event.person) {
-				const personLink = event.person.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+				const personLink = extractWikilinkPath(event.person);
 				if (personLink === person.name || personLink === person.file.basename) {
 					return true;
 				}
@@ -1242,7 +1243,7 @@ export class GedcomExporter {
 			// Check if person is in event.persons array
 			if (event.persons) {
 				for (const p of event.persons) {
-					const personLink = p.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+					const personLink = extractWikilinkPath(p);
 					if (personLink === person.name || personLink === person.file.basename) {
 						return true;
 					}
@@ -1270,7 +1271,7 @@ export class GedcomExporter {
 
 				// Add place if present
 				if (event.place) {
-					const placeName = event.place.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+					const placeName = extractWikilinkPath(event.place);
 					lines.push(...this.buildPlaceLines(placeName, 2));
 				}
 
@@ -1310,7 +1311,7 @@ export class GedcomExporter {
 
 				// Add place if present
 				if (event.place) {
-					const placeName = event.place.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
+					const placeName = extractWikilinkPath(event.place);
 					lines.push(...this.buildPlaceLines(placeName, 2));
 				}
 
@@ -1342,10 +1343,8 @@ export class GedcomExporter {
 	 * Handles formats like [[Source Name]] or [[Source Name|Display]]
 	 */
 	private extractSourceCrId(wikilink: string): string | null {
-		// Remove wikilink brackets
-		const cleanLink = wikilink.replace(/^\[\[/, '').replace(/\]\]$/, '').trim();
-		// Remove display text after pipe
-		const linkPath = cleanLink.split('|')[0].trim();
+		// Extract link path (handles alias format automatically)
+		const linkPath = extractWikilinkPath(wikilink);
 
 		// Try to find source by title (file name without extension)
 		if (this.sourceService) {
