@@ -487,10 +487,32 @@ export async function createPersonNote(
 	// Create the file
 	const file = await app.vault.create(finalPath, noteContent);
 
-	// Handle bidirectional spouse linking
-	if (addBidirectionalLinks && person.spouseCrId && person.spouseCrId.length > 0) {
-		for (const spouseCrId of person.spouseCrId) {
-			await addBidirectionalSpouseLink(app, spouseCrId, crId, directory);
+	// Handle bidirectional linking for relationships
+	if (addBidirectionalLinks) {
+		// Spouse linking
+		if (person.spouseCrId && person.spouseCrId.length > 0) {
+			for (const spouseCrId of person.spouseCrId) {
+				await addBidirectionalSpouseLink(app, spouseCrId, crId, person.name, directory);
+			}
+		}
+
+		// Parent-child linking: add this person as child to father
+		if (person.fatherCrId && person.fatherName) {
+			await addChildToParent(app, person.fatherCrId, crId, person.name, directory);
+		}
+
+		// Parent-child linking: add this person as child to mother
+		if (person.motherCrId && person.motherName) {
+			await addChildToParent(app, person.motherCrId, crId, person.name, directory);
+		}
+
+		// Reverse parent-child linking: add children to this person's children array
+		if (person.childCrId && person.childCrId.length > 0 && person.childName && person.childName.length === person.childCrId.length) {
+			for (let i = 0; i < person.childCrId.length; i++) {
+				const childCrId = person.childCrId[i];
+				const childName = person.childName[i];
+				await addParentToChild(app, childCrId, crId, person.name, person.sex, directory);
+			}
 		}
 	}
 
@@ -504,24 +526,10 @@ export async function createPersonNote(
 }
 
 /**
- * Add bidirectional spouse link to an existing person note
- *
- * @param app - Obsidian app instance
- * @param spouseCrId - The cr_id of the spouse to update
- * @param newSpouseCrId - The cr_id of the new spouse to add
- * @param directory - Directory to search for the spouse file
+ * Find a person file by cr_id
  */
-async function addBidirectionalSpouseLink(
-	app: App,
-	spouseCrId: string,
-	newSpouseCrId: string,
-	directory: string
-): Promise<void> {
-	logger.debug('bidirectional-link', `Adding spouse link: ${newSpouseCrId} to person ${spouseCrId}`);
-
-	// Find the spouse's file by cr_id
+async function findPersonByCrId(app: App, crId: string, directory?: string): Promise<TFile | null> {
 	const files = app.vault.getMarkdownFiles();
-	let spouseFile: TFile | null = null;
 
 	for (const file of files) {
 		// Only check files in the specified directory (or root if no directory)
@@ -530,87 +538,188 @@ async function addBidirectionalSpouseLink(
 		}
 
 		const cache = app.metadataCache.getFileCache(file);
-		if (cache?.frontmatter?.cr_id === spouseCrId) {
-			spouseFile = file;
-			break;
+		if (cache?.frontmatter?.cr_id === crId) {
+			return file;
 		}
 	}
+
+	return null;
+}
+
+/**
+ * Add bidirectional spouse link to an existing person note
+ * Updates the spouse's spouse_id array to include the new person
+ */
+async function addBidirectionalSpouseLink(
+	app: App,
+	spouseCrId: string,
+	newSpouseCrId: string,
+	newSpouseName: string,
+	directory: string
+): Promise<void> {
+	logger.debug('bidirectional-spouse', `Adding ${newSpouseCrId} (${newSpouseName}) as spouse to ${spouseCrId}`);
+
+	// Find the spouse's file by cr_id
+	const spouseFile = await findPersonByCrId(app, spouseCrId, directory);
 
 	if (!spouseFile) {
-		logger.warn('bidirectional-link', `Could not find spouse file with cr_id: ${spouseCrId}`);
+		logger.warn('bidirectional-spouse', `Could not find spouse file with cr_id: ${spouseCrId}`);
 		return;
 	}
 
-	logger.debug('bidirectional-link', `Found spouse file: ${spouseFile.path}`);
+	logger.debug('bidirectional-spouse', `Found spouse file: ${spouseFile.path}`);
 
-	// Read the spouse's file content
-	const content = await app.vault.read(spouseFile);
+	// Get existing spouse data
+	const cache = app.metadataCache.getFileCache(spouseFile);
+	const existingSpouseIds = cache?.frontmatter?.spouse_id;
+	const existingSpouseNames = cache?.frontmatter?.spouse;
 
-	// Parse frontmatter
-	const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-	if (!frontmatterMatch) {
-		logger.warn('bidirectional-link', `No frontmatter found in spouse file: ${spouseFile.path}`);
-		return;
+	// Normalize to arrays
+	let spouseIds: string[] = [];
+	let spouseNames: string[] = [];
+
+	if (existingSpouseIds) {
+		spouseIds = Array.isArray(existingSpouseIds) ? [...existingSpouseIds] : [existingSpouseIds];
 	}
-
-	const frontmatterText = frontmatterMatch[1];
-	const bodyContent = content.substring(frontmatterMatch[0].length);
-
-	// Parse existing spouse values
-	const spouseMatch = frontmatterText.match(/^spouse:\s*(.+)$/m);
-	let spouseValues: string[] = [];
-
-	if (spouseMatch) {
-		const spouseValue = spouseMatch[1].trim();
-		// Check if it's an array or single value
-		if (frontmatterText.includes('spouse:\n')) {
-			// Array format - extract all values
-			const arrayMatches = frontmatterText.match(/^ {2}- (.+)$/gm);
-			if (arrayMatches) {
-				spouseValues = arrayMatches.map(m => m.replace(/^ {2}- /, '').trim());
-			}
-		} else {
-			// Single value format
-			spouseValues = [spouseValue];
-		}
+	if (existingSpouseNames) {
+		spouseNames = Array.isArray(existingSpouseNames) ? [...existingSpouseNames] : [existingSpouseNames];
 	}
 
 	// Add new spouse if not already present
-	if (!spouseValues.includes(newSpouseCrId)) {
-		spouseValues.push(newSpouseCrId);
-		logger.debug('bidirectional-link', `Adding ${newSpouseCrId} to spouse list: ${JSON.stringify(spouseValues)}`);
+	if (!spouseIds.includes(newSpouseCrId)) {
+		spouseIds.push(newSpouseCrId);
+		spouseNames.push(newSpouseName);
 
-		// Rebuild frontmatter
-		let newFrontmatterText = frontmatterText;
+		logger.debug('bidirectional-spouse', `Updating spouse arrays: ids=${JSON.stringify(spouseIds)}, names=${JSON.stringify(spouseNames)}`);
 
-		// Remove old spouse field if it exists
-		newFrontmatterText = newFrontmatterText.replace(/^spouse:.*$/gm, '');
-		// Remove any spouse array items
-		newFrontmatterText = newFrontmatterText.replace(/^ {2}- [^\n]+$/gm, '');
-		// Clean up extra blank lines
-		newFrontmatterText = newFrontmatterText.replace(/\n\n+/g, '\n');
+		// Use updatePersonNote to properly handle dual storage
+		await updatePersonNote(app, spouseFile, {
+			spouseCrId: spouseIds,
+			spouseName: spouseNames
+		});
 
-		// Add new spouse field
-		if (spouseValues.length === 1) {
-			// Single spouse - use simple format
-			newFrontmatterText += `\nspouse: ${spouseValues[0]}`;
-		} else {
-			// Multiple spouses - use array format
-			newFrontmatterText += '\nspouse:';
-			for (const spouse of spouseValues) {
-				newFrontmatterText += `\n  - ${spouse}`;
-			}
-		}
-
-		// Rebuild file content
-		const newContent = `---\n${newFrontmatterText}\n---${bodyContent}`;
-
-		// Write back to file
-		await app.vault.modify(spouseFile, newContent);
-		logger.info('bidirectional-link', `Updated spouse link in ${spouseFile.path}`);
+		logger.info('bidirectional-spouse', `Updated spouse link in ${spouseFile.path}`);
 	} else {
-		logger.debug('bidirectional-link', `Spouse ${newSpouseCrId} already linked in ${spouseFile.path}`);
+		logger.debug('bidirectional-spouse', `Spouse ${newSpouseCrId} already linked in ${spouseFile.path}`);
 	}
+}
+
+/**
+ * Add this person as a child to a parent's children array
+ * Updates the parent's children_id and child fields
+ */
+async function addChildToParent(
+	app: App,
+	parentCrId: string,
+	childCrId: string,
+	childName: string,
+	directory: string
+): Promise<void> {
+	logger.debug('bidirectional-child', `Adding ${childCrId} (${childName}) as child to parent ${parentCrId}`);
+
+	// Find the parent's file by cr_id
+	const parentFile = await findPersonByCrId(app, parentCrId, directory);
+
+	if (!parentFile) {
+		logger.warn('bidirectional-child', `Could not find parent file with cr_id: ${parentCrId}`);
+		return;
+	}
+
+	logger.debug('bidirectional-child', `Found parent file: ${parentFile.path}`);
+
+	// Get existing children data
+	const cache = app.metadataCache.getFileCache(parentFile);
+	const existingChildIds = cache?.frontmatter?.children_id;
+	const existingChildNames = cache?.frontmatter?.child;
+
+	// Normalize to arrays
+	let childIds: string[] = [];
+	let childNames: string[] = [];
+
+	if (existingChildIds) {
+		childIds = Array.isArray(existingChildIds) ? [...existingChildIds] : [existingChildIds];
+	}
+	if (existingChildNames) {
+		childNames = Array.isArray(existingChildNames) ? [...existingChildNames] : [existingChildNames];
+	}
+
+	// Add new child if not already present
+	if (!childIds.includes(childCrId)) {
+		childIds.push(childCrId);
+		childNames.push(childName);
+
+		logger.debug('bidirectional-child', `Updating children arrays: ids=${JSON.stringify(childIds)}, names=${JSON.stringify(childNames)}`);
+
+		// Use updatePersonNote to properly handle dual storage
+		await updatePersonNote(app, parentFile, {
+			childCrId: childIds,
+			childName: childNames
+		});
+
+		logger.info('bidirectional-child', `Updated children link in ${parentFile.path}`);
+	} else {
+		logger.debug('bidirectional-child', `Child ${childCrId} already linked in ${parentFile.path}`);
+	}
+}
+
+/**
+ * Add a parent relationship to a child's father_id/mother_id field
+ * Updates the child's father or mother field based on parent's sex
+ */
+async function addParentToChild(
+	app: App,
+	childCrId: string,
+	parentCrId: string,
+	parentName: string,
+	parentSex: string | undefined,
+	directory: string
+): Promise<void> {
+	logger.debug('bidirectional-parent', `Adding ${parentCrId} (${parentName}) as parent to child ${childCrId}`);
+
+	// Find the child's file by cr_id
+	const childFile = await findPersonByCrId(app, childCrId, directory);
+
+	if (!childFile) {
+		logger.warn('bidirectional-parent', `Could not find child file with cr_id: ${childCrId}`);
+		return;
+	}
+
+	logger.debug('bidirectional-parent', `Found child file: ${childFile.path}`);
+
+	// Get existing parent data
+	const cache = app.metadataCache.getFileCache(childFile);
+	const existingFatherId = cache?.frontmatter?.father_id;
+	const existingMotherId = cache?.frontmatter?.mother_id;
+
+	// Determine parent type from sex (default to father if unknown)
+	const isMother = parentSex === 'female' || parentSex === 'F';
+
+	// Check if parent is already set
+	if (isMother && existingMotherId === parentCrId) {
+		logger.debug('bidirectional-parent', `Mother ${parentCrId} already linked in ${childFile.path}`);
+		return;
+	}
+	if (!isMother && existingFatherId === parentCrId) {
+		logger.debug('bidirectional-parent', `Father ${parentCrId} already linked in ${childFile.path}`);
+		return;
+	}
+
+	// Add parent relationship
+	if (isMother) {
+		logger.debug('bidirectional-parent', `Setting mother: ${parentName} (${parentCrId})`);
+		await updatePersonNote(app, childFile, {
+			motherCrId: parentCrId,
+			motherName: parentName
+		});
+	} else {
+		logger.debug('bidirectional-parent', `Setting father: ${parentName} (${parentCrId})`);
+		await updatePersonNote(app, childFile, {
+			fatherCrId: parentCrId,
+			fatherName: parentName
+		});
+	}
+
+	logger.info('bidirectional-parent', `Updated parent link in ${childFile.path}`);
 }
 
 /**
