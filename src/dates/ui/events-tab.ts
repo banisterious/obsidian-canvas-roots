@@ -291,8 +291,16 @@ function renderTimelineCard(
 			// Person filter
 			if (personValue) {
 				const normalizedPersonFilter = personValue.replace(/^\[\[/, '').replace(/\]\]$/, '').toLowerCase();
-				const eventPerson = event.person?.replace(/^\[\[/, '').replace(/\]\]$/, '').toLowerCase() || '';
-				if (!eventPerson.includes(normalizedPersonFilter)) return false;
+
+				// Check both person (singular) and persons (array) fields
+				const singlePerson = event.person?.replace(/^\[\[/, '').replace(/\]\]$/, '').toLowerCase() || '';
+				const multiplePeople = event.persons?.map(p => p.replace(/^\[\[/, '').replace(/\]\]$/, '').toLowerCase()) || [];
+
+				// Match if person filter matches either the single person or any person in the persons array
+				const matchesSingle = singlePerson.includes(normalizedPersonFilter);
+				const matchesMultiple = multiplePeople.some(p => p.includes(normalizedPersonFilter));
+
+				if (!matchesSingle && !matchesMultiple) return false;
 			}
 
 			// Search filter
@@ -517,8 +525,17 @@ function renderEventTable(
 
 		// Person cell
 		const personCell = row.createEl('td', { cls: 'crc-timeline-cell-person' });
+		// Collect all people (from both person and persons fields)
+		const allPeople: string[] = [];
 		if (event.person) {
-			personCell.textContent = event.person.replace(/^\[\[/, '').replace(/\]\]$/, '');
+			allPeople.push(event.person.replace(/^\[\[/, '').replace(/\]\]$/, ''));
+		}
+		if (event.persons && event.persons.length > 0) {
+			allPeople.push(...event.persons.map(p => p.replace(/^\[\[/, '').replace(/\]\]$/, '')));
+		}
+
+		if (allPeople.length > 0) {
+			personCell.textContent = allPeople.join(', ');
 		} else {
 			personCell.createEl('span', { text: '—', cls: 'crc-text-muted' });
 		}

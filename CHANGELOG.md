@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now only counts unsourced facts for people who have the `sourced_facts` property (actively using GPS tracking)
   - Example: With 24 people using GPS tracking and 7 fact types, the count was showing 169 unsourced facts (24×7), even though many people had complete tracking
 
+- **Timeline filter not working with persons array** - Fixed timeline person filter to properly match events using the `persons` array field:
+  - Timeline person filter now checks both the singular `person` field and the `persons` array
+  - Events with multiple people are now properly included when filtering by any person's name
+  - Substring matching now works correctly for aliased person names
+
+- **Events view not showing linked people** - Fixed "Person" column in Events tab to display all linked people:
+  - Person column now shows all people from both `person` (singular) and `persons` (array) fields
+  - Multiple people are displayed comma-separated in the table
+  - Events no longer appear to have no linked people when using the `persons` array
+
 ---
 
 ## [0.18.5] - 2025-12-29
