@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-29 23:21:07 UTC
+ * - Generated: 2025-12-29 23:25:28 UTC
  * - Components: 39 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -7821,7 +7821,7 @@ Reports
    COMPONENT: MEDIA-MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 1426 lines, 27.41 KB */
+/* Component Size: 1442 lines, 27.72 KB */
 
 /* ==========================================================================
    Media Picker Modal
@@ -8341,9 +8341,15 @@ Reports
 /* Action cards grid */
 .crc-media-manager-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   padding: 24px;
+}
+
+@media (max-width: 1024px) {
+  .crc-media-manager-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 500px) {
@@ -8406,6 +8412,16 @@ Reports
 .crc-media-manager-card-icon--sources {
   background: rgba(244, 114, 182, 0.15);
   color: rgb(244, 114, 182);
+}
+
+.crc-media-manager-card-icon--upload {
+  background: rgba(139, 92, 246, 0.15);
+  color: rgb(139, 92, 246);
+}
+
+.crc-media-manager-card-icon--link {
+  background: rgba(34, 197, 94, 0.15);
+  color: rgb(34, 197, 94);
 }
 
 .crc-media-manager-card-title {
@@ -32786,11 +32802,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-29 23:21:07 UTC
+ * Build completed: 2025-12-29 23:25:28 UTC
  * Components processed: 39
- * Total lines: 32412
- * Total size: 641.37 KB
- * Build duration: 0.05 seconds
+ * Total lines: 32428
+ * Total size: 641.69 KB
+ * Build duration: 0.03 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -32801,7 +32817,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - control-center.css: 5675 lines, 105.1 KB
  * - entity-create-modals.css: 543 lines, 10.63 KB
  * - place-modals.css: 932 lines, 17.28 KB
- * - media-modals.css: 1426 lines, 27.41 KB
+ * - media-modals.css: 1442 lines, 27.72 KB
  * - import-export-wizard.css: 1779 lines, 33.41 KB
  * - cleanup-wizard.css: 2134 lines, 39.23 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB

@@ -198,8 +198,10 @@ export class MediaManagerModal extends Modal {
 		setIcon(headerIcon, 'image');
 		header.createEl('h2', { text: 'Media Manager' });
 
-		// Action cards grid
+		// Action cards grid (6 tiles in 3×2 layout)
 		const grid = contentEl.createDiv({ cls: 'crc-media-manager-grid' });
+
+		// Row 1: Browse & Discover
 
 		// Linked Media Gallery card
 		this.renderActionCard(grid, {
@@ -209,16 +211,6 @@ export class MediaManagerModal extends Modal {
 			description: 'View media files linked to entities. Filter by entity type, search by name.',
 			stat: this.stats ? `${this.stats.linkedFiles} linked files` : 'Loading...',
 			onClick: () => this.openBrowseGallery()
-		});
-
-		// Bulk Link Media card
-		this.renderActionCard(grid, {
-			icon: 'image-plus',
-			iconClass: 'bulk',
-			title: 'Bulk Link Media',
-			description: 'Link media files to multiple entities at once. Select people, events, places, or organizations.',
-			stat: this.stats ? `${this.stats.entitiesWithoutMedia} entities without media` : 'Loading...',
-			onClick: () => this.openBulkLinkMedia()
 		});
 
 		// Find Unlinked card
@@ -239,6 +231,38 @@ export class MediaManagerModal extends Modal {
 			description: 'Smart matching to link images to sources by filename patterns.',
 			stat: this.stats ? `${this.stats.sourcesToReview} sources to review` : 'Loading...',
 			onClick: () => this.openSourceMediaLinker()
+		});
+
+		// Row 2: Add & Link Operations
+
+		// Upload Media card (NEW)
+		this.renderActionCard(grid, {
+			icon: 'upload',
+			iconClass: 'upload',
+			title: 'Upload Media',
+			description: 'Upload files to your vault and optionally link them to entities.',
+			stat: this.stats ? `Upload to ${this.getUploadDestination()}` : 'Loading...',
+			onClick: () => this.openUploadMedia()
+		});
+
+		// Link Media card (NEW - MediaPickerModal in media-first mode)
+		this.renderActionCard(grid, {
+			icon: 'link',
+			iconClass: 'link',
+			title: 'Link Media',
+			description: 'Select media files from your vault, then choose entities to link them to.',
+			stat: this.stats ? `${this.stats.totalMediaFiles} files available` : 'Loading...',
+			onClick: () => this.openLinkMedia()
+		});
+
+		// Bulk Link to Entities card (renamed from "Bulk Link Media")
+		this.renderActionCard(grid, {
+			icon: 'layers',
+			iconClass: 'bulk',
+			title: 'Bulk Link to Entities',
+			description: 'Select multiple entities, then choose media files to link to all of them.',
+			stat: this.stats ? `${this.stats.entitiesWithoutMedia} entities without media` : 'Loading...',
+			onClick: () => this.openBulkLinkMedia()
 		});
 
 		// Stats bar
@@ -334,6 +358,38 @@ export class MediaManagerModal extends Modal {
 	private openSourceMediaLinker(): void {
 		this.close();
 		new SourceMediaLinkerModal(this.app, this.plugin).open();
+	}
+
+	/**
+	 * Open Upload Media modal (Phase 3 - to be implemented)
+	 */
+	private openUploadMedia(): void {
+		this.close();
+		// TODO: Phase 3 - Open MediaUploadModal
+		console.log('Upload Media - to be implemented in Phase 3');
+	}
+
+	/**
+	 * Open Link Media flow - MediaPickerModal in media-first mode (Phase 4 - to be implemented)
+	 */
+	private openLinkMedia(): void {
+		this.close();
+		// TODO: Phase 4 - Open MediaPickerModal without pre-selected entity
+		console.log('Link Media - to be implemented in Phase 4');
+	}
+
+	/**
+	 * Get the upload destination folder name
+	 */
+	private getUploadDestination(): string {
+		const { mediaFolders } = this.plugin.settings;
+		if (mediaFolders.length === 0) {
+			return 'Not configured';
+		}
+		// Show just the folder name, not full path
+		const firstFolder = mediaFolders[0];
+		const parts = firstFolder.split('/');
+		return parts[parts.length - 1] || firstFolder;
 	}
 
 	/**

@@ -516,9 +516,15 @@
 /* Action cards grid */
 .crc-media-manager-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   padding: 24px;
+}
+
+@media (max-width: 1024px) {
+  .crc-media-manager-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 500px) {
@@ -581,6 +587,16 @@
 .crc-media-manager-card-icon--sources {
   background: rgba(244, 114, 182, 0.15);
   color: rgb(244, 114, 182);
+}
+
+.crc-media-manager-card-icon--upload {
+  background: rgba(139, 92, 246, 0.15);
+  color: rgb(139, 92, 246);
+}
+
+.crc-media-manager-card-icon--link {
+  background: rgba(34, 197, 94, 0.15);
+  color: rgb(34, 197, 94);
 }
 
 .crc-media-manager-card-title {
