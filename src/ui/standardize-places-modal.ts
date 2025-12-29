@@ -644,8 +644,8 @@ export class StandardizePlacesModal extends Modal {
 
 			const fm = cache.frontmatter;
 
-			// Skip place notes
-			if (fm.type === 'place') continue;
+			// Skip place notes (check both cr_type and legacy type)
+			if (fm.cr_type === 'place' || fm.type === 'place') continue;
 
 			// Check if any place fields match the old value
 			const fieldsToUpdate: string[] = [];

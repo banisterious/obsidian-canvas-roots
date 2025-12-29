@@ -111,8 +111,8 @@ export class MembershipService {
 
 			const fm = cache.frontmatter;
 
-			// Skip non-person notes
-			if (fm.type && fm.type !== 'person') continue;
+			// Skip non-person notes (check both cr_type and legacy type)
+			if ((fm.cr_type && fm.cr_type !== 'person') || (fm.type && fm.type !== 'person')) continue;
 
 			const personMemberships = this.getPersonMembershipsFromFile(file);
 			for (const membership of personMemberships) {
