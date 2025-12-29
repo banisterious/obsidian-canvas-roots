@@ -1904,11 +1904,27 @@ export default class CanvasRootsPlugin extends Plugin {
 											.setTitle('Add child')
 											.setIcon('baby')
 											.onClick(() => {
+												// Build context for inline creation
+												const cache = this.app.metadataCache.getFileCache(file);
+												const crId = cache?.frontmatter?.cr_id;
+												const directory = file.parent?.path || '';
+
+												const createContext: RelationshipContext = {
+													relationshipType: 'child',
+													suggestedSex: undefined, // No sex suggestion for children
+													parentCrId: crId,
+													directory: directory
+												};
+
 												const picker = new PersonPickerModal(this.app, (selectedPerson) => {
 													void (async () => {
 														const relationshipMgr = new RelationshipManager(this.app, this.relationshipHistory);
 														await relationshipMgr.addChildRelationship(file, selectedPerson.file);
 													})();
+												}, {
+													title: 'Select child',
+													createContext: createContext,
+													plugin: this
 												});
 												picker.open();
 											});
