@@ -4,7 +4,7 @@
  */
 
 import { App, Modal, Setting, TFile, Notice, normalizePath } from 'obsidian';
-import { createPersonNote, updatePersonNote, PersonData, DynamicBlockType } from '../core/person-note-writer';
+import { createPersonNote, updatePersonNote, PersonData, DynamicBlockType, addBidirectionalSpouseLink, addChildToParent, addParentToChild, findPersonByCrId } from '../core/person-note-writer';
 import { createLucideIcon } from './lucide-icons';
 import { FamilyGraphService } from '../core/family-graph';
 import { PlaceGraphService } from '../core/place-graph';
@@ -1398,6 +1398,7 @@ export class CreatePersonModal extends Modal {
 
 	/**
 	 * Add a relationship to the created person's note
+	 * Handles bidirectional linking for parent-child and spouse relationships
 	 */
 	private async addRelationshipToCreatedPerson(
 		relationshipType: 'spouse' | 'child' | 'father' | 'mother',
@@ -1410,11 +1411,18 @@ export class CreatePersonModal extends Modal {
 
 		try {
 			const data: Partial<PersonData> = {};
+			const cache = this.app.metadataCache.getFileCache(this.createdFile);
+			const createdPersonCrId = cache?.frontmatter?.cr_id;
+			const createdPersonName = cache?.frontmatter?.name || this.createdFile.basename;
+			const createdPersonSex = cache?.frontmatter?.sex;
+
+			if (!createdPersonCrId) {
+				new Notice('Error: Could not find cr_id of created person');
+				return;
+			}
 
 			if (relationshipType === 'spouse') {
 				// Add to spouse array
-				// First, read existing spouses from the file
-				const cache = this.app.metadataCache.getFileCache(this.createdFile);
 				const existingSpouseIds = cache?.frontmatter?.spouse_id || [];
 				const existingSpouseNames = cache?.frontmatter?.spouse || [];
 
@@ -1430,10 +1438,12 @@ export class CreatePersonModal extends Modal {
 
 				data.spouseCrId = spouseIds;
 				data.spouseName = spouseNames;
+
+				// Bidirectional: add created person to the spouse's spouse array
+				await addBidirectionalSpouseLink(this.app, person.crId, createdPersonCrId, createdPersonName, this.directory);
 			} else if (relationshipType === 'child') {
 				// Add to child array
-				const cache = this.app.metadataCache.getFileCache(this.createdFile);
-				const existingChildIds = cache?.frontmatter?.child_id || [];
+				const existingChildIds = cache?.frontmatter?.children_id || [];
 				const existingChildNames = cache?.frontmatter?.child || [];
 
 				// Normalize to arrays
@@ -1448,12 +1458,21 @@ export class CreatePersonModal extends Modal {
 
 				data.childCrId = childIds;
 				data.childName = childNames;
+
+				// Bidirectional: add created person as parent to the child
+				await addParentToChild(this.app, person.crId, createdPersonCrId, createdPersonName, createdPersonSex, this.directory);
 			} else if (relationshipType === 'father') {
 				data.fatherCrId = person.crId;
 				data.fatherName = person.name;
+
+				// Bidirectional: add created person as child to the father
+				await addChildToParent(this.app, person.crId, createdPersonCrId, createdPersonName, this.directory);
 			} else if (relationshipType === 'mother') {
 				data.motherCrId = person.crId;
 				data.motherName = person.name;
+
+				// Bidirectional: add created person as child to the mother
+				await addChildToParent(this.app, person.crId, createdPersonCrId, createdPersonName, this.directory);
 			}
 
 			await updatePersonNote(this.app, this.createdFile, data);

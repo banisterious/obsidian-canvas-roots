@@ -528,7 +528,7 @@ export async function createPersonNote(
 /**
  * Find a person file by cr_id
  */
-async function findPersonByCrId(app: App, crId: string, directory?: string): Promise<TFile | null> {
+export async function findPersonByCrId(app: App, crId: string, directory?: string): Promise<TFile | null> {
 	const files = app.vault.getMarkdownFiles();
 
 	for (const file of files) {
@@ -550,7 +550,7 @@ async function findPersonByCrId(app: App, crId: string, directory?: string): Pro
  * Add bidirectional spouse link to an existing person note
  * Updates the spouse's spouse_id array to include the new person
  */
-async function addBidirectionalSpouseLink(
+export async function addBidirectionalSpouseLink(
 	app: App,
 	spouseCrId: string,
 	newSpouseCrId: string,
@@ -608,7 +608,7 @@ async function addBidirectionalSpouseLink(
  * Add this person as a child to a parent's children array
  * Updates the parent's children_id and child fields
  */
-async function addChildToParent(
+export async function addChildToParent(
 	app: App,
 	parentCrId: string,
 	childCrId: string,
@@ -666,7 +666,7 @@ async function addChildToParent(
  * Add a parent relationship to a child's father_id/mother_id field
  * Updates the child's father or mother field based on parent's sex
  */
-async function addParentToChild(
+export async function addParentToChild(
 	app: App,
 	childCrId: string,
 	parentCrId: string,
