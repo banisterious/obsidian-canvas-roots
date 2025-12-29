@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **"Create new" buttons in context menu relationship flows** - Added inline person creation to all relationship context menu options:
+  - "Add parent" → Shows "Create new father" or "Create new mother" button with sex pre-filled
+  - "Add spouse" → Shows "Create new spouse" button with opposite sex suggested (if known)
+  - "Add child" → Shows "Create new child" button
+  - "Add custom relationship" → Shows "Create new [relationship type]" button
+  - Matches the behavior of the Create Person modal for a consistent user experience
+  - Streamlines workflow from 3 steps (close modal, create person, re-open modal) down to 1 step
+
 ### Fixed
 
 - **Research gaps counting bug** - Fixed inflated unsourced facts count in Control Center Research Gaps widget:
