@@ -10,6 +10,7 @@ This document outlines planned features for Canvas Roots. For completed features
 - [Planned Features](#planned-features)
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
+  - [Property Naming Normalization](#property-naming-normalization) 📋 Medium
   - [Custom Map Authoring](#custom-map-authoring) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Staging Management](#staging-management) 💡 Low
@@ -121,6 +122,39 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **Documentation:**
 - See [Gramps Notes & Family Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/gramps-notes-family-integration.md) for detailed specifications
+
+---
+
+### Property Naming Normalization
+
+**Priority:** 📋 Medium — Standardize property names for consistency and Obsidian compatibility
+
+**Status:** In Progress | [#65](https://github.com/banisterious/obsidian-canvas-roots/issues/65)
+
+**Summary:** Normalize inconsistent property names across the schema. The primary target is the `child` → `children` migration, but this pattern applies to other legacy property inconsistencies.
+
+**Current Status (v0.18.9):**
+- Core code now writes to `children` (preferred) instead of `child` (legacy)
+- Read operations check both properties for backward compatibility
+- Control Center deduplication migrates `child` → `children` during cleanup
+
+**Planned Work:**
+
+| Phase | Task | Description |
+|-------|------|-------------|
+| 1 | Cleanup Wizard Step 14 | Batch migrate `child` → `children` across vault |
+| 2 | Audit Import/Export | Ensure GEDCOM, Gramps, CSV use `children` consistently |
+| 3 | Documentation | Update schema docs, mark `child` as deprecated |
+| 4 | Remove Legacy Support | Future breaking change to remove `child` read support |
+
+**Affected Properties:**
+
+| Legacy | Preferred | Reason |
+|--------|-----------|--------|
+| `child` | `children` | Match `children_id`, consistent pluralization |
+
+**Documentation:**
+- See [Deprecate Child Property Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/deprecate-child-property.md) for detailed specifications
 
 ---
 
