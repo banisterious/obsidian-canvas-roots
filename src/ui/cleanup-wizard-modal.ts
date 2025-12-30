@@ -1,7 +1,7 @@
 /**
  * Post-Import Cleanup Wizard Modal
  *
- * A 12-step wizard for post-import data cleanup operations.
+ * A 13-step wizard for post-import data cleanup operations.
  *
  * Step 1: Quality Report — Review data quality issues (review-only)
  * Step 2: Bidirectional Relationships — Fix parent-child link consistency (batch)
@@ -15,6 +15,7 @@
  * Step 10: Flatten Properties — Fix nested frontmatter (batch)
  * Step 11: Event Person Migration — Convert person to persons array (batch)
  * Step 12: Evidence Tracking Migration — Convert sourced_facts to flat properties (batch)
+ * Step 13: Life Events Migration — Convert inline events to event notes (batch)
  */
 
 import { App, Modal, Notice, setIcon, TFile } from 'obsidian';
@@ -38,6 +39,7 @@ import type { PlaceNode, PlaceType } from '../models/place';
 import { SourceMigrationService, type IndexedSourceNote } from '../sources/services/source-migration-service';
 import { EventPersonMigrationService, type LegacyPersonEventNote } from '../events/services/event-person-migration-service';
 import { SourcedFactsMigrationService, type LegacySourcedFactsNote } from '../sources/services/sourced-facts-migration-service';
+import { LifeEventsMigrationService, type LegacyEventsNote } from '../events/services/life-events-migration-service';
 
 const logger = getLogger('CleanupWizard');
 
@@ -275,6 +277,18 @@ const WIZARD_STEPS: WizardStepConfig[] = [
 		detectMethod: 'detectLegacySourcedFacts',
 		applyMethod: 'migrateToFlatFormat',
 		dependencies: []
+	},
+	{
+		id: 'life-events-migrate',
+		number: 13,
+		title: 'Migrate Life Events',
+		shortTitle: 'Life Events',
+		description: 'Convert inline events arrays to separate event note files.',
+		type: 'batch',
+		service: 'LifeEventsMigrationService',
+		detectMethod: 'detectInlineEvents',
+		applyMethod: 'migrateToEventNotes',
+		dependencies: []
 	}
 ];
 
@@ -325,6 +339,10 @@ export class CleanupWizardModal extends Modal {
 	// Sourced facts migration state
 	private sourcedFactsMigrationService: SourcedFactsMigrationService | null = null;
 	private legacySourcedFactsNotes: LegacySourcedFactsNote[] = [];
+
+	// Life events migration state
+	private lifeEventsMigrationService: LifeEventsMigrationService | null = null;
+	private legacyEventsNotes: LegacyEventsNote[] = [];
 
 	// Step completion tracking for dependency checks
 	private stepCompletion: Record<string, { completed: boolean; completedAt: number; issuesFixed: number }> = {};
@@ -392,6 +410,16 @@ export class CleanupWizardModal extends Modal {
 			this.sourcedFactsMigrationService = new SourcedFactsMigrationService(this.app, this.plugin.settings);
 		}
 		return this.sourcedFactsMigrationService;
+	}
+
+	/**
+	 * Initialize the LifeEventsMigrationService (lazy initialization)
+	 */
+	private getLifeEventsMigrationService(): LifeEventsMigrationService {
+		if (!this.lifeEventsMigrationService) {
+			this.lifeEventsMigrationService = new LifeEventsMigrationService(this.app, this.plugin.settings);
+		}
+		return this.lifeEventsMigrationService;
 	}
 
 	/**
@@ -1274,6 +1302,9 @@ export class CleanupWizardModal extends Modal {
 			case 'sourced-facts-migrate':
 				this.renderSourcedFactsMigrationPreview(container);
 				break;
+			case 'life-events-migrate':
+				this.renderLifeEventsMigrationPreview(container);
+				break;
 			default:
 				// Fallback for unimplemented previews
 				this.renderGenericPreview(container, stepConfig, stepState);
@@ -1769,6 +1800,57 @@ export class CleanupWizardModal extends Modal {
 
 			const desc = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
 			desc.textContent = `: ${note.factKeys.length} fact type${note.factKeys.length === 1 ? '' : 's'}, ${note.totalSources} source${note.totalSources === 1 ? '' : 's'}`;
+
+			// Click to open the file
+			row.addEventListener('click', () => {
+				this.close();
+				void this.app.workspace.openLinkText(note.file.path, '', false);
+			});
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render preview for Step 13: Life Events Migration
+	 */
+	private renderLifeEventsMigrationPreview(container: HTMLElement): void {
+		if (this.legacyEventsNotes.length === 0) return;
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+
+		// Calculate total events
+		const totalEvents = this.legacyEventsNotes.reduce((sum, note) => sum + note.eventCount, 0);
+
+		summary.textContent = `${this.legacyEventsNotes.length} person note${this.legacyEventsNotes.length === 1 ? '' : 's'} with ${totalEvents} inline event${totalEvents === 1 ? '' : 's'} will be migrated:`;
+
+		const hint = preview.createDiv({ cls: 'crc-cleanup-preview-hint' });
+		hint.textContent = 'Inline events will be converted to separate event note files linked via "life_events".';
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		const maxDisplay = 15;
+		const displayItems = this.legacyEventsNotes.slice(0, maxDisplay);
+		const remaining = this.legacyEventsNotes.length - maxDisplay;
+
+		for (const note of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row crc-cleanup-preview-row--clickable' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'user');
+
+			const content = row.createDiv({ cls: 'crc-cleanup-preview-content' });
+
+			const fileName = content.createSpan({ cls: 'crc-cleanup-preview-person' });
+			fileName.textContent = note.personName;
+
+			const desc = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
+			const eventTypes = [...new Set(note.events.map(e => e.event_type))];
+			desc.textContent = `: ${note.eventCount} event${note.eventCount === 1 ? '' : 's'} (${eventTypes.join(', ')})`;
 
 			// Click to open the file
 			row.addEventListener('click', () => {
@@ -3457,6 +3539,24 @@ export class CleanupWizardModal extends Modal {
 					await this.plugin.saveSettings();
 					break;
 				}
+				case 'life-events-migrate': {
+					const lifeEventsMigrationService = this.getLifeEventsMigrationService();
+					const migrationResult = await lifeEventsMigrationService.migrateToEventNotes(this.legacyEventsNotes);
+					result = {
+						processed: migrationResult.processed,
+						modified: migrationResult.modified,
+						errors: migrationResult.errors
+					};
+					// Mark the nestedPropertiesMigration as complete for events
+					if (!this.plugin.settings.nestedPropertiesMigration) {
+						this.plugin.settings.nestedPropertiesMigration = {};
+					}
+					this.plugin.settings.nestedPropertiesMigration.eventsComplete = true;
+					await this.plugin.saveSettings();
+					// Custom notice for life events to show how many notes were created
+					new Notice(`Created ${migrationResult.eventNotesCreated} event notes from ${migrationResult.modified} person notes`);
+					break;
+				}
 				default:
 					// Placeholder for unimplemented methods
 					await new Promise(resolve => setTimeout(resolve, 500));
@@ -3691,6 +3791,12 @@ export class CleanupWizardModal extends Modal {
 			this.legacySourcedFactsNotes = sourcedFactsMigrationService.detectLegacySourcedFacts();
 			this.state.steps[12].issueCount = this.legacySourcedFactsNotes.length;
 			logger.debug('runPreScan', `Step 12 (Evidence): ${this.legacySourcedFactsNotes.length} notes with legacy sourced_facts`);
+
+			// Step 13: Life events migration (inline events → event note files)
+			const lifeEventsMigrationService = this.getLifeEventsMigrationService();
+			this.legacyEventsNotes = lifeEventsMigrationService.detectInlineEvents();
+			this.state.steps[13].issueCount = this.legacyEventsNotes.length;
+			logger.debug('runPreScan', `Step 13 (Life Events): ${this.legacyEventsNotes.length} notes with inline events`);
 
 			this.state.preScanComplete = true;
 			logger.info('runPreScan', 'Pre-scan complete');
