@@ -390,6 +390,27 @@ export async function createPersonNote(
 		}
 	}
 
+	// Gender-neutral parent relationship(s) (dual storage)
+	if (person.parentCrId && person.parentCrId.length > 0) {
+		if (person.parentName && person.parentName.length === person.parentCrId.length) {
+			if (person.parentName.length === 1) {
+				frontmatter[prop('parents')] = `"${createSmartWikilink(person.parentName[0], app)}"`;
+				frontmatter[prop('parents_id')] = person.parentCrId[0];
+			} else {
+				frontmatter[prop('parents')] = person.parentName.map(p => `"${createSmartWikilink(p, app)}"`);
+				frontmatter[prop('parents_id')] = person.parentCrId;
+			}
+			logger.debug('parents', `Added (dual): wikilinks=${JSON.stringify(person.parentName)}, ids=${JSON.stringify(person.parentCrId)}`);
+		} else {
+			if (person.parentCrId.length === 1) {
+				frontmatter[prop('parents_id')] = person.parentCrId[0];
+			} else {
+				frontmatter[prop('parents_id')] = person.parentCrId;
+			}
+			logger.debug('parents', `Added (id only): ${JSON.stringify(person.parentCrId)}`);
+		}
+	}
+
 	// Add media references if available
 	if (person.media && person.media.length > 0) {
 		// Media is stored as array of wikilinks
