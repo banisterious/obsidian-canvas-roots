@@ -9871,16 +9871,19 @@ export class ControlCenterModal extends Modal {
 						}
 					}
 
-					// Deduplicate children/child arrays
+					// Deduplicate and normalize children arrays
+					// Prefer 'children' (plural), migrate from 'child' (legacy) if present
 					const childrenArray = fm.children || fm.child;
-					if (Array.isArray(childrenArray) && childrenArray.length > 1) {
+					if (Array.isArray(childrenArray) && childrenArray.length > 0) {
 						const unique = [...new Set(childrenArray)];
+						// Always write to 'children' (preferred name)
+						frontmatter.children = unique.length === 1 ? unique[0] : unique;
+						// Remove legacy 'child' property if present
+						if (fm.child) {
+							delete frontmatter.child;
+							hasChanges = true;
+						}
 						if (unique.length < childrenArray.length) {
-							if (fm.children) {
-								frontmatter.children = unique;
-							} else {
-								frontmatter.child = unique;
-							}
 							hasChanges = true;
 						}
 					}

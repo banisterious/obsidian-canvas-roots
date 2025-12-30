@@ -279,7 +279,8 @@ export class BidirectionalLinker {
 
 			// Sync children relationships (child → parent direction)
 			// When children are linked to this person, set their father/mother based on this person's sex
-			const childrenLinks = frontmatter.child || frontmatter.children || [];
+			// Prefer 'children' (plural) but fall back to 'child' for backward compatibility
+			const childrenLinks = frontmatter.children || frontmatter.child || [];
 			const childrenArray = Array.isArray(childrenLinks) ? childrenLinks : [childrenLinks];
 			const personSex = frontmatter.sex || frontmatter.gender;
 
@@ -389,8 +390,15 @@ export class BidirectionalLinker {
 
 		// Check for deleted children relationships
 		// When a parent removes a child, clear the child's father/mother field
-		const previousChildren = this.extractChildLinks(previousSnapshot.child);
-		const currentChildren = this.extractChildLinks(currentFrontmatter.child);
+		// Check both 'children' (preferred) and 'child' (legacy) for backward compatibility
+		const previousChildren = [
+			...this.extractChildLinks(previousSnapshot.children),
+			...this.extractChildLinks(previousSnapshot.child)
+		];
+		const currentChildren = [
+			...this.extractChildLinks(currentFrontmatter.children),
+			...this.extractChildLinks(currentFrontmatter.child)
+		];
 
 		// Get parent's sex to know which field to clear (father or mother)
 		const parentSex = currentFrontmatter.sex || currentFrontmatter.gender;
@@ -549,8 +557,8 @@ export class BidirectionalLinker {
 			return;
 		}
 
-		// Add child to parent's child arrays (dual storage)
-		await this.addToArrayField(parentFile, 'child', childLinkText);
+		// Add child to parent's children arrays (dual storage)
+		await this.addToArrayField(parentFile, 'children', childLinkText);
 		await this.addToArrayField(parentFile, 'children_id', childCrId);
 
 		logger.info('bidirectional-linking', 'Added child to parent (dual storage)', {
@@ -983,8 +991,12 @@ export class BidirectionalLinker {
 			return;
 		}
 
-		// Remove from both child and children_id arrays
+		// Remove from both children and children_id arrays
 		// Try all possible formats: [[name]], [[basename]], [[basename|name]]
+		// Also check legacy 'child' field for backward compatibility
+		await this.removeFromArrayField(parentFile, 'children', `[[${childName}]]`);
+		await this.removeFromArrayField(parentFile, 'children', `[[${childFile.basename}]]`);
+		await this.removeFromArrayField(parentFile, 'children', `[[${childFile.basename}|${childName}]]`);
 		await this.removeFromArrayField(parentFile, 'child', `[[${childName}]]`);
 		await this.removeFromArrayField(parentFile, 'child', `[[${childFile.basename}]]`);
 		await this.removeFromArrayField(parentFile, 'child', `[[${childFile.basename}|${childName}]]`);

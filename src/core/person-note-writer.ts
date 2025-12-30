@@ -985,11 +985,11 @@ export async function updatePersonNote(
 			}
 		}
 
-		// Handle children relationships
+		// Handle children relationships (use 'children' plural to match 'children_id')
 		if (person.childCrId !== undefined || person.childName !== undefined) {
 			if (person.childCrId && person.childCrId.length > 0) {
 				if (person.childName && person.childName.length === person.childCrId.length) {
-					frontmatter.child = person.childName.length === 1
+					frontmatter.children = person.childName.length === 1
 						? `${createSmartWikilink(person.childName[0], app)}`
 						: person.childName.map(c => createSmartWikilink(c, app));
 					frontmatter.children_id = person.childCrId.length === 1
@@ -1000,9 +1000,12 @@ export async function updatePersonNote(
 						? person.childCrId[0]
 						: person.childCrId;
 				}
+				// Remove legacy 'child' property if present
+				delete frontmatter.child;
 				logger.debug('update-children', `Set children: ${JSON.stringify(person.childName)}, ids: ${JSON.stringify(person.childCrId)}`);
 			} else {
-				// Clear children
+				// Clear children (both new and legacy property names)
+				delete frontmatter.children;
 				delete frontmatter.child;
 				delete frontmatter.children_id;
 				logger.debug('update-children', 'Cleared children');
