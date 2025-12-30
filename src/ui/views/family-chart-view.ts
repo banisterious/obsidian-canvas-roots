@@ -120,6 +120,11 @@ export class FamilyChartView extends ItemView {
 	// Sync state (prevent infinite loops during sync)
 	private isSyncing: boolean = false;
 
+	// Refresh deferral - when chart isn't visible, defer refresh until visible again
+	private pendingRefresh: boolean = false;
+	// Saved zoom transform - preserve zoom/pan during visible refreshes
+	private savedZoomTransform: { k: number; x: number; y: number } | null = null;
+
 	// Services
 	private familyGraphService: FamilyGraphService;
 
@@ -928,11 +933,19 @@ export class FamilyChartView extends ItemView {
 			// Initial render without fit (just get the tree in the DOM)
 			this.f3Chart.updateTree({ initial: true });
 
-			// Defer fit operation until container dimensions are stable
+			// Defer positioning operation until container dimensions are stable
 			setTimeout(() => {
 				if (this.f3Chart && this.chartContainerEl) {
-					// Trigger fit when container has proper dimensions
-					this.f3Chart.updateTree({ tree_position: 'fit' });
+					// Check if we have a saved zoom transform to restore
+					if (this.savedZoomTransform) {
+						// Restore previous zoom/pan state instead of fitting
+						logger.debug('chart-init', 'Restoring saved zoom transform', this.savedZoomTransform);
+						this.restoreZoomTransform(this.savedZoomTransform);
+						this.savedZoomTransform = null; // Clear after restore
+					} else {
+						// No saved transform - trigger fit when container has proper dimensions
+						this.f3Chart.updateTree({ tree_position: 'fit' });
+					}
 					// Show container after animation completes
 					setTimeout(() => {
 						if (this.chartContainerEl) {
@@ -1279,6 +1292,15 @@ export class FamilyChartView extends ItemView {
 	 *                             If false, reloads immediately (suitable for live updates triggered by file change events).
 	 */
 	async refreshChart(waitForMetadataCache: boolean = false): Promise<void> {
+		// Save current zoom transform before refresh (if chart exists and has valid zoom)
+		if (this.f3Chart?.svg) {
+			const transform = f3.handlers.getCurrentZoom(this.f3Chart.svg);
+			if (transform && isFinite(transform.k) && isFinite(transform.x) && isFinite(transform.y)) {
+				this.savedZoomTransform = { k: transform.k, x: transform.x, y: transform.y };
+				logger.debug('refresh', 'Saved zoom transform', this.savedZoomTransform);
+			}
+		}
+
 		// Clear and reload the caches
 		this.familyGraphService.clearCache();
 		// Also clear avatar cache so we pick up any media changes
@@ -1362,6 +1384,37 @@ export class FamilyChartView extends ItemView {
 			f3.handlers.manualZoom({ amount: 0.8, svg, transition_time: 200 });
 			this.updateZoomLevelDisplay();
 		}
+	}
+
+	/**
+	 * Restore a saved zoom transform to the chart
+	 * Uses d3 to apply the transform directly to the SVG
+	 */
+	private restoreZoomTransform(transform: { k: number; x: number; y: number }): void {
+		if (!this.f3Chart?.svg) return;
+
+		const svgElement = this.f3Chart.svg;
+		const svgSelection = d3.select(svgElement);
+
+		// Create d3 zoom transform
+		const d3Transform = d3.zoomIdentity.translate(transform.x, transform.y).scale(transform.k);
+
+		// family-chart stores the zoom behavior on the svg's __zoom property
+		// We need to update both the __zoom property and the visual transform
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(svgElement as any).__zoom = d3Transform;
+
+		// Find the transform group (the first g element that family-chart creates for the tree)
+		const transformGroup = svgSelection.select('g');
+		if (!transformGroup.empty()) {
+			transformGroup
+				.transition()
+				.duration(200)
+				.attr('transform', `translate(${transform.x},${transform.y}) scale(${transform.k})`);
+		}
+
+		// Update zoom level display
+		this.updateZoomLevelDisplay();
 	}
 
 	/**
@@ -4171,12 +4224,33 @@ export class FamilyChartView extends ItemView {
 				}
 			})
 		);
+
+		// Listen for active leaf changes to handle deferred refreshes when view becomes visible
+		this.registerEvent(
+			this.app.workspace.on('active-leaf-change', (leaf) => {
+				if (leaf === this.leaf) {
+					// This view became active - check for pending refresh
+					this.handleViewVisible();
+				}
+			})
+		);
 	}
 
 	private refreshTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	/**
+	 * Check if the chart container is visible and has valid dimensions
+	 */
+	private isChartVisible(): boolean {
+		if (!this.chartContainerEl) return false;
+		const rect = this.chartContainerEl.getBoundingClientRect();
+		// Container must have non-zero dimensions to be considered visible
+		return rect.width > 0 && rect.height > 0;
+	}
+
+	/**
 	 * Schedule a debounced refresh
+	 * If the chart is not visible, defers the refresh until the view becomes visible again
 	 */
 	private scheduleRefresh(): void {
 		if (this.refreshTimeout) {
@@ -4184,8 +4258,28 @@ export class FamilyChartView extends ItemView {
 		}
 		this.refreshTimeout = setTimeout(() => {
 			this.refreshTimeout = null;
+
+			// If chart isn't visible, defer the refresh
+			if (!this.isChartVisible()) {
+				logger.debug('refresh', 'Chart not visible, deferring refresh');
+				this.pendingRefresh = true;
+				return;
+			}
+
 			void this.refreshChart();
 		}, 500);
+	}
+
+	/**
+	 * Handle when view becomes visible again (e.g., user switches back to this tab)
+	 * Performs any deferred refresh
+	 */
+	private handleViewVisible(): void {
+		if (this.pendingRefresh) {
+			logger.debug('refresh', 'View became visible, performing deferred refresh');
+			this.pendingRefresh = false;
+			void this.refreshChart();
+		}
 	}
 
 	// ============ State Persistence ============
