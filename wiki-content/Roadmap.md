@@ -8,7 +8,6 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
-  - [Nested Properties Redesign](#nested-properties-redesign) 📋 Medium
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
   - [Custom Map Authoring](#custom-map-authoring) 💡 Low
@@ -37,18 +36,13 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.18.9 | [Nested Properties Redesign](Release-History#nested-properties-redesign-v0189) | Flat property format for evidence tracking (`sourced_*`) and life events (`life_events` → event notes), 13-step Cleanup Wizard |
 | v0.18.9 | [Custom Relationships on Canvas Trees](Release-History#custom-relationships-on-canvas-trees-v0189) | Custom relationship types with flat properties, family tree integration via `includeOnFamilyTree` and `familyGraphMapping` |
 | v0.18.7 | [Inclusive Parent Relationships](Release-History#inclusive-parent-relationships-v0187) | Gender-neutral parent support with customizable labels, bidirectional linking, and full family graph integration |
 | v0.18.6 | [Media Upload and Management Enhancement](Release-History#media-upload-and-management-enhancement-v0186) | Direct file upload with drag-and-drop, 6-tile Media Manager dashboard, inline upload in media picker, entity picker with filters |
 | v0.18.2 | [Timeline Export Consolidation](Release-History#timeline-export-consolidation-v0182) | Unified timeline exports in Reports wizard with all 8 formats, consolidated filters, deprecation notice on Events tab |
-| v0.18.1 | [Create Person Enhancements](Release-History#create-person-enhancements-v0181) | Inline person creation, children management, "Add Another" flow, Family Creation Wizard, nickname property |
-| v0.18.0 | [Event Person Property Consolidation](Release-History#event-person-property-consolidation-v0180) | Unified `persons` array for all events, migration wizard step, backward-compatible reading |
-| v0.17.5 | [Research Level Property](Release-History#research-level-property-v0175) | Track research progress with 7-level GPS-based system, Edit Modal selector, Research Gaps Report integration |
-| v0.17.0 | [Post-Import Cleanup Wizard](Release-History#post-import-cleanup-wizard-v0170) | 10-step guided wizard for post-import data quality (relationships, dates, genders, places, sources) |
-| v0.17.0 | [Source Array Migration](Release-History#source-array-migration-v0170) | Migrate indexed source properties to YAML array format with wizard integration |
-| v0.16.0 | [Import/Export Hub](Release-History#importexport-hub-v0160) | Modal-based hub with 7-step import and 6-step export wizards, integrated reference numbering |
 
-**Earlier releases:** GEDCOM/Gramps/GEDCOM X import, geographic maps, evidence visualization, custom relationship types, fictional calendars, and more. See [Release History](Release-History) for details.
+**Earlier releases:** Create Person enhancements, Event Person consolidation, Research Level property, Post-Import Cleanup Wizard, Import/Export Hub, and more. See [Release History](Release-History) for details.
 
 ---
 
@@ -61,63 +55,6 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
-
----
-
-### Nested Properties Redesign
-
-**Priority:** 📋 Medium — Fix architectural incompatibility with Obsidian's property panel
-
-**Status:** In Progress → v0.18.9
-
-**The Problem:** Two features (`sourced_facts` for evidence tracking, `events` for life events) use nested YAML structures (objects within objects, arrays of objects) that are incompatible with Obsidian's property panel. This causes "Type mismatch" warnings and risks data corruption if users click "update" in the property panel.
-
-**Goal:** Redesign both features to use Obsidian-compatible flat property structures while maintaining full functionality and providing automatic migration for existing users.
-
-**Solution:**
-
-**Evidence Tracking:** Replace nested `sourced_facts` with individual flat properties:
-```yaml
-# Current (nested - incompatible)
-sourced_facts:
-  birth_date:
-    sources: ["[[1870 Census]]", "[[Birth Cert]]"]
-
-# New (flat - compatible)
-sourced_birth_date:
-  - "[[1870 Census]]"
-  - "[[Birth Cert]]"
-```
-
-**Life Events:** Replace inline `events` array with separate event note files:
-```yaml
-# Current (nested - incompatible)
-events:
-  - event_type: residence
-    place: "[[New York]]"
-    date_from: "1920"
-
-# New (flat - compatible)
-life_events:
-  - "[[Events/John - Residence - NYC 1920]]"
-```
-
-**Implementation:**
-
-| Phase | Feature | Description |
-|-------|---------|-------------|
-| 1 | Flat Alternatives | Add support for new flat property formats |
-| 2 | Migration Wizard | Add Cleanup Wizard steps to convert existing data |
-| 3 | Backward Compatibility | Read both old and new formats during transition |
-| 4 | Deprecation | Mark old format as legacy, encourage migration |
-
-**Benefits:**
-- Fully compatible with Obsidian's property panel
-- No more confusing "Type mismatch" warnings
-- Safer editing experience (no accidental data corruption)
-- Event notes become first-class entities (searchable, linkable, organized)
-
-**Documentation:** See [docs/planning/nested-properties-redesign.md](../docs/planning/nested-properties-redesign.md) for full technical plan.
 
 ---
 

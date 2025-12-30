@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.18.x](#v018x)
+  - [Nested Properties Redesign](#nested-properties-redesign-v0189)
   - [Inclusive Parent Relationships](#inclusive-parent-relationships-v0187)
   - [Media Upload and Management Enhancement](#media-upload-and-management-enhancement-v0186)
   - [Timeline Export Consolidation](#timeline-export-consolidation-v0182)
@@ -76,6 +77,112 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.18.x
+
+### Nested Properties Redesign (v0.18.9)
+
+Redesigned two features to use Obsidian-compatible flat property formats, eliminating "Type mismatch" warnings in the Properties panel and preventing data corruption.
+
+**Problem Solved:**
+
+Two plugin features used nested YAML structures incompatible with Obsidian's property panel:
+- `sourced_facts` (Evidence Tracking) - nested objects with source arrays
+- `events` (Life Events) - inline array of event objects
+
+This caused "Type mismatch" warnings and risked data corruption if users clicked "update" in the property panel. ([GitHub Issue #52](https://github.com/banisterious/obsidian-canvas-roots/issues/52))
+
+**Solution:**
+
+**1. Evidence Tracking → Flat Properties**
+
+Replaced nested `sourced_facts` object with individual flat properties:
+
+```yaml
+# Old format (nested - incompatible)
+sourced_facts:
+  birth_date:
+    sources:
+      - "[[Census 1870]]"
+  death_date:
+    sources:
+      - "[[Death Certificate]]"
+
+# New format (flat - compatible)
+sourced_birth_date:
+  - "[[Census 1870]]"
+sourced_death_date:
+  - "[[Death Certificate]]"
+```
+
+10 flat properties for each fact type:
+- `sourced_birth_date`, `sourced_birth_place`
+- `sourced_death_date`, `sourced_death_place`
+- `sourced_parents`, `sourced_spouse`
+- `sourced_marriage_date`, `sourced_marriage_place`
+- `sourced_occupation`, `sourced_residence`
+
+**2. Life Events → Event Note Files**
+
+Replaced inline `events` array with separate event note files:
+
+```yaml
+# Old format (inline array - incompatible)
+events:
+  - event_type: residence
+    place: "[[New York]]"
+    date_from: "1920"
+
+# New format (event note links - compatible)
+life_events:
+  - "[[Events/John Smith - Residence 1920]]"
+```
+
+Each event becomes a first-class note with full frontmatter, enabling:
+- Searchability and linking
+- Tags and attachments
+- Source citations per event
+- Organized in Events folder
+
+**3. Cleanup Wizard Integration**
+
+Added two new migration steps (now 13-step wizard):
+
+| Step | Name | Description |
+|------|------|-------------|
+| 12 | Migrate Evidence Tracking | Convert `sourced_facts` → `sourced_*` flat properties |
+| 13 | Migrate Life Events | Convert inline `events` → event note files with `life_events` links |
+
+**4. Migration Notice (v0.18.9)**
+
+- Shows on upgrade to v0.18.9+
+- Explains both migrations with before/after examples
+- Checkmarks indicate completed migrations
+- "Open Cleanup Wizard" button for migration
+- "Skip for now" button as escape hatch
+
+**5. Backward Compatibility**
+
+- Plugin reads both old and new formats during transition
+- Old data continues to work until migrated
+- Migration can be done at user's convenience
+
+**Benefits:**
+- No more "Type mismatch" warnings in Properties panel
+- Safe to edit properties without data corruption
+- Better Dataview and Bases compatibility
+- Each event as a note enables linking, tags, and attachments
+
+**Files Changed:**
+- `src/sources/types/source-types.ts` - New property types and mappings
+- `src/types/frontmatter.ts` - New `sourced_*` and `life_events` properties
+- `src/sources/services/evidence-service.ts` - Dual-format reading
+- `src/ui/control-center.ts` - Write to flat properties
+- `src/sources/services/sourced-facts-migration-service.ts` - Step 12 migration
+- `src/events/services/life-events-migration-service.ts` - Step 13 migration
+- `src/ui/cleanup-wizard-modal.ts` - Steps 12 and 13
+- `src/ui/views/migration-notice-view.ts` - v0.18.9 notice
+- `src/settings.ts` - Migration completion tracking
+
+---
 
 ### Inclusive Parent Relationships (v0.18.7)
 

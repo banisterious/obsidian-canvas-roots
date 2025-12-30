@@ -2,7 +2,7 @@
 
 - **Created:** 2025-12-29
 - **Updated:** 2025-12-30
-- **Status:** Planning → v0.18.9
+- **Status:** ✅ **IMPLEMENTED** (feature/nested-properties-redesign branch)
 - **Priority:** High - Architectural incompatibility with Obsidian
 
 ---
@@ -222,7 +222,7 @@ The existing Step 10 does NOT produce the desired format. We need **purpose-buil
 
 ## Implementation Checklist
 
-### For `sourced_facts` → Individual Properties
+### For `sourced_facts` → Individual Properties ✅
 
 **Property Names (10 fact types from `FACT_KEYS`):**
 ```typescript
@@ -239,42 +239,42 @@ sourced_residence: string[]     // sources for residence
 ```
 
 **Implementation:**
-- [ ] Define new property names in `frontmatter.ts`
-- [ ] Update `EvidenceService.getFactCoverageForFile()` to check new properties
-- [ ] Update Control Center Research Gaps widget
-- [ ] Add backward compatibility reader for old format
-- [ ] Add migration wizard step
+- [x] Define new property names in `frontmatter.ts`
+- [x] Update `EvidenceService.getFactCoverageForFile()` to check new properties
+- [x] Update Control Center Research Gaps widget (writes to new format)
+- [x] Add backward compatibility reader for old format
+- [x] Add migration wizard step (Step 12)
 - [ ] Update wiki documentation
 - [ ] Add deprecation warning in settings UI
 
-### For `events` → Event Note Files
+### For `events` → Event Note Files ✅
 
-- [ ] Add `life_events` property to `PersonFrontmatter`
+- [x] Add `life_events` property to `PersonFrontmatter`
+- [x] Create "Convert life events to event notes" wizard (Step 13)
+  - [x] Scan person notes with `events` array
+  - [x] Generate event note files with proper naming
+  - [x] Update person notes with `life_events` links
+  - [x] Preview and confirm before execution
 - [ ] Update `MapDataService.getLifeEventsForPerson()` to check new property
-- [ ] Create "Convert life events to event notes" wizard
-  - [ ] Scan person notes with `events` array
-  - [ ] Generate event note files with proper naming
-  - [ ] Update person notes with `life_events` links
-  - [ ] Preview and confirm before execution
 - [ ] Update map markers to work with both formats
 - [ ] Update Geographic Features documentation
 - [ ] Add deprecation notice in settings
 
-### Migration Notice View (v0.18.9)
+### Migration Notice View (v0.18.9) ✅
 
 Extend the existing migration notice infrastructure to inform users about the nested properties changes.
 
-**Files to modify:**
-- `src/ui/views/migration-notice-view.ts` - Add `'nested-properties'` migration type
-- `src/settings.ts` - Add migration completion tracking
-- `main.ts` - Update `shouldShowMigrationNotice()` to trigger for v0.18.9
+**Files modified:**
+- `src/ui/views/migration-notice-view.ts` - Added `'nested-properties'` migration type
+- `src/settings.ts` - Added migration completion tracking
+- `main.ts` - Update `shouldShowMigrationNotice()` to trigger for v0.18.9 (TODO)
 
 **Multi-Action Completion Tracking:**
 
-The migration notice must remain visible until BOTH migration actions are completed. Add a new setting to track individual migration completions:
+The migration notice remains visible until BOTH migration actions are completed. Setting added to track individual migration completions:
 
 ```typescript
-// In settings.ts - add to CanvasRootsSettings interface
+// In settings.ts - added to CanvasRootsSettings interface
 /** Tracks completion of individual v0.18.9 migrations */
 nestedPropertiesMigration?: {
   /** True when sourced_facts → sourced_* migration is complete */
@@ -289,23 +289,24 @@ nestedPropertiesMigration?: {
 - Display checkmarks next to completed migrations
 - "Dismiss" button only enabled when both migrations are complete OR user has no data requiring migration
 - Each wizard step marks its corresponding migration as complete when finished
-- If user has no data for a migration (no `sourced_facts` or `events`), auto-mark as complete
+- "Skip for now" button added as escape hatch
 
 **Implementation:**
-- [ ] Add `nestedPropertiesMigration` to `CanvasRootsSettings` interface in `settings.ts`
-- [ ] Add `'nested-properties'` to `MigrationType` union
-- [ ] Create `renderNestedPropertiesMigration()` method with:
+- [x] Add `nestedPropertiesMigration` to `CanvasRootsSettings` interface in `settings.ts`
+- [x] Add `'nested-properties'` to `MigrationType` union
+- [x] Create `renderNestedPropertiesMigration()` method with:
   - Before/after code examples for `sourced_facts` → `sourced_*` properties
   - Before/after code examples for `events` → event note files
   - Benefits list (no more type mismatch, safe editing, etc.)
   - Completion status indicators (checkmarks) for each migration
   - "Open Cleanup Wizard" button (always enabled)
-  - "Dismiss" button (enabled only when both complete or N/A)
-- [ ] Add `checkMigrationNeeded()` method to scan vault for legacy data
-- [ ] Update `determineMigrationType()` to detect v0.18.9+
-- [ ] Update `shouldShowMigrationNotice()` to check migration completion status
-- [ ] Update `getDisplayText()` to return "Canvas Roots v0.18.9"
-- [ ] Update Cleanup Wizard steps to mark migrations complete on finish
+  - "Dismiss" button (enabled only when both complete)
+  - "Skip for now" button (always enabled)
+- [x] Update `determineMigrationType()` to detect v0.18.9+
+- [x] Update `getDisplayText()` to return "Canvas Roots v0.18.9"
+- [x] Update Cleanup Wizard steps to mark migrations complete on finish
+- [ ] Add `checkMigrationNeeded()` method to scan vault for legacy data (auto-complete if no data)
+- [ ] Update `shouldShowMigrationNotice()` in main.ts to check migration completion status
 
 ---
 
@@ -392,3 +393,63 @@ This work is related but tracked separately since it's part of a larger feature.
 - Migration notice styles: `styles/migration-notice.css`
 - Documentation: `wiki-content/Evidence-And-Sources.md`, `wiki-content/Geographic-Features.md`
 - Cleanup Wizard: `src/ui/cleanup-wizard-modal.ts`, `src/core/data-quality.ts`
+
+---
+
+## Implementation Summary (2025-12-30)
+
+Branch: `feature/nested-properties-redesign`
+
+### Commits
+
+1. **feat: add flat sourced_* properties for evidence tracking (#52)**
+   - Added `SourcedPropertyName` type and `FACT_KEY_TO_SOURCED_PROPERTY` mapping
+   - Added `SOURCED_PROPERTY_NAMES` array for iteration
+   - Updated `EvidenceService` to read from flat properties with legacy fallback
+
+2. **feat: write to flat sourced_* properties instead of nested sourced_facts (#52)**
+   - Updated `addSourceCitationForFact()` in control-center.ts to write flat properties
+   - Exported `FACT_KEY_TO_SOURCED_PROPERTY` from sources module
+
+3. **feat: add nestedPropertiesMigration tracking setting (#52)**
+   - Added `nestedPropertiesMigration` setting with completion flags
+
+4. **feat: add nested-properties migration notice for v0.18.9 (#52)**
+   - Added `nested-properties` migration type with dual-checkmark UI
+   - Shows completion status for each migration
+   - "Skip for now" button as escape hatch
+
+5. **feat: add Cleanup Wizard Step 12 for Evidence Tracking migration (#52)**
+   - Created `SourcedFactsMigrationService` with detect/preview/migrate methods
+   - Converts nested `sourced_facts` to flat `sourced_*` properties
+   - Marks `sourcedFactsComplete` on completion
+
+6. **feat: add Cleanup Wizard Step 13 for Life Events migration (#52)**
+   - Created `LifeEventsMigrationService` with detect/preview/migrate methods
+   - Creates event note files for each inline event
+   - Updates person notes with `life_events` wikilink arrays
+   - Marks `eventsComplete` on completion
+
+### New Files
+
+- `src/sources/services/sourced-facts-migration-service.ts`
+- `src/events/services/life-events-migration-service.ts`
+
+### Modified Files
+
+- `src/sources/types/source-types.ts` - New types and mappings
+- `src/types/frontmatter.ts` - New sourced_* properties
+- `src/sources/services/evidence-service.ts` - Dual-format reading
+- `src/sources/index.ts` - New exports
+- `src/ui/control-center.ts` - Write to flat properties
+- `src/settings.ts` - Migration tracking setting
+- `src/ui/views/migration-notice-view.ts` - v0.18.9 notice
+- `src/ui/cleanup-wizard-modal.ts` - Steps 12 and 13
+
+### Remaining Work
+
+- [ ] Update `MapDataService` to read `life_events` property
+- [ ] Update `shouldShowMigrationNotice()` in main.ts
+- [ ] Auto-complete migrations when no legacy data exists
+- [ ] Update wiki documentation
+- [ ] Add deprecation warnings in settings UI
