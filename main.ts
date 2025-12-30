@@ -4840,7 +4840,8 @@ export default class CanvasRootsPlugin extends Plugin {
 				subtitle: `Select media files to link to ${entityName}`,
 				multiSelect: true,
 				existingMedia
-			}
+			},
+			this
 		).open();
 	}
 
