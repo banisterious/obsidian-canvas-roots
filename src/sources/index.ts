@@ -63,6 +63,7 @@ export {
 export { SourceService } from './services/source-service';
 export { EvidenceService, type ResearchGapsSummary } from './services/evidence-service';
 export { ProofSummaryService } from './services/proof-summary-service';
+export { SourcedFactsMigrationService, type LegacySourcedFactsNote } from './services/sourced-facts-migration-service';
 export {
 	generateCitation,
 	generateAllCitations,

@@ -1,7 +1,7 @@
 /**
  * Post-Import Cleanup Wizard Modal
  *
- * An 11-step wizard for post-import data cleanup operations.
+ * A 12-step wizard for post-import data cleanup operations.
  *
  * Step 1: Quality Report — Review data quality issues (review-only)
  * Step 2: Bidirectional Relationships — Fix parent-child link consistency (batch)
@@ -14,6 +14,7 @@
  * Step 9: Place Hierarchy — Build containment chains (interactive)
  * Step 10: Flatten Properties — Fix nested frontmatter (batch)
  * Step 11: Event Person Migration — Convert person to persons array (batch)
+ * Step 12: Evidence Tracking Migration — Convert sourced_facts to flat properties (batch)
  */
 
 import { App, Modal, Notice, setIcon, TFile } from 'obsidian';
@@ -36,6 +37,7 @@ import { createPlaceNote, updatePlaceNote, type PlaceData } from '../core/place-
 import type { PlaceNode, PlaceType } from '../models/place';
 import { SourceMigrationService, type IndexedSourceNote } from '../sources/services/source-migration-service';
 import { EventPersonMigrationService, type LegacyPersonEventNote } from '../events/services/event-person-migration-service';
+import { SourcedFactsMigrationService, type LegacySourcedFactsNote } from '../sources/services/sourced-facts-migration-service';
 
 const logger = getLogger('CleanupWizard');
 
@@ -261,6 +263,18 @@ const WIZARD_STEPS: WizardStepConfig[] = [
 		detectMethod: 'detectLegacyPersonProperty',
 		applyMethod: 'migrateToArrayFormat',
 		dependencies: [6]
+	},
+	{
+		id: 'sourced-facts-migrate',
+		number: 12,
+		title: 'Migrate Evidence Tracking',
+		shortTitle: 'Evidence',
+		description: 'Convert nested sourced_facts to flat sourced_* properties.',
+		type: 'batch',
+		service: 'SourcedFactsMigrationService',
+		detectMethod: 'detectLegacySourcedFacts',
+		applyMethod: 'migrateToFlatFormat',
+		dependencies: []
 	}
 ];
 
@@ -307,6 +321,10 @@ export class CleanupWizardModal extends Modal {
 	// Event person migration state
 	private eventPersonMigrationService: EventPersonMigrationService | null = null;
 	private legacyPersonEventNotes: LegacyPersonEventNote[] = [];
+
+	// Sourced facts migration state
+	private sourcedFactsMigrationService: SourcedFactsMigrationService | null = null;
+	private legacySourcedFactsNotes: LegacySourcedFactsNote[] = [];
 
 	// Step completion tracking for dependency checks
 	private stepCompletion: Record<string, { completed: boolean; completedAt: number; issuesFixed: number }> = {};
@@ -364,6 +382,16 @@ export class CleanupWizardModal extends Modal {
 			this.eventPersonMigrationService = new EventPersonMigrationService(this.app, this.plugin.settings);
 		}
 		return this.eventPersonMigrationService;
+	}
+
+	/**
+	 * Initialize the SourcedFactsMigrationService (lazy initialization)
+	 */
+	private getSourcedFactsMigrationService(): SourcedFactsMigrationService {
+		if (!this.sourcedFactsMigrationService) {
+			this.sourcedFactsMigrationService = new SourcedFactsMigrationService(this.app, this.plugin.settings);
+		}
+		return this.sourcedFactsMigrationService;
 	}
 
 	/**
@@ -1243,6 +1271,9 @@ export class CleanupWizardModal extends Modal {
 			case 'event-person-migrate':
 				this.renderEventPersonMigrationPreview(container);
 				break;
+			case 'sourced-facts-migrate':
+				this.renderSourcedFactsMigrationPreview(container);
+				break;
 			default:
 				// Fallback for unimplemented previews
 				this.renderGenericPreview(container, stepConfig, stepState);
@@ -1688,6 +1719,56 @@ export class CleanupWizardModal extends Modal {
 			const desc = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
 			const personName = note.personValue.replace(/\[\[|\]\]/g, '');
 			desc.textContent = `: person → persons["${personName}"]`;
+
+			// Click to open the file
+			row.addEventListener('click', () => {
+				this.close();
+				void this.app.workspace.openLinkText(note.file.path, '', false);
+			});
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render preview for Step 12: Sourced Facts Migration
+	 */
+	private renderSourcedFactsMigrationPreview(container: HTMLElement): void {
+		if (this.legacySourcedFactsNotes.length === 0) return;
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+
+		// Calculate total sources
+		const totalSources = this.legacySourcedFactsNotes.reduce((sum, note) => sum + note.totalSources, 0);
+
+		summary.textContent = `${this.legacySourcedFactsNotes.length} person note${this.legacySourcedFactsNotes.length === 1 ? '' : 's'} with ${totalSources} source citation${totalSources === 1 ? '' : 's'} will be migrated:`;
+
+		const hint = preview.createDiv({ cls: 'crc-cleanup-preview-hint' });
+		hint.textContent = 'The nested "sourced_facts" object will be converted to flat "sourced_*" properties.';
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		const maxDisplay = 15;
+		const displayItems = this.legacySourcedFactsNotes.slice(0, maxDisplay);
+		const remaining = this.legacySourcedFactsNotes.length - maxDisplay;
+
+		for (const note of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row crc-cleanup-preview-row--clickable' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'user');
+
+			const content = row.createDiv({ cls: 'crc-cleanup-preview-content' });
+
+			const fileName = content.createSpan({ cls: 'crc-cleanup-preview-person' });
+			fileName.textContent = note.file.basename;
+
+			const desc = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
+			desc.textContent = `: ${note.factKeys.length} fact type${note.factKeys.length === 1 ? '' : 's'}, ${note.totalSources} source${note.totalSources === 1 ? '' : 's'}`;
 
 			// Click to open the file
 			row.addEventListener('click', () => {
@@ -3360,6 +3441,22 @@ export class CleanupWizardModal extends Modal {
 					};
 					break;
 				}
+				case 'sourced-facts-migrate': {
+					const sourcedFactsMigrationService = this.getSourcedFactsMigrationService();
+					const migrationResult = await sourcedFactsMigrationService.migrateToFlatFormat(this.legacySourcedFactsNotes);
+					result = {
+						processed: migrationResult.processed,
+						modified: migrationResult.modified,
+						errors: migrationResult.errors
+					};
+					// Mark the nestedPropertiesMigration as complete for sourced_facts
+					if (!this.plugin.settings.nestedPropertiesMigration) {
+						this.plugin.settings.nestedPropertiesMigration = {};
+					}
+					this.plugin.settings.nestedPropertiesMigration.sourcedFactsComplete = true;
+					await this.plugin.saveSettings();
+					break;
+				}
 				default:
 					// Placeholder for unimplemented methods
 					await new Promise(resolve => setTimeout(resolve, 500));
@@ -3588,6 +3685,12 @@ export class CleanupWizardModal extends Modal {
 			this.legacyPersonEventNotes = eventPersonMigrationService.detectLegacyPersonProperty();
 			this.state.steps[11].issueCount = this.legacyPersonEventNotes.length;
 			logger.debug('runPreScan', `Step 11 (Event Persons): ${this.legacyPersonEventNotes.length} events with legacy person property`);
+
+			// Step 12: Sourced facts migration (sourced_facts → sourced_* flat properties)
+			const sourcedFactsMigrationService = this.getSourcedFactsMigrationService();
+			this.legacySourcedFactsNotes = sourcedFactsMigrationService.detectLegacySourcedFacts();
+			this.state.steps[12].issueCount = this.legacySourcedFactsNotes.length;
+			logger.debug('runPreScan', `Step 12 (Evidence): ${this.legacySourcedFactsNotes.length} notes with legacy sourced_facts`);
 
 			this.state.preScanComplete = true;
 			logger.info('runPreScan', 'Pre-scan complete');
