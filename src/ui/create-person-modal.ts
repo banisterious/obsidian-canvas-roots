@@ -62,6 +62,9 @@ interface PersonFormData {
 	adoptiveFatherName?: string;
 	adoptiveMotherCrId?: string;
 	adoptiveMotherName?: string;
+	// Gender-neutral parents (multi-relationship)
+	parentCrIds?: string[];
+	parentNames?: string[];
 	// Children fields
 	childCrIds?: string[];
 	childNames?: string[];
@@ -94,6 +97,8 @@ export class CreatePersonModal extends Modal {
 	private stepmotherField: RelationshipField = {};
 	private adoptiveFatherField: RelationshipField = {};
 	private adoptiveMotherField: RelationshipField = {};
+	// Gender-neutral parents (multi-relationship)
+	private parentsField: MultiRelationshipField = { crIds: [], names: [] };
 	// Children (multi-relationship)
 	private childrenField: MultiRelationshipField = { crIds: [], names: [] };
 	// Place fields
@@ -165,6 +170,9 @@ export class CreatePersonModal extends Modal {
 				adoptiveFatherName?: string;
 				adoptiveMotherId?: string;
 				adoptiveMotherName?: string;
+				// Gender-neutral parents
+				parentIds?: string[];
+				parentNames?: string[];
 				// Children
 				childIds?: string[];
 				childNames?: string[];
@@ -247,6 +255,13 @@ export class CreatePersonModal extends Modal {
 			}
 			if (ep.deathPlaceId || ep.deathPlaceName) {
 				this.deathPlaceField = { crId: ep.deathPlaceId, name: ep.deathPlaceName };
+			}
+			// Gender-neutral parents
+			if (ep.parentIds && ep.parentIds.length > 0) {
+				this.parentsField = {
+					crIds: [...ep.parentIds],
+					names: ep.parentNames ? [...ep.parentNames] : []
+				};
 			}
 			// Children
 			if (ep.childIds && ep.childIds.length > 0) {
@@ -469,6 +484,12 @@ export class CreatePersonModal extends Modal {
 		// Adoptive mother
 		this.createRelationshipField(stepAdoptSection, 'Adoptive mother', this.adoptiveMotherField);
 
+		// Gender-neutral parents (only shown if enabled in settings)
+		if (this.plugin.settings.enableInclusiveParents) {
+			const parentsLabel = this.plugin.settings.parentFieldLabel || 'Parents';
+			this.createParentsField(stepAdoptSection, parentsLabel);
+		}
+
 		// Collection - dropdown with existing + text for custom
 		const collectionSetting = new Setting(form)
 			.setName('Collection')
@@ -681,6 +702,9 @@ export class CreatePersonModal extends Modal {
 			adoptiveFatherName: this.adoptiveFatherField.name,
 			adoptiveMotherCrId: this.adoptiveMotherField.crId,
 			adoptiveMotherName: this.adoptiveMotherField.name,
+			// Gender-neutral parents
+			parentCrIds: this.parentsField.crIds.length > 0 ? [...this.parentsField.crIds] : undefined,
+			parentNames: this.parentsField.names.length > 0 ? [...this.parentsField.names] : undefined,
 			// Children fields
 			childCrIds: this.childrenField.crIds.length > 0 ? [...this.childrenField.crIds] : undefined,
 			childNames: this.childrenField.names.length > 0 ? [...this.childrenField.names] : undefined,
@@ -745,6 +769,14 @@ export class CreatePersonModal extends Modal {
 		}
 		if (formData.deathPlaceCrId || formData.deathPlaceName) {
 			this.deathPlaceField = { crId: formData.deathPlaceCrId, name: formData.deathPlaceName };
+		}
+
+		// Gender-neutral parents
+		if (formData.parentCrIds && formData.parentCrIds.length > 0) {
+			this.parentsField = {
+				crIds: [...formData.parentCrIds],
+				names: formData.parentNames ? [...formData.parentNames] : []
+			};
 		}
 
 		// Children fields
@@ -1021,6 +1053,100 @@ export class CreatePersonModal extends Modal {
 				renderChildList();
 			}, {
 				title: 'Select child',
+				subtitle: 'Select an existing person or create a new one',
+				createContext: createContext,
+				onCreateNew: () => {
+					// This callback signals inline creation support
+				},
+				plugin: this.plugin
+			});
+			picker.open();
+		});
+	}
+
+	/**
+	 * Create the gender-neutral parents multi-select field
+	 * Shows a list of currently linked parents with ability to add/remove
+	 */
+	private createParentsField(container: HTMLElement, label: string): void {
+		const parentsContainer = container.createDiv({ cls: 'crc-children-field' });
+
+		// Header with label and add button
+		const header = parentsContainer.createDiv({ cls: 'crc-children-field__header' });
+		header.createSpan({ cls: 'crc-children-field__label', text: label });
+
+		const addBtn = header.createEl('button', {
+			cls: 'crc-btn crc-btn--secondary crc-btn--small'
+		});
+		const addIcon = createLucideIcon('plus', 14);
+		addBtn.appendChild(addIcon);
+		addBtn.appendText(` Add ${label.toLowerCase().replace(/s$/, '')}`); // "Add parent" from "Parents"
+
+		// List of current parents
+		const parentList = parentsContainer.createDiv({ cls: 'crc-children-field__list' });
+
+		// Render function to update the list
+		const renderParentList = () => {
+			parentList.empty();
+
+			if (this.parentsField.crIds.length === 0) {
+				const emptyState = parentList.createDiv({ cls: 'crc-children-field__empty' });
+				emptyState.setText(`No ${label.toLowerCase()} linked`);
+				return;
+			}
+
+			for (let i = 0; i < this.parentsField.crIds.length; i++) {
+				const crId = this.parentsField.crIds[i];
+				const name = this.parentsField.names[i] || crId;
+
+				const parentItem = parentList.createDiv({ cls: 'crc-children-field__item' });
+
+				// Parent name
+				const nameSpan = parentItem.createSpan({ cls: 'crc-children-field__name' });
+				nameSpan.setText(name);
+
+				// Remove button
+				const removeBtn = parentItem.createEl('button', {
+					cls: 'crc-btn crc-btn--icon crc-btn--danger',
+					attr: { 'aria-label': `Remove ${name}` }
+				});
+				const removeIcon = createLucideIcon('x', 14);
+				removeBtn.appendChild(removeIcon);
+
+				removeBtn.addEventListener('click', () => {
+					// Remove from arrays
+					this.parentsField.crIds.splice(i, 1);
+					this.parentsField.names.splice(i, 1);
+					renderParentList();
+				});
+			}
+		};
+
+		// Initial render
+		renderParentList();
+
+		// Add button handler
+		addBtn.addEventListener('click', () => {
+			// Build context for inline creation - no suggested sex for gender-neutral parents
+			const createContext: RelationshipContext = {
+				relationshipType: label.toLowerCase().replace(/s$/, ''), // "parent" from "Parents"
+				parentCrId: undefined, // Not applicable for parent relationship
+				directory: this.directory
+			};
+
+			const picker = new PersonPickerModal(this.app, (person: PersonInfo) => {
+				// Check if already added
+				if (this.parentsField.crIds.includes(person.crId)) {
+					new Notice(`${person.name} is already linked as a ${label.toLowerCase().replace(/s$/, '')}`);
+					return;
+				}
+
+				// Add to arrays
+				this.parentsField.crIds.push(person.crId);
+				this.parentsField.names.push(person.name);
+				renderParentList();
+			}, {
+				title: `Select ${label.toLowerCase().replace(/s$/, '')}`,
 				subtitle: 'Select an existing person or create a new one',
 				createContext: createContext,
 				onCreateNew: () => {
@@ -1572,6 +1698,12 @@ export class CreatePersonModal extends Modal {
 				data.adoptiveMotherName = this.adoptiveMotherField.name;
 			}
 
+			// Add gender-neutral parents
+			if (this.parentsField.crIds.length > 0) {
+				data.parentCrId = [...this.parentsField.crIds];
+				data.parentName = [...this.parentsField.names];
+			}
+
 			// Add children
 			if (this.childrenField.crIds.length > 0) {
 				data.childCrId = [...this.childrenField.crIds];
@@ -1719,6 +1851,16 @@ export class CreatePersonModal extends Modal {
 			} else {
 				data.adoptiveMotherCrId = undefined;
 				data.adoptiveMotherName = undefined;
+			}
+
+			// Add gender-neutral parents
+			if (this.parentsField.crIds.length > 0) {
+				data.parentCrId = [...this.parentsField.crIds];
+				data.parentName = [...this.parentsField.names];
+			} else {
+				// Explicitly clear parents if all removed
+				data.parentCrId = [];
+				data.parentName = [];
 			}
 
 			// Add children
