@@ -50,21 +50,31 @@ export class RelationshipManager {
 	/**
 	 * Add a parent-child relationship
 	 * Updates child's father/father_id or mother/mother_id and parent's children/children_id
+	 * @param knownParentCrId Optional cr_id if already known (avoids metadata cache timing issues)
 	 */
 	async addParentRelationship(
 		childFile: TFile,
 		parentFile: TFile,
-		parentType: 'father' | 'mother'
+		parentType: 'father' | 'mother',
+		knownParentCrId?: string
 	): Promise<void> {
-		// Extract cr_ids from both notes
+		// Extract cr_ids from both notes (use provided cr_id if available to avoid cache timing issues)
 		const childCrId = this.extractCrId(childFile);
-		const parentCrId = this.extractCrId(parentFile);
+		const parentCrId = knownParentCrId || this.extractCrId(parentFile);
 		const parentSex = this.extractSex(parentFile);
 		const childName = this.extractName(childFile);
 		const parentName = this.extractName(parentFile);
 
 		if (!childCrId || !parentCrId) {
-			new Notice('Error: could not find cr_id in one or both notes');
+			const missing = !childCrId && !parentCrId ? 'both notes' :
+				!childCrId ? `child (${childFile.basename})` : `parent (${parentFile.basename})`;
+			new Notice(`Error: could not find cr_id in ${missing}`);
+			logger.error('relationship-manager', 'Missing cr_id in addParentRelationship', {
+				childFile: childFile.path,
+				childCrId,
+				parentFile: parentFile.path,
+				parentCrId
+			});
 			return;
 		}
 
@@ -100,10 +110,11 @@ export class RelationshipManager {
 	/**
 	 * Add a spouse relationship
 	 * Updates both notes' spouse/spouse_id arrays (bidirectional, dual storage)
+	 * @param knownPerson2CrId Optional cr_id if already known (avoids metadata cache timing issues)
 	 */
-	async addSpouseRelationship(person1File: TFile, person2File: TFile): Promise<void> {
+	async addSpouseRelationship(person1File: TFile, person2File: TFile, knownPerson2CrId?: string): Promise<void> {
 		const person1CrId = this.extractCrId(person1File);
-		const person2CrId = this.extractCrId(person2File);
+		const person2CrId = knownPerson2CrId || this.extractCrId(person2File);
 		const person1Name = this.extractName(person1File);
 		const person2Name = this.extractName(person2File);
 
@@ -132,13 +143,15 @@ export class RelationshipManager {
 	/**
 	 * Add a parent-child relationship (inverse of addParent)
 	 * Updates parent's children/children_id and child's father/father_id or mother/mother_id
+	 * @param knownChildCrId Optional cr_id if already known (avoids metadata cache timing issues)
 	 */
 	async addChildRelationship(
 		parentFile: TFile,
-		childFile: TFile
+		childFile: TFile,
+		knownChildCrId?: string
 	): Promise<void> {
 		const parentCrId = this.extractCrId(parentFile);
-		const childCrId = this.extractCrId(childFile);
+		const childCrId = knownChildCrId || this.extractCrId(childFile);
 		const parentSex = this.extractSex(parentFile);
 		const parentName = this.extractName(parentFile);
 		const childName = this.extractName(childFile);

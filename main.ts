@@ -1843,7 +1843,8 @@ export default class CanvasRootsPlugin extends Plugin {
 														await relationshipMgr.addParentRelationship(
 															file,
 															selectedPerson.file,
-															'father'
+															'father',
+															selectedPerson.crId
 														);
 													})();
 												}, {
@@ -1881,7 +1882,8 @@ export default class CanvasRootsPlugin extends Plugin {
 														await relationshipMgr.addParentRelationship(
 															file,
 															selectedPerson.file,
-															'mother'
+															'mother',
+															selectedPerson.crId
 														);
 													})();
 												}, {
@@ -1925,7 +1927,7 @@ export default class CanvasRootsPlugin extends Plugin {
 												const picker = new PersonPickerModal(this.app, (selectedPerson) => {
 													void (async () => {
 														const relationshipMgr = new RelationshipManager(this.app, this.relationshipHistory);
-														await relationshipMgr.addSpouseRelationship(file, selectedPerson.file);
+														await relationshipMgr.addSpouseRelationship(file, selectedPerson.file, selectedPerson.crId);
 													})();
 												}, {
 													title: 'Select spouse',
@@ -1959,7 +1961,7 @@ export default class CanvasRootsPlugin extends Plugin {
 												const picker = new PersonPickerModal(this.app, (selectedPerson) => {
 													void (async () => {
 														const relationshipMgr = new RelationshipManager(this.app, this.relationshipHistory);
-														await relationshipMgr.addChildRelationship(file, selectedPerson.file);
+														await relationshipMgr.addChildRelationship(file, selectedPerson.file, selectedPerson.crId);
 													})();
 												}, {
 													title: 'Select child',
@@ -2414,7 +2416,8 @@ export default class CanvasRootsPlugin extends Plugin {
 													await relationshipMgr.addParentRelationship(
 														file,
 														selectedPerson.file,
-														parentType
+														parentType,
+														selectedPerson.crId
 													);
 												}
 											})();
@@ -2431,7 +2434,7 @@ export default class CanvasRootsPlugin extends Plugin {
 										const picker = new PersonPickerModal(this.app, (selectedPerson) => {
 											void (async () => {
 												const relationshipMgr = new RelationshipManager(this.app, this.relationshipHistory);
-												await relationshipMgr.addSpouseRelationship(file, selectedPerson.file);
+												await relationshipMgr.addSpouseRelationship(file, selectedPerson.file, selectedPerson.crId);
 											})();
 										});
 										picker.open();
@@ -2446,7 +2449,7 @@ export default class CanvasRootsPlugin extends Plugin {
 										const picker = new PersonPickerModal(this.app, (selectedPerson) => {
 											void (async () => {
 												const relationshipMgr = new RelationshipManager(this.app, this.relationshipHistory);
-												await relationshipMgr.addChildRelationship(file, selectedPerson.file);
+												await relationshipMgr.addChildRelationship(file, selectedPerson.file, selectedPerson.crId);
 											})();
 										});
 										picker.open();
