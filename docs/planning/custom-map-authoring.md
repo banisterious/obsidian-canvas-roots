@@ -363,41 +363,41 @@ Right-click an image file in the file explorer:
 
 ## Implementation Checklist
 
-### Phase 1: Map Creation Wizard
+### Phase 1: Map Creation Wizard ✅
 
 #### Phase 1a: Wizard Modal Structure
-- [ ] Create `CreateMapWizardModal` class with step navigation
-- [ ] Implement step indicator UI (Step 1 of 4, etc.)
-- [ ] Add Back/Next/Cancel/Create buttons with step-appropriate states
+- [x] Create `CreateMapWizardModal` class with step navigation
+- [x] Implement step indicator UI (Step 1 of 4, etc.)
+- [x] Add Back/Next/Cancel/Create buttons with step-appropriate states
 
 #### Phase 1b: Step 1 - Image Selection
-- [ ] Reuse `ImagePickerModal` for browsing vault images
-- [ ] Show image preview with dimensions
-- [ ] Auto-detect and display image dimensions
+- [x] Create `ImagePickerModal` for browsing vault images
+- [x] Show image preview with dimensions
+- [x] Auto-detect and display image dimensions
 
 #### Phase 1c: Step 2 - Map Configuration
-- [ ] Name input with auto-generated map ID
-- [ ] Universe dropdown (existing universes + create new)
-- [ ] Coordinate system selector (pixel default)
-- [ ] Collapsible advanced section for bounds/zoom
+- [x] Name input with auto-generated map ID
+- [x] Universe dropdown (existing universes)
+- [x] Coordinate system selector (pixel default)
+- [x] Collapsible advanced section for bounds/zoom
 
 #### Phase 1d: Step 3 - Add Places
-- [ ] Embed Leaflet map with selected image
-- [ ] Handle click events to capture coordinates
-- [ ] Inline name input at click location
-- [ ] Display pending places as markers
-- [ ] Allow removing pending places before creation
+- [x] Display selected image as map preview
+- [x] Handle click events to capture coordinates
+- [x] Inline name input at click location
+- [x] Display pending places as markers
+- [x] Allow removing pending places before creation
 
 #### Phase 1e: Step 4 - Review & Create
-- [ ] Summary view of map configuration
-- [ ] List of places to be created
-- [ ] Create all notes on confirm
-- [ ] Open map in Map View after creation
+- [x] Summary view of map configuration
+- [x] List of places to be created
+- [x] Create all notes on confirm
+- [x] Open map in Map View after creation
 
 #### Phase 1f: Entry Points
-- [ ] Add "Create map wizard" button to Control Center Maps tab
-- [ ] Add command: "Canvas Roots: Create custom map"
-- [ ] Add context menu on image files: "Use as custom map"
+- [x] Add "Wizard" button to Control Center Maps tab
+- [x] Add command: "Canvas Roots: Create custom map"
+- [x] Add context menu on image files: "Use as custom map"
 
 ### Phase 2: Right-Click to Create Place
 

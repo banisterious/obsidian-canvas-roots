@@ -3261,6 +3261,24 @@ export default class CanvasRootsPlugin extends Plugin {
 					}
 				}
 
+				// Image files: Use as custom map
+				const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
+				if (file instanceof TFile && imageExtensions.includes(file.extension.toLowerCase())) {
+					menu.addSeparator();
+
+					menu.addItem((item) => {
+						item
+							.setTitle('Canvas Roots: Use as custom map')
+							.setIcon('map')
+							.onClick(() => {
+								new CreateMapWizardModal(this.app, this, {
+									directory: this.settings.mapsFolder,
+									preselectedImage: file
+								}).open();
+							});
+					});
+				}
+
 				// Folders: Type-specific context menus
 				if (file instanceof TFolder) {
 					menu.addSeparator();
