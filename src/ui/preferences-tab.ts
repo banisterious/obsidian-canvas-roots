@@ -710,10 +710,10 @@ function renderFolderLocationsCard(
 		(v) => { plugin.settings.placesFolder = v; }
 	);
 
-	// Maps folder
+	// Map notes folder
 	createFolderSetting(
-		'Maps folder',
-		'Default folder for custom map images',
+		'Map notes folder',
+		'Default folder for map notes',
 		'Canvas Roots/Places/Maps',
 		() => plugin.settings.mapsFolder,
 		(v) => { plugin.settings.mapsFolder = v; }

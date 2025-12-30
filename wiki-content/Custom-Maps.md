@@ -90,7 +90,7 @@ For a simpler creation flow without the wizard:
 
 4. Click **Create**
 
-The map note is created in your configured maps folder (Control Center → Preferences → Folder locations → Maps folder).
+The map note is created in your configured map notes folder (Control Center → Preferences → Folder locations → Map notes folder).
 
 ### From JSON Import
 
@@ -99,7 +99,7 @@ If you have a map configuration exported from another vault:
 1. In the **Custom Maps** card, click **Import JSON**
 2. Select a JSON file from your computer
 3. If a map with the same ID already exists, you'll be warned
-4. The imported map note is created in your maps folder
+4. The imported map note is created in your map notes folder
 
 ---
 

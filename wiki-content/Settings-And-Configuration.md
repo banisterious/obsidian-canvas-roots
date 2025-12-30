@@ -46,7 +46,7 @@ Configure where Canvas Roots stores and looks for different note types.
 |---------|---------|-------------|
 | **People folder** | `Canvas Roots/People` | Default folder for person notes |
 | **Places folder** | `Canvas Roots/Places` | Default folder for place notes |
-| **Maps folder** | `Canvas Roots/Places/Maps` | Folder for custom map configuration notes |
+| **Map notes folder** | `Canvas Roots/Places/Maps` | Default folder for map notes |
 | **Organizations folder** | `Canvas Roots/Organizations` | Default folder for organization notes |
 | **Sources folder** | `Canvas Roots/Sources` | Default folder for source notes |
 | **Events folder** | `Canvas Roots/Events` | Default folder for event notes |
