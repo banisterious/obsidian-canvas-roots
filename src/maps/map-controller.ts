@@ -1475,13 +1475,14 @@ export class MapController {
 		const latlng = this.map.mouseEventToLatLng(event);
 
 		if (this.currentCRS === 'pixel') {
-			// For pixel maps, the latlng values represent pixel coordinates
-			// Leaflet uses lat for Y and lng for X in simple CRS
+			// For pixel maps, latlng values represent pixel coordinates
+			// In L.CRS.Simple: lat = Y, lng = X (Y=0 at bottom, increases upward)
+			// We store Y directly since markers use [pixelY, pixelX] format
 			return {
 				lat: latlng.lat,
 				lng: latlng.lng,
 				pixelX: Math.round(latlng.lng),  // X is longitude
-				pixelY: Math.round(-latlng.lat)  // Y is negative latitude (inverted for image coordinates)
+				pixelY: Math.round(latlng.lat)   // Y is latitude (no negation needed)
 			};
 		}
 
