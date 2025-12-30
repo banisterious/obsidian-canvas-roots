@@ -1341,6 +1341,33 @@ function renderInclusiveParentsCard(
 		text: 'Add a gender-neutral "Parents" field to Create/Edit Person modals for users with nonbinary parents or who prefer inclusive terminology. This setting is optional and coexists with existing father/mother fields.'
 	});
 
+	// Parent field label container (conditionally shown)
+	const labelContainer = content.createDiv();
+
+	// Function to render label setting
+	const renderLabelSetting = (show: boolean) => {
+		labelContainer.empty();
+		if (show) {
+			new Setting(labelContainer)
+				.setName('Parent field label')
+				.setDesc('Customize the UI label for the gender-neutral parent field')
+				.addText(text => text
+					.setPlaceholder('Parents')
+					.setValue(plugin.settings.parentFieldLabel)
+					.onChange(async (value) => {
+						plugin.settings.parentFieldLabel = value || 'Parents';
+						await plugin.saveSettings();
+					}));
+
+			// Examples
+			const examplesDiv = labelContainer.createDiv({ cls: 'cr-info-box' });
+			const examplesIcon = examplesDiv.createSpan({ cls: 'cr-info-box-icon' });
+			setIcon(examplesIcon, 'lightbulb');
+			examplesDiv.createEl('strong', { text: 'Label examples:' });
+			examplesDiv.appendText(' Parents (default), Guardians, Progenitors, or any custom term');
+		}
+	};
+
 	// Enable toggle
 	new Setting(content)
 		.setName('Enable gender-neutral parent field')
@@ -1350,30 +1377,12 @@ function renderInclusiveParentsCard(
 			.onChange(async (value) => {
 				plugin.settings.enableInclusiveParents = value;
 				await plugin.saveSettings();
-				// Refresh to show/hide the label setting
-				renderPreferencesTab(container.parentElement as HTMLElement, plugin, createCard, () => {}, undefined);
+				// Show/hide the label setting
+				renderLabelSetting(value);
 			}));
 
-	// Parent field label (only shown when enabled)
-	if (plugin.settings.enableInclusiveParents) {
-		new Setting(content)
-			.setName('Parent field label')
-			.setDesc('Customize the UI label for the gender-neutral parent field')
-			.addText(text => text
-				.setPlaceholder('Parents')
-				.setValue(plugin.settings.parentFieldLabel)
-				.onChange(async (value) => {
-					plugin.settings.parentFieldLabel = value || 'Parents';
-					await plugin.saveSettings();
-				}));
-
-		// Examples
-		const examplesDiv = content.createDiv({ cls: 'cr-info-box' });
-		const examplesIcon = examplesDiv.createSpan({ cls: 'cr-info-box-icon' });
-		setIcon(examplesIcon, 'lightbulb');
-		examplesDiv.createEl('strong', { text: 'Label examples:' });
-		examplesDiv.appendText(' Parents (default), Guardians, Progenitors, or any custom term');
-	}
+	// Initial render of label setting
+	renderLabelSetting(plugin.settings.enableInclusiveParents);
 
 	container.appendChild(card);
 }

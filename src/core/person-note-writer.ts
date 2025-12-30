@@ -93,6 +93,9 @@ export interface PersonData {
 	adoptiveFatherName?: string; // Adoptive father's name for wikilink display
 	adoptiveMotherCrId?: string; // Adoptive mother's cr_id
 	adoptiveMotherName?: string; // Adoptive mother's name for wikilink display
+	// Gender-neutral parent relationships
+	parentCrId?: string[];       // Gender-neutral parent(s) cr_id
+	parentName?: string[];       // Gender-neutral parent(s) name for wikilink display
 	// Place relationships (dual storage like relationships)
 	birthPlaceCrId?: string;     // Birth place cr_id for reliable resolution
 	birthPlaceName?: string;     // Birth place name for wikilink display

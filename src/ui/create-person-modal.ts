@@ -485,7 +485,7 @@ export class CreatePersonModal extends Modal {
 		this.createRelationshipField(stepAdoptSection, 'Adoptive mother', this.adoptiveMotherField);
 
 		// Gender-neutral parents (only shown if enabled in settings)
-		if (this.plugin.settings.enableInclusiveParents) {
+		if (this.plugin?.settings.enableInclusiveParents) {
 			const parentsLabel = this.plugin.settings.parentFieldLabel || 'Parents';
 			this.createParentsField(stepAdoptSection, parentsLabel);
 		}
