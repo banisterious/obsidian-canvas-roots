@@ -15,9 +15,19 @@ import type CanvasRootsPlugin from '../../main';
 import { createLucideIcon } from './lucide-icons';
 import { getLogger } from '../core/logging';
 import { generateCrId } from '../core/uuid';
-import { toWikilink, extractWikilinkPath, isWikilink } from '../utils/wikilink-resolver';
+import { toWikilink, extractWikilinkPath } from '../utils/wikilink-resolver';
+import { ModalStatePersistence, renderResumePromptBanner } from './modal-state-persistence';
 
 const logger = getLogger('CreateMapWizard');
+
+/**
+ * Form data for persistence
+ */
+interface MapWizardFormData {
+	currentStep: WizardStep;
+	mapConfig: MapConfig;
+	pendingPlaces: PendingPlace[];
+}
 
 /**
  * Wizard steps
@@ -75,6 +85,11 @@ export class CreateMapWizardModal extends Modal {
 	// UI elements
 	private imagePreviewEl?: HTMLElement;
 	private mapPreviewContainer?: HTMLElement;
+	private showNewUniverseInput = false;
+
+	// Persistence
+	private persistence: ModalStatePersistence<MapWizardFormData>;
+	private savedSuccessfully = false;
 
 	constructor(app: App, plugin: CanvasRootsPlugin, options?: {
 		directory?: string;
@@ -83,6 +98,7 @@ export class CreateMapWizardModal extends Modal {
 		super(app);
 		this.plugin = plugin;
 		this.directory = options?.directory || plugin.settings.mapsFolder || 'Maps';
+		this.persistence = new ModalStatePersistence(plugin, 'map-wizard');
 
 		// Initialize map config
 		this.mapConfig = {
@@ -107,12 +123,78 @@ export class CreateMapWizardModal extends Modal {
 
 	onOpen(): void {
 		this.modalEl.addClass('crc-map-wizard-modal');
-		this.render();
+
+		// Check for existing state
+		const existingState = this.persistence.getValidState();
+		if (existingState) {
+			this.renderResumePrompt(existingState);
+		} else {
+			this.render();
+		}
 	}
 
 	onClose(): void {
 		const { contentEl } = this;
 		contentEl.empty();
+
+		// Persist state if not saved successfully and has content
+		if (!this.savedSuccessfully) {
+			const formData: MapWizardFormData = {
+				currentStep: this.currentStep,
+				mapConfig: this.mapConfig,
+				pendingPlaces: this.pendingPlaces
+			};
+			if (this.persistence.hasContent(formData)) {
+				void this.persistence.persist(formData);
+			}
+		}
+	}
+
+	/**
+	 * Render resume prompt for existing state
+	 */
+	private renderResumePrompt(existingState: { formData: Record<string, unknown>; savedAt: number }): void {
+		const { contentEl } = this;
+		contentEl.empty();
+
+		this.renderHeader('Resume previous session?');
+
+		const timeAgo = this.persistence.getTimeAgoString({ ...existingState, modalType: 'map-wizard' });
+
+		renderResumePromptBanner(
+			contentEl,
+			timeAgo,
+			() => {
+				// Discard - clear state and start fresh
+				void this.persistence.clear();
+				this.render();
+			},
+			() => {
+				// Restore - load the saved state
+				const data = existingState.formData as unknown as MapWizardFormData;
+				if (data.currentStep) this.currentStep = data.currentStep;
+				if (data.mapConfig) this.mapConfig = { ...this.mapConfig, ...data.mapConfig };
+				if (data.pendingPlaces) this.pendingPlaces = [...data.pendingPlaces];
+				void this.persistence.clear();
+				this.render();
+			}
+		);
+
+		// Show a preview of what will be restored
+		const previewSection = contentEl.createDiv({ cls: 'crc-wizard-resume-preview' });
+		const data = existingState.formData as unknown as MapWizardFormData;
+
+		if (data.mapConfig?.name) {
+			previewSection.createDiv({ cls: 'crc-wizard-resume-preview-item', text: `Map: ${data.mapConfig.name}` });
+		}
+		if (data.mapConfig?.imagePath) {
+			const imagePath = extractWikilinkPath(data.mapConfig.imagePath);
+			const filename = imagePath.split('/').pop() || imagePath;
+			previewSection.createDiv({ cls: 'crc-wizard-resume-preview-item', text: `Image: ${filename}` });
+		}
+		if (data.pendingPlaces && data.pendingPlaces.length > 0) {
+			previewSection.createDiv({ cls: 'crc-wizard-resume-preview-item', text: `Places: ${data.pendingPlaces.length} pending` });
+		}
 	}
 
 	/**
@@ -406,17 +488,50 @@ export class CreateMapWizardModal extends Modal {
 
 		// Universe (optional)
 		const universes = this.getExistingUniverses();
-		new Setting(form)
+		const universeSetting = new Setting(form)
 			.setName('Universe')
-			.setDesc('Associate this map with a universe (optional)')
-			.addDropdown(dropdown => {
-				dropdown.addOption('', 'Select universe...');
-				universes.forEach(u => dropdown.addOption(u, u));
-				dropdown.setValue(this.mapConfig.universe)
+			.setDesc('Associate this map with a universe (optional)');
+
+		if (universes.length === 0 || this.showNewUniverseInput) {
+			// No existing universes or user chose to create new - show text input
+			universeSetting.addText(text => {
+				text.setPlaceholder('Enter universe name...')
+					.setValue(this.mapConfig.universe)
 					.onChange(value => {
 						this.mapConfig.universe = value;
 					});
 			});
+
+			// Add link to show dropdown if universes exist
+			if (universes.length > 0) {
+				const switchLink = universeSetting.controlEl.createEl('a', {
+					cls: 'crc-wizard-switch-link',
+					text: 'Choose existing'
+				});
+				switchLink.addEventListener('click', (e) => {
+					e.preventDefault();
+					this.showNewUniverseInput = false;
+					this.render();
+				});
+			}
+		} else {
+			// Show dropdown with existing universes
+			universeSetting.addDropdown(dropdown => {
+				dropdown.addOption('', 'Select universe...');
+				universes.forEach(u => dropdown.addOption(u, u));
+				dropdown.addOption('__new__', '+ Create new...');
+				dropdown.setValue(this.mapConfig.universe)
+					.onChange(value => {
+						if (value === '__new__') {
+							this.showNewUniverseInput = true;
+							this.mapConfig.universe = '';
+							this.render();
+						} else {
+							this.mapConfig.universe = value;
+						}
+					});
+			});
+		}
 
 		// Coordinate system
 		new Setting(form)
@@ -599,21 +714,40 @@ export class CreateMapWizardModal extends Modal {
 		// Load map image
 		const displayPath = extractWikilinkPath(this.mapConfig.imagePath);
 		const file = this.app.vault.getAbstractFileByPath(displayPath);
+		let imgElRef: HTMLImageElement | null = null;
+
 		if (file instanceof TFile) {
 			const imgEl = mapPreview.createEl('img', { cls: 'crc-wizard-map-image' });
 			imgEl.src = this.app.vault.getResourcePath(file);
+			imgElRef = imgEl;
 
 			// Click handler for adding places
 			imgEl.addEventListener('click', (e) => {
-				const rect = imgEl.getBoundingClientRect();
-				const x = Math.round(((e.clientX - rect.left) / rect.width) * this.mapConfig.imageWidth);
-				const y = Math.round(((e.clientY - rect.top) / rect.height) * this.mapConfig.imageHeight);
-				this.showPlaceInput(mapPreview, e.clientX - rect.left, e.clientY - rect.top, x, y);
+				const imgRect = imgEl.getBoundingClientRect();
+				const containerRect = mapPreview.getBoundingClientRect();
+
+				// Calculate click position relative to image (not container)
+				const clickXOnImage = e.clientX - imgRect.left;
+				const clickYOnImage = e.clientY - imgRect.top;
+
+				// Convert to image pixel coordinates
+				// X: left-to-right (0 = left edge)
+				const x = Math.round((clickXOnImage / imgRect.width) * this.mapConfig.imageWidth);
+				// Y: In DOM, 0 is at top. For Leaflet Simple CRS, 0 is at bottom.
+				// Flip Y so stored coordinates work with Leaflet: y = imageHeight - domY
+				const domY = Math.round((clickYOnImage / imgRect.height) * this.mapConfig.imageHeight);
+				const y = this.mapConfig.imageHeight - domY;
+
+				// For input positioning, calculate relative to container but accounting for image offset
+				const inputX = e.clientX - containerRect.left;
+				const inputY = e.clientY - containerRect.top;
+
+				this.showPlaceInput(mapPreview, inputX, inputY, x, y);
 			});
 		}
 
 		// Render existing markers
-		this.renderPlaceMarkers(mapPreview);
+		this.renderPlaceMarkers(mapPreview, imgElRef);
 
 		// Pending places list
 		if (this.pendingPlaces.length > 0) {
@@ -639,19 +773,134 @@ export class CreateMapWizardModal extends Modal {
 		});
 	}
 
-	private renderPlaceMarkers(container: HTMLElement): void {
+	private renderPlaceMarkers(container: HTMLElement, imgEl: HTMLImageElement | null): void {
+		if (!imgEl) return;
+
 		this.pendingPlaces.forEach((place, index) => {
-			const marker = container.createDiv({ cls: 'crc-wizard-place-marker' });
+			const marker = container.createDiv({ cls: 'crc-wizard-place-marker crc-wizard-place-marker--draggable' });
 			marker.textContent = String(index + 1);
 
-			// Position based on percentage of image
-			const leftPercent = (place.pixelX / this.mapConfig.imageWidth) * 100;
-			const topPercent = (place.pixelY / this.mapConfig.imageHeight) * 100;
-			marker.style.left = `${leftPercent}%`;
-			marker.style.top = `${topPercent}%`;
+			// Position marker relative to container, but calculate based on image position
+			// The image may not fill the container exactly, so we need to account for the image's position
+			const updateMarkerPosition = () => {
+				const containerRect = container.getBoundingClientRect();
+				const imgRect = imgEl.getBoundingClientRect();
 
-			marker.setAttribute('title', place.name);
+				// Calculate where on the image the place should be (as percentage of image)
+				// place.pixelX: 0 = left edge (same as DOM)
+				const xPercent = place.pixelX / this.mapConfig.imageWidth;
+				// place.pixelY is in Leaflet format (0 = bottom), convert to DOM (0 = top)
+				const domY = this.mapConfig.imageHeight - place.pixelY;
+				const yPercent = domY / this.mapConfig.imageHeight;
+
+				// Convert to position within the image
+				const xOnImage = xPercent * imgRect.width;
+				const yOnImage = yPercent * imgRect.height;
+
+				// Account for image offset within container
+				const imageOffsetLeft = imgRect.left - containerRect.left;
+				const imageOffsetTop = imgRect.top - containerRect.top;
+
+				marker.style.left = `${imageOffsetLeft + xOnImage}px`;
+				marker.style.top = `${imageOffsetTop + yOnImage}px`;
+			};
+
+			// Position after image loads
+			if (imgEl.complete) {
+				updateMarkerPosition();
+			} else {
+				imgEl.addEventListener('load', updateMarkerPosition, { once: true });
+			}
+
+			marker.setAttribute('title', `${place.name} (drag to move)`);
+
+			// Make marker draggable
+			this.makeDraggable(marker, place, imgEl);
 		});
+	}
+
+	/**
+	 * Make a marker element draggable
+	 */
+	private makeDraggable(marker: HTMLElement, place: PendingPlace, imgEl: HTMLImageElement): void {
+		let isDragging = false;
+		let offsetX = 0; // Offset from mouse to marker center
+		let offsetY = 0;
+
+		const onMouseDown = (e: MouseEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+			isDragging = true;
+
+			// Calculate offset from mouse position to marker center
+			// This ensures the marker doesn't "jump" when we start dragging
+			const markerRect = marker.getBoundingClientRect();
+			offsetX = e.clientX - (markerRect.left + markerRect.width / 2);
+			offsetY = e.clientY - (markerRect.top + markerRect.height / 2);
+
+			marker.addClass('crc-wizard-place-marker--dragging');
+			document.addEventListener('mousemove', onMouseMove);
+			document.addEventListener('mouseup', onMouseUp);
+		};
+
+		const onMouseMove = (e: MouseEvent) => {
+			if (!isDragging) return;
+
+			const imgRect = imgEl.getBoundingClientRect();
+			const containerRect = marker.parentElement?.getBoundingClientRect();
+			if (!containerRect) return;
+
+			// Calculate where the marker center should be (accounting for initial offset)
+			const targetCenterX = e.clientX - offsetX;
+			const targetCenterY = e.clientY - offsetY;
+
+			// Calculate position relative to container
+			let newLeft = targetCenterX - containerRect.left;
+			let newTop = targetCenterY - containerRect.top;
+
+			// Clamp to image bounds (accounting for image position within container)
+			const imageOffsetLeft = imgRect.left - containerRect.left;
+			const imageOffsetTop = imgRect.top - containerRect.top;
+
+			newLeft = Math.max(imageOffsetLeft, Math.min(newLeft, imageOffsetLeft + imgRect.width));
+			newTop = Math.max(imageOffsetTop, Math.min(newTop, imageOffsetTop + imgRect.height));
+
+			// Update visual position
+			marker.style.left = `${newLeft}px`;
+			marker.style.top = `${newTop}px`;
+		};
+
+		const onMouseUp = () => {
+			if (!isDragging) return;
+			isDragging = false;
+			marker.removeClass('crc-wizard-place-marker--dragging');
+			document.removeEventListener('mousemove', onMouseMove);
+			document.removeEventListener('mouseup', onMouseUp);
+
+			// Calculate final position in image pixel coordinates
+			const imgRect = imgEl.getBoundingClientRect();
+			const markerRect = marker.getBoundingClientRect();
+
+			// Get marker center position relative to image (DOM coordinates: 0 at top)
+			const markerCenterX = markerRect.left + markerRect.width / 2 - imgRect.left;
+			const markerCenterY = markerRect.top + markerRect.height / 2 - imgRect.top;
+
+			// Convert to image pixel coordinates
+			// X: direct mapping (0 = left edge)
+			const newPixelX = Math.round((markerCenterX / imgRect.width) * this.mapConfig.imageWidth);
+			// Y: DOM has 0 at top, Leaflet Simple CRS has 0 at bottom - flip it
+			const domY = Math.round((markerCenterY / imgRect.height) * this.mapConfig.imageHeight);
+			const newPixelY = this.mapConfig.imageHeight - domY;
+
+			// Update place coordinates (clamped to valid range)
+			place.pixelX = Math.max(0, Math.min(newPixelX, this.mapConfig.imageWidth));
+			place.pixelY = Math.max(0, Math.min(newPixelY, this.mapConfig.imageHeight));
+
+			// Re-render to update the list
+			this.render();
+		};
+
+		marker.addEventListener('mousedown', onMouseDown);
 	}
 
 	private showPlaceInput(container: HTMLElement, clickX: number, clickY: number, pixelX: number, pixelY: number): void {
@@ -923,6 +1172,10 @@ export class CreateMapWizardModal extends Modal {
 
 			new Notice(`Created map: ${this.mapConfig.name}`);
 
+			// Mark as saved and clear persistence
+			this.savedSuccessfully = true;
+			await this.persistence.clear();
+
 			// Show completion
 			this.currentStep = 'complete';
 			this.render();
@@ -1014,18 +1267,27 @@ export class CreateMapWizardModal extends Modal {
 	}
 
 	private async openInMapView(): Promise<void> {
-		// Try to find the Map View and switch to the new map
+		// Open Map View with the newly created map selected
+		const mapId = this.mapConfig.mapId;
+
 		const leaves = this.app.workspace.getLeavesOfType('canvas-roots-map');
 		if (leaves.length > 0) {
-			// Activate the existing Map View
-			await this.app.workspace.revealLeaf(leaves[0]);
-			// The map should automatically refresh and show the new map in the dropdown
+			// Activate the existing Map View and switch to the new map
+			const leaf = leaves[0];
+			await this.app.workspace.revealLeaf(leaf);
+			// Set state to switch to the new map
+			await leaf.setViewState({
+				type: 'canvas-roots-map',
+				active: true,
+				state: { activeMap: mapId }
+			});
 		} else {
-			// Open a new Map View
+			// Open a new Map View with the new map selected
 			const leaf = this.app.workspace.getLeaf(false);
 			await leaf.setViewState({
 				type: 'canvas-roots-map',
-				active: true
+				active: true,
+				state: { activeMap: mapId }
 			});
 		}
 	}

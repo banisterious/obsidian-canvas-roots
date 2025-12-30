@@ -813,7 +813,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
   border-bottom: 1px solid var(--background-modifier-border);
   background: var(--background-primary);
   flex-shrink: 0;
-  gap: var(--cr-spacing-md);
+  gap: var(--cr-spacing-sm);
+  flex-wrap: wrap;
+  overflow: visible;
 }
 
 .cr-map-toolbar-left,
@@ -822,17 +824,28 @@ svg.leaflet-image-layer.leaflet-interactive path {
   display: flex;
   align-items: center;
   gap: var(--cr-spacing-sm);
+  flex-wrap: wrap;
+}
+
+.cr-map-toolbar-left {
+  flex-shrink: 0;
 }
 
 .cr-map-toolbar-center {
   flex: 1;
   justify-content: center;
+  min-width: 0;
+}
+
+.cr-map-toolbar-right {
+  flex-shrink: 0;
 }
 
 /* Toolbar buttons */
 .cr-map-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--cr-spacing-xs);
   padding: var(--cr-spacing-xs) var(--cr-spacing-sm);
   background: var(--background-modifier-hover);
@@ -846,6 +859,18 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 .cr-map-btn:hover {
   background: var(--background-modifier-active-hover);
+}
+
+/* Icon-only toolbar buttons */
+.cr-map-btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.cr-map-btn-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Select dropdown */

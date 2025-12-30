@@ -1027,11 +1027,11 @@
 
 /* Person Picker and entity creation modals moved to entity-create-modals.css */
 
-STATISTICS
-  DISPLAY
-  ==========================================================================
-  */
-  .crc-stat-row {
+/* ==========================================================================
+   STATISTICS DISPLAY
+   ========================================================================== */
+
+.crc-stat-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2404,12 +2404,11 @@ STATISTICS
 
 /* Place-specific modal styles moved to place-modals.css */
 
-Template
-  Snippets
-  Modal
-  ==========================================================================
-  */
-  .crc-template-snippets-modal {
+/* ==========================================================================
+   Template Snippets Modal
+   ========================================================================== */
+
+.crc-template-snippets-modal {
   width: 700px;
   max-width: 90vw;
 }
@@ -5355,12 +5354,11 @@ Template
 
 /* Media management modal styles moved to media-modals.css */
 
-Reports
-  Hub
-  Modal
-  ==========================================================================
-  */
-  .modal:has(.crc-reports-hub-modal) {
+/* ==========================================================================
+   Reports Hub Modal
+   ========================================================================== */
+
+.modal:has(.crc-reports-hub-modal) {
   max-width: 500px;
   width: 90vw;
 }

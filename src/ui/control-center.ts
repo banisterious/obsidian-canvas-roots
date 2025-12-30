@@ -6142,6 +6142,7 @@ export class ControlCenterModal extends Modal {
 				.setButtonText('Wizard')
 				.setCta()
 				.onClick(() => {
+					this.close();
 					new CreateMapWizardModal(this.app, this.plugin, {
 						directory: this.plugin.settings.mapsFolder
 					}).open();
@@ -6149,12 +6150,12 @@ export class ControlCenterModal extends Modal {
 			.addButton(button => button
 				.setButtonText('Quick create')
 				.onClick(() => {
+					this.close();
 					new CreateMapModal(this.app, {
 						directory: this.plugin.settings.mapsFolder,
 						propertyAliases: this.plugin.settings.propertyAliases,
 						onCreated: () => {
-							// Refresh the maps grid after creation
-							void this.loadCustomMapsGrid(mapsGridContainer);
+							// Note: Control Center is closed, so we can't refresh
 						}
 					}).open();
 				}))

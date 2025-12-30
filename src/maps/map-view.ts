@@ -5,7 +5,7 @@
  * birth/death locations and migration patterns.
  */
 
-import { ItemView, WorkspaceLeaf, Menu, Notice, TFile } from 'obsidian';
+import { ItemView, WorkspaceLeaf, Menu, Notice, TFile, setIcon } from 'obsidian';
 import type CanvasRootsPlugin from '../../main';
 import { getLogger } from '../core/logging';
 import { MapController } from './map-controller';
@@ -265,10 +265,10 @@ export class MapView extends ItemView {
 
 		// Layers dropdown
 		const layersBtn = leftSection.createEl('button', {
-			cls: 'cr-map-btn',
+			cls: 'cr-map-btn cr-map-btn-icon',
 			attr: { 'aria-label': 'Layers' }
 		});
-		layersBtn.createSpan({ text: 'Layers' });
+		setIcon(layersBtn, 'layers');
 		layersBtn.addEventListener('click', (e) => this.showLayersMenu(e));
 
 		// Center section: Filters
@@ -320,54 +320,54 @@ export class MapView extends ItemView {
 
 		// Move places button (for custom maps only) - enables marker dragging
 		this.movePlacesBtn = rightSection.createEl('button', {
-			cls: 'cr-map-btn cr-map-btn-move',
-			attr: { 'aria-label': 'Move place markers' }
+			cls: 'cr-map-btn cr-map-btn-icon cr-map-btn-move',
+			attr: { 'aria-label': 'Move places' }
 		});
-		this.movePlacesBtn.createSpan({ text: 'Move places' });
+		setIcon(this.movePlacesBtn, 'move');
 		this.movePlacesBtn.addEventListener('click', () => void this.toggleMovePlacesMode());
 		// Initially disabled (enabled when custom map is selected)
 		this.movePlacesBtn.disabled = true;
 
 		// Edit mode button (for custom maps only) - enables image alignment editing
 		this.editBtn = rightSection.createEl('button', {
-			cls: 'cr-map-btn cr-map-btn-edit',
-			attr: { 'aria-label': 'Edit map alignment' }
+			cls: 'cr-map-btn cr-map-btn-icon cr-map-btn-edit',
+			attr: { 'aria-label': 'Edit alignment' }
 		});
-		this.editBtn.createSpan({ text: 'Edit' });
+		setIcon(this.editBtn, 'edit');
 		this.editBtn.addEventListener('click', () => void this.toggleEditMode());
 		// Initially disabled (enabled when custom map is selected)
 		this.editBtn.disabled = true;
 
 		// Split view button (for side-by-side comparison)
 		const splitBtn = rightSection.createEl('button', {
-			cls: 'cr-map-btn',
-			attr: { 'aria-label': 'Split view for comparison' }
+			cls: 'cr-map-btn cr-map-btn-icon',
+			attr: { 'aria-label': 'Compare' }
 		});
-		splitBtn.createSpan({ text: 'Compare' });
+		setIcon(splitBtn, 'git-compare');
 		splitBtn.addEventListener('click', (e) => this.showCompareMenu(e));
 
 		// Timeline toggle button
 		const timelineBtn = rightSection.createEl('button', {
-			cls: 'cr-map-btn',
-			attr: { 'aria-label': 'Toggle timeline' }
+			cls: 'cr-map-btn cr-map-btn-icon',
+			attr: { 'aria-label': 'Timeline' }
 		});
-		timelineBtn.createSpan({ text: 'Timeline' });
+		setIcon(timelineBtn, 'clock');
 		timelineBtn.addEventListener('click', () => this.toggleTimeSlider());
 
 		// Refresh button (force refresh reads directly from files, bypassing metadata cache)
 		const refreshBtn = rightSection.createEl('button', {
-			cls: 'cr-map-btn',
-			attr: { 'aria-label': 'Refresh data' }
+			cls: 'cr-map-btn cr-map-btn-icon',
+			attr: { 'aria-label': 'Refresh' }
 		});
-		refreshBtn.createSpan({ text: 'Refresh' });
+		setIcon(refreshBtn, 'refresh-cw');
 		refreshBtn.addEventListener('click', () => void this.refreshData(true));
 
 		// Export dropdown
 		const exportBtn = rightSection.createEl('button', {
-			cls: 'cr-map-btn',
-			attr: { 'aria-label': 'Export overlay' }
+			cls: 'cr-map-btn cr-map-btn-icon',
+			attr: { 'aria-label': 'Export' }
 		});
-		exportBtn.createSpan({ text: 'Export overlay' });
+		setIcon(exportBtn, 'download');
 		exportBtn.addEventListener('click', (e) => this.showExportMenu(e));
 	}
 
