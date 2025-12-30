@@ -49,7 +49,7 @@ export class RelationshipManager {
 
 	/**
 	 * Add a parent-child relationship
-	 * Updates child's father_id/mother_id and parent's children_id
+	 * Updates child's father/father_id or mother/mother_id and parent's children/children_id
 	 */
 	async addParentRelationship(
 		childFile: TFile,
@@ -75,11 +75,11 @@ export class RelationshipManager {
 			new Notice('Warning: selected person has sex: M but being added as mother');
 		}
 
-		// Update child's frontmatter
-		await this.updateParentField(childFile, parentCrId, parentType);
+		// Update child's frontmatter (dual storage: wikilink + ID)
+		await this.updateParentField(childFile, parentFile, parentCrId, parentName, parentType);
 
-		// Update parent's children_id array
-		await this.addToChildrenArray(parentFile, childCrId);
+		// Update parent's children array (dual storage: wikilink + ID)
+		await this.addToChildrenArray(parentFile, childFile, childCrId, childName);
 
 		// Record to history
 		if (this.historyRecorder) {
@@ -99,7 +99,7 @@ export class RelationshipManager {
 
 	/**
 	 * Add a spouse relationship
-	 * Updates both notes' spouse_id arrays (bidirectional)
+	 * Updates both notes' spouse/spouse_id arrays (bidirectional, dual storage)
 	 */
 	async addSpouseRelationship(person1File: TFile, person2File: TFile): Promise<void> {
 		const person1CrId = this.extractCrId(person1File);
@@ -112,9 +112,9 @@ export class RelationshipManager {
 			return;
 		}
 
-		// Add each person to the other's spouse_id array
-		await this.addToSpouseArray(person1File, person2CrId);
-		await this.addToSpouseArray(person2File, person1CrId);
+		// Add each person to the other's spouse arrays (dual storage: wikilink + ID)
+		await this.addToSpouseArray(person1File, person2File, person2CrId, person2Name);
+		await this.addToSpouseArray(person2File, person1File, person1CrId, person1Name);
 
 		// Record to history (record as person1 adding spouse person2)
 		if (this.historyRecorder) {
@@ -131,7 +131,7 @@ export class RelationshipManager {
 
 	/**
 	 * Add a parent-child relationship (inverse of addParent)
-	 * Updates parent's children_id and child's father_id/mother_id
+	 * Updates parent's children/children_id and child's father/father_id or mother/mother_id
 	 */
 	async addChildRelationship(
 		parentFile: TFile,
@@ -151,11 +151,11 @@ export class RelationshipManager {
 		// Determine parent type from sex
 		const parentType: 'father' | 'mother' = parentSex === 'F' ? 'mother' : 'father';
 
-		// Update child's frontmatter
-		await this.updateParentField(childFile, parentCrId, parentType);
+		// Update child's frontmatter (dual storage: wikilink + ID)
+		await this.updateParentField(childFile, parentFile, parentCrId, parentName, parentType);
 
-		// Update parent's children_id array
-		await this.addToChildrenArray(parentFile, childCrId);
+		// Update parent's children array (dual storage: wikilink + ID)
+		await this.addToChildrenArray(parentFile, childFile, childCrId, childName);
 
 		// Record to history
 		if (this.historyRecorder) {
@@ -195,54 +195,92 @@ export class RelationshipManager {
 	}
 
 	/**
-	 * Update father_id or mother_id field in child's frontmatter
+	 * Update father/mother fields in child's frontmatter (dual storage)
+	 * Writes both wikilink field (father/mother) and ID field (father_id/mother_id)
 	 * Uses processFrontMatter to safely modify without corrupting other fields
 	 */
 	private async updateParentField(
 		childFile: TFile,
+		parentFile: TFile,
 		parentCrId: string,
+		parentName: string,
 		parentType: 'father' | 'mother'
 	): Promise<void> {
-		const fieldName = parentType === 'father' ? 'father_id' : 'mother_id';
+		const idFieldName = parentType === 'father' ? 'father_id' : 'mother_id';
+		const linkFieldName = parentType; // 'father' or 'mother'
+		const wikilink = this.createSmartWikilink(parentName, parentFile);
 
 		try {
 			await this.app.fileManager.processFrontMatter(childFile, (frontmatter) => {
-				const existingValue = frontmatter[fieldName];
+				const existingValue = frontmatter[idFieldName];
 				if (existingValue && existingValue !== '' && existingValue !== parentCrId) {
-					new Notice(`Warning: ${fieldName} already set to ${existingValue}, replacing with ${parentCrId}`);
+					new Notice(`Warning: ${idFieldName} already set to ${existingValue}, replacing with ${parentCrId}`);
 				}
-				frontmatter[fieldName] = parentCrId;
+				// Dual storage: wikilink + ID
+				frontmatter[linkFieldName] = wikilink;
+				frontmatter[idFieldName] = parentCrId;
 			});
 		} catch (error) {
 			logger.error('relationship-manager', 'Failed to update parent field', {
 				file: childFile.path,
-				fieldName,
+				fieldName: idFieldName,
 				error: getErrorMessage(error)
 			});
 		}
 	}
 
 	/**
-	 * Add cr_id to parent's children_id array
+	 * Create a wikilink with proper handling of duplicate filenames
+	 * Uses [[basename|name]] format when basename differs from name
+	 */
+	private createSmartWikilink(name: string, file: TFile): string {
+		if (file.basename !== name) {
+			return `[[${file.basename}|${name}]]`;
+		}
+		return `[[${name}]]`;
+	}
+
+	/**
+	 * Add child to parent's children arrays (dual storage)
+	 * Writes both wikilink field (children) and ID field (children_id)
 	 * Uses processFrontMatter to safely modify without corrupting other fields
 	 */
-	private async addToChildrenArray(parentFile: TFile, childCrId: string): Promise<void> {
+	private async addToChildrenArray(
+		parentFile: TFile,
+		childFile: TFile,
+		childCrId: string,
+		childName: string
+	): Promise<void> {
+		const wikilink = this.createSmartWikilink(childName, childFile);
+
 		try {
 			await this.app.fileManager.processFrontMatter(parentFile, (frontmatter) => {
-				const existing = frontmatter.children_id;
-
-				if (!existing) {
-					// Field doesn't exist, create as array with single value
+				// Update children_id array
+				const existingIds = frontmatter.children_id;
+				if (!existingIds) {
 					frontmatter.children_id = [childCrId];
-				} else if (Array.isArray(existing)) {
-					// Already an array, add if not present
-					if (!existing.includes(childCrId)) {
-						existing.push(childCrId);
+				} else if (Array.isArray(existingIds)) {
+					if (!existingIds.includes(childCrId)) {
+						existingIds.push(childCrId);
 					}
 				} else {
-					// Single value, convert to array if different
-					if (existing !== childCrId) {
-						frontmatter.children_id = [existing, childCrId];
+					if (existingIds !== childCrId) {
+						frontmatter.children_id = [existingIds, childCrId];
+					}
+				}
+
+				// Update children wikilink array
+				const existingLinks = frontmatter.children;
+				if (!existingLinks) {
+					frontmatter.children = [wikilink];
+				} else if (Array.isArray(existingLinks)) {
+					// Check if this wikilink already exists (by cr_id match above, we know it's new)
+					if (!existingLinks.includes(wikilink)) {
+						existingLinks.push(wikilink);
+					}
+				} else {
+					if (existingLinks !== wikilink) {
+						frontmatter.children = [existingLinks, wikilink];
 					}
 				}
 			});
@@ -255,26 +293,45 @@ export class RelationshipManager {
 	}
 
 	/**
-	 * Add cr_id to person's spouse_id array
+	 * Add spouse to person's spouse arrays (dual storage)
+	 * Writes both wikilink field (spouse) and ID field (spouse_id)
 	 * Uses processFrontMatter to safely modify without corrupting other fields
 	 */
-	private async addToSpouseArray(personFile: TFile, spouseCrId: string): Promise<void> {
+	private async addToSpouseArray(
+		personFile: TFile,
+		spouseFile: TFile,
+		spouseCrId: string,
+		spouseName: string
+	): Promise<void> {
+		const wikilink = this.createSmartWikilink(spouseName, spouseFile);
+
 		try {
 			await this.app.fileManager.processFrontMatter(personFile, (frontmatter) => {
-				const existing = frontmatter.spouse_id;
-
-				if (!existing) {
-					// Field doesn't exist, create as array with single value
+				// Update spouse_id array
+				const existingIds = frontmatter.spouse_id;
+				if (!existingIds) {
 					frontmatter.spouse_id = [spouseCrId];
-				} else if (Array.isArray(existing)) {
-					// Already an array, add if not present
-					if (!existing.includes(spouseCrId)) {
-						existing.push(spouseCrId);
+				} else if (Array.isArray(existingIds)) {
+					if (!existingIds.includes(spouseCrId)) {
+						existingIds.push(spouseCrId);
 					}
 				} else {
-					// Single value, convert to array if different
-					if (existing !== spouseCrId) {
-						frontmatter.spouse_id = [existing, spouseCrId];
+					if (existingIds !== spouseCrId) {
+						frontmatter.spouse_id = [existingIds, spouseCrId];
+					}
+				}
+
+				// Update spouse wikilink array
+				const existingLinks = frontmatter.spouse;
+				if (!existingLinks) {
+					frontmatter.spouse = [wikilink];
+				} else if (Array.isArray(existingLinks)) {
+					if (!existingLinks.includes(wikilink)) {
+						existingLinks.push(wikilink);
+					}
+				} else {
+					if (existingLinks !== wikilink) {
+						frontmatter.spouse = [existingLinks, wikilink];
 					}
 				}
 			});
