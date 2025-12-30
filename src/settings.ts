@@ -370,6 +370,11 @@ export interface CanvasRootsSettings {
 	// Version tracking (for migration notices)
 	/** Last plugin version the user has acknowledged (for showing upgrade notices) */
 	lastSeenVersion?: string;
+	// Inclusive parent relationships (opt-in feature)
+	/** Enable gender-neutral parent relationships */
+	enableInclusiveParents: boolean;
+	/** Label for gender-neutral parent field (e.g., "Parents", "Guardians", "Progenitors") */
+	parentFieldLabel: string;
 }
 
 /**
@@ -646,7 +651,10 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	// Gramps import settings
 	preserveMediaFolderStructure: false,       // Disabled by default for backwards compatibility
 	// Dynamic content settings
-	frozenGalleryCalloutType: 'info'           // Callout type for frozen media galleries
+	frozenGalleryCalloutType: 'info',          // Callout type for frozen media galleries
+	// Inclusive parent relationships (opt-in feature)
+	enableInclusiveParents: false,             // Default: OFF - users opt-in to gender-neutral parents
+	parentFieldLabel: 'Parents'                // Default label for gender-neutral parent field
 };
 
 export class CanvasRootsSettingTab extends PluginSettingTab {

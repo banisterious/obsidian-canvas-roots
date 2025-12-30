@@ -2,10 +2,10 @@
 
 Planning document for adding gender-neutral parent relationship support.
 
-- **Status:** Planning
-- **GitHub Issue:** #TBD
+- **Status:** Completed
+- **GitHub Issue:** #63
 - **Created:** 2025-12-27
-- **Updated:** 2025-12-27
+- **Updated:** 2025-12-29
 
 ---
 
@@ -240,38 +240,38 @@ When a person is added to the `parents` array, automatically add them to each pa
 ## Implementation Checklist
 
 ### Phase 1: Settings and Schema
-- [ ] Add `enableInclusiveParents` toggle to Control Center > Preferences
-- [ ] Add `parentFieldLabel` text setting (conditional visibility when toggle is on)
-- [ ] Add `parents` and `parents_id` to PersonFrontmatter type definition
-- [ ] Update Frontmatter Reference documentation
+- [x] Add `enableInclusiveParents` toggle to Control Center > Preferences
+- [x] Add `parentFieldLabel` text setting (conditional visibility when toggle is on)
+- [x] Add `parents` and `parents_id` to PersonFrontmatter type definition
+- [x] Update Frontmatter Reference documentation
 
 ### Phase 2: Create/Edit Modal
-- [ ] Add parents field to CreatePersonModal (multi-select, like children field)
-- [ ] Implement "Add parent" button with person picker
-- [ ] Support inline creation of new parents (via person picker)
-- [ ] Handle saving/loading of `parents` and `parents_id` arrays
-- [ ] Only show parents field when `enableInclusiveParents` is enabled
-- [ ] Use `parentFieldLabel` setting for field label (default: "Parents")
+- [x] Add parents field to CreatePersonModal (multi-select, like children field)
+- [x] Implement "Add parent" button with person picker
+- [x] Support inline creation of new parents (via person picker)
+- [x] Handle saving/loading of `parents` and `parents_id` arrays
+- [x] Only show parents field when `enableInclusiveParents` is enabled
+- [x] Use `parentFieldLabel` setting for field label (default: "Parents")
 
 ### Phase 3: Family Graph Integration
-- [ ] Update FamilyGraphService to read `parents`/`parents_id` relationships
-- [ ] Include parents in ancestor/descendant calculations
-- [ ] Display parents in relationship views (canvas-roots-relationships block)
-- [ ] Treat parents same as father/mother for graph traversal
+- [x] Update FamilyGraphService to read `parents`/`parents_id` relationships
+- [x] Include parents in ancestor/descendant calculations
+- [x] Display parents in relationship views (canvas-roots-relationships block)
+- [x] Treat parents same as father/mother for graph traversal
 
 ### Phase 4: Bidirectional Linking
-- [ ] Update BidirectionalLinker to handle `parents` → `children` linking
-- [ ] When parent is added to `parents` array, add child to parent's `children` array
-- [ ] Implement deduplication (don't add if already exists)
-- [ ] Handle removal (when parent removed from `parents`, remove child from their `children`)
-- [ ] Test mixed usage (both `parents` and `father`/`mother` on same person)
+- [x] Update BidirectionalLinker to handle `parents` → `children` linking
+- [x] When parent is added to `parents` array, add child to parent's `children` array
+- [x] Implement deduplication (don't add if already exists)
+- [x] Handle removal (when parent removed from `parents`, remove child from their `children`)
+- [x] Test mixed usage (both `parents` and `father`/`mother` on same person)
 
 ### Documentation and Testing
-- [ ] Update Data Entry documentation
-- [ ] Add CHANGELOG entry
-- [ ] Test with various family configurations
-- [ ] Test bidirectional linking edge cases
-- [ ] Test with property aliases enabled
+- [x] Update Data Entry documentation
+- [x] Add CHANGELOG entry
+- [x] Test with various family configurations
+- [x] Test bidirectional linking edge cases
+- [x] Test with property aliases enabled
 
 ---
 

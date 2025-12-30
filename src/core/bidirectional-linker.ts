@@ -16,6 +16,7 @@ interface RelationshipSnapshot {
 	adoptive_mother?: string;
 	stepfather?: string | string[];
 	stepmother?: string | string[];
+	parents?: string | string[];
 	spouse?: string | string[];
 	children?: string | string[];
 	child?: string | string[];  // Actual property name in frontmatter
@@ -228,6 +229,22 @@ export class BidirectionalLinker {
 				}
 			}
 
+			// Sync gender-neutral parent relationship(s)
+			const parentsLinks = frontmatter.parents;
+			const parentsArray = parentsLinks
+				? Array.isArray(parentsLinks) ? parentsLinks : [parentsLinks]
+				: [];
+			for (const parentLink of parentsArray) {
+				if (parentLink) {
+					await this.syncParentChild(
+						parentLink,
+						personFile,
+						personName,
+						'parents'
+					);
+				}
+			}
+
 			// Sync spouse relationship(s)
 			// Handle both simple spouse/spouse_id and indexed spouse1/spouse1_id format
 			const spousesToSync: Array<{link: unknown, index?: number}> = [];
@@ -339,6 +356,16 @@ export class BidirectionalLinker {
 			}
 		}
 
+		// Check for deleted gender-neutral parent relationships
+		const previousParents = this.extractSpouseLinks(previousSnapshot.parents);
+		const currentParents = this.extractSpouseLinks(currentFrontmatter.parents);
+
+		for (const previousParent of previousParents) {
+			if (!currentParents.includes(previousParent)) {
+				await this.removeChildFromParent(previousParent, personFile, personName, personCrId);
+			}
+		}
+
 		// Check for deleted spouse relationships (simple format)
 		const previousSpouses = this.extractSpouseLinks(previousSnapshot.spouse);
 		const currentSpouses = this.extractSpouseLinks(currentFrontmatter.spouse);
@@ -430,6 +457,7 @@ export class BidirectionalLinker {
 			adoptive_mother: frontmatter.adoptive_mother,
 			stepfather: frontmatter.stepfather,
 			stepmother: frontmatter.stepmother,
+			parents: frontmatter.parents,
 			spouse: frontmatter.spouse,
 			children: frontmatter.children,
 			child: childSnapshot  // Capture child array for deletion detection
@@ -460,7 +488,7 @@ export class BidirectionalLinker {
 		parentLink: unknown,
 		childFile: TFile,
 		childName: string,
-		relationshipType: 'father' | 'mother'
+		relationshipType: 'father' | 'mother' | 'parents'
 	): Promise<void> {
 		const parentFile = this.resolveLink(parentLink, childFile);
 		if (!parentFile) {

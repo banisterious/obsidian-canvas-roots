@@ -44,6 +44,9 @@ export interface PersonNode {
 	adoptiveFatherCrId?: string;
 	adoptiveMotherCrId?: string;
 
+	// Gender-neutral parent relationships (opt-in via settings)
+	parentCrIds: string[];
+
 	// Spouse and child relationships
 	spouseCrIds: string[];
 	childrenCrIds: string[];
@@ -450,6 +453,7 @@ export class FamilyGraphService {
 
 				if (currentPerson.fatherCrId) related.push(currentPerson.fatherCrId);
 				if (currentPerson.motherCrId) related.push(currentPerson.motherCrId);
+				if (currentPerson.parentCrIds) related.push(...currentPerson.parentCrIds);
 				if (currentPerson.spouseCrIds) related.push(...currentPerson.spouseCrIds);
 				if (currentPerson.childrenCrIds) related.push(...currentPerson.childrenCrIds);
 
@@ -703,6 +707,15 @@ export class FamilyGraphService {
 			}
 		}
 
+		// Add gender-neutral parents
+		for (const parentCrId of node.parentCrIds) {
+			const parent = this.personCache.get(parentCrId);
+			if (parent && this.shouldIncludePerson(parent, options)) {
+				edges.push({ from: parent.crId, to: node.crId, type: 'parent' });
+				this.buildAncestorTree(parent, nodes, edges, options, currentGeneration + 1);
+			}
+		}
+
 		// Add step-parents if enabled (with distinct edge type)
 		if (options.includeStepParents) {
 			// Step-fathers
@@ -784,6 +797,21 @@ export class FamilyGraphService {
 					(e.from === mother.crId && e.to === father.crId && e.type === 'spouse')
 				)) {
 					edges.push({ from: father.crId, to: mother.crId, type: 'spouse' });
+				}
+			}
+		}
+
+		// Add spouse edges between gender-neutral parents (if exactly 2 parents)
+		if (node.parentCrIds.length === 2 && options.includeSpouses) {
+			const parent1 = this.personCache.get(node.parentCrIds[0]);
+			const parent2 = this.personCache.get(node.parentCrIds[1]);
+			if (parent1 && parent2) {
+				// Add bidirectional spouse edge (only once)
+				if (!edges.some(e =>
+					(e.from === parent1.crId && e.to === parent2.crId && e.type === 'spouse') ||
+					(e.from === parent2.crId && e.to === parent1.crId && e.type === 'spouse')
+				)) {
+					edges.push({ from: parent1.crId, to: parent2.crId, type: 'spouse' });
 				}
 			}
 		}
@@ -890,6 +918,15 @@ export class FamilyGraphService {
 				}
 			}
 
+			// Gender-neutral parents
+			for (const parentCrId of currentPerson.parentCrIds) {
+				const parent = this.personCache.get(parentCrId);
+				if (parent) {
+					edges.push({ from: parent.crId, to: currentCrId, type: 'parent' });
+					toProcess.push(parent.crId);
+				}
+			}
+
 			// Step-parents (with distinct edge type, default enabled for full trees)
 			if (includeStepParents) {
 				// Step-fathers
@@ -990,6 +1027,20 @@ export class FamilyGraphService {
 						(e.from === mother.crId && e.to === father.crId && e.type === 'spouse')
 					)) {
 						edges.push({ from: father.crId, to: mother.crId, type: 'spouse' });
+					}
+				}
+			}
+
+			// Spouse edges between gender-neutral parents (if exactly 2 parents, avoid duplicates)
+			if (currentPerson.parentCrIds.length === 2 && options.includeSpouses) {
+				const parent1 = this.personCache.get(currentPerson.parentCrIds[0]);
+				const parent2 = this.personCache.get(currentPerson.parentCrIds[1]);
+				if (parent1 && parent2) {
+					if (!edges.some(e =>
+						(e.from === parent1.crId && e.to === parent2.crId && e.type === 'spouse') ||
+						(e.from === parent2.crId && e.to === parent1.crId && e.type === 'spouse')
+					)) {
+						edges.push({ from: parent1.crId, to: parent2.crId, type: 'spouse' });
 					}
 				}
 			}
@@ -1229,28 +1280,10 @@ export class FamilyGraphService {
 		const motherValue = this.resolveProperty<string>(fm, 'mother');
 		let motherCrId = motherIdValue || this.extractCrIdFromWikilink(motherValue);
 
-		// Alternative: Parse parents array (for users who prefer a single array of both parents)
-		// This is checked after father/mother to allow those to take precedence
-		if (!fatherCrId && !motherCrId) {
-			const parentsIdValue = this.resolveProperty<string | string[]>(fm, 'parents_id');
-			const parentsValue = this.resolveProperty<string | string[]>(fm, 'parents');
-
-			const parentsIds = parentsIdValue
-				? (Array.isArray(parentsIdValue) ? parentsIdValue : [parentsIdValue])
-				: parentsValue
-					? (Array.isArray(parentsValue) ? parentsValue : [parentsValue])
-						.map(v => this.extractCrIdFromWikilink(v) || v)
-						.filter((v): v is string => !!v)
-					: [];
-
-			// Assign first two parents as father/mother (order-based)
-			if (parentsIds.length > 0) {
-				fatherCrId = parentsIds[0] || null;
-			}
-			if (parentsIds.length > 1) {
-				motherCrId = parentsIds[1] || null;
-			}
-		}
+		// Parse gender-neutral parent relationships (opt-in via settings)
+		const parentsIdValue = this.resolveProperty<string | string[]>(fm, 'parents_id');
+		const parentsValue = this.resolveProperty<string | string[]>(fm, 'parents');
+		const parentCrIds = this.extractCrIdsFromField(parentsIdValue, parentsValue);
 
 		// Parse step-parent relationships (can be arrays for multiple step-parents)
 		const stepfatherIdValue = this.resolveProperty<string | string[]>(fm, 'stepfather_id');
@@ -1391,6 +1424,8 @@ export class FamilyGraphService {
 			// Adoptive parents
 			adoptiveFatherCrId: adoptiveFatherCrId || undefined,
 			adoptiveMotherCrId: adoptiveMotherCrId || undefined,
+			// Gender-neutral parents
+			parentCrIds,
 			// Spouses and children
 			spouseCrIds: [...new Set(spouseCrIds)], // Deduplicate to avoid family-chart issues
 			spouses, // Enhanced spouse relationships with metadata (if present)
@@ -1602,6 +1637,11 @@ export class FamilyGraphService {
 			if (person.motherCrId && !visited.has(person.motherCrId)) {
 				queue.push(person.motherCrId);
 			}
+			for (const parentCrId of person.parentCrIds) {
+				if (!visited.has(parentCrId)) {
+					queue.push(parentCrId);
+				}
+			}
 		}
 
 		return ancestors;
@@ -1670,12 +1710,12 @@ export class FamilyGraphService {
 		const peopleWithSex = allPeople.filter(p => p.sex).length;
 
 		// Calculate relationship metrics
-		const peopleWithParents = allPeople.filter(p => p.fatherCrId || p.motherCrId).length;
+		const peopleWithParents = allPeople.filter(p => p.fatherCrId || p.motherCrId || p.parentCrIds.length > 0).length;
 		const peopleWithSpouses = allPeople.filter(p => p.spouseCrIds.length > 0).length;
 		const peopleWithChildren = allPeople.filter(p => p.childrenCrIds.length > 0).length;
 		// Orphaned = no parents AND no spouse AND no children
 		const orphanedPeople = allPeople.filter(p =>
-			!p.fatherCrId && !p.motherCrId &&
+			!p.fatherCrId && !p.motherCrId && p.parentCrIds.length === 0 &&
 			p.spouseCrIds.length === 0 &&
 			p.childrenCrIds.length === 0
 		).length;

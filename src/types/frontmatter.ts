@@ -58,6 +58,9 @@ export interface PersonFrontmatter {
 	adoptive_father_id?: string;
 	adoptive_mother?: string;
 	adoptive_mother_id?: string;
+	// Gender-neutral parents (opt-in via settings)
+	parents?: string | string[];
+	parents_id?: string | string[];
 	// Spouses and children
 	spouse?: string | string[];
 	spouse_id?: string;

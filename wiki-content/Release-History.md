@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.18.x](#v018x)
+  - [Inclusive Parent Relationships](#inclusive-parent-relationships-v0187)
   - [Media Upload and Management Enhancement](#media-upload-and-management-enhancement-v0186)
   - [Timeline Export Consolidation](#timeline-export-consolidation-v0182)
   - [Create Person Enhancements](#create-person-enhancements-v0181)
@@ -75,6 +76,131 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.18.x
+
+### Inclusive Parent Relationships (v0.18.7)
+
+Opt-in gender-neutral parent relationship support allowing users to represent diverse family structures while preserving traditional father/mother fields.
+
+**Problem Solved:**
+
+Users with nonbinary parents or those who prefer gender-neutral terminology had no way to represent these relationships. The plugin only supported gendered parent fields (father/mother), which doesn't accommodate all family structures.
+
+**User Request:** "What if one or both parents are nonbinary? Could you add a 'Parent' option to father/mother?" ([GitHub Issue #63](https://github.com/banisterious/obsidian-canvas-roots/issues/63))
+
+**Solution:**
+
+A complete opt-in gender-neutral parent system that coexists with traditional relationships:
+
+**1. Settings (Control Center > Preferences)**
+- **Enable Inclusive Parents** toggle (default: OFF)
+- **Parent Field Label** text setting for customization (default: "Parents")
+  - Examples: "Parents", "Guardians", "Progenitors", "Lolos"
+  - Label shown in UI only; frontmatter always uses `parents` property
+- Conditional visibility: label setting only shown when toggle enabled
+
+**2. Schema Changes**
+- New `parents` property (wikilinks, can be array for multiple parents)
+- New `parents_id` property (Canvas Roots IDs, dual storage pattern)
+- Independent of `father`/`mother` — users can use either or both
+- Supports mixed usage for blended families or migration scenarios
+
+**3. Create/Edit Person Modal**
+- Parents field appears when setting enabled (above father/mother)
+- Multi-select person picker (same pattern as children field)
+- Inline parent creation via person picker
+- No gender pre-fill (unlike father/mother)
+- Uses custom label from settings
+
+**4. Family Graph Integration**
+- FamilyGraphService reads `parents`/`parents_id` relationships
+- Included in ancestor/descendant calculations
+- Same treatment as father/mother for graph traversal
+- Spouse edges between 2 parents (same pattern as father/mother)
+- Priority order for fallback: biological → gender-neutral → adoptive
+
+**5. Bidirectional Linking**
+- When person added to `parents` array, automatically adds to each parent's `children` array
+- Uses dual storage: both wikilinks (`parents`) and IDs (`parents_id`)
+- Deduplication prevents duplicate entries
+- Handles removal: when parent removed, child removed from their `children`
+- Supports aliased wikilinks (`[[basename|name]]`) when filename differs from name
+
+**6. Relationship Displays**
+- **Relationships Block** (`canvas-roots-relationships`): Shows parents with "Parent" label
+- **Family Chart View**: Displays gender-neutral parents in interactive tree
+- **Sibling Detection**: Checks gender-neutral parents' children for siblings
+
+**Design Principles:**
+
+1. **Opt-in, not replacement** — Father/mother fields remain; this adds alongside
+2. **Configurable** — Users customize terminology to their preference
+3. **Non-disruptive** — Users with traditional setups see no UI changes
+4. **Coexistent** — Can use father, mother, AND parents simultaneously
+
+**Schema Example:**
+
+```yaml
+# Child's note
+name: Jamie Smith
+parents:
+  - "[[Alex Smith]]"
+  - "[[Jordan Smith]]"
+parents_id:
+  - "I0045"
+  - "I0046"
+```
+
+```yaml
+# Parent's note (automatically updated via bidirectional linking)
+name: Alex Smith
+children:
+  - "[[Jamie Smith]]"
+children_id:
+  - "I0050"
+```
+
+**Implementation:**
+
+**Files Modified:**
+- [src/settings.ts](../../src/settings.ts) — Settings schema and UI
+- [src/types/frontmatter.ts](../../src/types/frontmatter.ts#L62-L63) — Schema definition
+- [src/core/family-graph.ts](../../src/core/family-graph.ts#L48) — Family graph integration
+- [src/core/bidirectional-linker.ts](../../src/core/bidirectional-linker.ts#L227-L241) — Bidirectional sync
+- [src/core/person-note-writer.ts](../../src/core/person-note-writer.ts#L393-L412) — Frontmatter writing
+- [src/dynamic-content/renderers/relationships-renderer.ts](../../src/dynamic-content/renderers/relationships-renderer.ts#L150-L156) — Relationships display
+- [src/ui/views/family-chart-view.ts](../../src/ui/views/family-chart-view.ts#L1090-L1097) — Family Chart View
+
+**User Benefits:**
+- Represents nonbinary parents respectfully
+- Supports diverse family structures (queer families, cultural variations)
+- Fully customizable terminology
+- Backward compatible — no disruption to existing workflows
+- Full integration across all family graph features
+
+**Technical Details:**
+
+**Dual Storage Pattern:**
+```yaml
+# Both wikilinks and IDs stored for flexibility
+parents: ["[[Alex Smith]]"]  # For display and linking
+parents_id: ["I0045"]         # For reliable graph traversal
+```
+
+**Priority Order (Fallback Logic):**
+1. Check biological parents (father/mother)
+2. If none, check gender-neutral parents
+3. If none, check adoptive parents
+
+**Bidirectional Sync:**
+- Uses same `children` array as father/mother relationships
+- Each parent in `parents` array gets child added to their `children`
+- Deduplication by both cr_id and wikilink
+- Deletion detection for relationship cleanup
+
+**Planning Documentation:**
+- See [planning document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/inclusive-parent-relationships.md) for detailed specifications and design decisions
+
+---
 
 ### Media Upload and Management Enhancement (v0.18.6)
 

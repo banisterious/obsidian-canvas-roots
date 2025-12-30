@@ -11,6 +11,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.18.7] - 2025-12-29
+
+### Added
+
+- **Inclusive Parent Relationships** - Opt-in gender-neutral parent support for diverse family structures ([#63](https://github.com/banisterious/obsidian-canvas-roots/issues/63)):
+
+  **Settings (Control Center > Preferences)**
+  - Enable Inclusive Parents toggle (default: OFF) - opt-in feature
+  - Parent Field Label text setting for customization (default: "Parents")
+    - Examples: "Parents", "Guardians", "Progenitors", "Lolos"
+    - Label shown in UI only; frontmatter always uses `parents` property
+  - Conditional visibility: label setting only shown when toggle enabled
+
+  **Schema Changes**
+  - New `parents` property (wikilinks, can be array for multiple parents)
+  - New `parents_id` property (Canvas Roots IDs, dual storage pattern)
+  - Independent of `father`/`mother` - users can use either or both
+  - Supports mixed usage for blended families or migration scenarios
+
+  **Create/Edit Person Modal**
+  - Parents field appears when setting enabled (above father/mother)
+  - Multi-select person picker (same pattern as children field)
+  - Inline parent creation via person picker
+  - No gender pre-fill (unlike father/mother)
+  - Uses custom label from settings
+
+  **Family Graph Integration**
+  - FamilyGraphService reads `parents`/`parents_id` relationships
+  - Included in ancestor/descendant calculations
+  - Same treatment as father/mother for graph traversal
+  - Spouse edges between 2 parents (same pattern as father/mother)
+  - Priority order for fallback: biological → gender-neutral → adoptive
+
+  **Bidirectional Linking**
+  - When person added to `parents` array, automatically adds to each parent's `children` array
+  - Uses dual storage: both wikilinks (`parents`) and IDs (`parents_id`)
+  - Deduplication prevents duplicate entries
+  - Handles removal: when parent removed, child removed from their `children`
+  - Supports aliased wikilinks (`[[basename|name]]`) when filename differs from name
+
+  **Relationship Displays**
+  - Relationships Block (`canvas-roots-relationships`): Shows parents with "Parent" label
+  - Family Chart View: Displays gender-neutral parents in interactive tree
+  - Sibling Detection: Checks gender-neutral parents' children for siblings
+
+  **Design Principles**
+  - Opt-in, not replacement - father/mother fields remain; this adds alongside
+  - Configurable - users customize terminology to their preference
+  - Non-disruptive - users with traditional setups see no UI changes
+  - Coexistent - can use father, mother, AND parents simultaneously
+
+---
+
 ## [0.18.6] - 2025-12-29
 
 ### Added

@@ -147,6 +147,13 @@ export class RelationshipsRenderer {
 					groups.parents.push(this.personToEntry(mother, 'Mother'));
 				}
 			}
+			// Gender-neutral parents
+			for (const parentCrId of person.parentCrIds) {
+				const parent = familyGraph.getPersonByCrId(parentCrId);
+				if (parent) {
+					groups.parents.push(this.personToEntry(parent, 'Parent'));
+				}
+			}
 		}
 
 		// Spouses
@@ -230,6 +237,18 @@ export class RelationshipsRenderer {
 			const mother = familyGraph.getPersonByCrId(person.motherCrId);
 			if (mother) {
 				for (const childCrId of mother.childrenCrIds) {
+					if (childCrId !== person.crId) {
+						siblings.add(childCrId);
+					}
+				}
+			}
+		}
+
+		// Get all children of gender-neutral parents
+		for (const parentCrId of person.parentCrIds) {
+			const parent = familyGraph.getPersonByCrId(parentCrId);
+			if (parent) {
+				for (const childCrId of parent.childrenCrIds) {
 					if (childCrId !== person.crId) {
 						siblings.add(childCrId);
 					}

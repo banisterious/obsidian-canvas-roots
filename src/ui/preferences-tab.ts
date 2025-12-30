@@ -128,6 +128,9 @@ export function renderPreferencesTab(
 	// Sex Normalization card
 	renderSexNormalizationCard(container, plugin, createCard);
 
+	// Inclusive Parent Relationships card
+	renderInclusiveParentsCard(container, plugin, createCard);
+
 	// Integrations card (only shows if Calendarium or other integrations are available)
 	createIntegrationsCard(container, plugin, createCard);
 }
@@ -1313,6 +1316,73 @@ function renderSexNormalizationCard(
 				plugin.settings.sexNormalizationMode = value as SexNormalizationMode;
 				await plugin.saveSettings();
 			}));
+
+	container.appendChild(card);
+}
+
+/**
+ * Render the inclusive parent relationships card
+ */
+function renderInclusiveParentsCard(
+	container: HTMLElement,
+	plugin: CanvasRootsPlugin,
+	createCard: (options: { title: string; icon?: LucideIconName; subtitle?: string }) => HTMLElement
+): void {
+	const card = createCard({
+		title: 'Inclusive parent relationships',
+		icon: 'users',
+		subtitle: 'Opt-in support for gender-neutral parent terminology'
+	});
+	const content = card.querySelector('.crc-card__content') as HTMLElement;
+
+	// Info text
+	content.createEl('p', {
+		cls: 'crc-text-muted',
+		text: 'Add a gender-neutral "Parents" property to Create/Edit Person modals for users with nonbinary parents or who prefer inclusive terminology. This setting is optional and coexists with existing father/mother properties.'
+	});
+
+	// Parent field label container (conditionally shown)
+	const labelContainer = content.createDiv();
+
+	// Function to render label setting
+	const renderLabelSetting = (show: boolean) => {
+		labelContainer.empty();
+		if (show) {
+			new Setting(labelContainer)
+				.setName('Parent property label')
+				.setDesc('Customize the UI label for the gender-neutral parent property')
+				.addText(text => text
+					.setPlaceholder('Parents')
+					.setValue(plugin.settings.parentFieldLabel)
+					.onChange(async (value) => {
+						plugin.settings.parentFieldLabel = value || 'Parents';
+						await plugin.saveSettings();
+					}));
+
+			// Examples
+			const examplesDiv = labelContainer.createDiv({ cls: 'cr-info-box' });
+			const examplesIcon = examplesDiv.createSpan({ cls: 'cr-info-box-icon' });
+			setIcon(examplesIcon, 'lightbulb');
+			examplesDiv.createEl('strong', { text: 'Label examples:' });
+			examplesDiv.appendText(' Parents (default), Guardians, Progenitors, or any custom term');
+		}
+	};
+
+	// Enable toggle
+	new Setting(content)
+		.setName('Enable gender-neutral parent property')
+		.setDesc('Show a "Parents" property in person modals (uses parents/parents_id properties)')
+		.addToggle(toggle => toggle
+			.setValue(plugin.settings.enableInclusiveParents)
+			.onChange(async (value) => {
+				plugin.settings.enableInclusiveParents = value;
+				await plugin.saveSettings();
+				// Show/hide the label setting
+				renderLabelSetting(value);
+			}));
+
+	// Initial render of label setting
+	renderLabelSetting(plugin.settings.enableInclusiveParents);
 
 	container.appendChild(card);
 }

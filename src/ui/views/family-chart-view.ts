@@ -1087,7 +1087,16 @@ export class FamilyChartView extends ItemView {
 			parents.push(person.motherCrId);
 		}
 
-		// If no biological parents, use adoptive parents instead
+		// If no biological parents, try gender-neutral parents
+		if (parents.length === 0 && person.parentCrIds) {
+			for (const parentId of person.parentCrIds) {
+				if (validIds.has(parentId)) {
+					parents.push(parentId);
+				}
+			}
+		}
+
+		// If no biological or gender-neutral parents, use adoptive parents as fallback
 		// This ensures adopted children appear connected to their adoptive family
 		if (parents.length === 0) {
 			if (person.adoptiveFatherCrId && validIds.has(person.adoptiveFatherCrId)) {
@@ -1105,7 +1114,7 @@ export class FamilyChartView extends ItemView {
 		// family-chart requires strict bidirectional relationships: if parent lists child,
 		// the child MUST list the parent back, otherwise family-chart throws
 		// "child has more than 1 parent" error during tree construction
-		// Include biological and adoptive children (matching the parent logic above)
+		// Include biological, gender-neutral, and adoptive children (matching the parent logic above)
 		const children = (person.childrenCrIds || []).filter(childId => {
 			if (!validIds.has(childId)) return false;
 			// Use the pre-built map for O(1) lookup instead of service call
@@ -1115,9 +1124,15 @@ export class FamilyChartView extends ItemView {
 			if (childPerson.fatherCrId === person.crId || childPerson.motherCrId === person.crId) {
 				return true;
 			}
-			// Check adoptive parent relationship (only if child has no biological parents)
-			// This matches the parent logic: adoptive parents only used when no biological parents
+			// Check gender-neutral parent relationship (if child has no biological parents)
 			if (!childPerson.fatherCrId && !childPerson.motherCrId) {
+				if (childPerson.parentCrIds && childPerson.parentCrIds.includes(person.crId)) {
+					return true;
+				}
+			}
+			// Check adoptive parent relationship (only if child has no biological or gender-neutral parents)
+			// This matches the parent logic: adoptive parents only used when no biological/gender-neutral parents
+			if (!childPerson.fatherCrId && !childPerson.motherCrId && (!childPerson.parentCrIds || childPerson.parentCrIds.length === 0)) {
 				if (childPerson.adoptiveFatherCrId === person.crId || childPerson.adoptiveMotherCrId === person.crId) {
 					return true;
 				}

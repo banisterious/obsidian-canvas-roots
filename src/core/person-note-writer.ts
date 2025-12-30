@@ -93,6 +93,9 @@ export interface PersonData {
 	adoptiveFatherName?: string; // Adoptive father's name for wikilink display
 	adoptiveMotherCrId?: string; // Adoptive mother's cr_id
 	adoptiveMotherName?: string; // Adoptive mother's name for wikilink display
+	// Gender-neutral parent relationships
+	parentCrId?: string[];       // Gender-neutral parent(s) cr_id
+	parentName?: string[];       // Gender-neutral parent(s) name for wikilink display
 	// Place relationships (dual storage like relationships)
 	birthPlaceCrId?: string;     // Birth place cr_id for reliable resolution
 	birthPlaceName?: string;     // Birth place name for wikilink display
@@ -384,6 +387,27 @@ export async function createPersonNote(
 		} else {
 			frontmatter[prop('adoptive_mother_id')] = person.adoptiveMotherCrId;
 			logger.debug('adoptive_mother', `Added (id only): ${person.adoptiveMotherCrId}`);
+		}
+	}
+
+	// Gender-neutral parent relationship(s) (dual storage)
+	if (person.parentCrId && person.parentCrId.length > 0) {
+		if (person.parentName && person.parentName.length === person.parentCrId.length) {
+			if (person.parentName.length === 1) {
+				frontmatter[prop('parents')] = `"${createSmartWikilink(person.parentName[0], app)}"`;
+				frontmatter[prop('parents_id')] = person.parentCrId[0];
+			} else {
+				frontmatter[prop('parents')] = person.parentName.map(p => `"${createSmartWikilink(p, app)}"`);
+				frontmatter[prop('parents_id')] = person.parentCrId;
+			}
+			logger.debug('parents', `Added (dual): wikilinks=${JSON.stringify(person.parentName)}, ids=${JSON.stringify(person.parentCrId)}`);
+		} else {
+			if (person.parentCrId.length === 1) {
+				frontmatter[prop('parents_id')] = person.parentCrId[0];
+			} else {
+				frontmatter[prop('parents_id')] = person.parentCrId;
+			}
+			logger.debug('parents', `Added (id only): ${JSON.stringify(person.parentCrId)}`);
 		}
 	}
 
