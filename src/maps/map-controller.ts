@@ -126,6 +126,8 @@ export class MapController {
 	private activeMapId: string = 'openstreetmap';
 	private currentCRS: 'geographic' | 'pixel' = 'geographic';
 	private editModeEnabled: boolean = false;
+	// Whether image alignment editing is active (vs just marker dragging)
+	private imageAlignmentModeEnabled: boolean = false;
 
 	// Current data
 	private currentData: MapData | null = null;
@@ -1569,16 +1571,53 @@ export class MapController {
 	}
 
 	/**
-	 * Enable edit mode - replace image overlay with distortable overlay
+	 * Enable marker-only edit mode (markers draggable, but no image alignment)
+	 * This keeps the normal map view while allowing marker repositioning
 	 */
-	async enableEditMode(): Promise<boolean> {
+	enableMarkerEditMode(): boolean {
+		if (!this.map || this.activeMapId === 'openstreetmap') {
+			logger.warn('marker-edit-mode', 'Cannot enable marker edit mode: no custom map active');
+			return false;
+		}
+
+		if (this.editModeEnabled) {
+			logger.debug('marker-edit-mode', 'Edit mode already enabled');
+			return true;
+		}
+
+		this.editModeEnabled = true;
+		this.imageAlignmentModeEnabled = false;
+
+		// Update place marker draggability
+		this.updatePlaceMarkerDraggability();
+
+		// Notify listeners
+		if (this.onEditModeChangeCallback) {
+			this.onEditModeChangeCallback(true);
+		}
+
+		logger.info('marker-edit-mode', 'Marker edit mode enabled');
+		return true;
+	}
+
+	/**
+	 * Check if image alignment mode is currently active
+	 */
+	isImageAlignmentModeEnabled(): boolean {
+		return this.imageAlignmentModeEnabled;
+	}
+
+	/**
+	 * Enable full edit mode - replace image overlay with distortable overlay for alignment
+	 */
+	async enableImageAlignmentMode(): Promise<boolean> {
 		if (!this.map || this.activeMapId === 'openstreetmap') {
 			logger.warn('edit-mode', 'Cannot enable edit mode: no custom map active');
 			return false;
 		}
 
-		if (this.editModeEnabled) {
-			logger.debug('edit-mode', 'Edit mode already enabled');
+		if (this.imageAlignmentModeEnabled) {
+			logger.debug('edit-mode', 'Image alignment mode already enabled');
 			return true;
 		}
 
@@ -1704,6 +1743,7 @@ export class MapController {
 			}
 
 			this.editModeEnabled = true;
+			this.imageAlignmentModeEnabled = true;
 
 			// Update place marker draggability
 			this.updatePlaceMarkerDraggability();
@@ -1713,7 +1753,7 @@ export class MapController {
 				this.onEditModeChangeCallback(true);
 			}
 
-			logger.info('edit-mode', `Edit mode enabled for ${this.activeMapId}`);
+			logger.info('edit-mode', `Image alignment mode enabled for ${this.activeMapId}`);
 			return true;
 		} catch (error) {
 			logger.error('edit-mode-error', 'Failed to enable edit mode', { error });
@@ -1724,40 +1764,52 @@ export class MapController {
 	}
 
 	/**
-	 * Disable edit mode - replace distortable overlay with regular image overlay
+	 * Legacy method - calls enableImageAlignmentMode for backwards compatibility
+	 * @deprecated Use enableMarkerEditMode() or enableImageAlignmentMode() instead
+	 */
+	async enableEditMode(): Promise<boolean> {
+		return this.enableImageAlignmentMode();
+	}
+
+	/**
+	 * Disable edit mode - restore normal map view
 	 */
 	async disableEditMode(): Promise<void> {
 		if (!this.map || !this.editModeEnabled) return;
 
 		try {
-			// Remove distortable overlay
-			if (this.currentDistortableOverlay) {
-				// Safely deselect and disable editing
-				if (typeof this.currentDistortableOverlay.deselect === 'function') {
-					try {
-						this.currentDistortableOverlay.deselect();
-					} catch {
-						// Ignore deselect errors
+			// Only restore image overlay if we were in image alignment mode
+			if (this.imageAlignmentModeEnabled) {
+				// Remove distortable overlay
+				if (this.currentDistortableOverlay) {
+					// Safely deselect and disable editing
+					if (typeof this.currentDistortableOverlay.deselect === 'function') {
+						try {
+							this.currentDistortableOverlay.deselect();
+						} catch {
+							// Ignore deselect errors
+						}
 					}
-				}
-				if (this.currentDistortableOverlay.editing) {
-					try {
-						this.currentDistortableOverlay.editing.disable();
-					} catch {
-						// Ignore disable errors
+					if (this.currentDistortableOverlay.editing) {
+						try {
+							this.currentDistortableOverlay.editing.disable();
+						} catch {
+							// Ignore disable errors
+						}
 					}
+					this.map.removeLayer(this.currentDistortableOverlay);
+					this.currentDistortableOverlay = null;
 				}
-				this.map.removeLayer(this.currentDistortableOverlay);
-				this.currentDistortableOverlay = null;
+
+				// Remove the 'ldi' class from the map container
+				this.container.classList.remove('ldi');
+
+				// Restore regular overlay
+				await this.restoreRegularOverlay();
 			}
 
-			// Remove the 'ldi' class from the map container
-			this.container.classList.remove('ldi');
-
-			// Restore regular overlay
-			await this.restoreRegularOverlay();
-
 			this.editModeEnabled = false;
+			this.imageAlignmentModeEnabled = false;
 
 			// Update place marker draggability
 			this.updatePlaceMarkerDraggability();

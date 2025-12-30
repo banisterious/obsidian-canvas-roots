@@ -91,8 +91,10 @@ export class MapView extends ItemView {
 
 	// Edit mode state
 	private editModeEnabled: boolean = false;
+	private movePlacesModeEnabled: boolean = false;  // Marker-only edit mode
 	private editBannerEl: HTMLElement | null = null;
 	private editBtn: HTMLButtonElement | null = null;
+	private movePlacesBtn: HTMLButtonElement | null = null;
 
 	constructor(leaf: WorkspaceLeaf, plugin: CanvasRootsPlugin) {
 		super(leaf);
@@ -316,7 +318,17 @@ export class MapView extends ItemView {
 		// Right section: Actions
 		const rightSection = this.toolbarEl.createDiv({ cls: 'cr-map-toolbar-right' });
 
-		// Edit mode button (for custom maps only)
+		// Move places button (for custom maps only) - enables marker dragging
+		this.movePlacesBtn = rightSection.createEl('button', {
+			cls: 'cr-map-btn cr-map-btn-move',
+			attr: { 'aria-label': 'Move place markers' }
+		});
+		this.movePlacesBtn.createSpan({ text: 'Move places' });
+		this.movePlacesBtn.addEventListener('click', () => void this.toggleMovePlacesMode());
+		// Initially disabled (enabled when custom map is selected)
+		this.movePlacesBtn.disabled = true;
+
+		// Edit mode button (for custom maps only) - enables image alignment editing
 		this.editBtn = rightSection.createEl('button', {
 			cls: 'cr-map-btn cr-map-btn-edit',
 			attr: { 'aria-label': 'Edit map alignment' }
@@ -1284,10 +1296,13 @@ export class MapView extends ItemView {
 					this.mapSelectEl.value = mapId;
 				}
 
-				// Enable/disable edit button based on map type
+				// Enable/disable edit buttons based on map type
+				const canEdit = this.mapController?.canEnableEditMode() ?? false;
 				if (this.editBtn) {
-					const canEdit = this.mapController?.canEnableEditMode() ?? false;
 					this.editBtn.disabled = !canEdit;
+				}
+				if (this.movePlacesBtn) {
+					this.movePlacesBtn.disabled = !canEdit;
 				}
 
 				// If edit mode was enabled and we switched maps, disable it
@@ -1626,29 +1641,80 @@ export class MapView extends ItemView {
 	// ========================================================================
 
 	/**
+	 * Toggle move places mode (marker-only edit mode)
+	 */
+	private async toggleMovePlacesMode(): Promise<void> {
+		if (!this.mapController) return;
+
+		if (this.movePlacesModeEnabled) {
+			await this.disableMovePlacesMode();
+		} else {
+			await this.enableMovePlacesMode();
+		}
+	}
+
+	/**
+	 * Enable move places mode (marker dragging without image alignment)
+	 */
+	private async enableMovePlacesMode(): Promise<void> {
+		if (!this.mapController) return;
+
+		// If image alignment edit mode is active, disable it first
+		if (this.editModeEnabled && !this.movePlacesModeEnabled) {
+			await this.disableEditMode();
+		}
+
+		const success = this.mapController.enableMarkerEditMode();
+		if (success) {
+			this.movePlacesModeEnabled = true;
+			this.editModeEnabled = true;  // mapController tracks this
+			this.updateEditUI();
+			logger.info('move-places-mode', 'Move places mode enabled');
+		}
+	}
+
+	/**
+	 * Disable move places mode
+	 */
+	private async disableMovePlacesMode(): Promise<void> {
+		if (!this.mapController) return;
+
+		await this.mapController.disableEditMode();
+		this.movePlacesModeEnabled = false;
+		this.editModeEnabled = false;
+		this.updateEditUI();
+		logger.info('move-places-mode', 'Move places mode disabled');
+	}
+
+	/**
 	 * Toggle edit mode for image alignment
 	 */
 	private async toggleEditMode(): Promise<void> {
 		if (!this.mapController) return;
 
-		if (this.editModeEnabled) {
+		if (this.editModeEnabled && !this.movePlacesModeEnabled) {
 			await this.disableEditMode();
 		} else {
+			// If in move places mode, disable it first
+			if (this.movePlacesModeEnabled) {
+				await this.disableMovePlacesMode();
+			}
 			await this.enableEditMode();
 		}
 	}
 
 	/**
-	 * Enable edit mode
+	 * Enable edit mode (image alignment)
 	 */
 	private async enableEditMode(): Promise<void> {
 		if (!this.mapController) return;
 
-		const success = await this.mapController.enableEditMode();
+		const success = await this.mapController.enableImageAlignmentMode();
 		if (success) {
 			this.editModeEnabled = true;
+			this.movePlacesModeEnabled = false;
 			this.updateEditUI();
-			logger.info('edit-mode', 'Edit mode enabled');
+			logger.info('edit-mode', 'Image alignment edit mode enabled');
 		}
 	}
 
@@ -1660,6 +1726,7 @@ export class MapView extends ItemView {
 
 		await this.mapController.disableEditMode();
 		this.editModeEnabled = false;
+		this.movePlacesModeEnabled = false;
 		this.updateEditUI();
 		logger.info('edit-mode', 'Edit mode disabled');
 	}
@@ -1670,7 +1737,7 @@ export class MapView extends ItemView {
 	private updateEditUI(): void {
 		// Update edit button appearance
 		if (this.editBtn) {
-			if (this.editModeEnabled) {
+			if (this.editModeEnabled && !this.movePlacesModeEnabled) {
 				this.editBtn.addClass('active');
 				const span = this.editBtn.querySelector('span');
 				if (span) span.textContent = 'Exit edit';
@@ -1681,9 +1748,26 @@ export class MapView extends ItemView {
 			}
 		}
 
+		// Update move places button appearance
+		if (this.movePlacesBtn) {
+			if (this.movePlacesModeEnabled) {
+				this.movePlacesBtn.addClass('active');
+				const span = this.movePlacesBtn.querySelector('span');
+				if (span) span.textContent = 'Done moving';
+			} else {
+				this.movePlacesBtn.removeClass('active');
+				const span = this.movePlacesBtn.querySelector('span');
+				if (span) span.textContent = 'Move places';
+			}
+		}
+
 		// Show/hide edit banner
-		if (this.editModeEnabled) {
+		if (this.editModeEnabled && !this.movePlacesModeEnabled) {
+			// Full edit mode banner (image alignment)
 			this.showEditBanner();
+		} else if (this.movePlacesModeEnabled) {
+			// Move places mode banner (simpler)
+			this.showMovePlacesBanner();
 		} else {
 			this.hideEditBanner();
 		}
@@ -1760,6 +1844,46 @@ export class MapView extends ItemView {
 		if (this.editBannerEl) {
 			this.editBannerEl.remove();
 			this.editBannerEl = null;
+		}
+	}
+
+	/**
+	 * Show the move places mode banner (simpler than full edit mode)
+	 */
+	private showMovePlacesBanner(): void {
+		if (this.editBannerEl) {
+			// Already showing a banner, replace it
+			this.editBannerEl.remove();
+		}
+
+		const container = this.contentEl;
+		if (!container.hasClass('cr-map-view')) {
+			return;
+		}
+
+		this.editBannerEl = document.createElement('div');
+		this.editBannerEl.className = 'cr-map-edit-banner cr-map-move-banner';
+
+		// Banner text
+		const textEl = this.editBannerEl.createDiv({ cls: 'cr-map-edit-banner-text' });
+		textEl.createEl('strong', { text: 'Move places:' });
+		textEl.appendText(' Drag place markers to reposition them. Changes are saved automatically.');
+
+		// Button container
+		const btnContainer = this.editBannerEl.createDiv({ cls: 'cr-map-edit-controls' });
+
+		// Done button
+		const doneBtn = btnContainer.createEl('button', {
+			cls: 'cr-map-btn cr-map-btn-edit',
+			text: 'Done'
+		});
+		doneBtn.addEventListener('click', () => void this.disableMovePlacesMode());
+
+		// Insert banner before the map container
+		if (this.mapContainerEl) {
+			container.insertBefore(this.editBannerEl, this.mapContainerEl);
+		} else {
+			container.appendChild(this.editBannerEl);
 		}
 	}
 
