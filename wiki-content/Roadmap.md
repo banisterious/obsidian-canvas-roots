@@ -12,7 +12,6 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
   - [Custom Map Authoring](#custom-map-authoring) 💡 Low
-  - [Custom Relationships on Canvas Trees](#custom-relationships-on-canvas-trees) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Staging Management](#staging-management) 💡 Low
   - [Universe Management Enhancements](#universe-management-enhancements) 💡 Low
@@ -38,6 +37,7 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.18.9 | [Custom Relationships on Canvas Trees](Release-History#custom-relationships-on-canvas-trees-v0189) | Custom relationship types with flat properties, family tree integration via `includeOnFamilyTree` and `familyGraphMapping` |
 | v0.18.7 | [Inclusive Parent Relationships](Release-History#inclusive-parent-relationships-v0187) | Gender-neutral parent support with customizable labels, bidirectional linking, and full family graph integration |
 | v0.18.6 | [Media Upload and Management Enhancement](Release-History#media-upload-and-management-enhancement-v0186) | Direct file upload with drag-and-drop, 6-tile Media Manager dashboard, inline upload in media picker, entity picker with filters |
 | v0.18.2 | [Timeline Export Consolidation](Release-History#timeline-export-consolidation-v0182) | Unified timeline exports in Reports wizard with all 8 formats, consolidated filters, deprecation notice on Events tab |
@@ -118,48 +118,6 @@ life_events:
 - Event notes become first-class entities (searchable, linkable, organized)
 
 **Documentation:** See [docs/planning/nested-properties-redesign.md](../docs/planning/nested-properties-redesign.md) for full technical plan.
-
----
-
-### Inclusive Parent Relationships
-
-**Priority:** 📋 Medium — Gender-neutral parent support for diverse families
-
-**Status:** Planning
-
-**The Problem:** Currently, the plugin only supports gendered parent fields (father/mother). Users with nonbinary parents or those who prefer gender-neutral terminology have no way to represent these relationships.
-
-**Goal:** Add opt-in support for gender-neutral parent relationships while preserving the existing father/mother fields for users who prefer them.
-
-**Design Principles:**
-- Opt-in, not replacement — don't remove or replace father/mother
-- Configurable label — let users customize the terminology
-- Non-disruptive — users with traditional setups won't notice any change
-- Coexistent — a person can have father, mother, AND parents
-
-**Settings:**
-
-| Setting | Type | Default | Description |
-|---------|------|---------|-------------|
-| Enable Inclusive Parents | Toggle | Off | Show gender-neutral parent field in modals |
-| Parent Field Label | Text | "Parent" | Customize the UI label (e.g., "Progenitor", "Guardian") |
-
-**Schema:**
-- New `parents` array property (wikilinks)
-- New `parents_id` array property (Canvas Roots IDs)
-- Independent of father/mother — can use either or both
-
-**Phased Implementation:**
-
-| Phase | Feature | Description |
-|-------|---------|-------------|
-| 1 | Settings & Schema | Add toggle, label setting, and new properties |
-| 2 | Create/Edit Modal | Add parents field with multi-select picker |
-| 3 | Family Graph | Include parents in relationship displays and calculations |
-| 4 | Bidirectional Linking | Optionally sync parent→child relationships |
-
-**Documentation:**
-- See [Inclusive Parent Relationships Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/inclusive-parent-relationships.md) for detailed specifications
 
 ---
 
@@ -274,59 +232,6 @@ life_events:
 
 **Documentation:**
 - See [Custom Map Authoring Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/custom-map-authoring.md) for detailed specifications
-
----
-
-### Custom Relationships on Canvas Trees
-
-**Priority:** 💡 Low — Worldbuilder feature for non-biological lineages
-
-**Status:** Planning
-
-**The Problem:** The `relationships` array in frontmatter is not parsed by the family graph or canvas tree generation. Only direct properties (`stepfather`, `adoptive_father`, etc.) are read. Users who define step-parents or adoptive parents via the relationships array don't see them on canvas trees.
-
-**Summary:** Render custom relationships (defined in the `relationships` frontmatter array) as labeled edges on canvas trees and family charts. Currently, only biological and step/adoptive parent relationships appear on trees — and only when using direct properties, not the relationships array. Custom relationship types like vampire sire/childer, guild master/apprentice, or magical bonds are tracked in the Relationships tab but don't render on visual trees.
-
-**Use Cases:**
-- **Vampire lineages:** Sire/childer relationships forming parallel "family" structures
-- **Guild apprenticeships:** Master/apprentice lineages in fantasy worldbuilding
-- **Magical bonds:** Familiar bonds, mentor relationships, magical adoption
-- **Feudal systems:** Lord/vassal relationships, sworn sword bonds
-- **Non-biological kinship:** Godparents, sworn siblings, adopted-but-not-legally relationships
-
-**Current Workaround:** Use direct frontmatter properties instead of the relationships array:
-
-```yaml
-# Instead of:
-relationships:
-  - type: adoptive_parent
-    target: "[[John Doe]]"
-
-# Use:
-adoptive_father: "[[John Doe]]"
-```
-
-Users can also configure property aliases (`sire` → `father`) to render custom lineages using the standard parent/child infrastructure, but edges display as generic parent/child rather than with custom labels.
-
-**Proposed Features:**
-
-| Feature | Description |
-|---------|-------------|
-| Parse `relationships` array | FamilyGraphService reads `relationships` frontmatter entries |
-| Map to family roles | `step_parent`, `adoptive_parent`, etc. map to existing step/adoptive parent handling |
-| Filter by relationship category | Only render relationships marked as "lineage" or "parent-child" type |
-| Custom edge labels | Display relationship type on edge (e.g., "sire", "mentor") |
-| Edge styling | Distinct styling for custom vs biological relationships (color, dash pattern) |
-| Tree wizard option | Checkbox to include/exclude custom relationships from tree generation |
-
-**Technical Approach:**
-1. Parse `relationships` array in `FamilyGraphService.parsePersonFromFrontmatter()`
-2. Map relationship types to family graph roles (step_parent → stepfatherCrIds/stepmotherCrIds based on target gender)
-3. Add support for foster parents and guardians
-4. Apply custom edge styling based on relationship type definitions
-
-**Documentation:**
-- See [Relationships Array in Family Graph Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/relationships-array-family-graph.md) for detailed specifications
 
 ---
 
