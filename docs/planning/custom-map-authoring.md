@@ -27,8 +27,9 @@ This document covers two complementary problems:
 ### The Solutions
 
 1. **Map Creation Wizard** — A guided, multi-step wizard that walks users through creating a map and optionally adding initial places
-2. **Right-click to Create Place** — In Map View, right-click on empty map space to create a place with coordinates auto-filled
-3. **Draggable Place Markers** — Reposition existing places by dragging their markers (requires edit mode)
+2. **Right-click to Create Place** — In Map View, right-click on empty map space to create a place with coordinates auto-filled ✅
+3. **Place Marker Context Menu** — Right-click on a place marker to edit, open note, or copy coordinates ✅
+4. **Draggable Place Markers** — Reposition existing places by dragging their markers (requires edit mode)
 
 ---
 
@@ -400,13 +401,21 @@ Right-click an image file in the file explorer:
 
 ### Phase 2: Right-Click to Create Place
 
-- [ ] Add context menu to map container in `MapView`
-- [ ] Implement coordinate capture from right-click event
-- [ ] Add `prefilledCoordinates` option to `CreatePlaceModal`
-- [ ] Display coordinates as read-only info in modal
-- [ ] Handle both geographic and pixel coordinate prefill
-- [ ] Pass map's universe for default values
-- [ ] Refresh map after place creation
+- [x] Add context menu to map container in `MapView`
+- [x] Implement coordinate capture from right-click event
+- [x] Add `prefilledCoordinates` option to `CreatePlaceModal`
+- [x] Display coordinates as read-only info in modal
+- [x] Handle both geographic and pixel coordinate prefill
+- [x] Pass map's universe for default values
+- [x] Refresh map after place creation
+
+### Phase 2b: Place Marker Context Menu
+
+- [x] Add `onPlaceMarkerContextMenu` callback to `MapController`
+- [x] Add contextmenu event handler to place markers
+- [x] Implement "Edit place" action (opens `CreatePlaceModal` in edit mode)
+- [x] Implement "Open note" action
+- [x] Implement "Copy coordinates" action
 
 ### Phase 3: Draggable Place Markers
 
