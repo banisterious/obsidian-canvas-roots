@@ -6680,9 +6680,9 @@ export default class CanvasRootsPlugin extends Plugin {
 							propertiesAdded = true;
 						}
 
-						// person: Add empty if missing
-						if (!frontmatter.person) {
-							frontmatter.person = '';
+						// persons: Add empty array if missing (use persons array, not deprecated singular person)
+						if (!frontmatter.persons) {
+							frontmatter.persons = [];
 							propertiesAdded = true;
 						}
 
