@@ -1,8 +1,8 @@
 # Nested Properties Redesign Plan
 
-**Created:** 2025-12-29
-**Status:** Planning
-**Priority:** High - Architectural incompatibility with Obsidian
+- **Created:** 2025-12-29
+- **Status:** Planning
+- **Priority:** High - Architectural incompatibility with Obsidian
 
 ---
 
