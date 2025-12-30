@@ -10,6 +10,7 @@ import type CanvasRootsPlugin from '../../main';
 import { getLogger } from '../core/logging';
 import { MapController } from './map-controller';
 import { MapDataService } from './map-data-service';
+import { CreatePlaceModal } from '../ui/create-place-modal';
 import type {
 	MapFilters,
 	LayerVisibility,
@@ -226,6 +227,11 @@ export class MapView extends ItemView {
 
 		// Create map container
 		this.mapContainerEl = container.createDiv({ cls: 'cr-map-container' });
+
+		// Add right-click context menu for creating places
+		this.mapContainerEl.addEventListener('contextmenu', (e) => {
+			this.handleMapContextMenu(e);
+		});
 
 		// Create status bar
 		this.statusBarEl = container.createDiv({ cls: 'cr-map-status' });
@@ -554,6 +560,73 @@ export class MapView extends ItemView {
 		});
 
 		menu.showAtMouseEvent(e);
+	}
+
+	/**
+	 * Handle right-click context menu on the map
+	 * Allows creating a new place at the clicked location
+	 */
+	private handleMapContextMenu(e: MouseEvent): void {
+		// Don't show context menu if clicking on a marker or popup
+		const target = e.target as HTMLElement;
+		if (target.closest('.leaflet-marker-icon') ||
+			target.closest('.leaflet-popup') ||
+			target.closest('.leaflet-control')) {
+			return;
+		}
+
+		// Get coordinates from click location
+		const coords = this.mapController?.mouseEventToCoordinates(e);
+		if (!coords) return;
+
+		const menu = new Menu();
+
+		menu.addItem((item) => {
+			item.setTitle('Create place here')
+				.setIcon('map-pin')
+				.onClick(() => {
+					this.createPlaceAtCoordinates(coords);
+				});
+		});
+
+		menu.showAtMouseEvent(e);
+	}
+
+	/**
+	 * Open CreatePlaceModal with prefilled coordinates from map click
+	 */
+	private createPlaceAtCoordinates(coords: { lat: number; lng: number; pixelX?: number; pixelY?: number }): void {
+		// Get universe from the current map (null for real world)
+		const universe = this.mapController?.getActiveMapUniverse() ?? undefined;
+		const isPixelMap = coords.pixelX !== undefined && coords.pixelY !== undefined;
+
+		// Get services from plugin
+		const pluginWithServices = this.plugin as unknown as {
+			createFamilyGraphService: () => unknown;
+			createPlaceGraphService: () => unknown;
+		};
+
+		const modal = new CreatePlaceModal(this.app, {
+			directory: this.plugin.settings.placesFolder || '',
+			initialUniverse: universe,
+			familyGraph: pluginWithServices.createFamilyGraphService() as import('../core/family-graph').FamilyGraphService,
+			placeGraph: pluginWithServices.createPlaceGraphService() as import('../core/place-graph').PlaceGraphService,
+			settings: this.plugin.settings,
+			plugin: this.plugin,
+			prefilledCoordinates: {
+				lat: coords.lat,
+				lng: coords.lng,
+				pixelX: coords.pixelX,
+				pixelY: coords.pixelY,
+				isPixelMap
+			},
+			onCreated: () => {
+				// Refresh the map to show the new place marker
+				void this.refreshData(true);
+			}
+		});
+
+		modal.open();
 	}
 
 	/**

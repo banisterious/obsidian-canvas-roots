@@ -1445,6 +1445,53 @@ export class MapController {
 		return this.activeMapId;
 	}
 
+	/**
+	 * Get the universe associated with the current active map
+	 * Returns null for OpenStreetMap (real world)
+	 */
+	getActiveMapUniverse(): string | null {
+		if (this.activeMapId === 'openstreetmap') {
+			return null;
+		}
+		return this.imageMapManager.getMapUniverse(this.activeMapId);
+	}
+
+	/**
+	 * Get the underlying Leaflet map instance
+	 * Useful for attaching event handlers or coordinate transformations
+	 */
+	getLeafletMap(): L.Map | null {
+		return this.map;
+	}
+
+	/**
+	 * Convert a mouse event to map coordinates
+	 * For geographic maps, returns lat/lng
+	 * For pixel maps, returns pixel x/y coordinates
+	 */
+	mouseEventToCoordinates(event: MouseEvent): { lat: number; lng: number; pixelX?: number; pixelY?: number } | null {
+		if (!this.map) return null;
+
+		const latlng = this.map.mouseEventToLatLng(event);
+
+		if (this.currentCRS === 'pixel') {
+			// For pixel maps, the latlng values represent pixel coordinates
+			// Leaflet uses lat for Y and lng for X in simple CRS
+			return {
+				lat: latlng.lat,
+				lng: latlng.lng,
+				pixelX: Math.round(latlng.lng),  // X is longitude
+				pixelY: Math.round(-latlng.lat)  // Y is negative latitude (inverted for image coordinates)
+			};
+		}
+
+		// Geographic map - return lat/lng
+		return {
+			lat: latlng.lat,
+			lng: latlng.lng
+		};
+	}
+
 	// ========================================================================
 	// Edit Mode (Distortable Image) Methods
 	// ========================================================================

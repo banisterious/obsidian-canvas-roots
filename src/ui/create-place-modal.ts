@@ -126,6 +126,15 @@ export class CreatePlaceModal extends Modal {
 	// Pre-set values for new modals (e.g., when creating parent from child)
 	private initialPlaceType?: PlaceType;
 
+	// Prefilled coordinates from map right-click (read-only display)
+	private prefilledCoordinates?: {
+		lat?: number;
+		lng?: number;
+		pixelX?: number;
+		pixelY?: number;
+		isPixelMap?: boolean;
+	};
+
 	// Settings for default category
 	private settings?: CanvasRootsSettings;
 
@@ -142,6 +151,7 @@ export class CreatePlaceModal extends Modal {
 			initialName?: string;
 			initialPlaceType?: PlaceType;
 			initialCollection?: string;
+			initialUniverse?: string;
 			onCreated?: (file: TFile) => void;
 			onUpdated?: (file: TFile) => void;
 			familyGraph?: FamilyGraphService;
@@ -152,6 +162,14 @@ export class CreatePlaceModal extends Modal {
 			editFile?: TFile;
 			// Plugin reference for state persistence
 			plugin?: CanvasRootsPlugin;
+			// Prefilled coordinates from map right-click
+			prefilledCoordinates?: {
+				lat?: number;
+				lng?: number;
+				pixelX?: number;
+				pixelY?: number;
+				isPixelMap?: boolean;
+			};
 		}
 	) {
 		super(app);
@@ -182,19 +200,43 @@ export class CreatePlaceModal extends Modal {
 			this.directory = pathParts.join('/');
 		} else {
 			// Determine default category based on settings, folder, and collection
-			const defaultCategory = this.settings
-				? getDefaultPlaceCategory(this.settings, {
-					folder: this.directory,
-					collection: options?.initialCollection
-				})
-				: 'real';
+			// If prefilled coordinates from pixel map, default to fictional
+			const defaultCategory = options?.prefilledCoordinates?.isPixelMap
+				? 'fictional'
+				: (this.settings
+					? getDefaultPlaceCategory(this.settings, {
+						folder: this.directory,
+						collection: options?.initialCollection
+					})
+					: 'real');
 
 			this.placeData = {
 				name: options?.initialName || '',
 				placeType: options?.initialPlaceType,
 				placeCategory: defaultCategory,
-				collection: options?.initialCollection
+				collection: options?.initialCollection,
+				universe: options?.initialUniverse
 			};
+
+			// Handle prefilled coordinates from map right-click
+			if (options?.prefilledCoordinates) {
+				this.prefilledCoordinates = options.prefilledCoordinates;
+
+				if (options.prefilledCoordinates.isPixelMap) {
+					// Pixel coordinates for custom image maps
+					this.placeData.customCoordinates = {
+						x: options.prefilledCoordinates.pixelX ?? 0,
+						y: options.prefilledCoordinates.pixelY ?? 0
+					};
+				} else if (options.prefilledCoordinates.lat !== undefined &&
+						   options.prefilledCoordinates.lng !== undefined) {
+					// Geographic coordinates
+					this.placeData.coordinates = {
+						lat: options.prefilledCoordinates.lat,
+						long: options.prefilledCoordinates.lng
+					};
+				}
+			}
 		}
 
 		// Gather existing collections from both person notes and place notes
@@ -735,20 +777,29 @@ export class CreatePlaceModal extends Modal {
 		// Coordinates section (for real/historical/disputed places)
 		this.coordSectionEl = form.createDiv({ cls: 'crc-coord-section' });
 
+		// Check if coordinates are prefilled from map (non-pixel)
+		const hasPrefilledGeoCoords = this.prefilledCoordinates &&
+			!this.prefilledCoordinates.isPixelMap &&
+			this.prefilledCoordinates.lat !== undefined;
+
 		const coordHeader = new Setting(this.coordSectionEl)
 			.setName('Coordinates')
-			.setDesc('Real-world coordinates (for real, historical, disputed places)');
+			.setDesc(hasPrefilledGeoCoords
+				? 'Coordinates from map click (read-only)'
+				: 'Real-world coordinates (for real, historical, disputed places)');
 		coordHeader.settingEl.addClass('crc-coord-header');
 
-		// Add geocoding lookup button to header
-		coordHeader.addButton(btn => {
-			btn.setButtonText('Look up')
-				.setTooltip('Look up coordinates by place name (uses OpenStreetMap)')
-				.onClick(() => {
-					void this.lookupCoordinates();
-				});
-			btn.buttonEl.addClass('crc-coord-lookup-btn');
-		});
+		// Add geocoding lookup button to header (only if not prefilled)
+		if (!hasPrefilledGeoCoords) {
+			coordHeader.addButton(btn => {
+				btn.setButtonText('Look up')
+					.setTooltip('Look up coordinates by place name (uses OpenStreetMap)')
+					.onClick(() => {
+						void this.lookupCoordinates();
+					});
+				btn.buttonEl.addClass('crc-coord-lookup-btn');
+			});
+		}
 
 		const coordInputs = this.coordSectionEl.createDiv({ cls: 'crc-coord-inputs' });
 
@@ -761,9 +812,14 @@ export class CreatePlaceModal extends Modal {
 					.onChange(value => {
 						this.updateCoordinates('lat', value);
 					});
-				// Set initial value if editing
+				// Set initial value if editing or prefilled
 				if (this.placeData.coordinates?.lat !== undefined) {
 					text.setValue(this.placeData.coordinates.lat.toString());
+				}
+				// Make read-only if prefilled from map
+				if (hasPrefilledGeoCoords) {
+					text.inputEl.readOnly = true;
+					text.inputEl.addClass('crc-coord-readonly');
 				}
 			});
 		latSetting.settingEl.addClass('crc-coord-input');
@@ -777,9 +833,14 @@ export class CreatePlaceModal extends Modal {
 					.onChange(value => {
 						this.updateCoordinates('long', value);
 					});
-				// Set initial value if editing
+				// Set initial value if editing or prefilled
 				if (this.placeData.coordinates?.long !== undefined) {
 					text.setValue(this.placeData.coordinates.long.toString());
+				}
+				// Make read-only if prefilled from map
+				if (hasPrefilledGeoCoords) {
+					text.inputEl.readOnly = true;
+					text.inputEl.addClass('crc-coord-readonly');
 				}
 			});
 		longSetting.settingEl.addClass('crc-coord-input');
@@ -787,9 +848,14 @@ export class CreatePlaceModal extends Modal {
 		// Pixel coordinates section (for fictional/mythological places on pixel-based maps)
 		this.pixelCoordSectionEl = form.createDiv({ cls: 'crc-coord-section' });
 
+		// Check if pixel coordinates are prefilled from map
+		const hasPrefilledPixelCoords = this.prefilledCoordinates?.isPixelMap;
+
 		const pixelCoordHeader = new Setting(this.pixelCoordSectionEl)
 			.setName('Pixel coordinates')
-			.setDesc('For places on pixel-based custom maps (e.g., fantasy worlds)');
+			.setDesc(hasPrefilledPixelCoords
+				? 'Coordinates from map click (read-only)'
+				: 'For places on pixel-based custom maps (e.g., fantasy worlds)');
 		pixelCoordHeader.settingEl.addClass('crc-coord-header');
 
 		const pixelCoordInputs = this.pixelCoordSectionEl.createDiv({ cls: 'crc-coord-inputs' });
@@ -803,9 +869,14 @@ export class CreatePlaceModal extends Modal {
 					.onChange(value => {
 						this.updatePixelCoordinates('x', value);
 					});
-				// Set initial value if editing
+				// Set initial value if editing or prefilled
 				if (this.placeData.customCoordinates?.x !== undefined) {
 					text.setValue(this.placeData.customCoordinates.x.toString());
+				}
+				// Make read-only if prefilled from map
+				if (hasPrefilledPixelCoords) {
+					text.inputEl.readOnly = true;
+					text.inputEl.addClass('crc-coord-readonly');
 				}
 			});
 		pixelXSetting.settingEl.addClass('crc-coord-input');
@@ -819,9 +890,14 @@ export class CreatePlaceModal extends Modal {
 					.onChange(value => {
 						this.updatePixelCoordinates('y', value);
 					});
-				// Set initial value if editing
+				// Set initial value if editing or prefilled
 				if (this.placeData.customCoordinates?.y !== undefined) {
 					text.setValue(this.placeData.customCoordinates.y.toString());
+				}
+				// Make read-only if prefilled from map
+				if (hasPrefilledPixelCoords) {
+					text.inputEl.readOnly = true;
+					text.inputEl.addClass('crc-coord-readonly');
 				}
 			});
 		pixelYSetting.settingEl.addClass('crc-coord-input');
