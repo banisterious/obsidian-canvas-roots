@@ -83,6 +83,8 @@ export interface ParsedGrampsPlace {
 	/** Whether this place has a ptitle (full hierarchical name) */
 	hasPtitle?: boolean;
 	mediaRefs: string[];
+	/** Note references */
+	noteRefs: string[];
 }
 
 /**
@@ -331,7 +333,8 @@ export class GrampsParser {
 				type: grampsPlace.type,
 				parentRef: grampsPlace.parentRef,
 				hasPtitle: grampsPlace.hasPtitle,
-				mediaRefs: grampsPlace.mediaRefs || []
+				mediaRefs: grampsPlace.mediaRefs || [],
+				noteRefs: grampsPlace.noteRefs || []
 			});
 		}
 
