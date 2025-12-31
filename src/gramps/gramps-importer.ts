@@ -332,7 +332,7 @@ export class GrampsImporter {
 				let placeIndex = 0;
 				for (const [handle, place] of leafPlaces) {
 					try {
-						const crId = await this.importPlace(place, placesFolder, options, result.mediaHandleToPath);
+						const crId = await this.importPlace(place, grampsData, placesFolder, options, result.mediaHandleToPath);
 						if (crId !== null) {
 							// Place was created
 							result.placeNotesCreated = (result.placeNotesCreated || 0) + 1;
@@ -1085,6 +1085,7 @@ export class GrampsImporter {
 	 */
 	private async importPlace(
 		place: ParsedGrampsPlace,
+		grampsData: ParsedGrampsData,
 		placesFolder: string,
 		options: GrampsImportOptions,
 		mediaHandleToPath?: Map<string, string>
@@ -1118,13 +1119,32 @@ export class GrampsImporter {
 			}
 		}
 
+		// Resolve and format notes (if enabled)
+		let notesContent: string | undefined;
+		let hasPrivateNotes = false;
+		if (options.importNotes !== false && place.noteRefs && place.noteRefs.length > 0) {
+			const resolvedNotes: GrampsNote[] = [];
+			for (const noteRef of place.noteRefs) {
+				const note = grampsData.database.notes.get(noteRef);
+				if (note) {
+					resolvedNotes.push(note);
+				}
+			}
+			if (resolvedNotes.length > 0) {
+				notesContent = formatNotesSection(resolvedNotes);
+				hasPrivateNotes = hasPrivateNote(resolvedNotes);
+			}
+		}
+
 		// Convert Gramps place to PlaceData
 		const placeData: PlaceData = {
 			name: placeName,
 			crId: crId,
 			// Map Gramps place type to Canvas Roots place type if possible
 			placeType: this.mapGrampsPlaceType(place.type),
-			media: resolvedMedia.length > 0 ? resolvedMedia : undefined
+			media: resolvedMedia.length > 0 ? resolvedMedia : undefined,
+			notesContent,
+			private: hasPrivateNotes || undefined
 		};
 
 		// Write place note using the createPlaceNote function
