@@ -1457,10 +1457,33 @@ export class GrampsImporter {
 			}
 		}
 
+		// Add privacy flag if any attached note is private
+		let hasPrivateNotes = false;
+		let notesContent = '';
+
+		// Resolve and append notes (if enabled)
+		if (options.importNotes !== false && event.noteRefs && event.noteRefs.length > 0) {
+			const resolvedNotes: GrampsNote[] = [];
+			for (const noteRef of event.noteRefs) {
+				const note = grampsData.database.notes.get(noteRef);
+				if (note) {
+					resolvedNotes.push(note);
+				}
+			}
+			if (resolvedNotes.length > 0) {
+				notesContent = '\n' + formatNotesSection(resolvedNotes);
+				hasPrivateNotes = hasPrivateNote(resolvedNotes);
+			}
+		}
+
+		if (hasPrivateNotes) {
+			frontmatterLines.push(`${prop('private')}: true`);
+		}
+
 		frontmatterLines.push('---');
 
 		// Build note body
-		const body = `\n# ${title}\n\n${event.description || ''}\n`;
+		const body = `\n# ${title}\n\n${event.description || ''}\n${notesContent}`;
 		const content = frontmatterLines.join('\n') + body;
 
 		// Create file

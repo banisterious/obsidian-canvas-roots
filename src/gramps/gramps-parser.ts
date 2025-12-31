@@ -101,6 +101,10 @@ export interface ParsedGrampsEvent {
 	citationHandles: string[];
 	/** Media references */
 	mediaRefs: string[];
+	/** Note references (from event + family if applicable) */
+	noteRefs: string[];
+	/** Family handle if this event comes from a family (for family notes fallback) */
+	familyHandle?: string;
 }
 
 /**
@@ -336,6 +340,10 @@ export class GrampsParser {
 		for (const [handle, grampsEvent] of database.events) {
 			// Find persons associated with this event
 			const personHandles: string[] = [];
+			// Track family handle for family events (to attach family notes)
+			let familyHandle: string | undefined;
+			// Collect note references (event + family notes for family events)
+			const noteRefs: string[] = [...(grampsEvent.noteRefs || [])];
 
 			// Check person event references
 			for (const [personHandle, person] of database.persons) {
@@ -346,7 +354,7 @@ export class GrampsParser {
 
 			// Check family event references (for marriage, divorce, residence, etc.)
 			// These events are attached to families, not directly to persons
-			for (const [, family] of database.families) {
+			for (const [famHandle, family] of database.families) {
 				if (family.eventrefs.some(ref => ref.hlink === handle)) {
 					// Add father and mother as participants
 					if (family.father && !personHandles.includes(family.father)) {
@@ -354,6 +362,16 @@ export class GrampsParser {
 					}
 					if (family.mother && !personHandles.includes(family.mother)) {
 						personHandles.push(family.mother);
+					}
+					// Track family handle for this event
+					familyHandle = famHandle;
+					// Include family notes on family events (family notes fallback)
+					if (family.noteRefs && family.noteRefs.length > 0) {
+						for (const noteRef of family.noteRefs) {
+							if (!noteRefs.includes(noteRef)) {
+								noteRefs.push(noteRef);
+							}
+						}
 					}
 				}
 			}
@@ -374,7 +392,9 @@ export class GrampsParser {
 				description: grampsEvent.description,
 				personHandles,
 				citationHandles: grampsEvent.citationRefs || [],
-				mediaRefs: grampsEvent.mediaRefs || []
+				mediaRefs: grampsEvent.mediaRefs || [],
+				noteRefs,
+				familyHandle
 			});
 		}
 
@@ -843,7 +863,8 @@ export class GrampsParser {
 			father: el.querySelector('father')?.getAttribute('hlink') || undefined,
 			mother: el.querySelector('mother')?.getAttribute('hlink') || undefined,
 			eventrefs: [],
-			children: []
+			children: [],
+			noteRefs: []
 		};
 
 		// Parse event references
@@ -866,6 +887,14 @@ export class GrampsParser {
 					mrel: this.parseRelType(refEl.getAttribute('mrel')),
 					frel: this.parseRelType(refEl.getAttribute('frel'))
 				});
+			}
+		});
+
+		// Parse note references
+		el.querySelectorAll('noteref').forEach(refEl => {
+			const hlink = refEl.getAttribute('hlink');
+			if (hlink) {
+				family.noteRefs.push(hlink);
 			}
 		});
 

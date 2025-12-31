@@ -129,6 +129,7 @@ export interface GrampsFamily {
 	mother?: string;     // Handle link to mother person
 	eventrefs: GrampsEventRef[];
 	children: GrampsChildRef[];
+	noteRefs: string[];  // Handle links to notes
 }
 
 /**
