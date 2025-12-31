@@ -7,6 +7,7 @@ import { FolderFilterService } from './folder-filter';
 export type ValidationIssueType =
 	| 'broken-father-ref'
 	| 'broken-mother-ref'
+	| 'broken-parent-ref'
 	| 'broken-spouse-ref'
 	| 'broken-child-ref'
 	| 'missing-bidirectional-parent'
@@ -63,6 +64,7 @@ export class RelationshipValidator {
 		const personName = this.extractField(content, 'name') || file.basename;
 		const fatherId = this.extractField(content, 'father_id');
 		const motherId = this.extractField(content, 'mother_id');
+		const parentsIds = this.extractArrayField(content, 'parents_id');
 		const spouseIds = this.extractArrayField(content, 'spouse_id');
 		const childrenIds = this.extractArrayField(content, 'children_id');
 
@@ -102,6 +104,18 @@ export class RelationshipValidator {
 				field: 'mother_id',
 				referencedCrId: motherId
 			});
+		}
+
+		// Validate parents references (gender-neutral)
+		for (const parentId of parentsIds) {
+			if (!allPersonCrIds.has(parentId)) {
+				issues.push({
+					type: 'broken-parent-ref',
+					message: `Parent reference points to non-existent person`,
+					field: 'parents_id',
+					referencedCrId: parentId
+				});
+			}
 		}
 
 		// Validate spouse references
@@ -183,6 +197,24 @@ export class RelationshipValidator {
 						field: 'mother_id',
 						referencedCrId: motherId
 					});
+				}
+			}
+		}
+
+		// Check bidirectional parent relationships for gender-neutral parents
+		for (const parentId of parentsIds) {
+			if (allPersonCrIds.has(parentId)) {
+				const parentFile = allPersonCrIds.get(parentId);
+				if (parentFile) {
+					const parentListsChild = await this.checkChildBackReference(parentFile, crId);
+					if (!parentListsChild) {
+						issues.push({
+							type: 'missing-bidirectional-parent',
+							message: `Parent doesn't list this person as child`,
+							field: 'parents_id',
+							referencedCrId: parentId
+						});
+					}
 				}
 			}
 		}
@@ -271,12 +303,14 @@ export class RelationshipValidator {
 
 	/**
 	 * Check if a child file lists the given cr_id as parent
+	 * Checks father_id, mother_id, and parents_id (gender-neutral)
 	 */
 	private async checkParentBackReference(childFile: TFile, crId: string): Promise<boolean> {
 		const content = await this.app.vault.read(childFile);
 		const fatherId = this.extractField(content, 'father_id');
 		const motherId = this.extractField(content, 'mother_id');
-		return fatherId === crId || motherId === crId;
+		const parentsIds = this.extractArrayField(content, 'parents_id');
+		return fatherId === crId || motherId === crId || parentsIds.includes(crId);
 	}
 
 	/**
