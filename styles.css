@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2025-12-31 02:10:34 UTC
+ * - Generated: 2025-12-31 02:45:59 UTC
  * - Components: 40 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -11544,7 +11544,7 @@ settings:
    COMPONENT: CLEANUP-WIZARD.CSS
    ========================================================================== */
 
-/* Component Size: 2134 lines, 39.23 KB */
+/* Component Size: 2206 lines, 40.82 KB */
 
 /* ==========================================================================
    CLEANUP WIZARD MODAL
@@ -11679,6 +11679,15 @@ settings:
 .crc-cleanup-tile:hover {
   border-color: var(--interactive-accent);
   background: rgba(var(--interactive-accent-rgb), 0.08);
+}
+
+/* Keyboard focus state */
+.crc-cleanup-tile:focus,
+.crc-cleanup-tile--focused {
+  border-color: var(--interactive-accent);
+  background: rgba(var(--interactive-accent-rgb), 0.08);
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
 }
 
 .crc-cleanup-tile--complete {
@@ -13678,6 +13687,69 @@ settings:
 .crc-cleanup-hierarchy-done {
   display: flex;
   justify-content: center;
+}
+
+/* ==========================================================================
+   BATCH OPERATION PROGRESS (Phase 4)
+   ========================================================================== */
+
+.crc-cleanup-batch-progress {
+  padding: 24px;
+  text-align: center;
+}
+
+.crc-cleanup-batch-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.crc-cleanup-batch-progress-spinner {
+  animation: crc-spin 1s linear infinite;
+}
+
+.crc-cleanup-batch-progress-spinner svg {
+  width: 18px;
+  height: 18px;
+  color: var(--interactive-accent);
+}
+
+.crc-cleanup-batch-progress-title {
+  font-size: var(--font-ui-medium);
+  font-weight: 500;
+}
+
+.crc-cleanup-batch-progress-stats {
+  margin-bottom: 12px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.crc-cleanup-batch-progress-bar-container {
+  height: 8px;
+  background: var(--background-modifier-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.crc-cleanup-batch-progress-bar {
+  height: 100%;
+  background: var(--interactive-accent);
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.crc-cleanup-batch-progress-file {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+  font-family: var(--font-monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 
@@ -33926,10 +33998,10 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2025-12-31 02:10:34 UTC
+ * Build completed: 2025-12-31 02:45:59 UTC
  * Components processed: 40
- * Total lines: 33543
- * Total size: 663.76 KB
+ * Total lines: 33615
+ * Total size: 665.36 KB
  * Build duration: 0.04 seconds
  *
  * Component breakdown:
@@ -33943,7 +34015,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - place-modals.css: 932 lines, 17.28 KB
  * - media-modals.css: 1928 lines, 36.72 KB
  * - import-export-wizard.css: 1779 lines, 33.41 KB
- * - cleanup-wizard.css: 2134 lines, 39.23 KB
+ * - cleanup-wizard.css: 2206 lines, 40.82 KB
  * - duplicate-detection.css: 163 lines, 2.82 KB
  * - tree-statistics.css: 41 lines, 0.6 KB
  * - validation.css: 79 lines, 1.41 KB

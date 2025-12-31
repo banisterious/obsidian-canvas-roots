@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.18.x](#v018x)
+  - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4-v01811)
   - [Property Naming Normalization](#property-naming-normalization-v01811)
   - [Custom Map Authoring](#custom-map-authoring-v01810)
   - [Nested Properties Redesign](#nested-properties-redesign-v0189)
@@ -79,6 +80,46 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.18.x
+
+### Cleanup Wizard Phase 4 (v0.18.11)
+
+User experience refinements for the Post-Import Cleanup Wizard, improving accessibility and feedback during batch operations.
+
+**Features:**
+
+| Feature | Description |
+|---------|-------------|
+| Batch Progress Indicators | Real-time progress bars during batch operations (Steps 2-6, 10-14) showing current/total count and current file |
+| Keyboard Navigation | Full keyboard accessibility: arrow keys for tile selection, Enter/Space to activate, Escape to go back |
+
+**Batch Progress Implementation:**
+
+- Progress callbacks added to all batch methods in `DataQualityService` and migration services
+- UI re-renders every 5 items to show progress without excessive updates
+- Displays "Processing X of Y notes..." with animated progress bar
+- Shows current filename being processed
+
+**Keyboard Navigation Implementation:**
+
+- Arrow keys navigate between tiles on overview screen
+- Enter/Space activates focused tile
+- Escape returns to overview or closes modal from step view
+- ARIA attributes (role, aria-label) for screen reader accessibility
+- Visual focus indicators matching hover styles
+
+**Remaining Phase 4 Tasks (Deferred):**
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Step Reordering | Deferred | Drag-drop tiles with dependency validation |
+| Cleanup Profiles | Deferred | Save/load named configurations |
+| Step Animations | Deferred | Smooth transitions between views |
+| Schema Integration | Deferred | Depends on schema validation feature |
+
+**Documentation:**
+- See [Cleanup Wizard Phase 4 Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/cleanup-wizard-phase4.md) for detailed specifications
+
+---
 
 ### Property Naming Normalization (v0.18.11)
 

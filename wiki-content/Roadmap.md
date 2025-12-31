@@ -9,7 +9,6 @@ This document outlines planned features for Canvas Roots. For completed features
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
   - [Edit Person Modal: Events & Sources](#edit-person-modal-events--sources) 📋 Medium
-  - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Staging Management](#staging-management) 💡 Low
@@ -36,6 +35,7 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.18.11 | [Cleanup Wizard Phase 4](Release-History#cleanup-wizard-phase-4-v01811) | Batch progress indicators, keyboard navigation for accessibility |
 | v0.18.11 | [Property Naming Normalization](Release-History#property-naming-normalization-v01811) | `child` → `children` migration, Cleanup Wizard Step 14, documentation updates |
 | v0.18.10 | [Custom Map Authoring](Release-History#custom-map-authoring-v01810) | 4-step Map Creation Wizard, right-click to create places, draggable place markers with undo, icon-only Map View toolbar |
 | v0.18.9 | [Nested Properties Redesign](Release-History#nested-properties-redesign-v0189) | Flat property format for evidence tracking (`sourced_*`) and life events (`life_events` → event notes), 13-step Cleanup Wizard |
@@ -90,38 +90,6 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **Documentation:**
 - See [Edit Person Events & Sources Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/edit-person-events-sources.md) for detailed specifications
-
----
-
-### Cleanup Wizard Phase 4
-
-**Priority:** 📋 Medium — UX polish and customization for the Post-Import Cleanup Wizard
-
-**Status:** Planning | Depends on v0.17.0 completion
-
-**Summary:** User experience refinements for the Post-Import Cleanup Wizard. These enhancements improve accessibility, allow workflow customization, and add visual polish without changing core functionality.
-
-**Planned Features:**
-
-| Task | Feature | Value |
-|------|---------|-------|
-| 1 | Batch Progress Indicators | Progress bars for large batch operations (Steps 2-6, 10) |
-| 2 | Keyboard Navigation | Arrow keys, Enter/Escape, number shortcuts for accessibility |
-| 3 | Step Reordering | Drag-drop tiles with dependency validation |
-| 4 | Cleanup Profiles | Save/load named configurations (Full, Quick, Places Only) |
-| 5 | Step Transition Animations | Smooth tile expansion, slide transitions, staggered results |
-| 6 | Schema Integration | Hook into future schema validation system |
-
-**Implementation Order:**
-1. Batch progress indicators (high priority, UX improvement for large vaults)
-2. Keyboard navigation (high priority, accessibility)
-3. Animations (quick UX win)
-4. Cleanup profiles (power user feature)
-5. Step reordering (complex, may not be needed if profiles suffice)
-6. Schema integration (deferred until schema validation exists)
-
-**Documentation:**
-- See [Cleanup Wizard Phase 4 Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/cleanup-wizard-phase4.md) for detailed specifications
 
 ---
 
