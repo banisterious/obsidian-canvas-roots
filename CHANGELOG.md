@@ -33,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Import notes attached to events appended to event note content
   - Import notes attached to places appended to place note content
 
+### Fixed
+
+- **Step/adoptive parent canvas positioning** - Fixed step/adoptive parents not rendering on generated canvas trees; positioning pass was missing after layout engine ([#75](https://github.com/banisterious/obsidian-canvas-roots/issues/75))
+
 ---
 
 ## [0.18.12] - 2025-12-31
