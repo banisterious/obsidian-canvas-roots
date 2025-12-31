@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Adoptive parent relationship fixes** - Multiple fixes for adoptive parent relationships ([#75](https://github.com/banisterious/obsidian-canvas-roots/issues/75)):
+  - Added `adoptive_parent`/`adoptive_parent_id` gender-neutral property support alongside existing `adoptive_father`/`adoptive_mother`
+  - Added `adopted_child`/`adopted_child_id` parsing from parent's perspective with automatic reverse relationship
+  - Fixed `parents_id` validation false positive ("Child doesn't list this person as parent")
+  - Fixed adoptive parents rendering in Family Chart when biological parents also exist
+  - Adoptive parents now appear on canvas trees when relationship is defined from either direction
 - **Dynamic block metadata timing** - Timeline and relationships blocks now show "Waiting for metadata..." instead of errors when opened on newly created person notes, then auto-refresh when ready ([#74](https://github.com/banisterious/obsidian-canvas-roots/issues/74))
 - **Timeline event detection** - Timeline block now listens for event note changes and file creation, so new events appear without requiring a page refresh ([#74](https://github.com/banisterious/obsidian-canvas-roots/issues/74))
 - **Family Chart color dropdown** - Removed non-functional color scheme dropdown from Family Chart toolbar; sex-based coloring remains available via the palette button ([#72](https://github.com/banisterious/obsidian-canvas-roots/issues/72))
