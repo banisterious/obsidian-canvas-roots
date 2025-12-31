@@ -4796,50 +4796,52 @@ export default class CanvasRootsPlugin extends Plugin {
 	 * Opens source picker, then adds the selected source to the person's sources
 	 */
 	private addSourceToPersonNote(file: TFile): void {
-		new SourcePickerModal(this.app, this, async (source) => {
-			// Get current sources from frontmatter
-			const cache = this.app.metadataCache.getFileCache(file);
-			const frontmatter = cache?.frontmatter || {};
+		new SourcePickerModal(this.app, this, {
+			onSelect: async (source) => {
+				// Get current sources from frontmatter
+				const cache = this.app.metadataCache.getFileCache(file);
+				const frontmatter = cache?.frontmatter || {};
 
-			// Find the next available source slot
-			let nextSlot = 1;
-			if (frontmatter.source) {
-				nextSlot = 2;
-				while (frontmatter[`source_${nextSlot}`]) {
-					nextSlot++;
+				// Find the next available source slot
+				let nextSlot = 1;
+				if (frontmatter.source) {
+					nextSlot = 2;
+					while (frontmatter[`source_${nextSlot}`]) {
+						nextSlot++;
+					}
 				}
-			}
 
-			// Create the wikilink
-			const sourceLink = `[[${source.filePath.replace(/\.md$/, '')}]]`;
+				// Create the wikilink
+				const sourceLink = `[[${source.filePath.replace(/\.md$/, '')}]]`;
 
-			// Check if this source is already linked
-			const existingSources: string[] = [];
-			if (frontmatter.source) existingSources.push(String(frontmatter.source));
-			for (let i = 2; i <= 50; i++) {
-				const key = `source_${i}`;
-				if (frontmatter[key]) {
-					existingSources.push(String(frontmatter[key]));
-				} else {
-					break;
+				// Check if this source is already linked
+				const existingSources: string[] = [];
+				if (frontmatter.source) existingSources.push(String(frontmatter.source));
+				for (let i = 2; i <= 50; i++) {
+					const key = `source_${i}`;
+					if (frontmatter[key]) {
+						existingSources.push(String(frontmatter[key]));
+					} else {
+						break;
+					}
 				}
-			}
 
-			if (existingSources.some(s => s.includes(source.filePath.replace(/\.md$/, '')))) {
-				new Notice(`Source "${source.title}" is already linked to this person`);
-				return;
-			}
-
-			// Add the source to frontmatter
-			await this.app.fileManager.processFrontMatter(file, (fm) => {
-				if (nextSlot === 1) {
-					fm.source = sourceLink;
-				} else {
-					fm[`source_${nextSlot}`] = sourceLink;
+				if (existingSources.some(s => s.includes(source.filePath.replace(/\.md$/, '')))) {
+					new Notice(`Source "${source.title}" is already linked to this person`);
+					return;
 				}
-			});
 
-			new Notice(`Linked source: ${source.title}`);
+				// Add the source to frontmatter
+				await this.app.fileManager.processFrontMatter(file, (fm) => {
+					if (nextSlot === 1) {
+						fm.source = sourceLink;
+					} else {
+						fm[`source_${nextSlot}`] = sourceLink;
+					}
+				});
+
+				new Notice(`Linked source: ${source.title}`);
+			}
 		}).open();
 	}
 

@@ -27,6 +27,18 @@ interface FilterOptions {
 }
 
 /**
+ * Options for configuring the SourcePickerModal
+ */
+export interface SourcePickerOptions {
+	/** Callback when a source is selected */
+	onSelect: (source: SourceNote) => void | Promise<void>;
+	/** cr_ids of sources to exclude from the list (e.g., already linked) */
+	excludeSources?: string[];
+	/** Whether to show the "Create new" button (default: true) */
+	allowCreate?: boolean;
+}
+
+/**
  * Source Picker Modal
  * Allows users to search and select a source from the vault
  */
@@ -35,7 +47,7 @@ export class SourcePickerModal extends Modal {
 	private searchQuery: string = '';
 	private allSources: SourceNote[] = [];
 	private filteredSources: SourceNote[] = [];
-	private onSelect: (source: SourceNote) => void | Promise<void>;
+	private options: SourcePickerOptions;
 	private searchInput!: HTMLInputElement;
 	private resultsContainer!: HTMLElement;
 	private sortOption: SortOption = 'title-asc';
@@ -44,10 +56,13 @@ export class SourcePickerModal extends Modal {
 		confidence: 'all'
 	};
 
-	constructor(app: App, plugin: CanvasRootsPlugin, onSelect: (source: SourceNote) => void | Promise<void>) {
+	constructor(app: App, plugin: CanvasRootsPlugin, options: SourcePickerOptions) {
 		super(app);
 		this.plugin = plugin;
-		this.onSelect = onSelect;
+		this.options = {
+			allowCreate: true,  // Default to true
+			...options
+		};
 	}
 
 	onOpen(): void {
@@ -74,7 +89,15 @@ export class SourcePickerModal extends Modal {
 	 */
 	private loadSources(): void {
 		const sourceService = new SourceService(this.app, this.plugin.settings);
-		this.allSources = sourceService.getAllSources();
+		let sources = sourceService.getAllSources();
+
+		// Filter out excluded sources if specified
+		if (this.options.excludeSources && this.options.excludeSources.length > 0) {
+			const excludeSet = new Set(this.options.excludeSources);
+			sources = sources.filter(s => !excludeSet.has(s.crId));
+		}
+
+		this.allSources = sources;
 
 		// Initial sort by title
 		this.sortSources();
@@ -137,24 +160,26 @@ export class SourcePickerModal extends Modal {
 		titleSection.appendChild(icon);
 		titleSection.appendText('Select source');
 
-		// Create new source button
-		const createBtn = header.createEl('button', { cls: 'mod-cta cr-source-picker-create-btn' });
-		createBtn.createSpan({ text: 'Create new' });
-		createBtn.addEventListener('click', () => {
-			this.close();
-			new CreateSourceModal(this.app, this.plugin, {
-				onSuccess: (file) => {
-					// After creating, get the source and call onSelect
-					if (file) {
-						const sourceService = new SourceService(this.app, this.plugin.settings);
-						const source = sourceService.getSourceByPath(file.path);
-						if (source) {
-							void this.onSelect(source);
+		// Create new source button (conditionally shown)
+		if (this.options.allowCreate !== false) {
+			const createBtn = header.createEl('button', { cls: 'mod-cta cr-source-picker-create-btn' });
+			createBtn.createSpan({ text: 'Create new' });
+			createBtn.addEventListener('click', () => {
+				this.close();
+				new CreateSourceModal(this.app, this.plugin, {
+					onSuccess: (file) => {
+						// After creating, get the source and call onSelect
+						if (file) {
+							const sourceService = new SourceService(this.app, this.plugin.settings);
+							const source = sourceService.getSourceByPath(file.path);
+							if (source) {
+								void this.options.onSelect(source);
+							}
 						}
 					}
-				}
-			}).open();
-		});
+				}).open();
+			});
+		}
 
 		// Search section
 		const searchSection = contentEl.createDiv({ cls: 'crc-picker-search' });
@@ -355,7 +380,7 @@ export class SourcePickerModal extends Modal {
 
 		// Click handler
 		card.addEventListener('click', () => {
-			void this.onSelect(source);
+			void this.options.onSelect(source);
 			this.close();
 		});
 

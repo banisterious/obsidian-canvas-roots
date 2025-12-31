@@ -103,6 +103,17 @@ export interface PersonFrontmatter {
 	 * undefined = not assessed (distinct from 0 = unidentified)
 	 */
 	research_level?: ResearchLevel;
+	/**
+	 * General person-level sources (distinct from fact-level sourced_* properties)
+	 * Array of wikilinks to source notes that document this person.
+	 * Migrated from legacy source, source_2, source_3 properties by SourceMigrationService.
+	 */
+	sources?: string[];
+	/**
+	 * Companion cr_id array for sources (follows children/children_id pattern)
+	 * Enables reliable linking even when source notes are renamed.
+	 */
+	sources_id?: string[];
 	// Index signature for dynamic properties (spouse1, spouse1_id, spouse2, etc.)
 	[key: string]: string | string[] | number | SourcedFacts | undefined;
 }

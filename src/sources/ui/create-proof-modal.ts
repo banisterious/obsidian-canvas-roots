@@ -316,19 +316,21 @@ export class CreateProofModal extends Modal {
 	}
 
 	private addEvidence(): void {
-		new SourcePickerModal(this.app, this.plugin, (source) => {
-			// Create wikilink from source file path
-			const fileName = source.filePath.split('/').pop()?.replace('.md', '') || source.title;
-			const wikilink = `[[${fileName}]]`;
+		new SourcePickerModal(this.app, this.plugin, {
+			onSelect: (source) => {
+				// Create wikilink from source file path
+				const fileName = source.filePath.split('/').pop()?.replace('.md', '') || source.title;
+				const wikilink = `[[${fileName}]]`;
 
-			// Add new evidence item
-			this.evidence.push({
-				source: wikilink,
-				information: '',
-				supports: 'moderately'
-			});
+				// Add new evidence item
+				this.evidence.push({
+					source: wikilink,
+					information: '',
+					supports: 'moderately'
+				});
 
-			this.renderEvidenceList();
+				this.renderEvidenceList();
+			}
 		}).open();
 	}
 

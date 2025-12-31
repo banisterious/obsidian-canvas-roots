@@ -4138,37 +4138,39 @@ export class ControlCenterModal extends Modal {
 		}
 
 		// Open source picker modal
-		new SourcePickerModal(this.app, this.plugin, async (source) => {
-			// Create wikilink from source file path
-			const sourceFileName = source.filePath.split('/').pop()?.replace('.md', '') || source.title;
-			const wikilink = `[[${sourceFileName}]]`;
+		new SourcePickerModal(this.app, this.plugin, {
+			onSelect: async (source) => {
+				// Create wikilink from source file path
+				const sourceFileName = source.filePath.split('/').pop()?.replace('.md', '') || source.title;
+				const wikilink = `[[${sourceFileName}]]`;
 
-			// Update using new flat sourced_* property
-			await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-				const propName = FACT_KEY_TO_SOURCED_PROPERTY[factKey];
+				// Update using new flat sourced_* property
+				await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+					const propName = FACT_KEY_TO_SOURCED_PROPERTY[factKey];
 
-				// Get existing sources array (normalize to array)
-				let sources: string[] = [];
-				if (frontmatter[propName]) {
-					if (Array.isArray(frontmatter[propName])) {
-						sources = frontmatter[propName] as string[];
-					} else {
-						sources = [String(frontmatter[propName])];
+					// Get existing sources array (normalize to array)
+					let sources: string[] = [];
+					if (frontmatter[propName]) {
+						if (Array.isArray(frontmatter[propName])) {
+							sources = frontmatter[propName] as string[];
+						} else {
+							sources = [String(frontmatter[propName])];
+						}
 					}
-				}
 
-				// Add the source if not already present
-				if (!sources.includes(wikilink)) {
-					sources.push(wikilink);
-					frontmatter[propName] = sources;
-					new Notice(`Added "${source.title}" as source for ${FACT_KEY_LABELS[factKey]}`);
-				} else {
-					new Notice(`"${source.title}" is already linked to ${FACT_KEY_LABELS[factKey]}`);
-				}
-			});
+					// Add the source if not already present
+					if (!sources.includes(wikilink)) {
+						sources.push(wikilink);
+						frontmatter[propName] = sources;
+						new Notice(`Added "${source.title}" as source for ${FACT_KEY_LABELS[factKey]}`);
+					} else {
+						new Notice(`"${source.title}" is already linked to ${FACT_KEY_LABELS[factKey]}`);
+					}
+				});
 
-			// Refresh the people tab to show updated coverage
-			this.showPeopleTab();
+				// Refresh the people tab to show updated coverage
+				this.showPeopleTab();
+			}
 		}).open();
 	}
 
