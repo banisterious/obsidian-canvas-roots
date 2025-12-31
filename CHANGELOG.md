@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.18.13] - 2025-12-31
+
+### Added
+
+- **Gramps Notes Import** - Import notes attached to Gramps entities during Gramps XML import ([#36](https://github.com/banisterious/obsidian-canvas-roots/issues/36), [#76](https://github.com/banisterious/obsidian-canvas-roots/issues/76), [#77](https://github.com/banisterious/obsidian-canvas-roots/issues/77)):
+
+  **Person Notes (Phase 1)**
+  - Import notes attached to persons as "## Notes" section at bottom of person note
+  - Multiple notes organized by type (e.g., "### Research", "### Person Note")
+  - Style conversion: bold, italic, strikethrough, underline, superscript, subscript, links
+  - Formatted (preformatted) notes wrapped in code fences to preserve whitespace
+  - Privacy flag: `private: true` added to frontmatter if any note has privacy flag
+  - Import wizard toggle to enable/disable notes import (enabled by default)
+
+  **Family Notes Handling**
+  - Family-level notes attached to marriage/family events instead of separate entity
+  - Preserves notes without requiring new Family entity type
+
+  **Event & Place Notes (Phase 2)**
+  - Import notes attached to events appended to event note content
+  - Import notes attached to places appended to place note content
+
+---
+
 ## [0.18.12] - 2025-12-31
 
 ### Fixed

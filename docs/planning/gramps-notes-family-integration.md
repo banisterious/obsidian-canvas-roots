@@ -2,11 +2,17 @@
 
 Planning document for Gramps notes import/export and potentially introducing a Family entity type.
 
-- **Status:** Planning
+- **Status:** In Progress (Phase 1 complete, Phase 2 in progress)
 - **GitHub Issue:** [#36](https://github.com/banisterious/obsidian-canvas-roots/issues/36)
+- **Sub-issues:**
+  - [#76](https://github.com/banisterious/obsidian-canvas-roots/issues/76) Phase 1: Embedded Notes ✅
+  - [#77](https://github.com/banisterious/obsidian-canvas-roots/issues/77) Phase 2: Other Entity Notes (in progress)
+  - [#79](https://github.com/banisterious/obsidian-canvas-roots/issues/79) Phase 3: Family Entity (Optional)
+  - [#80](https://github.com/banisterious/obsidian-canvas-roots/issues/80) Phase 4: Separate Note Files (Optional)
+  - [#81](https://github.com/banisterious/obsidian-canvas-roots/issues/81) Phase 5: Gramps Export & Sync Support
 - **Priority:** Medium
 - **Created:** 2025-12-26
-- **Updated:** 2025-12-28
+- **Updated:** 2025-12-31
 
 ---
 
@@ -355,15 +361,33 @@ The `priv` attribute on Gramps notes indicates private/sensitive content.
 
 ## Technical Notes
 
-### Files to Modify
+### Implementation Progress
 
-**Phase 1:**
-- `src/gramps/gramps-types.ts` - Add `noteRefs` to `GrampsPerson`
-- `src/gramps/gramps-parser.ts` - Parse person noteref elements
-- `src/gramps/gramps-importer.ts` - Resolve and append notes to content
-- `src/ui/import-wizard-modal.ts` - Add import toggle
+#### Phase 1: Embedded Notes ✅ (Completed 2025-12-31)
 
-**Phase 3 (Family Entity):**
+**Files Modified:**
+- `src/gramps/gramps-types.ts` - Added `noteRefs` to `GrampsPerson`, `GrampsEvent`, `GrampsPlace`, `GrampsFamily`; extended `GrampsNote` with `format`, `private`, `styles` fields; added `GrampsNoteFormat` and `GrampsStyleRange` types
+- `src/gramps/gramps-parser.ts` - Parse `<noteref>` elements for persons, events, places, families; parse note `format`, `priv`, and `<style>` elements
+- `src/gramps/gramps-note-converter.ts` - **New file**: Markdown conversion with style handling (bold, italic, strikethrough, links, etc.)
+- `src/gramps/gramps-importer.ts` - Resolve and append notes to person content; added `importNotes` option
+- `src/core/person-note-writer.ts` - Added `notesContent` and `private` fields to `PersonData`
+- `src/ui/import-wizard-modal.ts` - Added "Notes" toggle (Gramps only, enabled by default)
+
+**Key Features:**
+- Style conversion: bold → `**`, italic → `*`, strikethrough → `~~`, links → `[]()`
+- Format handling: FLOWED (normal text) vs FORMATTED (code fence)
+- Privacy flag: `private: true` in frontmatter if any note has `priv="1"`
+- Family notes fallback: attached to marriage/family events instead of separate entity
+- Import wizard toggle to enable/disable notes import
+
+#### Phase 2: Other Entity Notes (In Progress)
+
+**Files to Modify:**
+- `src/gramps/gramps-importer.ts` - Resolve notes for events and places
+- `src/core/event-note-writer.ts` - Add notes content support
+- `src/core/place-note-writer.ts` - Add notes content support
+
+#### Phase 3 (Family Entity - Future):
 - `src/models/family.ts` - New Family model
 - `src/core/family-service.ts` - New service layer
 - `src/gramps/gramps-importer.ts` - Create family notes
