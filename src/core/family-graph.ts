@@ -42,9 +42,12 @@ export interface PersonNode {
 	stepfatherCrIds: string[];
 	stepmotherCrIds: string[];
 
-	// Adoptive parent relationships
+	// Adoptive parent relationships (gender-specific)
 	adoptiveFatherCrId?: string;
 	adoptiveMotherCrId?: string;
+
+	// Gender-neutral adoptive parent relationships
+	adoptiveParentCrIds: string[];
 
 	// Gender-neutral parent relationships (opt-in via settings)
 	parentCrIds: string[];
@@ -755,7 +758,7 @@ export class FamilyGraphService {
 
 		// Add adoptive parents if enabled (with distinct edge type)
 		if (options.includeAdoptiveParents) {
-			// Adoptive father
+			// Adoptive father (gender-specific)
 			if (node.adoptiveFatherCrId) {
 				const adoptiveFather = this.personCache.get(node.adoptiveFatherCrId);
 				if (adoptiveFather && this.shouldIncludePerson(adoptiveFather, options) && !nodes.has(node.adoptiveFatherCrId)) {
@@ -771,7 +774,7 @@ export class FamilyGraphService {
 				}
 			}
 
-			// Adoptive mother
+			// Adoptive mother (gender-specific)
 			if (node.adoptiveMotherCrId) {
 				const adoptiveMother = this.personCache.get(node.adoptiveMotherCrId);
 				if (adoptiveMother && this.shouldIncludePerson(adoptiveMother, options) && !nodes.has(node.adoptiveMotherCrId)) {
@@ -782,6 +785,22 @@ export class FamilyGraphService {
 						type: 'relationship',
 						relationshipTypeId: 'adoptive_parent',
 						relationshipLabel: 'Adoptive mother'
+					});
+					// Don't recurse ancestors for adoptive parents (they're not blood relatives)
+				}
+			}
+
+			// Gender-neutral adoptive parents
+			for (const adoptiveParentCrId of node.adoptiveParentCrIds) {
+				const adoptiveParent = this.personCache.get(adoptiveParentCrId);
+				if (adoptiveParent && this.shouldIncludePerson(adoptiveParent, options) && !nodes.has(adoptiveParentCrId)) {
+					nodes.set(adoptiveParentCrId, adoptiveParent);
+					edges.push({
+						from: adoptiveParent.crId,
+						to: node.crId,
+						type: 'relationship',
+						relationshipTypeId: 'adoptive_parent',
+						relationshipLabel: 'Adoptive parent'
 					});
 					// Don't recurse ancestors for adoptive parents (they're not blood relatives)
 				}
@@ -976,7 +995,7 @@ export class FamilyGraphService {
 
 			// Adoptive parents (with distinct edge type, default enabled for full trees)
 			if (includeAdoptiveParents) {
-				// Adoptive father
+				// Adoptive father (gender-specific)
 				if (currentPerson.adoptiveFatherCrId) {
 					const adoptiveFather = this.personCache.get(currentPerson.adoptiveFatherCrId);
 					if (adoptiveFather && !visited.has(currentPerson.adoptiveFatherCrId)) {
@@ -997,7 +1016,7 @@ export class FamilyGraphService {
 					}
 				}
 
-				// Adoptive mother
+				// Adoptive mother (gender-specific)
 				if (currentPerson.adoptiveMotherCrId) {
 					const adoptiveMother = this.personCache.get(currentPerson.adoptiveMotherCrId);
 					if (adoptiveMother && !visited.has(currentPerson.adoptiveMotherCrId)) {
@@ -1015,6 +1034,27 @@ export class FamilyGraphService {
 							});
 						}
 						toProcess.push(currentPerson.adoptiveMotherCrId);
+					}
+				}
+
+				// Gender-neutral adoptive parents
+				for (const adoptiveParentCrId of currentPerson.adoptiveParentCrIds) {
+					const adoptiveParent = this.personCache.get(adoptiveParentCrId);
+					if (adoptiveParent && !visited.has(adoptiveParentCrId)) {
+						// Add relationship edge (avoid duplicates)
+						if (!edges.some(e =>
+							e.from === adoptiveParentCrId && e.to === currentCrId &&
+							e.relationshipTypeId === 'adoptive_parent'
+						)) {
+							edges.push({
+								from: adoptiveParentCrId,
+								to: currentCrId,
+								type: 'relationship',
+								relationshipTypeId: 'adoptive_parent',
+								relationshipLabel: 'Adoptive parent'
+							});
+						}
+						toProcess.push(adoptiveParentCrId);
 					}
 				}
 			}
@@ -1296,7 +1336,7 @@ export class FamilyGraphService {
 		const stepmotherValue = this.resolveProperty<string | string[]>(fm, 'stepmother');
 		const stepmotherCrIds = this.extractCrIdsFromField(stepmotherIdValue, stepmotherValue);
 
-		// Parse adoptive parent relationships
+		// Parse adoptive parent relationships (gender-specific)
 		const adoptiveFatherIdValue = this.resolveProperty<string>(fm, 'adoptive_father_id');
 		const adoptiveFatherValue = this.resolveProperty<string>(fm, 'adoptive_father');
 		const adoptiveFatherCrId = adoptiveFatherIdValue || this.extractCrIdFromWikilink(adoptiveFatherValue);
@@ -1304,6 +1344,11 @@ export class FamilyGraphService {
 		const adoptiveMotherIdValue = this.resolveProperty<string>(fm, 'adoptive_mother_id');
 		const adoptiveMotherValue = this.resolveProperty<string>(fm, 'adoptive_mother');
 		const adoptiveMotherCrId = adoptiveMotherIdValue || this.extractCrIdFromWikilink(adoptiveMotherValue);
+
+		// Parse gender-neutral adoptive parent relationships (can be array)
+		const adoptiveParentIdValue = this.resolveProperty<string | string[]>(fm, 'adoptive_parent_id');
+		const adoptiveParentValue = this.resolveProperty<string | string[]>(fm, 'adoptive_parent');
+		const adoptiveParentCrIds = this.extractCrIdsFromField(adoptiveParentIdValue, adoptiveParentValue);
 
 		// Parse relationships array for family-relevant types
 		// This supplements direct properties (stepfather, adoptive_father, etc.)
@@ -1446,9 +1491,11 @@ export class FamilyGraphService {
 			// Step-parents
 			stepfatherCrIds,
 			stepmotherCrIds,
-			// Adoptive parents
+			// Adoptive parents (gender-specific)
 			adoptiveFatherCrId: adoptiveFatherCrId || undefined,
 			adoptiveMotherCrId: adoptiveMotherCrId || undefined,
+			// Gender-neutral adoptive parents
+			adoptiveParentCrIds,
 			// Gender-neutral parents
 			parentCrIds,
 			// Spouses and children
