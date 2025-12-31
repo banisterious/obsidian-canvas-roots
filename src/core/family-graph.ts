@@ -49,6 +49,9 @@ export interface PersonNode {
 	// Gender-neutral adoptive parent relationships
 	adoptiveParentCrIds: string[];
 
+	// Adopted children (from parent's perspective - used to infer reverse relationship)
+	adoptedChildCrIds: string[];
+
 	// Gender-neutral parent relationships (opt-in via settings)
 	parentCrIds: string[];
 
@@ -1193,6 +1196,15 @@ export class FamilyGraphService {
 			person.childrenCrIds = person.childrenCrIds.filter(childCrId =>
 				this.personCache.has(childCrId)
 			);
+
+			// Build reverse adoptive parent relationships from adopted_child declarations
+			// If this person has adopted_child: X, then X should have this person as adoptive parent
+			for (const adoptedChildId of person.adoptedChildCrIds) {
+				const adoptedChild = this.personCache.get(adoptedChildId);
+				if (adoptedChild && !adoptedChild.adoptiveParentCrIds.includes(crId)) {
+					adoptedChild.adoptiveParentCrIds.push(crId);
+				}
+			}
 		}
 
 		// Third pass: count source backlinks for each person
@@ -1350,6 +1362,11 @@ export class FamilyGraphService {
 		const adoptiveParentValue = this.resolveProperty<string | string[]>(fm, 'adoptive_parent');
 		const adoptiveParentCrIds = this.extractCrIdsFromField(adoptiveParentIdValue, adoptiveParentValue);
 
+		// Parse adopted children (from parent's perspective)
+		const adoptedChildIdValue = this.resolveProperty<string | string[]>(fm, 'adopted_child_id');
+		const adoptedChildValue = this.resolveProperty<string | string[]>(fm, 'adopted_child');
+		const adoptedChildCrIds = this.extractCrIdsFromField(adoptedChildIdValue, adoptedChildValue);
+
 		// Parse relationships array for family-relevant types
 		// This supplements direct properties (stepfather, adoptive_father, etc.)
 		const relationshipsFromArray = this.parseRelationshipsArrayForFamilyGraph(fm);
@@ -1496,6 +1513,8 @@ export class FamilyGraphService {
 			adoptiveMotherCrId: adoptiveMotherCrId || undefined,
 			// Gender-neutral adoptive parents
 			adoptiveParentCrIds,
+			// Adopted children (from parent's perspective)
+			adoptedChildCrIds,
 			// Gender-neutral parents
 			parentCrIds,
 			// Spouses and children

@@ -367,6 +367,7 @@ export class CrossImportDetectionService {
 			adoptiveFatherCrId: this.extractCrId(fm.adoptive_father),
 			adoptiveMotherCrId: this.extractCrId(fm.adoptive_mother),
 			adoptiveParentCrIds: this.extractCrIds(fm.adoptive_parent),
+			adoptedChildCrIds: this.extractCrIds(fm.adopted_child),
 			parentCrIds: this.extractCrIds(fm.parents),
 			spouseCrIds: this.extractCrIds(fm.spouse),
 			childrenCrIds: this.extractCrIds(fm.children),
