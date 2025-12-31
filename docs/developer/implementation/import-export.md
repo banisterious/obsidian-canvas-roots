@@ -217,6 +217,139 @@ const personData: PersonData = {
 
 ---
 
+## Gramps Notes Handling
+
+When importing Gramps XML files, notes attached to entities are parsed, converted to Markdown, and appended to the corresponding Obsidian notes.
+
+**Note parsing flow:**
+
+```mermaid
+flowchart TD
+    A[Parse XML] --> B[Extract noteref elements]
+    B --> C[Build noteRefs arrays on entities]
+    C --> D[Parse note elements]
+    D --> E[Extract text, format, priv, styles]
+    E --> F[Store in notes Map by handle]
+    F --> G[During entity import]
+    G --> H[Resolve noteRefs to GrampsNote objects]
+    H --> I[Convert to Markdown]
+    I --> J[Append to entity note content]
+```
+
+**Key modules:**
+
+| File | Purpose |
+|------|---------|
+| `src/gramps/gramps-types.ts` | `GrampsNote`, `GrampsStyleRange`, `GrampsNoteFormat` types |
+| `src/gramps/gramps-parser.ts` | Parses `<noteref>` and `<note>` elements from XML |
+| `src/gramps/gramps-note-converter.ts` | Converts notes to Markdown with style handling |
+| `src/gramps/gramps-importer.ts` | Resolves and appends notes during entity import |
+
+**Data structures:**
+
+```typescript
+// Note format types
+type GrampsNoteFormat = 'flowed' | 'formatted';
+
+// Style range within note text
+interface GrampsStyleRange {
+  type: 'bold' | 'italic' | 'underline' | 'strikethrough' | 'superscript' | 'subscript' | 'link';
+  start: number;   // Start offset in text
+  end: number;     // End offset in text
+  value?: string;  // For links, the URL
+}
+
+// Note record
+interface GrampsNote {
+  handle: string;
+  id?: string;
+  type?: string;           // e.g., "Person Note", "Research"
+  text?: string;
+  format?: GrampsNoteFormat;
+  private?: boolean;       // Privacy flag (priv="1")
+  styles?: GrampsStyleRange[];
+}
+
+// Added to entity interfaces
+interface GrampsPerson {
+  // ... existing fields
+  noteRefs: string[];  // Handle links to notes
+}
+```
+
+**Style conversion:**
+
+The `gramps-note-converter.ts` module converts Gramps style ranges to Markdown:
+
+```typescript
+function wrapWithStyle(content: string, style: GrampsStyleRange): string {
+  switch (style.type) {
+    case 'bold':          return `**${content}**`;
+    case 'italic':        return `*${content}*`;
+    case 'strikethrough': return `~~${content}~~`;
+    case 'underline':     return `<u>${content}</u>`;
+    case 'superscript':   return `<sup>${content}</sup>`;
+    case 'subscript':     return `<sub>${content}</sub>`;
+    case 'link':          return style.value ? `[${content}](${style.value})` : content;
+    default:              return content;
+  }
+}
+```
+
+Styles are applied from end to start to preserve character positions when inserting Markdown syntax.
+
+**Format handling:**
+
+- **Flowed** (default): Normal text, whitespace not significant
+- **Formatted**: Preformatted text, wrapped in code fences to preserve whitespace
+
+```typescript
+if (note.format === 'formatted') {
+  return '```\n' + text + '\n```';
+}
+```
+
+**Note resolution during import:**
+
+```typescript
+// In GrampsImporter.importPerson()
+let notesContent: string | undefined;
+let hasPrivateNotes = false;
+
+if (options.importNotes !== false && person.noteRefs.length > 0) {
+  const resolvedNotes: GrampsNote[] = [];
+  for (const noteRef of person.noteRefs) {
+    const note = grampsData.database.notes.get(noteRef);
+    if (note) resolvedNotes.push(note);
+  }
+  if (resolvedNotes.length > 0) {
+    notesContent = formatNotesSection(resolvedNotes);
+    hasPrivateNotes = hasPrivateNote(resolvedNotes);
+  }
+}
+
+const personData: PersonData = {
+  // ... other fields
+  notesContent,
+  private: hasPrivateNotes || undefined
+};
+```
+
+**Privacy propagation:**
+
+If any note attached to an entity has `priv="1"` in Gramps, the entity note receives `private: true` in frontmatter. This enables filtering private data during export.
+
+**Entity support:**
+
+| Entity | Interface Field | Note Writer Field |
+|--------|-----------------|-------------------|
+| Person | `GrampsPerson.noteRefs` | `PersonData.notesContent` |
+| Event | `GrampsEvent.noteRefs` | `EventData.notesContent` |
+| Place | `GrampsPlace.noteRefs` | `PlaceData.notesContent` |
+| Family | `GrampsFamily.noteRefs` | Attached to family events |
+
+---
+
 ## Source Image Management
 
 Two wizard tools for managing source images: importing new images as source notes, and linking existing images to existing source notes. These tools help genealogists process large collections of source images with intelligent metadata extraction.

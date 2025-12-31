@@ -271,6 +271,7 @@ spouses:
 |----------|------|-------------|---------|
 | `cr_root` | `boolean` | Designates this person as root of a tree | `true` |
 | `collection` | `string` | User-defined grouping/collection name | `"Smith Family"` |
+| `private` | `boolean` | Marks note as containing private data (set automatically during Gramps import if any attached note has privacy flag) | `true` |
 
 ### Media Files
 
@@ -482,6 +483,12 @@ Place notes can link to media files (location photos, historical maps, floor pla
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
 | `media` | `string \| string[]` | Wikilink(s) to media files | `"[[castle-photo.jpg]]"` |
+
+### Privacy
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `private` | `boolean` | Marks note as containing private data (set automatically during Gramps import if any attached note has privacy flag) | `true` |
 
 ---
 

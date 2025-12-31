@@ -20,6 +20,7 @@ Canvas Roots supports importing and exporting family data in GEDCOM, Gramps XML,
   - [What Gets Created](#what-gets-created)
   - [Place Linking](#place-linking)
   - [Supported Event Types](#supported-event-types)
+  - [Notes Import](#notes-import)
   - [Limitations](#limitations)
 - [CSV Import/Export](#csv-importexport)
   - [Importing from CSV/TSV](#importing-from-csvtsv)
@@ -362,6 +363,46 @@ Gramps person attributes are imported when present:
 
 The `Research Level` attribute is automatically recognized from Gramps person records and imported as the `research_level` property. See [Research Level](Frontmatter-Reference#research-level) for details on the 0-6 scale.
 
+### Notes Import
+
+Notes attached to entities in Gramps are imported and appended to the corresponding Obsidian notes. The import wizard includes a **Notes** toggle (enabled by default) to control this behavior.
+
+**What gets imported:**
+
+| Entity Type | Notes Location |
+|-------------|----------------|
+| **Person** | Appended as "## Notes" section in person note |
+| **Event** | Appended as "## Notes" section in event note |
+| **Place** | Appended as "## Notes" section in place note |
+| **Family** | Attached to marriage/family events (no separate family entity) |
+
+**Note formatting:**
+
+Gramps note styling is converted to Markdown:
+
+| Gramps Style | Markdown Output |
+|--------------|-----------------|
+| Bold | `**text**` |
+| Italic | `*text*` |
+| Strikethrough | `~~text~~` |
+| Underline | `<u>text</u>` |
+| Superscript | `<sup>text</sup>` |
+| Subscript | `<sub>text</sub>` |
+| Link | `[text](url)` |
+
+**Note format handling:**
+
+- **Flowed notes** (default): Normal text, rendered as regular Markdown
+- **Formatted notes** (preformatted): Wrapped in code fences to preserve whitespace
+
+**Note types:**
+
+Each note's type from Gramps (e.g., "Person Note", "Research", "Source text") becomes a `### Heading` in the imported content, making it easy to distinguish different types of notes on the same entity.
+
+**Privacy handling:**
+
+If any note attached to an entity has the privacy flag set in Gramps (`priv="1"`), the imported Obsidian note will include `private: true` in its frontmatter. This allows you to filter or exclude private data when exporting.
+
 ### Place Type Mapping
 
 Gramps place types are preserved and mapped to Canvas Roots place types:
@@ -387,7 +428,7 @@ Media extracted from Gramps packages can be viewed using the [Media Gallery](Dyn
 
 ### Limitations
 
-- **Notes**: Gramps note records are not imported as separate notes
+- **Separate note files**: Notes are embedded in entity notes, not created as standalone files (planned for future phase)
 - **Repositories**: Repository records create properties on sources but not separate notes
 
 ## CSV Import/Export
