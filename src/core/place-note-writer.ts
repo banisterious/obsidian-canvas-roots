@@ -48,6 +48,8 @@ export interface PlaceData {
 	historicalNames?: HistoricalName[];
 	collection?: string;       // User-defined collection/grouping
 	media?: string[];          // Wikilinks to media files
+	notesContent?: string;     // Markdown notes content to append
+	private?: boolean;         // Privacy flag (if any attached note is private)
 }
 
 /**
@@ -171,20 +173,32 @@ export async function createPlaceNote(
 		frontmatter[prop('media')] = place.media;
 	}
 
+	// Privacy flag (if any attached note is private)
+	if (place.private) {
+		frontmatter[prop('private')] = true;
+	}
+
 	logger.debug('frontmatter', `Final: ${JSON.stringify(frontmatter)}`);
 
 	// Build YAML frontmatter string
 	const yamlContent = buildYamlFrontmatter(frontmatter);
 
-	// Build note content
-	const noteContent = [
+	// Build note content with optional notes section
+	const contentParts = [
 		yamlContent,
 		'',
 		`# ${cleanName}`,
 		'',
-		'',
 		''
-	].join('\n');
+	];
+
+	// Append notes content if provided
+	if (place.notesContent) {
+		contentParts.push(place.notesContent);
+	}
+
+	contentParts.push('');
+	const noteContent = contentParts.join('\n');
 
 	// Sanitize filename (remove invalid characters)
 	const filename = sanitizeFilename(cleanName || 'Untitled Place');
