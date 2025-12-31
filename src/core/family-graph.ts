@@ -683,8 +683,16 @@ export class FamilyGraphService {
 		nodes: Map<string, PersonNode>,
 		edges: FamilyEdge[],
 		options: TreeOptions,
-		currentGeneration: number
+		currentGeneration: number,
+		visited: Set<string> = new Set()
 	): void {
+		// Cycle detection: prevent infinite recursion from circular relationships
+		if (visited.has(node.crId)) {
+			logger.warn('buildAncestorTree', `Circular relationship detected at ${node.crId}, breaking cycle`);
+			return;
+		}
+		visited.add(node.crId);
+
 		// Add current node if it passes filters
 		if (!this.shouldIncludePerson(node, options)) {
 			return;
@@ -702,7 +710,7 @@ export class FamilyGraphService {
 			const father = this.personCache.get(node.fatherCrId);
 			if (father && this.shouldIncludePerson(father, options)) {
 				edges.push({ from: father.crId, to: node.crId, type: 'parent' });
-				this.buildAncestorTree(father, nodes, edges, options, currentGeneration + 1);
+				this.buildAncestorTree(father, nodes, edges, options, currentGeneration + 1, visited);
 			}
 		}
 
@@ -711,7 +719,7 @@ export class FamilyGraphService {
 			const mother = this.personCache.get(node.motherCrId);
 			if (mother && this.shouldIncludePerson(mother, options)) {
 				edges.push({ from: mother.crId, to: node.crId, type: 'parent' });
-				this.buildAncestorTree(mother, nodes, edges, options, currentGeneration + 1);
+				this.buildAncestorTree(mother, nodes, edges, options, currentGeneration + 1, visited);
 			}
 		}
 
@@ -720,7 +728,7 @@ export class FamilyGraphService {
 			const parent = this.personCache.get(parentCrId);
 			if (parent && this.shouldIncludePerson(parent, options)) {
 				edges.push({ from: parent.crId, to: node.crId, type: 'parent' });
-				this.buildAncestorTree(parent, nodes, edges, options, currentGeneration + 1);
+				this.buildAncestorTree(parent, nodes, edges, options, currentGeneration + 1, visited);
 			}
 		}
 
@@ -849,8 +857,16 @@ export class FamilyGraphService {
 		nodes: Map<string, PersonNode>,
 		edges: FamilyEdge[],
 		options: TreeOptions,
-		currentGeneration: number
+		currentGeneration: number,
+		visited: Set<string> = new Set()
 	): void {
+		// Cycle detection: prevent infinite recursion from circular relationships
+		if (visited.has(node.crId)) {
+			logger.warn('buildDescendantTree', `Circular relationship detected at ${node.crId}, breaking cycle`);
+			return;
+		}
+		visited.add(node.crId);
+
 		// Add current node if it passes filters
 		if (!this.shouldIncludePerson(node, options)) {
 			return;
@@ -879,7 +895,7 @@ export class FamilyGraphService {
 			const child = this.personCache.get(childCrId);
 			if (child && this.shouldIncludePerson(child, options)) {
 				edges.push({ from: node.crId, to: child.crId, type: 'parent' });
-				this.buildDescendantTree(child, nodes, edges, options, currentGeneration + 1);
+				this.buildDescendantTree(child, nodes, edges, options, currentGeneration + 1, visited);
 			}
 		}
 	}

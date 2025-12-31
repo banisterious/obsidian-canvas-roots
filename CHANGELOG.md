@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Step/adoptive parent canvas positioning** - Fixed step/adoptive parents not rendering on generated canvas trees; positioning pass was missing after layout engine ([#75](https://github.com/banisterious/obsidian-canvas-roots/issues/75))
+- **Circular relationship freeze** - Added cycle detection to prevent Obsidian from freezing when circular parent-child relationships exist (e.g., A is parent of B and B is parent of A); cycles are now detected and broken with a warning ([#83](https://github.com/banisterious/obsidian-canvas-roots/issues/83))
 
 ---
 
