@@ -223,30 +223,6 @@ export class FamilyChartView extends ItemView {
 		// Left side controls
 		const leftControls = toolbar.createDiv({ cls: 'cr-fcv-toolbar-left' });
 
-		// Color scheme dropdown
-		const colorGroup = leftControls.createDiv({ cls: 'cr-fcv-control-group' });
-		colorGroup.createSpan({ text: 'Color:', cls: 'cr-fcv-label' });
-		const colorSelect = colorGroup.createEl('select', { cls: 'cr-fcv-select dropdown' });
-
-		const colorOptions: { value: ColorScheme; label: string }[] = [
-			{ value: 'sex', label: 'Sex' },
-			{ value: 'generation', label: 'Generation' },
-			{ value: 'collection', label: 'Collection' },
-			{ value: 'monochrome', label: 'Monochrome' }
-		];
-
-		for (const opt of colorOptions) {
-			const option = colorSelect.createEl('option', { value: opt.value, text: opt.label });
-			if (opt.value === this.colorScheme) {
-				option.selected = true;
-			}
-		}
-
-		colorSelect.addEventListener('change', () => {
-			this.colorScheme = colorSelect.value as ColorScheme;
-			void this.refreshChart();
-		});
-
 		// Zoom controls group
 		const zoomGroup = leftControls.createDiv({ cls: 'cr-fcv-control-group cr-fcv-zoom-group' });
 
