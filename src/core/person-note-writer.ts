@@ -308,14 +308,15 @@ export async function createPersonNote(
 	}
 
 	// Children relationship(s) (dual storage)
+	// Uses 'children' (plural) per v0.18.11 property naming normalization
 	if (person.childCrId && person.childCrId.length > 0) {
 		if (person.childName && person.childName.length === person.childCrId.length) {
 			// Dual storage with both names and IDs
 			if (person.childName.length === 1) {
-				frontmatter[prop('child')] = `"${createSmartWikilink(person.childName[0], app)}"`;
+				frontmatter[prop('children')] = `"${createSmartWikilink(person.childName[0], app)}"`;
 				frontmatter[prop('children_id')] = person.childCrId[0];
 			} else {
-				frontmatter[prop('child')] = person.childName.map(c => `"${createSmartWikilink(c, app)}"`);
+				frontmatter[prop('children')] = person.childName.map(c => `"${createSmartWikilink(c, app)}"`);
 				frontmatter[prop('children_id')] = [...person.childCrId]; // Make a copy to avoid reference issues
 			}
 			logger.debug('children', `Added (dual): wikilinks=${JSON.stringify(person.childName)}, ids=${JSON.stringify(person.childCrId)}`);
