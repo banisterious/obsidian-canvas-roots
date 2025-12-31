@@ -8,6 +8,7 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
+  - [Edit Person Modal: Events & Sources](#edit-person-modal-events--sources) 📋 Medium
   - [Cleanup Wizard Phase 4](#cleanup-wizard-phase-4) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
   - [Property Naming Normalization](#property-naming-normalization) 📋 Medium
@@ -56,6 +57,39 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
+
+---
+
+### Edit Person Modal: Events & Sources
+
+**Priority:** 📋 Medium — Expand person editing with related entity linking
+
+**Status:** Planning | [#33](https://github.com/banisterious/obsidian-canvas-roots/issues/33)
+
+**Summary:** Add events and sources fields to the Edit Person modal, allowing users to manage all person-related data from a single interface instead of editing multiple notes separately.
+
+**Planned Features:**
+
+| Feature | Description |
+|---------|-------------|
+| Events section | Display events referencing this person; link existing or create new events |
+| Sources section | Multi-value picker to link source notes with create-new support |
+| Event linking | Updates event note's `persons` array to include this person |
+| Source storage | Stores as `sources` array in person frontmatter |
+
+**Technical Notes:**
+- Events use inverse relationships: event notes contain `persons: ["[[Person]]"]`
+- Linking an event from the person modal modifies the event note, not the person note
+- Sources follow the existing multi-value picker pattern (like spouses/children)
+- Uses existing `SourcePickerModal` and `CreateEventModal`
+
+**Implementation Phases:**
+1. Sources section (straightforward multi-value picker)
+2. Events section (read-only display, then link/create/unlink)
+3. Polish (form persistence, duplicate detection, display formatting)
+
+**Documentation:**
+- See [Edit Person Events & Sources Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/edit-person-events-sources.md) for detailed specifications
 
 ---
 
