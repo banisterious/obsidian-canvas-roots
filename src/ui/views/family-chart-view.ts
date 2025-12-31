@@ -1391,8 +1391,7 @@ export class FamilyChartView extends ItemView {
 
 		// family-chart stores the zoom behavior on the svg's __zoom property
 		// We need to update both the __zoom property and the visual transform
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(svgElement as any).__zoom = d3Transform;
+		(svgElement as unknown as { __zoom: d3.ZoomTransform }).__zoom = d3Transform;
 
 		// Find the transform group (the first g element that family-chart creates for the tree)
 		const transformGroup = svgSelection.select('g');

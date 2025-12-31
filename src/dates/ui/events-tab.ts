@@ -735,7 +735,9 @@ function renderExportCard(
 	const noticeIcon = createLucideIcon('info', 16);
 	deprecationNotice.appendChild(noticeIcon);
 	const noticeText = deprecationNotice.createSpan();
-	noticeText.innerHTML = 'Timeline exports are moving to <strong>Statistics & Reports → Reports → Timeline</strong> for a unified experience with all formats and options.';
+	noticeText.appendText('Timeline exports are moving to ');
+	noticeText.createEl('strong', { text: 'Statistics & Reports → Reports → Timeline' });
+	noticeText.appendText(' for a unified experience with all formats and options.');
 	const openReportsLink = deprecationNotice.createEl('a', {
 		text: 'Open Reports',
 		cls: 'crc-deprecation-notice__link'

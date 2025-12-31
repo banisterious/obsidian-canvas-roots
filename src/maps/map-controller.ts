@@ -1566,7 +1566,7 @@ export class MapController {
 			await this.disableEditMode();
 			return false;
 		} else {
-			return this.enableEditMode();
+			return this.enableImageAlignmentMode();
 		}
 	}
 

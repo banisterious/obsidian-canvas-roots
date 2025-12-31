@@ -1783,8 +1783,8 @@ export class FamilyGraphService {
 	 */
 	private normalizeToStringArray(value: unknown): string[] {
 		if (!value) return [];
-		if (Array.isArray(value)) return value.map(v => String(v));
-		return [String(value)];
+		if (Array.isArray(value)) return value.map(v => typeof v === 'string' ? v : JSON.stringify(v));
+		return [typeof value === 'string' ? value : JSON.stringify(value)];
 	}
 
 	/**

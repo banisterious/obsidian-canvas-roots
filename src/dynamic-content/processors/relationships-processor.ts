@@ -43,7 +43,7 @@ export class RelationshipsProcessor {
 			const config = this.service.parseConfig(source);
 
 			// Build context (resolves file, cr_id, person)
-			let context = this.service.buildContext(ctx);
+			const context = this.service.buildContext(ctx);
 
 			// Create a MarkdownRenderChild for proper cleanup of rendered markdown
 			const component = new MarkdownRenderChild(el);

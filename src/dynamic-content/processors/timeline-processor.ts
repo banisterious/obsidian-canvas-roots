@@ -44,7 +44,7 @@ export class TimelineProcessor {
 			const config = this.service.parseConfig(source);
 
 			// Build context (resolves file, cr_id, person)
-			let context = this.service.buildContext(ctx);
+			const context = this.service.buildContext(ctx);
 
 			// Create a MarkdownRenderChild for proper cleanup of rendered markdown
 			const component = new MarkdownRenderChild(el);
@@ -110,13 +110,13 @@ export class TimelineProcessor {
 			);
 
 			// Also listen for file creation events (for newly created event notes)
-			const createHandler = async (file: TAbstractFile) => {
+			const createHandler = (file: TAbstractFile) => {
 				if (file instanceof TFile && eventsFolder && file.path.startsWith(eventsFolder)) {
 					// Small delay to allow metadata cache to process the new file
-					setTimeout(async () => {
+					setTimeout(() => {
 						const freshContext = this.service.buildContext(ctx);
 						el.empty();
-						await this.renderer.render(el, freshContext, config, component);
+						void this.renderer.render(el, freshContext, config, component);
 					}, 100);
 				}
 			};

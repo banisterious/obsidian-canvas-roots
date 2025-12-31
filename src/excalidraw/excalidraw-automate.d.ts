@@ -141,7 +141,7 @@ export interface ExcalidrawAutomate {
 	 * Set current view to work with
 	 * @param view - Excalidraw view to target (null for API-only mode)
 	 */
-	setView(view: unknown | null): void;
+	setView(view: unknown): void;
 
 	/**
 	 * Add a rectangle element
@@ -405,6 +405,5 @@ export interface ExcalidrawAutomate {
  * @returns ExcalidrawAutomate instance or null if not available
  */
 export function getExcalidrawAutomate(): ExcalidrawAutomate | null {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return (window as any).ExcalidrawAutomate ?? null;
+	return (window as unknown as { ExcalidrawAutomate?: ExcalidrawAutomate }).ExcalidrawAutomate ?? null;
 }
