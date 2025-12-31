@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.18.12] - 2025-12-31
+
 ### Fixed
 
 - **Adoptive parent relationship fixes** - Multiple fixes for adoptive parent relationships ([#75](https://github.com/banisterious/obsidian-canvas-roots/issues/75)):
