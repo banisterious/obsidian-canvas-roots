@@ -1275,12 +1275,12 @@ export class FamilyGraphService {
 		// Both father_id and father support aliases
 		const fatherIdValue = this.resolveProperty<string>(fm, 'father_id');
 		const fatherValue = this.resolveProperty<string>(fm, 'father');
-		let fatherCrId = fatherIdValue || this.extractCrIdFromWikilink(fatherValue);
+		const fatherCrId = fatherIdValue || this.extractCrIdFromWikilink(fatherValue);
 
 		// Parse mother relationship (prefer _id field, fallback to mother field for legacy)
 		const motherIdValue = this.resolveProperty<string>(fm, 'mother_id');
 		const motherValue = this.resolveProperty<string>(fm, 'mother');
-		let motherCrId = motherIdValue || this.extractCrIdFromWikilink(motherValue);
+		const motherCrId = motherIdValue || this.extractCrIdFromWikilink(motherValue);
 
 		// Parse gender-neutral parent relationships (opt-in via settings)
 		const parentsIdValue = this.resolveProperty<string | string[]>(fm, 'parents_id');
@@ -1656,7 +1656,7 @@ export class FamilyGraphService {
 				if (!targetCrId) continue;
 
 				// Skip if already added from flat properties
-				const mapping = typeDef.familyGraphMapping as FamilyGraphMapping;
+				const mapping = typeDef.familyGraphMapping;
 				if (mapping === 'parent' && result.parentCrIds.includes(targetCrId)) continue;
 				if (mapping === 'stepparent' && (result.stepfatherCrIds.includes(targetCrId) || result.stepmotherCrIds.includes(targetCrId))) continue;
 

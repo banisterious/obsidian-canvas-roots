@@ -12,7 +12,7 @@
  * - File type validation
  */
 
-import { App, Modal, Notice, TFile, normalizePath, TextComponent, Setting } from 'obsidian';
+import { App, Modal, Notice, normalizePath, TextComponent } from 'obsidian';
 import { setIcon } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import { IMAGE_EXTENSIONS, VIDEO_EXTENSIONS, AUDIO_EXTENSIONS, PDF_EXTENSIONS, DOCUMENT_EXTENSIONS } from '../media-service';
@@ -117,13 +117,13 @@ export class MediaUploadModal extends Modal {
 
 		// Destination info
 		const destInfo = body.createDiv({ cls: 'crc-upload-destination' });
-		const destLabel = destInfo.createDiv({ cls: 'crc-upload-destination-label', text: 'Files will be uploaded to:' });
-		const destPath = destInfo.createDiv({ cls: 'crc-upload-destination-path', text: this.getUploadDestination() });
-		const destHint = destInfo.createDiv({ cls: 'crc-upload-destination-hint', text: 'This is your first configured media folder. You can move files to other locations later using Obsidian\'s file explorer.' });
+		destInfo.createDiv({ cls: 'crc-upload-destination-label', text: 'Files will be uploaded to:' });
+		destInfo.createDiv({ cls: 'crc-upload-destination-path', text: this.getUploadDestination() });
+		destInfo.createDiv({ cls: 'crc-upload-destination-hint', text: 'This is your first configured media folder. You can move files to other locations later using Obsidian\'s file explorer.' });
 
 		// Files list
 		const filesSection = body.createDiv({ cls: 'crc-upload-files-section' });
-		const filesHeader = filesSection.createDiv({ cls: 'crc-upload-files-header', text: 'Files to upload' });
+		filesSection.createDiv({ cls: 'crc-upload-files-header', text: 'Files to upload' });
 		this.filesListContainer = filesSection.createDiv({ cls: 'crc-upload-files-list' });
 
 		this.renderFilesList();
@@ -139,7 +139,7 @@ export class MediaUploadModal extends Modal {
 
 		this.uploadButton = footerActions.createEl('button', { cls: 'crc-btn crc-btn--primary', text: 'Upload' });
 		this.uploadButton.disabled = true;
-		this.uploadButton.addEventListener('click', () => this.handleUpload());
+		this.uploadButton.addEventListener('click', () => { void this.handleUpload(); });
 
 		// Update footer info when files change
 		this.updateFooterInfo(footerInfo);
@@ -385,28 +385,30 @@ export class MediaUploadModal extends Modal {
 			text: 'Set folder'
 		});
 
-		setFolderBtn.addEventListener('click', async () => {
-			const folderPath = selectedFolder.trim() || textComponent.getValue().trim();
+		setFolderBtn.addEventListener('click', () => {
+			void (async () => {
+				const folderPath = selectedFolder.trim() || textComponent.getValue().trim();
 
-			if (!folderPath) {
-				new Notice('Please enter a folder path');
-				return;
-			}
+				if (!folderPath) {
+					new Notice('Please enter a folder path');
+					return;
+				}
 
-			// Save the folder to settings
-			this.plugin.settings.mediaFolders = [folderPath];
-			this.plugin.settings.enableMediaFolderFilter = true;
-			await this.plugin.saveSettings();
+				// Save the folder to settings
+				this.plugin.settings.mediaFolders = [folderPath];
+				this.plugin.settings.enableMediaFolderFilter = true;
+				await this.plugin.saveSettings();
 
-			// Remove the config section
-			this.folderConfigContainer?.remove();
-			this.folderConfigContainer = null;
+				// Remove the config section
+				this.folderConfigContainer?.remove();
+				this.folderConfigContainer = null;
 
-			// Update the destination display
-			this.updateDestinationDisplay();
+				// Update the destination display
+				this.updateDestinationDisplay();
 
-			// Proceed with upload
-			await this.performUpload(folderPath);
+				// Proceed with upload
+				await this.performUpload(folderPath);
+			})();
 		});
 
 		// Focus the input

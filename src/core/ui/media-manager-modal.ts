@@ -9,7 +9,7 @@
  * - Source Media Linker (smart source-image matching)
  */
 
-import { App, Modal, Notice, setIcon } from 'obsidian';
+import { App, Modal, setIcon } from 'obsidian';
 import type CanvasRootsPlugin from '../../../main';
 import { MediaService, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS, AUDIO_EXTENSIONS, PDF_EXTENSIONS, DOCUMENT_EXTENSIONS } from '../media-service';
 import { BulkMediaLinkModal } from './bulk-media-link-modal';

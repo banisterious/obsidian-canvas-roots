@@ -14,7 +14,7 @@ import type { CanvasRootsSettings } from '../../settings';
 import { getLogger } from '../../core/logging';
 import { isPersonNote } from '../../utils/note-type-detection';
 import { generateCrId } from '../../core/uuid';
-import type { LifeEvent, EventType } from '../../maps/types/map-types';
+import type { EventType } from '../../maps/types/map-types';
 
 const logger = getLogger('LifeEventsMigration');
 

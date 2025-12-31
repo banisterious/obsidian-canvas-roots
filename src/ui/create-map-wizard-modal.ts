@@ -430,10 +430,12 @@ export class CreateMapWizardModal extends Modal {
 			return;
 		}
 
-		const picker = new ImagePickerModal(this.app, imageFiles, async (selectedPath) => {
-			this.mapConfig.imagePath = toWikilink(selectedPath);
-			await this.loadImageDimensions(selectedPath);
-			this.render();
+		const picker = new ImagePickerModal(this.app, imageFiles, (selectedPath) => {
+			void (async () => {
+				this.mapConfig.imagePath = toWikilink(selectedPath);
+				await this.loadImageDimensions(selectedPath);
+				this.render();
+			})();
 		});
 		picker.open();
 	}
@@ -518,7 +520,9 @@ export class CreateMapWizardModal extends Modal {
 			// Show dropdown with existing universes
 			universeSetting.addDropdown(dropdown => {
 				dropdown.addOption('', 'Select universe...');
-				universes.forEach(u => dropdown.addOption(u, u));
+				for (const u of universes) {
+					dropdown.addOption(u, u);
+				}
 				dropdown.addOption('__new__', '+ Create new...');
 				dropdown.setValue(this.mapConfig.universe)
 					.onChange(value => {
@@ -601,15 +605,14 @@ export class CreateMapWizardModal extends Modal {
 		const advancedArrow = advancedHeader.createSpan({ text: '▶' });
 		advancedHeader.createSpan({ text: ' Advanced options' });
 
-		const advancedContent = form.createDiv({ cls: 'crc-wizard-collapsible-content' });
-		advancedContent.style.display = 'none';
+		const advancedContent = form.createDiv({ cls: 'crc-wizard-collapsible-content crc-hidden' });
 
 		advancedHeader.addEventListener('click', () => {
-			if (advancedContent.style.display === 'none') {
-				advancedContent.style.display = 'block';
+			if (advancedContent.hasClass('crc-hidden')) {
+				advancedContent.removeClass('crc-hidden');
 				advancedArrow.textContent = '▼';
 			} else {
-				advancedContent.style.display = 'none';
+				advancedContent.addClass('crc-hidden');
 				advancedArrow.textContent = '▶';
 			}
 		});

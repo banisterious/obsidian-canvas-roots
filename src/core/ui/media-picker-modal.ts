@@ -542,9 +542,9 @@ export class MediaPickerModal extends Modal {
 		input.multiple = true;
 		input.accept = ALL_MEDIA_EXTENSIONS.join(',');
 
-		input.addEventListener('change', async () => {
+		input.addEventListener('change', () => {
 			if (input.files && input.files.length > 0) {
-				await this.handleFileUpload(input.files);
+				void this.handleFileUpload(input.files);
 			}
 		});
 
@@ -663,33 +663,35 @@ export class MediaPickerModal extends Modal {
 			text: 'Set folder'
 		});
 
-		setFolderBtn.addEventListener('click', async () => {
-			const folderPath = selectedFolder.trim() || textComponent.getValue().trim();
+		setFolderBtn.addEventListener('click', () => {
+			void (async () => {
+				const folderPath = selectedFolder.trim() || textComponent.getValue().trim();
 
-			if (!folderPath) {
-				new Notice('Please enter a folder path');
-				return;
-			}
+				if (!folderPath) {
+					new Notice('Please enter a folder path');
+					return;
+				}
 
-			// Save the folder to settings
-			this.plugin!.settings.mediaFolders = [folderPath];
-			this.plugin!.settings.enableMediaFolderFilter = true;
-			await this.plugin!.saveSettings();
+				// Save the folder to settings
+				this.plugin!.settings.mediaFolders = [folderPath];
+				this.plugin!.settings.enableMediaFolderFilter = true;
+				await this.plugin!.saveSettings();
 
-			// Remove the config section
-			this.folderConfigContainer?.remove();
-			this.folderConfigContainer = null;
+				// Remove the config section
+				this.folderConfigContainer?.remove();
+				this.folderConfigContainer = null;
 
-			// Proceed with pending upload if any
-			if (this.pendingFileList) {
-				const fileList = this.pendingFileList;
-				this.pendingFileList = null;
-				await this.performFileUpload(fileList, folderPath);
-			}
+				// Proceed with pending upload if any
+				if (this.pendingFileList) {
+					const fileList = this.pendingFileList;
+					this.pendingFileList = null;
+					await this.performFileUpload(fileList, folderPath);
+				}
 
-			// Reload media files to show the new folder's contents
-			this.loadMediaFiles();
-			this.filterMedia();
+				// Reload media files to show the new folder's contents
+				this.loadMediaFiles();
+				this.filterMedia();
+			})();
 		});
 
 		// Focus the input

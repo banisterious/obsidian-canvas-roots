@@ -78,7 +78,6 @@ import type {
 	ResearchGapsSummary,
 	PersonResearchCoverage,
 	FactCoverageStatus,
-	SourcedFacts,
 	ProofSummaryNote
 } from '../sources';
 

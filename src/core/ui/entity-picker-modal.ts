@@ -226,7 +226,7 @@ export class EntityPickerModal extends Modal {
 			text: 'Link to selected entities'
 		});
 		this.linkButton.disabled = true;
-		this.linkButton.addEventListener('click', () => this.linkMediaToEntities());
+		this.linkButton.addEventListener('click', () => { void this.linkMediaToEntities(); });
 
 		this.updateSelectionCount();
 	}
@@ -427,11 +427,11 @@ export class EntityPickerModal extends Modal {
 
 		// Only show for people
 		if (this.selectedEntityType !== 'person') {
-			this.personFiltersContainer.style.display = 'none';
+			this.personFiltersContainer.addClass('crc-hidden');
 			return;
 		}
 
-		this.personFiltersContainer.style.display = '';
+		this.personFiltersContainer.removeClass('crc-hidden');
 
 		// Sort dropdown
 		const sortContainer = this.personFiltersContainer.createDiv({ cls: 'crc-picker-sort' });

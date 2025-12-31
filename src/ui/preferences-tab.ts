@@ -931,7 +931,7 @@ function renderMediaFoldersList(
 			}
 		});
 
-		row.addEventListener('drop', async (e: DragEvent) => {
+		row.addEventListener('drop', (e: DragEvent) => {
 			e.preventDefault();
 
 			if (draggedIndex === -1 || draggedIndex === i) {
@@ -944,8 +944,9 @@ function renderMediaFoldersList(
 			newFolders.splice(i, 0, movedFolder);
 
 			plugin.settings.mediaFolders = newFolders;
-			await plugin.saveSettings();
-			renderMediaFoldersList(container, plugin);
+			void plugin.saveSettings().then(() => {
+				renderMediaFoldersList(container, plugin);
+			});
 		});
 	}
 

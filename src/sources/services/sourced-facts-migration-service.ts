@@ -12,7 +12,6 @@
 import { App, TFile } from 'obsidian';
 import type { CanvasRootsSettings } from '../../settings';
 import { getLogger } from '../../core/logging';
-import { isPersonNote } from '../../utils/note-type-detection';
 import {
 	FACT_KEYS,
 	FACT_KEY_TO_SOURCED_PROPERTY,

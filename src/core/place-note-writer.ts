@@ -407,18 +407,6 @@ function isCoordinatesApplicable(category?: PlaceCategory): boolean {
 }
 
 /**
- * Format a value as a wikilink if it isn't already
- */
-function formatWikilink(value: string): string {
-	// Already a wikilink
-	if (value.startsWith('[[') && value.endsWith(']]')) {
-		return `"${value}"`;
-	}
-	// Plain text - convert to wikilink
-	return `"[[${value}]]"`;
-}
-
-/**
  * Create a wikilink with proper handling of duplicate filenames
  * Uses [[basename|name]] format when basename differs from name
  * @param name The display name

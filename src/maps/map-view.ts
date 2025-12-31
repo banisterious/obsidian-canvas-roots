@@ -679,7 +679,7 @@ export class MapView extends ItemView {
 	/**
 	 * Open a place note for editing in CreatePlaceModal
 	 */
-	private async editPlace(placeId: string): Promise<void> {
+	private editPlace(placeId: string): void {
 		// Get services from plugin
 		const pluginWithServices = this.plugin as unknown as {
 			createFamilyGraphService: () => unknown;
@@ -834,10 +834,10 @@ export class MapView extends ItemView {
 			const undoLink = document.createElement('a');
 			undoLink.textContent = 'Undo';
 			undoLink.href = '#';
-			undoLink.style.cursor = 'pointer';
-			undoLink.addEventListener('click', async (e) => {
+			undoLink.addClass('crc-undo-link');
+			undoLink.addEventListener('click', (e) => {
 				e.preventDefault();
-				await this.undoPlaceMove(file, previousCoords, isPixelMap, placeName);
+				void this.undoPlaceMove(file, previousCoords, isPixelMap, placeName);
 			});
 			fragment.appendChild(undoLink);
 

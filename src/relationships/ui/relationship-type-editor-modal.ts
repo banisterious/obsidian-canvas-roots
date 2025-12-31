@@ -305,7 +305,7 @@ export class RelationshipTypeEditorModal extends Modal {
 
 			// Initially hide if not included on family tree
 			if (!this.includeOnFamilyTree) {
-				mappingSetting.settingEl.style.display = 'none';
+				mappingSetting.settingEl.addClass('crc-hidden');
 			}
 		}
 

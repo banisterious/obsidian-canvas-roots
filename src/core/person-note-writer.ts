@@ -551,7 +551,7 @@ export async function createPersonNote(
 		if (person.childCrId && person.childCrId.length > 0 && person.childName && person.childName.length === person.childCrId.length) {
 			for (let i = 0; i < person.childCrId.length; i++) {
 				const childCrId = person.childCrId[i];
-				const childName = person.childName[i];
+				// childName is available but not needed for the addParentToChild call
 				await addParentToChild(app, childCrId, crId, person.name, person.sex, directory);
 			}
 		}
@@ -569,7 +569,7 @@ export async function createPersonNote(
 /**
  * Find a person file by cr_id
  */
-export async function findPersonByCrId(app: App, crId: string, directory?: string): Promise<TFile | null> {
+export function findPersonByCrId(app: App, crId: string, directory?: string): TFile | null {
 	const files = app.vault.getMarkdownFiles();
 
 	for (const file of files) {
@@ -601,7 +601,7 @@ export async function addBidirectionalSpouseLink(
 	logger.debug('bidirectional-spouse', `Adding ${newSpouseCrId} (${newSpouseName}) as spouse to ${spouseCrId}`);
 
 	// Find the spouse's file by cr_id
-	const spouseFile = await findPersonByCrId(app, spouseCrId, directory);
+	const spouseFile = findPersonByCrId(app, spouseCrId, directory);
 
 	if (!spouseFile) {
 		logger.warn('bidirectional-spouse', `Could not find spouse file with cr_id: ${spouseCrId}`);
@@ -659,7 +659,7 @@ export async function addChildToParent(
 	logger.debug('bidirectional-child', `Adding ${childCrId} (${childName}) as child to parent ${parentCrId}`);
 
 	// Find the parent's file by cr_id
-	const parentFile = await findPersonByCrId(app, parentCrId, directory);
+	const parentFile = findPersonByCrId(app, parentCrId, directory);
 
 	if (!parentFile) {
 		logger.warn('bidirectional-child', `Could not find parent file with cr_id: ${parentCrId}`);
@@ -719,7 +719,7 @@ export async function addParentToChild(
 	logger.debug('bidirectional-parent', `Adding ${parentCrId} (${parentName}) as parent to child ${childCrId}`);
 
 	// Find the child's file by cr_id
-	const childFile = await findPersonByCrId(app, childCrId, directory);
+	const childFile = findPersonByCrId(app, childCrId, directory);
 
 	if (!childFile) {
 		logger.warn('bidirectional-parent', `Could not find child file with cr_id: ${childCrId}`);
@@ -764,7 +764,7 @@ export async function addParentToChild(
 	logger.info('bidirectional-parent', `Updated parent link in ${childFile.path}`);
 
 	// Also link the parent's spouse as the other parent (if they have one)
-	const parentFile = await findPersonByCrId(app, parentCrId, directory);
+	const parentFile = findPersonByCrId(app, parentCrId, directory);
 	if (parentFile) {
 		const parentCache = app.metadataCache.getFileCache(parentFile);
 		const spouseIds = parentCache?.frontmatter?.spouse_id;
