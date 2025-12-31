@@ -1,7 +1,7 @@
 /**
  * Post-Import Cleanup Wizard Modal
  *
- * A 13-step wizard for post-import data cleanup operations.
+ * A 14-step wizard for post-import data cleanup operations.
  *
  * Step 1: Quality Report — Review data quality issues (review-only)
  * Step 2: Bidirectional Relationships — Fix parent-child link consistency (batch)
@@ -16,6 +16,7 @@
  * Step 11: Event Person Migration — Convert person to persons array (batch)
  * Step 12: Evidence Tracking Migration — Convert sourced_facts to flat properties (batch)
  * Step 13: Life Events Migration — Convert inline events to event notes (batch)
+ * Step 14: Normalize Children Property — Rename child to children (batch)
  */
 
 import { App, Modal, Notice, setIcon, TFile } from 'obsidian';
@@ -289,6 +290,18 @@ const WIZARD_STEPS: WizardStepConfig[] = [
 		detectMethod: 'detectInlineEvents',
 		applyMethod: 'migrateToEventNotes',
 		dependencies: []
+	},
+	{
+		id: 'child-to-children',
+		number: 14,
+		title: 'Normalize Children Property',
+		shortTitle: 'Children',
+		description: 'Rename legacy "child" property to "children" for consistency.',
+		type: 'batch',
+		service: 'inline', // No external service needed
+		detectMethod: 'detectLegacyChildProperty',
+		applyMethod: 'migrateChildToChildren',
+		dependencies: []
 	}
 ];
 
@@ -343,6 +356,9 @@ export class CleanupWizardModal extends Modal {
 	// Life events migration state
 	private lifeEventsMigrationService: LifeEventsMigrationService | null = null;
 	private legacyEventsNotes: LegacyEventsNote[] = [];
+
+	// Child→children migration state (Step 14)
+	private legacyChildNotes: TFile[] = [];
 
 	// Step completion tracking for dependency checks
 	private stepCompletion: Record<string, { completed: boolean; completedAt: number; issuesFixed: number }> = {};
@@ -1305,6 +1321,9 @@ export class CleanupWizardModal extends Modal {
 			case 'life-events-migrate':
 				this.renderLifeEventsMigrationPreview(container);
 				break;
+			case 'child-to-children':
+				this.renderChildToChildrenPreview(container);
+				break;
 			default:
 				// Fallback for unimplemented previews
 				this.renderGenericPreview(container, stepConfig, stepState);
@@ -1856,6 +1875,52 @@ export class CleanupWizardModal extends Modal {
 			row.addEventListener('click', () => {
 				this.close();
 				void this.app.workspace.openLinkText(note.file.path, '', false);
+			});
+		}
+
+		if (remaining > 0) {
+			const moreEl = list.createDiv({ cls: 'crc-cleanup-preview-more' });
+			moreEl.textContent = `... and ${remaining} more`;
+		}
+	}
+
+	/**
+	 * Render preview for Step 14: Child→Children Migration
+	 */
+	private renderChildToChildrenPreview(container: HTMLElement): void {
+		if (this.legacyChildNotes.length === 0) return;
+
+		const preview = container.createDiv({ cls: 'crc-cleanup-preview' });
+		const summary = preview.createDiv({ cls: 'crc-cleanup-preview-summary' });
+		summary.textContent = `${this.legacyChildNotes.length} person note${this.legacyChildNotes.length === 1 ? '' : 's'} will be updated:`;
+
+		const hint = preview.createDiv({ cls: 'crc-cleanup-preview-hint' });
+		hint.textContent = 'The legacy "child" property will be converted to the "children" property.';
+
+		const list = preview.createDiv({ cls: 'crc-cleanup-preview-list' });
+
+		const maxDisplay = 15;
+		const displayItems = this.legacyChildNotes.slice(0, maxDisplay);
+		const remaining = this.legacyChildNotes.length - maxDisplay;
+
+		for (const file of displayItems) {
+			const row = list.createDiv({ cls: 'crc-cleanup-preview-row crc-cleanup-preview-row--clickable' });
+
+			const iconEl = row.createDiv({ cls: 'crc-cleanup-preview-icon' });
+			setIcon(iconEl, 'user');
+
+			const content = row.createDiv({ cls: 'crc-cleanup-preview-content' });
+
+			const fileName = content.createSpan({ cls: 'crc-cleanup-preview-person' });
+			fileName.textContent = file.basename;
+
+			const desc = content.createSpan({ cls: 'crc-cleanup-preview-desc' });
+			desc.textContent = ': child → children';
+
+			// Click to open the file
+			row.addEventListener('click', () => {
+				this.close();
+				void this.app.workspace.openLinkText(file.path, '', false);
 			});
 		}
 
@@ -3426,7 +3491,7 @@ export class CleanupWizardModal extends Modal {
 			// Review step or already complete - just show Next
 			const nextBtn = rightBtns.createEl('button', {
 				cls: 'crc-btn crc-btn--primary',
-				text: this.state.currentStep === 10 ? 'Finish' : 'Next'
+				text: this.state.currentStep === WIZARD_STEPS.length ? 'Finish' : 'Next'
 			});
 			nextBtn.addEventListener('click', () => {
 				if (stepState.status === 'pending') {
@@ -3450,7 +3515,7 @@ export class CleanupWizardModal extends Modal {
 			// No issues or interactive step - show Next
 			const nextBtn = rightBtns.createEl('button', {
 				cls: 'crc-btn crc-btn--primary',
-				text: this.state.currentStep === 10 ? 'Finish' : 'Next'
+				text: this.state.currentStep === WIZARD_STEPS.length ? 'Finish' : 'Next'
 			});
 			nextBtn.addEventListener('click', () => {
 				if (stepState.status === 'pending' && stepState.issueCount === 0) {
@@ -3466,7 +3531,7 @@ export class CleanupWizardModal extends Modal {
 	 * Advance to the next step or summary
 	 */
 	private advanceToNextStep(): void {
-		if (this.state.currentStep >= 10) {
+		if (this.state.currentStep >= WIZARD_STEPS.length) {
 			this.currentView = 'summary';
 		} else {
 			this.state.currentStep++;
@@ -3555,6 +3620,15 @@ export class CleanupWizardModal extends Modal {
 					await this.plugin.saveSettings();
 					// Custom notice for life events to show how many notes were created
 					new Notice(`Created ${migrationResult.eventNotesCreated} event notes from ${migrationResult.modified} person notes`);
+					break;
+				}
+				case 'child-to-children': {
+					const migrationResult = await this.migrateChildToChildren();
+					result = {
+						processed: migrationResult.processed,
+						modified: migrationResult.modified,
+						errors: migrationResult.errors
+					};
 					break;
 				}
 				default:
@@ -3798,6 +3872,11 @@ export class CleanupWizardModal extends Modal {
 			this.state.steps[13].issueCount = this.legacyEventsNotes.length;
 			logger.debug('runPreScan', `Step 13 (Life Events): ${this.legacyEventsNotes.length} notes with inline events`);
 
+			// Step 14: Child→children migration (child → children property rename)
+			this.legacyChildNotes = this.detectLegacyChildProperty();
+			this.state.steps[14].issueCount = this.legacyChildNotes.length;
+			logger.debug('runPreScan', `Step 14 (Children): ${this.legacyChildNotes.length} notes with legacy child property`);
+
 			this.state.preScanComplete = true;
 			logger.info('runPreScan', 'Pre-scan complete');
 		} catch (error) {
@@ -3877,5 +3956,75 @@ export class CleanupWizardModal extends Modal {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			new Notice(`Failed to save report: ${message}`);
 		}
+	}
+
+	/**
+	 * Detect person notes with legacy "child" property (Step 14)
+	 */
+	private detectLegacyChildProperty(): TFile[] {
+		const files: TFile[] = [];
+		for (const file of this.app.vault.getMarkdownFiles()) {
+			const cache = this.app.metadataCache.getFileCache(file);
+			if (!cache?.frontmatter) continue;
+
+			const fm = cache.frontmatter as Record<string, unknown>;
+
+			// Only check person notes (must have cr_id)
+			if (!fm.cr_id) continue;
+
+			// Check for legacy "child" property
+			if (fm.child !== undefined) {
+				files.push(file);
+			}
+		}
+		return files;
+	}
+
+	/**
+	 * Migrate child→children property (Step 14)
+	 */
+	private async migrateChildToChildren(): Promise<{ processed: number; modified: number; errors: Array<{ file: string; error: string }> }> {
+		const result = {
+			processed: 0,
+			modified: 0,
+			errors: [] as Array<{ file: string; error: string }>
+		};
+
+		for (const file of this.legacyChildNotes) {
+			result.processed++;
+
+			try {
+				await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+					if (frontmatter.child !== undefined) {
+						const childValue = frontmatter.child;
+						const childrenValue = frontmatter.children;
+
+						if (childrenValue !== undefined) {
+							// Merge with existing children, deduplicate
+							const childArray = Array.isArray(childValue) ? childValue : [childValue];
+							const childrenArray = Array.isArray(childrenValue) ? childrenValue : [childrenValue];
+							const merged = [...new Set([...childrenArray, ...childArray])];
+							frontmatter.children = merged.length === 1 ? merged[0] : merged;
+						} else {
+							// Simply rename
+							frontmatter.children = childValue;
+						}
+
+						delete frontmatter.child;
+					}
+				});
+
+				result.modified++;
+				logger.debug('migrateChildToChildren', `Migrated ${file.path}`);
+			} catch (error) {
+				result.errors.push({
+					file: file.path,
+					error: error instanceof Error ? error.message : String(error)
+				});
+			}
+		}
+
+		logger.info('migrateChildToChildren', `Migration complete`, result);
+		return result;
 	}
 }

@@ -55,7 +55,7 @@ erDiagram
     PERSON ||--o| PERSON : "father"
     PERSON ||--o| PERSON : "mother"
     PERSON }o--o{ PERSON : "spouse"
-    PERSON ||--o{ PERSON : "child"
+    PERSON ||--o{ PERSON : "children"
     PERSON }o--o| PLACE : "birth_place"
     PERSON }o--o| PLACE : "death_place"
     PERSON }o--o| PLACE : "burial_place"
@@ -260,8 +260,10 @@ spouses:
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
-| `child` | `string \| string[]` | Wikilink(s) to children's notes | `["[[John Jr]]", "[[Mary]]"]` |
+| `children` | `string \| string[]` | Wikilink(s) to children's notes | `["[[John Jr]]", "[[Mary]]"]` |
 | `children_id` | `string \| string[]` | Children's `cr_id`(s) | `["c1234567-...", "c7654321-..."]` |
+
+> **Deprecation Note:** The `child` property (singular) is deprecated as of v0.18.11. Use `children` (plural) for consistency with `children_id`. Canvas Roots still reads both properties for backward compatibility, but new notes should use `children`. Use the Cleanup Wizard (Step 14) to migrate existing notes.
 
 ### Canvas Roots Metadata
 
@@ -920,7 +922,7 @@ All person note properties can be aliased:
 | Identity | `name`, `cr_id`, `sex`, `gender`, `gender_identity`, `nickname`, `maiden_name` |
 | Dates | `born`, `died` |
 | Places | `birth_place`, `death_place` |
-| Relationships | `father`, `father_id`, `mother`, `mother_id`, `spouse`, `spouse_id`, `child`, `children_id` |
+| Relationships | `father`, `father_id`, `mother`, `mother_id`, `spouse`, `spouse_id`, `children`, `children_id` |
 | Sources | `sources` |
 | Other | `occupation`, `universe`, `image`, `sourced_facts`, `relationships`, `research_level` |
 
@@ -1017,7 +1019,7 @@ spouse1_marriage_status: "widowed"
 spouse2: "[[Margaret Brown]]"
 spouse2_id: "s2222222-..."
 spouse2_marriage_date: "1935-09-01"
-child:
+children:
   - "[[John Smith Jr]]"
   - "[[Mary Elizabeth Smith]]"
 children_id:
