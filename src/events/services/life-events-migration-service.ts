@@ -228,7 +228,10 @@ export class LifeEventsMigrationService {
 	/**
 	 * Migrate all detected notes to event note format
 	 */
-	async migrateToEventNotes(notes: LegacyEventsNote[]): Promise<LifeEventsMigrationResult> {
+	async migrateToEventNotes(
+		notes: LegacyEventsNote[],
+		onProgress?: (current: number, total: number, currentFile?: string) => void
+	): Promise<LifeEventsMigrationResult> {
 		const result: LifeEventsMigrationResult = {
 			processed: 0,
 			modified: 0,
@@ -243,7 +246,11 @@ export class LifeEventsMigrationService {
 		// Ensure events folder exists
 		await this.ensureFolderExists(eventsFolder);
 
-		for (const note of notes) {
+		for (let i = 0; i < notes.length; i++) {
+			const note = notes[i];
+			// Report progress
+			onProgress?.(i + 1, notes.length, note.file.basename);
+
 			result.processed++;
 
 			try {

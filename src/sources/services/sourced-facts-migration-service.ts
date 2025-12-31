@@ -174,7 +174,10 @@ export class SourcedFactsMigrationService {
 	/**
 	 * Migrate all detected notes to flat property format
 	 */
-	async migrateToFlatFormat(notes: LegacySourcedFactsNote[]): Promise<SourcedFactsMigrationResult> {
+	async migrateToFlatFormat(
+		notes: LegacySourcedFactsNote[],
+		onProgress?: (current: number, total: number, currentFile?: string) => void
+	): Promise<SourcedFactsMigrationResult> {
 		const result: SourcedFactsMigrationResult = {
 			processed: 0,
 			modified: 0,
@@ -184,7 +187,11 @@ export class SourcedFactsMigrationService {
 			sourceCitationsMigrated: 0
 		};
 
-		for (const note of notes) {
+		for (let i = 0; i < notes.length; i++) {
+			const note = notes[i];
+			// Report progress
+			onProgress?.(i + 1, notes.length, note.file.basename);
+
 			result.processed++;
 
 			try {

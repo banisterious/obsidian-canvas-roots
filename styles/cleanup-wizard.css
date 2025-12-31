@@ -133,6 +133,15 @@
   background: rgba(var(--interactive-accent-rgb), 0.08);
 }
 
+/* Keyboard focus state */
+.crc-cleanup-tile:focus,
+.crc-cleanup-tile--focused {
+  border-color: var(--interactive-accent);
+  background: rgba(var(--interactive-accent-rgb), 0.08);
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
 .crc-cleanup-tile--complete {
   border-color: rgb(74, 222, 128);
   background: rgba(74, 222, 128, 0.1);
@@ -2130,4 +2139,67 @@
 .crc-cleanup-hierarchy-done {
   display: flex;
   justify-content: center;
+}
+
+/* ==========================================================================
+   BATCH OPERATION PROGRESS (Phase 4)
+   ========================================================================== */
+
+.crc-cleanup-batch-progress {
+  padding: 24px;
+  text-align: center;
+}
+
+.crc-cleanup-batch-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.crc-cleanup-batch-progress-spinner {
+  animation: crc-spin 1s linear infinite;
+}
+
+.crc-cleanup-batch-progress-spinner svg {
+  width: 18px;
+  height: 18px;
+  color: var(--interactive-accent);
+}
+
+.crc-cleanup-batch-progress-title {
+  font-size: var(--font-ui-medium);
+  font-weight: 500;
+}
+
+.crc-cleanup-batch-progress-stats {
+  margin-bottom: 12px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.crc-cleanup-batch-progress-bar-container {
+  height: 8px;
+  background: var(--background-modifier-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.crc-cleanup-batch-progress-bar {
+  height: 100%;
+  background: var(--interactive-accent);
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.crc-cleanup-batch-progress-file {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+  font-family: var(--font-monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }

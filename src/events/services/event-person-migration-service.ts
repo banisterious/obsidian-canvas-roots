@@ -199,7 +199,10 @@ export class EventPersonMigrationService {
 	/**
 	 * Migrate all detected notes to array format
 	 */
-	async migrateToArrayFormat(notes: LegacyPersonEventNote[]): Promise<EventPersonMigrationResult> {
+	async migrateToArrayFormat(
+		notes: LegacyPersonEventNote[],
+		onProgress?: (current: number, total: number, currentFile?: string) => void
+	): Promise<EventPersonMigrationResult> {
 		const result: EventPersonMigrationResult = {
 			processed: 0,
 			modified: 0,
@@ -210,7 +213,11 @@ export class EventPersonMigrationService {
 		const personProp = getPropertyName('person', this.settings.propertyAliases);
 		const personsProp = getPropertyName('persons', this.settings.propertyAliases);
 
-		for (const note of notes) {
+		for (let i = 0; i < notes.length; i++) {
+			const note = notes[i];
+			// Report progress
+			onProgress?.(i + 1, notes.length, note.file.basename);
+
 			result.processed++;
 
 			try {

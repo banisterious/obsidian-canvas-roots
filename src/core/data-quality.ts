@@ -120,6 +120,14 @@ export interface DataQualityReport {
 }
 
 /**
+ * Progress callback for batch operations
+ */
+export interface BatchProgressCallback {
+	/** Called with current progress */
+	onProgress: (current: number, total: number, currentFile?: string) => void;
+}
+
+/**
  * Options for running data quality checks
  */
 export interface DataQualityOptions {
@@ -142,6 +150,9 @@ export interface DataQualityOptions {
 
 	/** Minimum severity to include */
 	minSeverity?: IssueSeverity;
+
+	/** Progress callback for batch operations */
+	progress?: BatchProgressCallback;
 }
 
 /**
@@ -1111,7 +1122,10 @@ export class DataQualityService {
 			errors: [],
 		};
 
-		for (const person of people) {
+		for (let i = 0; i < people.length; i++) {
+			const person = people[i];
+			// Report progress
+			options.progress?.onProgress(i + 1, people.length, person.file.basename);
 			// Read raw frontmatter to get actual field names used
 			const cache = this.app.metadataCache.getFileCache(person.file);
 			const fm = cache?.frontmatter as Record<string, unknown> | undefined;
@@ -1200,7 +1214,11 @@ export class DataQualityService {
 
 		const canonicalValues = new Set<string>(CANONICAL_SEX_VALUES);
 
-		for (const person of people) {
+		for (let i = 0; i < people.length; i++) {
+			const person = people[i];
+			// Report progress
+			options.progress?.onProgress(i + 1, people.length, person.file.basename);
+
 			// In schema-aware mode, skip notes protected by schemas with custom sex values
 			if (mode === 'schema-aware' && this.schemaService) {
 				const schemas = await this.schemaService.getSchemasForPerson(person.file);
@@ -1264,7 +1282,11 @@ export class DataQualityService {
 		// Build lookup of valid cr_ids
 		const validCrIds = new Set(people.map(p => p.crId));
 
-		for (const person of people) {
+		for (let i = 0; i < people.length; i++) {
+			const person = people[i];
+			// Report progress
+			options.progress?.onProgress(i + 1, people.length, person.file.basename);
+
 			const updates: Record<string, string | null> = {};
 			let modified = false;
 
@@ -1314,7 +1336,11 @@ export class DataQualityService {
 			errors: [],
 		};
 
-		for (const person of people) {
+		for (let i = 0; i < people.length; i++) {
+			const person = people[i];
+			// Report progress
+			options.progress?.onProgress(i + 1, people.length, person.file.basename);
+
 			// Get the cached frontmatter for this file
 			const cache = this.app.metadataCache.getFileCache(person.file);
 			if (!cache?.frontmatter) {
@@ -1602,7 +1628,8 @@ export class DataQualityService {
 	 * Adds missing reciprocal relationships
 	 */
 	async fixBidirectionalInconsistencies(
-		inconsistencies: BidirectionalInconsistency[]
+		inconsistencies: BidirectionalInconsistency[],
+		progress?: BatchProgressCallback
 	): Promise<BatchOperationResult> {
 		const results: BatchOperationResult = {
 			processed: 0,
@@ -1618,7 +1645,11 @@ export class DataQualityService {
 			logger.info('fix-bidirectional', `Skipping ${conflicts.length} conflicting-parent-claim issues (require manual resolution)`);
 		}
 
-		for (const issue of autoFixable) {
+		for (let i = 0; i < autoFixable.length; i++) {
+			const issue = autoFixable[i];
+			// Report progress
+			progress?.onProgress(i + 1, autoFixable.length, issue.person.file.basename);
+
 			results.processed++;
 			logger.debug('fix-bidirectional', `Processing ${issue.type}: ${issue.description}`);
 

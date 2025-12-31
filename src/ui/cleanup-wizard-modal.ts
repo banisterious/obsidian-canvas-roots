@@ -363,6 +363,13 @@ export class CleanupWizardModal extends Modal {
 	// Step completion tracking for dependency checks
 	private stepCompletion: Record<string, { completed: boolean; completedAt: number; issuesFixed: number }> = {};
 
+	// Batch operation progress state
+	private batchProgress: { current: number; total: number; currentFile?: string } | null = null;
+
+	// Keyboard navigation state
+	private focusedTileIndex = 0;
+	private keyboardHandler: ((e: KeyboardEvent) => void) | null = null;
+
 	constructor(app: App, plugin: CanvasRootsPlugin) {
 		super(app);
 		this.plugin = plugin;
@@ -495,6 +502,9 @@ export class CleanupWizardModal extends Modal {
 
 		// Footer container
 		this.footerContainer = contentEl.createDiv({ cls: 'crc-cleanup-wizard-footer' });
+
+		// Setup keyboard navigation
+		this.setupKeyboardNavigation();
 
 		// Start pre-scan and render
 		this.renderCurrentView();
@@ -768,7 +778,109 @@ export class CleanupWizardModal extends Modal {
 			void this.persistState();
 		}
 
+		// Clean up keyboard handler
+		if (this.keyboardHandler) {
+			this.modalEl.removeEventListener('keydown', this.keyboardHandler);
+			this.keyboardHandler = null;
+		}
+
 		contentEl.empty();
+	}
+
+	// ========================================
+	// Keyboard Navigation (Phase 4)
+	// ========================================
+
+	/**
+	 * Setup keyboard navigation for the wizard
+	 */
+	private setupKeyboardNavigation(): void {
+		this.keyboardHandler = (e: KeyboardEvent) => {
+			// Only handle navigation on overview screen
+			if (this.currentView === 'overview') {
+				this.handleOverviewKeyboard(e);
+			} else if (this.currentView === 'step') {
+				this.handleStepKeyboard(e);
+			}
+		};
+		this.modalEl.addEventListener('keydown', this.keyboardHandler);
+	}
+
+	/**
+	 * Handle keyboard events on the overview screen
+	 */
+	private handleOverviewKeyboard(e: KeyboardEvent): void {
+		const totalTiles = WIZARD_STEPS.length;
+		const tilesPerRow = 5;
+
+		switch (e.key) {
+			case 'ArrowRight':
+				this.focusedTileIndex = Math.min(this.focusedTileIndex + 1, totalTiles - 1);
+				this.updateTileFocus();
+				e.preventDefault();
+				break;
+			case 'ArrowLeft':
+				this.focusedTileIndex = Math.max(this.focusedTileIndex - 1, 0);
+				this.updateTileFocus();
+				e.preventDefault();
+				break;
+			case 'ArrowDown':
+				this.focusedTileIndex = Math.min(this.focusedTileIndex + tilesPerRow, totalTiles - 1);
+				this.updateTileFocus();
+				e.preventDefault();
+				break;
+			case 'ArrowUp':
+				this.focusedTileIndex = Math.max(this.focusedTileIndex - tilesPerRow, 0);
+				this.updateTileFocus();
+				e.preventDefault();
+				break;
+			case 'Enter':
+			case ' ':
+				this.activateFocusedTile();
+				e.preventDefault();
+				break;
+		}
+	}
+
+	/**
+	 * Handle keyboard events on the step screen
+	 */
+	private handleStepKeyboard(e: KeyboardEvent): void {
+		// Escape goes back to overview
+		if (e.key === 'Escape') {
+			this.currentView = 'overview';
+			this.renderCurrentView();
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	}
+
+	/**
+	 * Update tile focus visual state
+	 */
+	private updateTileFocus(): void {
+		const tiles = this.contentContainer?.querySelectorAll('.crc-cleanup-tile');
+		if (!tiles) return;
+
+		tiles.forEach((tile, index) => {
+			if (index === this.focusedTileIndex) {
+				tile.addClass('crc-cleanup-tile--focused');
+				(tile as HTMLElement).focus();
+			} else {
+				tile.removeClass('crc-cleanup-tile--focused');
+			}
+		});
+	}
+
+	/**
+	 * Activate the currently focused tile
+	 */
+	private activateFocusedTile(): void {
+		const tiles = this.contentContainer?.querySelectorAll('.crc-cleanup-tile');
+		if (!tiles || this.focusedTileIndex >= tiles.length) return;
+
+		const tile = tiles[this.focusedTileIndex] as HTMLElement;
+		tile.click();
 	}
 
 	/**
@@ -823,6 +935,9 @@ export class CleanupWizardModal extends Modal {
 			this.renderStepTile(grid, stepConfig);
 		}
 
+		// Apply keyboard focus to the first tile (or current focus index)
+		this.updateTileFocus();
+
 		// Footer buttons
 		const leftBtns = this.footerContainer.createDiv({ cls: 'crc-cleanup-footer-left' });
 		const cancelBtn = leftBtns.createEl('button', {
@@ -876,6 +991,11 @@ export class CleanupWizardModal extends Modal {
 	private renderStepTile(container: HTMLElement, stepConfig: WizardStepConfig): void {
 		const stepState = this.state.steps[stepConfig.number];
 		const tile = container.createDiv({ cls: 'crc-cleanup-tile' });
+
+		// Make tile focusable for keyboard navigation
+		tile.setAttribute('tabindex', '0');
+		tile.setAttribute('role', 'button');
+		tile.setAttribute('aria-label', `Step ${stepConfig.number}: ${stepConfig.title}`);
 
 		// Check for unmet dependencies
 		const unmetDeps = this.getUnmetDependencies(stepConfig);
@@ -1254,6 +1374,12 @@ export class CleanupWizardModal extends Modal {
 		stepConfig: WizardStepConfig,
 		stepState: StepState
 	): void {
+		// Show progress during batch operation
+		if (stepState.status === 'in_progress' && this.batchProgress) {
+			this.renderBatchProgress(container, stepConfig);
+			return;
+		}
+
 		if (stepState.status === 'complete') {
 			// Special handling for Step 2 with conflicts
 			if (stepConfig.id === 'bidirectional') {
@@ -1327,6 +1453,39 @@ export class CleanupWizardModal extends Modal {
 			default:
 				// Fallback for unimplemented previews
 				this.renderGenericPreview(container, stepConfig, stepState);
+		}
+	}
+
+	/**
+	 * Render batch operation progress
+	 */
+	private renderBatchProgress(container: HTMLElement, stepConfig: WizardStepConfig): void {
+		if (!this.batchProgress) return;
+
+		const { current, total, currentFile } = this.batchProgress;
+		const percent = total > 0 ? Math.round((current / total) * 100) : 0;
+
+		const progress = container.createDiv({ cls: 'crc-cleanup-batch-progress' });
+
+		// Progress header
+		const header = progress.createDiv({ cls: 'crc-cleanup-batch-progress-header' });
+		const spinner = header.createSpan({ cls: 'crc-cleanup-batch-progress-spinner' });
+		setIcon(spinner, 'loader-2');
+		header.createSpan({ text: `Processing ${stepConfig.shortTitle}...`, cls: 'crc-cleanup-batch-progress-title' });
+
+		// Progress stats
+		const stats = progress.createDiv({ cls: 'crc-cleanup-batch-progress-stats' });
+		stats.createSpan({ text: `${current} of ${total} (${percent}%)` });
+
+		// Progress bar
+		const barContainer = progress.createDiv({ cls: 'crc-cleanup-batch-progress-bar-container' });
+		const bar = barContainer.createDiv({ cls: 'crc-cleanup-batch-progress-bar' });
+		bar.style.width = `${percent}%`;
+
+		// Current file
+		if (currentFile) {
+			const fileText = progress.createDiv({ cls: 'crc-cleanup-batch-progress-file' });
+			fileText.textContent = currentFile;
 		}
 	}
 
@@ -3545,7 +3704,17 @@ export class CleanupWizardModal extends Modal {
 	private async applyBatchFixes(stepConfig: WizardStepConfig): Promise<void> {
 		const stepState = this.state.steps[stepConfig.number];
 		stepState.status = 'in_progress';
+		this.batchProgress = null;
 		this.renderCurrentView();
+
+		// Progress callback that updates state and re-renders periodically
+		const onProgress = (current: number, total: number, currentFile?: string) => {
+			this.batchProgress = { current, total, currentFile };
+			// Re-render every 5 items to avoid excessive updates
+			if (current % 5 === 0 || current === total) {
+				this.renderCurrentView();
+			}
+		};
 
 		try {
 			let result: BatchOperationResult | null = null;
@@ -3554,23 +3723,23 @@ export class CleanupWizardModal extends Modal {
 			// Call the appropriate service method using cached issues from pre-scan
 			switch (stepConfig.id) {
 				case 'bidirectional':
-					result = await service.fixBidirectionalInconsistencies(this.bidirectionalIssues);
+					result = await service.fixBidirectionalInconsistencies(this.bidirectionalIssues, { onProgress });
 					break;
 				case 'date-normalize':
-					result = await service.normalizeDateFormats();
+					result = await service.normalizeDateFormats({ progress: { onProgress } });
 					break;
 				case 'gender-normalize':
-					result = await service.normalizeGenderValues();
+					result = await service.normalizeGenderValues({ progress: { onProgress } });
 					break;
 				case 'orphan-clear':
-					result = await service.clearOrphanReferences();
+					result = await service.clearOrphanReferences({ progress: { onProgress } });
 					break;
 				case 'flatten-props':
-					result = await service.flattenNestedProperties();
+					result = await service.flattenNestedProperties({ progress: { onProgress } });
 					break;
 				case 'source-migrate': {
 					const sourceMigrationService = this.getSourceMigrationService();
-					const migrationResult = await sourceMigrationService.migrateToArrayFormat(this.indexedSourceNotes);
+					const migrationResult = await sourceMigrationService.migrateToArrayFormat(this.indexedSourceNotes, onProgress);
 					result = {
 						processed: migrationResult.processed,
 						modified: migrationResult.modified,
@@ -3580,7 +3749,7 @@ export class CleanupWizardModal extends Modal {
 				}
 				case 'event-person-migrate': {
 					const eventPersonMigrationService = this.getEventPersonMigrationService();
-					const migrationResult = await eventPersonMigrationService.migrateToArrayFormat(this.legacyPersonEventNotes);
+					const migrationResult = await eventPersonMigrationService.migrateToArrayFormat(this.legacyPersonEventNotes, onProgress);
 					result = {
 						processed: migrationResult.processed,
 						modified: migrationResult.modified,
@@ -3590,7 +3759,7 @@ export class CleanupWizardModal extends Modal {
 				}
 				case 'sourced-facts-migrate': {
 					const sourcedFactsMigrationService = this.getSourcedFactsMigrationService();
-					const migrationResult = await sourcedFactsMigrationService.migrateToFlatFormat(this.legacySourcedFactsNotes);
+					const migrationResult = await sourcedFactsMigrationService.migrateToFlatFormat(this.legacySourcedFactsNotes, onProgress);
 					result = {
 						processed: migrationResult.processed,
 						modified: migrationResult.modified,
@@ -3606,7 +3775,7 @@ export class CleanupWizardModal extends Modal {
 				}
 				case 'life-events-migrate': {
 					const lifeEventsMigrationService = this.getLifeEventsMigrationService();
-					const migrationResult = await lifeEventsMigrationService.migrateToEventNotes(this.legacyEventsNotes);
+					const migrationResult = await lifeEventsMigrationService.migrateToEventNotes(this.legacyEventsNotes, onProgress);
 					result = {
 						processed: migrationResult.processed,
 						modified: migrationResult.modified,
@@ -3623,7 +3792,7 @@ export class CleanupWizardModal extends Modal {
 					break;
 				}
 				case 'child-to-children': {
-					const migrationResult = await this.migrateChildToChildren();
+					const migrationResult = await this.migrateChildToChildren(onProgress);
 					result = {
 						processed: migrationResult.processed,
 						modified: migrationResult.modified,
@@ -3660,6 +3829,7 @@ export class CleanupWizardModal extends Modal {
 			stepState.status = 'pending';
 		}
 
+		this.batchProgress = null;
 		this.renderCurrentView();
 	}
 
@@ -3983,14 +4153,20 @@ export class CleanupWizardModal extends Modal {
 	/**
 	 * Migrate child→children property (Step 14)
 	 */
-	private async migrateChildToChildren(): Promise<{ processed: number; modified: number; errors: Array<{ file: string; error: string }> }> {
+	private async migrateChildToChildren(
+		onProgress?: (current: number, total: number, currentFile?: string) => void
+	): Promise<{ processed: number; modified: number; errors: Array<{ file: string; error: string }> }> {
 		const result = {
 			processed: 0,
 			modified: 0,
 			errors: [] as Array<{ file: string; error: string }>
 		};
 
-		for (const file of this.legacyChildNotes) {
+		for (let i = 0; i < this.legacyChildNotes.length; i++) {
+			const file = this.legacyChildNotes[i];
+			// Report progress
+			onProgress?.(i + 1, this.legacyChildNotes.length, file.basename);
+
 			result.processed++;
 
 			try {
