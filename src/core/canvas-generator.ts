@@ -431,6 +431,73 @@ export class CanvasGenerator {
 			}
 		}
 
+		// Second pass: add step/adoptive parent nodes next to their positioned children
+		// These are connected via 'relationship' edges with relationshipTypeId of 'step_parent' or 'adoptive_parent'
+		// Track how many step/adoptive parents have been placed per child to avoid overlap
+		const stepAdoptiveParentCountPerChild = new Map<string, number>();
+
+		for (const edge of familyTree.edges) {
+			if (edge.type === 'relationship' &&
+				(edge.relationshipTypeId === 'step_parent' || edge.relationshipTypeId === 'adoptive_parent')) {
+
+				const parentCrId = edge.from;
+				const childCrId = edge.to;
+				const childPos = nodeMap.get(childCrId);
+				const parentPos = nodeMap.get(parentCrId);
+
+				// If the child is positioned but the parent isn't, position the parent
+				if (childPos && !parentPos) {
+					const parent = familyTree.nodes.get(parentCrId);
+					if (parent) {
+						const canvasId = this.generateId();
+						crIdToCanvasId.set(parentCrId, canvasId);
+
+						// Get the count of step/adoptive parents already placed for this child
+						const existingCount = stepAdoptiveParentCountPerChild.get(childCrId) ?? 0;
+						stepAdoptiveParentCountPerChild.set(childCrId, existingCount + 1);
+
+						// Find the rightmost positioned node in the parent row (same y level)
+						// to avoid overlapping with biological parents or spouses
+						const parentRowY = childPos.y - opts.nodeSpacingY;
+						let rightmostX = childPos.x;
+						for (const [, pos] of nodeMap) {
+							// Check if this node is roughly at the same y level (parent row)
+							if (Math.abs(pos.y - parentRowY) < opts.nodeHeight / 2) {
+								const nodeRightEdge = pos.x + opts.nodeWidth;
+								if (nodeRightEdge > rightmostX) {
+									rightmostX = nodeRightEdge;
+								}
+							}
+						}
+
+						// Position parent to the right of any existing nodes in the parent row
+						const horizontalGap = opts.nodeSpacingX * 0.3;
+						const additionalOffset = existingCount * (opts.nodeWidth + horizontalGap);
+						const newParentPos = {
+							x: rightmostX + horizontalGap + additionalOffset,
+							y: parentRowY
+						};
+						nodeMap.set(parentCrId, newParentPos);
+
+						// Parent is one generation before child
+						const childGeneration = generationMap.get(childCrId);
+						const parentGeneration = childGeneration !== undefined ? childGeneration - 1 : undefined;
+
+						canvasNodes.push({
+							id: canvasId,
+							type: 'file',
+							file: parent.file.path,
+							x: newParentPos.x,
+							y: newParentPos.y,
+							width: opts.nodeWidth,
+							height: opts.nodeHeight,
+							color: this.getNodeColor(parent, parentGeneration, opts.nodeColorScheme)
+						});
+					}
+				}
+			}
+		}
+
 		// Generate canvas edges using canvas IDs
 		const canvasEdges = this.generateEdges(
 			familyTree,
