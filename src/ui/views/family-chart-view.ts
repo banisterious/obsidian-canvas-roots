@@ -901,7 +901,7 @@ export class FamilyChartView extends ItemView {
 				});
 			}
 
-			// Configure SVG cards with current display options
+			// Configure cards based on current card style
 			const displayFields: string[][] = [['first name', 'last name']];
 			if (this.showBirthDates && this.showDeathDates) {
 				displayFields.push(['birthday', 'deathday']);
@@ -911,11 +911,50 @@ export class FamilyChartView extends ItemView {
 				displayFields.push(['deathday']);
 			}
 
-			this.f3Card = this.f3Chart.setCardSvg()
-				.setCardDisplay(displayFields)
-				.setCardDim({ w: 200, h: 70, text_x: 75, text_y: 15, img_w: 60, img_h: 60, img_x: 5, img_y: 5 })
-				.setOnCardClick((e, d) => this.handleCardClick(e, d))
-				.setOnCardUpdate(this.createOpenNoteButtonCallback());
+			// Apply container style class for CSS targeting
+			this.updateContainerStyleClass();
+
+			// Initialize card renderer based on card style
+			switch (this.cardStyle) {
+				case 'circle':
+					// HTML cards with circular avatar / rectangle fallback
+					this.f3Card = this.f3Chart.setCardHtml()
+						.setStyle('imageCircleRect')
+						.setCardDisplay(displayFields)
+						.setCardImageField('avatar')
+						.setCardDim({ w: 200, h: 70, img_w: 60, img_h: 60, img_x: 5, img_y: 5 })
+						.setOnCardClick((e, d) => this.handleCardClick(e, d))
+						.setOnCardUpdate(this.createOpenNoteButtonCallback());
+					break;
+
+				case 'compact':
+					// Text-only cards, no avatars
+					this.f3Card = this.f3Chart.setCardSvg()
+						.setCardDisplay(displayFields)
+						.setCardDim({ w: 180, h: 50, text_x: 10, text_y: 12, img_w: 0, img_h: 0 })
+						.setOnCardClick((e, d) => this.handleCardClick(e, d))
+						.setOnCardUpdate(this.createOpenNoteButtonCallback());
+					break;
+
+				case 'mini':
+					// Smaller cards for overview (name only)
+					this.f3Card = this.f3Chart.setCardSvg()
+						.setCardDisplay([['first name', 'last name']])
+						.setCardDim({ w: 120, h: 35, text_x: 5, text_y: 10, img_w: 0, img_h: 0 })
+						.setOnCardClick((e, d) => this.handleCardClick(e, d))
+						.setOnCardUpdate(this.createOpenNoteButtonCallback());
+					break;
+
+				case 'rectangle':
+				default:
+					// Default: SVG cards with square avatars (current implementation)
+					this.f3Card = this.f3Chart.setCardSvg()
+						.setCardDisplay(displayFields)
+						.setCardDim({ w: 200, h: 70, text_x: 75, text_y: 15, img_w: 60, img_h: 60, img_x: 5, img_y: 5 })
+						.setOnCardClick((e, d) => this.handleCardClick(e, d))
+						.setOnCardUpdate(this.createOpenNoteButtonCallback());
+					break;
+			}
 
 			// Initialize EditTree for editing capabilities
 			this.initializeEditTree();
