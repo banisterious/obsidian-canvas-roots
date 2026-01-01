@@ -234,13 +234,20 @@ These features are under consideration but not yet prioritized.
 
 ### Research Tracking
 
-Advanced research workflow tools for serious genealogists:
+**Summary:** Tools for tracking research progress toward GPS-compliant documentation.
 
-- "Needs research" tags with to-dos
-- Confidence levels: verified, probable, possible
-- Source documentation per fact
-- DNA match tracking
-- Research log notes
+**Already Implemented:**
+- **Research level property** (v0.17.x) — 7-level scale (0-6) based on Hoitink's "Six Levels of Ancestral Profiles," with Edit Person modal, Research Gaps Report filtering/sorting, and Bases views
+- **Confidence levels** — Source confidence (high/medium/low/unknown), proof confidence (proven/probable/possible/disproven)
+- **Source documentation per fact** — `sourced_*` properties linking facts to sources, coverage percentages in reports
+- **Proof summaries** — GPS-aligned proof summary notes with evidence tracking, conflict detection, and resolution
+
+**Potential Future Additions:**
+- Research to-do tracking (per-person or per-fact task lists)
+- DNA match tracking (cM values, shared segments, match relationships)
+- Research log notes (session-based research journals)
+
+See [Evidence and Sources](Evidence-And-Sources) for documentation on existing features.
 
 ### Dynasty Management
 
