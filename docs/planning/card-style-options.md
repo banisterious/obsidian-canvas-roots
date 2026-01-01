@@ -27,6 +27,13 @@ A new toolbar button (icon: `layout-template` or similar) opens a dropdown menu:
 
 ### Visual Behavior
 
+**Rectangle style (default):**
+- Current implementation with SVG cards
+- Square avatar image on the left
+- Name + birth/death dates on the right
+- Gender-based background color
+- "Open note" button on hover
+
 **Circle style with avatar:**
 - Circular photo cropped to fit
 - Name label below the circle
@@ -175,9 +182,43 @@ private f3Card: ReturnType<ReturnType<typeof f3.createChart>['setCardSvg']>
 private setCardStyle(style: 'rectangle' | 'circle' | 'compact' | 'mini'): void {
     if (this.cardStyle === style) return;
     this.cardStyle = style;
+    this.updateContainerStyleClass();
     void this.refreshChart();
 }
+
+private updateContainerStyleClass(): void {
+    const container = this.chartContainer;
+    if (!container) return;
+
+    // Remove existing style classes
+    container.removeClass('card-style-rectangle', 'card-style-circle', 'card-style-compact', 'card-style-mini');
+
+    // Add current style class
+    container.addClass(`card-style-${this.cardStyle}`);
+}
 ```
+
+### State Persistence
+
+Card style is stored as per-view state using Obsidian's view state API:
+
+```typescript
+getState(): Record<string, unknown> {
+    return {
+        ...super.getState(),
+        cardStyle: this.cardStyle
+    };
+}
+
+setState(state: Record<string, unknown>, result: ViewStateResult): Promise<void> {
+    if (state.cardStyle && typeof state.cardStyle === 'string') {
+        this.cardStyle = state.cardStyle as 'rectangle' | 'circle' | 'compact' | 'mini';
+    }
+    return super.setState(state, result);
+}
+```
+
+This ensures the card style persists when the view is reopened or the workspace is restored.
 
 ---
 
