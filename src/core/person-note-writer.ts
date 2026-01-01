@@ -105,6 +105,9 @@ export interface PersonData {
 	media?: string[];            // Wikilinks to media files (e.g., ["[[photo.jpg]]"])
 	// Research tracking
 	researchLevel?: ResearchLevel;  // Research level (0-6) based on Hoitink's Six Levels
+	// Source references (general person-level sources)
+	sourceCrIds?: string[];      // Source cr_ids for reliable resolution
+	sourceNames?: string[];      // Source names for wikilink display
 	// Notes content (from Gramps import)
 	notesContent?: string;       // Markdown notes content to append to note body
 	// Privacy flag
@@ -235,6 +238,13 @@ export async function createPersonNote(
 
 	if (person.researchLevel !== undefined) {
 		frontmatter[prop('research_level')] = person.researchLevel;
+	}
+
+	// Sources (dual storage: wikilinks + _id array)
+	if (person.sourceCrIds && person.sourceCrIds.length > 0 && person.sourceNames && person.sourceNames.length > 0) {
+		frontmatter[prop('sources')] = person.sourceNames.map(name => `"${createSmartWikilink(name, app)}"`);
+		frontmatter[prop('sources_id')] = person.sourceCrIds;
+		logger.debug('sources', `Added ${person.sourceCrIds.length} sources`);
 	}
 
 	// Privacy flag (e.g., from Gramps priv attribute)
@@ -942,6 +952,18 @@ export async function updatePersonNote(
 				frontmatter.universe = person.universe;
 			} else {
 				delete frontmatter.universe;
+			}
+		}
+
+		// Handle sources (dual storage: wikilinks + _id array)
+		if (person.sourceCrIds !== undefined || person.sourceNames !== undefined) {
+			if (person.sourceCrIds && person.sourceCrIds.length > 0 && person.sourceNames && person.sourceNames.length > 0) {
+				frontmatter.sources = person.sourceNames.map(name => `${createSmartWikilink(name, app)}`);
+				frontmatter.sources_id = person.sourceCrIds;
+			} else {
+				// Clear sources
+				delete frontmatter.sources;
+				delete frontmatter.sources_id;
 			}
 		}
 

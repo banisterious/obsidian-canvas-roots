@@ -15,6 +15,8 @@ import type { CanvasRootsSettings } from '../settings';
 import type CanvasRootsPlugin from '../../main';
 import { ModalStatePersistence, renderResumePromptBanner } from './modal-state-persistence';
 import { ResearchLevel, RESEARCH_LEVELS } from '../types/frontmatter';
+import { SourcePickerModal } from '../sources/ui/source-picker-modal';
+import { SourceService } from '../sources/services/source-service';
 
 /**
  * Relationship field data
@@ -73,6 +75,9 @@ interface PersonFormData {
 	birthPlaceName?: string;
 	deathPlaceCrId?: string;
 	deathPlaceName?: string;
+	// Sources fields
+	sourceCrIds?: string[];
+	sourceNames?: string[];
 }
 
 /**
@@ -106,6 +111,8 @@ export class CreatePersonModal extends Modal {
 	private deathPlaceField: RelationshipField = {};
 	private placeGraph?: PlaceGraphService;
 	private settings?: CanvasRootsSettings;
+	// Sources field (multi-relationship)
+	private sourcesField: MultiRelationshipField = { crIds: [], names: [] };
 
 	// Edit mode properties
 	private editMode: boolean = false;
@@ -445,6 +452,9 @@ export class CreatePersonModal extends Modal {
 				});
 		}
 
+		// Sources section
+		this.createSourcesField(form);
+
 		// Relationship fields section header
 		const relSection = form.createDiv({ cls: 'crc-relationship-section' });
 		relSection.createEl('h4', { text: 'Family relationships', cls: 'crc-section-header' });
@@ -712,7 +722,10 @@ export class CreatePersonModal extends Modal {
 			birthPlaceCrId: this.birthPlaceField.crId,
 			birthPlaceName: this.birthPlaceField.name,
 			deathPlaceCrId: this.deathPlaceField.crId,
-			deathPlaceName: this.deathPlaceField.name
+			deathPlaceName: this.deathPlaceField.name,
+			// Sources fields
+			sourceCrIds: this.sourcesField.crIds.length > 0 ? [...this.sourcesField.crIds] : undefined,
+			sourceNames: this.sourcesField.names.length > 0 ? [...this.sourcesField.names] : undefined
 		};
 	}
 
@@ -784,6 +797,14 @@ export class CreatePersonModal extends Modal {
 			this.childrenField = {
 				crIds: [...formData.childCrIds],
 				names: formData.childNames ? [...formData.childNames] : []
+			};
+		}
+
+		// Sources fields
+		if (formData.sourceCrIds && formData.sourceCrIds.length > 0) {
+			this.sourcesField = {
+				crIds: [...formData.sourceCrIds],
+				names: formData.sourceNames ? [...formData.sourceNames] : []
 			};
 		}
 	}
@@ -1155,6 +1176,95 @@ export class CreatePersonModal extends Modal {
 				plugin: this.plugin
 			});
 			picker.open();
+		});
+	}
+
+	/**
+	 * Create the sources multi-select field
+	 * Shows a list of currently linked sources with ability to add/remove
+	 */
+	private createSourcesField(container: HTMLElement): void {
+		const sourcesContainer = container.createDiv({ cls: 'crc-sources-field' });
+
+		// Section header
+		sourcesContainer.createEl('h4', { text: 'Sources', cls: 'crc-section-header' });
+
+		// Header with add button
+		const header = sourcesContainer.createDiv({ cls: 'crc-sources-field__header' });
+
+		const addBtn = header.createEl('button', {
+			cls: 'crc-btn crc-btn--secondary crc-btn--small'
+		});
+		const addIcon = createLucideIcon('plus', 14);
+		addBtn.appendChild(addIcon);
+		addBtn.appendText(' Add source');
+
+		// List of current sources
+		const sourceList = sourcesContainer.createDiv({ cls: 'crc-sources-field__list' });
+
+		// Render function to update the list
+		const renderSourceList = () => {
+			sourceList.empty();
+
+			if (this.sourcesField.crIds.length === 0) {
+				const emptyState = sourceList.createDiv({ cls: 'crc-sources-field__empty' });
+				emptyState.setText('No sources linked');
+				return;
+			}
+
+			for (let i = 0; i < this.sourcesField.crIds.length; i++) {
+				const crId = this.sourcesField.crIds[i];
+				const name = this.sourcesField.names[i] || crId;
+
+				const sourceItem = sourceList.createDiv({ cls: 'crc-sources-field__item' });
+
+				// Source name
+				const nameSpan = sourceItem.createSpan({ cls: 'crc-sources-field__name' });
+				nameSpan.setText(name);
+
+				// Remove button
+				const removeBtn = sourceItem.createEl('button', {
+					cls: 'crc-btn crc-btn--icon crc-btn--danger',
+					attr: { 'aria-label': `Remove ${name}` }
+				});
+				const removeIcon = createLucideIcon('x', 14);
+				removeBtn.appendChild(removeIcon);
+
+				removeBtn.addEventListener('click', () => {
+					// Remove from arrays
+					this.sourcesField.crIds.splice(i, 1);
+					this.sourcesField.names.splice(i, 1);
+					renderSourceList();
+				});
+			}
+		};
+
+		// Initial render
+		renderSourceList();
+
+		// Add button handler
+		addBtn.addEventListener('click', () => {
+			if (!this.plugin) {
+				new Notice('Plugin not available');
+				return;
+			}
+
+			new SourcePickerModal(this.app, this.plugin, {
+				onSelect: (source) => {
+					// Check if already added
+					if (this.sourcesField.crIds.includes(source.crId)) {
+						new Notice(`${source.title} is already linked as a source`);
+						return;
+					}
+
+					// Add to arrays
+					this.sourcesField.crIds.push(source.crId);
+					this.sourcesField.names.push(source.title);
+					renderSourceList();
+				},
+				excludeSources: this.sourcesField.crIds,
+				allowCreate: true
+			}).open();
 		});
 	}
 
@@ -1722,6 +1832,12 @@ export class CreatePersonModal extends Modal {
 				data.deathPlaceName = this.deathPlaceField.name;
 			}
 
+			// Add sources
+			if (this.sourcesField.crIds.length > 0) {
+				data.sourceCrIds = [...this.sourcesField.crIds];
+				data.sourceNames = [...this.sourcesField.names];
+			}
+
 			// Add collection and universe
 			data.collection = this.getCollectionValue();
 			data.universe = this.getUniverseValue();
@@ -1891,6 +2007,16 @@ export class CreatePersonModal extends Modal {
 				// Explicitly clear death place if unlinked
 				data.deathPlaceCrId = undefined;
 				data.deathPlaceName = undefined;
+			}
+
+			// Add sources
+			if (this.sourcesField.crIds.length > 0) {
+				data.sourceCrIds = [...this.sourcesField.crIds];
+				data.sourceNames = [...this.sourcesField.names];
+			} else {
+				// Explicitly clear sources if all removed
+				data.sourceCrIds = [];
+				data.sourceNames = [];
 			}
 
 			// Add collection and universe
