@@ -64,7 +64,7 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **Priority:** 📋 Medium — Expand person editing with related entity linking
 
-**Status:** ✅ Phase 1 complete | Phase 2 planned | [#33](https://github.com/banisterious/obsidian-canvas-roots/issues/33)
+**Status:** ✅ Phase 1 complete | ✅ Phase 2 complete | Phase 3 planned | [#33](https://github.com/banisterious/obsidian-canvas-roots/issues/33)
 
 **Summary:** Add events and sources fields to the Edit Person modal, allowing users to manage all person-related data from a single interface instead of editing multiple notes separately.
 
@@ -74,8 +74,8 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 |---------|-------------|--------|
 | Sources section | Multi-value picker to link source notes with create-new support | ✅ Complete |
 | Source storage | Stores as `sources`/`sources_id` arrays in person frontmatter | ✅ Complete |
-| Events section | Display events referencing this person; link existing or create new events | Planned |
-| Event linking | Updates event note's `persons` array to include this person | Planned |
+| Events section | Display events referencing this person; link existing or create new events | ✅ Complete |
+| Event linking | Updates event note's `persons` array to include this person | ✅ Complete |
 
 **Technical Notes:**
 - Events use inverse relationships: event notes contain `persons: ["[[Person]]"]`
@@ -88,7 +88,7 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | Phase | Feature | Status |
 |-------|---------|--------|
 | 1 | Sources section (multi-value picker) | ✅ Complete |
-| 2 | Events section (read-only display, then link/create/unlink) | Planned |
+| 2 | Events section (read-only display, link/create/unlink) | ✅ Complete |
 | 3 | Polish (form persistence, duplicate detection, display formatting) | Planned |
 
 **Documentation:**

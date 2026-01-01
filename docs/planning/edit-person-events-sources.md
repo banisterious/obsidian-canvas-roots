@@ -4,7 +4,7 @@
 
 Add events and sources fields to the Edit Person modal, allowing users to manage all person-related data from a single interface instead of editing multiple notes separately.
 
-**Status:** Phase 1 Complete | Phase 2 Planned
+**Status:** Phase 1 Complete | Phase 2 Complete | Phase 3 Planned
 **Issue:** [#33](https://github.com/banisterious/obsidian-canvas-roots/issues/33)
 **Target Version:** v0.18.14
 
@@ -370,12 +370,20 @@ class EventPickerModal extends FuzzySuggestModal<EventNote> {
 - `5a9d54d` - Load existing sources when editing a person
 - `0e0f48d` - Match sources field styling to spouses field pattern
 
-### Phase 2: Events Section
-1. Add events section UI (read-only display first)
-2. Query events that reference this person
-3. Add "Link event" functionality with picker
-4. Add "Create event" with person pre-filled
-5. Add "Unlink event" functionality
+### Phase 2: Events Section ✅ Complete
+
+| Step | Task | Status |
+|------|------|--------|
+| 1 | Add events section UI (read-only display) | ✅ Done |
+| 2 | Query events that reference this person | ✅ Done |
+| 3 | Add "Link event" functionality with EventPickerModal | ✅ Done |
+| 4 | Add "Unlink event" functionality | ✅ Done |
+| 5 | Add "Create event" with person pre-filled | ✅ Done |
+
+**Commits:**
+- `a42ecc2` - Add events section to Edit Person modal (read-only display)
+- `13bbb73` - Add link/unlink event functionality with EventPickerModal
+- `bb829a8` - Add create event button to Edit Person modal
 
 ### Phase 3: Polish
 1. Form state persistence for new fields
