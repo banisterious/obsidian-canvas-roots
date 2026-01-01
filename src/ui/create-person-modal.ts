@@ -20,8 +20,10 @@ import { CreateSourceModal } from '../sources/ui/create-source-modal';
 import { SourceService } from '../sources/services/source-service';
 import { EventService } from '../events/services/event-service';
 import type { EventNote } from '../events/types/event-types';
+import { getEventType } from '../events/types/event-types';
 import { EventPickerModal } from '../events/ui/event-picker-modal';
 import { CreateEventModal } from '../events/ui/create-event-modal';
+import { getSourceType } from '../sources/types/source-types';
 
 /**
  * Relationship field data
@@ -1240,15 +1242,43 @@ export class CreatePersonModal extends Modal {
 				return;
 			}
 
+			// Get source service for type lookup
+			const sourceService = this.plugin ? new SourceService(this.app, this.plugin.settings) : null;
+
 			for (let i = 0; i < this.sourcesField.crIds.length; i++) {
 				const crId = this.sourcesField.crIds[i];
 				const name = this.sourcesField.names[i] || crId;
 
 				const sourceItem = sourceList.createDiv({ cls: 'crc-sources-field__item' });
 
+				// Source info container
+				const infoContainer = sourceItem.createDiv({ cls: 'crc-sources-field__info' });
+
 				// Source name
-				const nameSpan = sourceItem.createSpan({ cls: 'crc-sources-field__name' });
+				const nameSpan = infoContainer.createSpan({ cls: 'crc-sources-field__name' });
 				nameSpan.setText(name);
+
+				// Source type badge (if we can look it up)
+				if (sourceService && this.plugin) {
+					const source = sourceService.getSourceById(crId);
+					if (source?.sourceType) {
+						const typeDef = getSourceType(
+							source.sourceType,
+							this.plugin.settings.customSourceTypes,
+							this.plugin.settings.showBuiltInSourceTypes
+						);
+						const typeBadge = infoContainer.createSpan({ cls: 'crc-sources-field__type' });
+						if (typeDef) {
+							typeBadge.setText(typeDef.name);
+							if (typeDef.color) {
+								typeBadge.style.setProperty('background-color', typeDef.color);
+								typeBadge.style.setProperty('color', this.getContrastColor(typeDef.color));
+							}
+						} else {
+							typeBadge.setText(source.sourceType);
+						}
+					}
+				}
 
 				// Remove button
 				const removeBtn = sourceItem.createEl('button', {
@@ -1376,10 +1406,23 @@ export class CreatePersonModal extends Modal {
 				const titleSpan = infoContainer.createSpan({ cls: 'crc-events-field__title' });
 				titleSpan.setText(event.title);
 
-				// Event type badge
-				if (event.eventType) {
+				// Event type badge with color
+				if (event.eventType && this.plugin) {
+					const typeDef = getEventType(
+						event.eventType,
+						this.plugin.settings.customEventTypes,
+						this.plugin.settings.showBuiltInEventTypes
+					);
 					const typeBadge = infoContainer.createSpan({ cls: 'crc-events-field__type' });
-					typeBadge.setText(event.eventType);
+					if (typeDef) {
+						typeBadge.setText(typeDef.name);
+						if (typeDef.color) {
+							typeBadge.style.setProperty('background-color', typeDef.color);
+							typeBadge.style.setProperty('color', this.getContrastColor(typeDef.color));
+						}
+					} else {
+						typeBadge.setText(event.eventType);
+					}
 				}
 
 				// Event date
@@ -1609,6 +1652,18 @@ export class CreatePersonModal extends Modal {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get contrasting text color for a background color
+	 */
+	private getContrastColor(hexColor: string): string {
+		const hex = hexColor.replace('#', '');
+		const r = parseInt(hex.substring(0, 2), 16);
+		const g = parseInt(hex.substring(2, 4), 16);
+		const b = parseInt(hex.substring(4, 6), 16);
+		const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+		return luminance > 0.5 ? '#000000' : '#ffffff';
 	}
 
 	/**

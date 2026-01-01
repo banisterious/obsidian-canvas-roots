@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-canvas-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2026-01-01 00:40:56 UTC
+ * - Generated: 2026-01-01 00:50:57 UTC
  * - Components: 40 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -6326,7 +6326,7 @@ settings:
    COMPONENT: ENTITY-CREATE-MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 684 lines, 13.45 KB */
+/* Component Size: 701 lines, 13.75 KB */
 
 /* ==========================================================================
    PERSON PICKER MODAL
@@ -6787,9 +6787,26 @@ settings:
   border-radius: var(--radius-s);
 }
 
+.crc-sources-field__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
 .crc-sources-field__name {
   font-size: 14px;
   color: var(--text-normal);
+  font-weight: 500;
+}
+
+.crc-sources-field__type {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: var(--radius-s);
+  background: var(--background-modifier-border);
+  color: var(--text-muted);
 }
 
 .crc-sources-field__buttons {
@@ -34139,11 +34156,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2026-01-01 00:40:56 UTC
+ * Build completed: 2026-01-01 00:50:57 UTC
  * Components processed: 40
- * Total lines: 33756
- * Total size: 668.18 KB
- * Build duration: 0.04 seconds
+ * Total lines: 33773
+ * Total size: 668.48 KB
+ * Build duration: 0.06 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -34152,7 +34169,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - layout.css: 22 lines, 0.24 KB
  * - settings.css: 131 lines, 3.53 KB
  * - control-center.css: 5673 lines, 105.32 KB
- * - entity-create-modals.css: 684 lines, 13.45 KB
+ * - entity-create-modals.css: 701 lines, 13.75 KB
  * - place-modals.css: 932 lines, 17.28 KB
  * - media-modals.css: 1928 lines, 36.72 KB
  * - import-export-wizard.css: 1779 lines, 33.41 KB

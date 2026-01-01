@@ -457,9 +457,26 @@
   border-radius: var(--radius-s);
 }
 
+.crc-sources-field__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
 .crc-sources-field__name {
   font-size: 14px;
   color: var(--text-normal);
+  font-weight: 500;
+}
+
+.crc-sources-field__type {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: var(--radius-s);
+  background: var(--background-modifier-border);
+  color: var(--text-muted);
 }
 
 .crc-sources-field__buttons {
