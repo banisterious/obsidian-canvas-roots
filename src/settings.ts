@@ -276,6 +276,8 @@ export interface CanvasRootsSettings {
 	hiddenOrganizationCategories: string[];
 	// Source management settings
 	sourcesFolder: string;
+	// Notes folder (for separate note files - Phase 4 Gramps integration)
+	notesFolder: string;
 	// Bases folder
 	basesFolder: string;
 	defaultCitationFormat: CitationFormat;
@@ -597,6 +599,8 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	hiddenOrganizationCategories: [],    // Hidden/deleted built-in organization categories
 	// Source management settings
 	sourcesFolder: 'Canvas Roots/Sources',  // Default folder for source notes
+	// Notes folder (for separate note files - Phase 4 Gramps integration)
+	notesFolder: 'Canvas Roots/Notes',      // Default folder for note entity files
 	// Bases folder
 	basesFolder: 'Canvas Roots/Bases',      // Default folder for base files
 	defaultCitationFormat: 'evidence_explained',  // Evidence Explained is the genealogy standard

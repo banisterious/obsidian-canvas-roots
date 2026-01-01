@@ -82,6 +82,10 @@ export interface GrampsImportOptions {
 	preserveMediaFolderStructure?: boolean;
 	/** Whether to import notes attached to entities (default: true) */
 	importNotes?: boolean;
+	/** Whether to create separate note files instead of embedding (default: false) */
+	createSeparateNoteFiles?: boolean;
+	/** Folder for separate note files (default: Canvas Roots/Notes) */
+	notesFolder?: string;
 }
 
 /**
@@ -108,6 +112,8 @@ export interface GrampsImportResult {
 	mediaFilesExtracted?: number;
 	/** Mapping from Gramps media handle to vault path (for linking) */
 	mediaHandleToPath?: Map<string, string>;
+	/** Number of separate note files created (Phase 4) */
+	separateNoteFilesCreated?: number;
 }
 
 /**
