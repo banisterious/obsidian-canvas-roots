@@ -1131,92 +1131,108 @@
  * ============================================================ */
 
 /* ------------------------------------------------------------
- * Circular Avatar Card Styles (imageCircle / imageCircleRect)
+ * Circular Avatar Card Styles
  * Used when cardStyle = 'circle'
+ * Uses custom card HTML matching family-chart example structure
  * ------------------------------------------------------------ */
 
-/* Remove rectangle wrapper styling for circle cards */
+/* Circle card wrapper - matches family-chart v2 example */
+/* Override Obsidian's base .card styles that add padding/margin */
 .cr-fcv-chart-container.card-style-circle .card {
+  cursor: pointer;
+  pointer-events: auto;
+  color: #fff;
+  position: relative;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+  /* Reset Obsidian's .card defaults */
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  display: block !important;
+  flex-direction: unset !important;
+  flex-grow: unset !important;
 }
 
-/* Remove rectangular outline from circle card main/hover states */
-.cr-fcv-chart-container.card-style-circle div.card-main .card-inner.card-image-circle {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(220, 220, 220, 0.8);
+/* Override base hover transform that would shift card children */
+.cr-fcv-chart-container.card-style-circle.f3 div.card:hover > div {
+  /* Don't use translate - circle cards handle hover with scale on inner element */
 }
 
-.cr-fcv-chart-container.card-style-circle div.card:hover .card-inner.card-image-circle {
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.8);
-}
-
-/* Make the circular card container fully round */
-.cr-fcv-chart-container.f3 div.card-image-circle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 5px;
+/* Circular image card container */
+.cr-fcv-chart-container.card-style-circle div.card-image {
   border-radius: 50%;
+  padding: 5px;
   width: 90px;
   height: 90px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* Label below circular cards - positioned to not affect card width */
+.cr-fcv-chart-container.card-style-circle div.card-image div.card-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 5px;
+  width: max-content;
+  max-width: 200px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 1.3;
 }
 
 /* Image styling for circular cards */
-.cr-fcv-chart-container.f3 div.card-image-circle img {
+.cr-fcv-chart-container.card-style-circle div.card-image img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
 }
 
-/* Person icon placeholder for circular cards without avatar */
-.cr-fcv-chart-container.f3 div.card-image-circle .person-icon {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cr-fcv-chart-container.f3 div.card-image-circle .person-icon svg {
-  width: 50px;
-  height: 50px;
-  opacity: 0.7;
-}
-
-/* Label below circular cards - white text for readability */
-.cr-fcv-chart-container.f3 div.card-image-circle .card-label {
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translate(-50%, 50%);
-  max-width: 150%;
-  min-height: 22px;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* Text-only card fallback (no avatar) */
+.cr-fcv-chart-container.card-style-circle div.card-text {
+  padding: 5px;
   border-radius: 3px;
-  padding: 0 5px;
-  font-size: 12px;
-  line-height: 22px;
+  width: 120px;
+  height: 70px;
+  overflow: hidden;
+  line-height: 1.2;
 }
 
-/* Rectangular fallback styling (matches existing rect cards) */
-.cr-fcv-chart-container.f3 div.card-rect {
-  width: 200px;
-  min-height: 70px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 10px 15px;
-  border-radius: 5px;
+/* Hover effect - apply to inner card-image/card-text, not the .card wrapper */
+.cr-fcv-chart-container.card-style-circle div.card > div {
+  transition: transform 0.2s ease-in-out;
+}
+
+.cr-fcv-chart-container.card-style-circle div.card:hover > div {
+  transform: scale(1.1);
+}
+
+/* Main card highlight - apply scale to inner element, shadow to card-image */
+.cr-fcv-chart-container.card-style-circle div.card .card-main {
+  transform: scale(1.05);
+}
+
+.cr-fcv-chart-container.card-style-circle div.card .card-main.card-image {
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Gender-based background colors */
+.cr-fcv-chart-container.card-style-circle div.card-female {
+  background-color: rgb(196, 138, 146);
+}
+.cr-fcv-chart-container.card-style-circle div.card-male {
+  background-color: rgb(120, 159, 172);
+}
+.cr-fcv-chart-container.card-style-circle div.card-genderless {
+  background-color: lightgray;
 }
 
 /* ------------------------------------------------------------

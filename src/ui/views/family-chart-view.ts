@@ -917,14 +917,10 @@ export class FamilyChartView extends ItemView {
 			// Initialize card renderer based on card style
 			switch (this.cardStyle) {
 				case 'circle':
-					// HTML cards with circular avatar / rectangle fallback
-					// Don't set cardDim - let library use defaults like in family-chart example
+					// HTML cards with circular avatar - use setOnCardUpdate to replace entire card HTML
+					// Based on family-chart v2 example: external/family-chart/examples/htmls/v2/11-card-styling.html
 					this.f3Card = this.f3Chart.setCardHtml()
-						.setStyle('imageCircleRect')
-						.setCardDisplay(displayFields)
-						.setCardImageField('avatar')
-						.setOnCardClick((e: MouseEvent, d: { data: { id: string; [key: string]: unknown } }) => this.handleCardClick(e, d))
-						.setOnCardUpdate(this.createOpenNoteButtonCallback());
+						.setOnCardUpdate(this.createCircleCardCallback());
 					break;
 
 				case 'compact':
@@ -1311,6 +1307,80 @@ export class FamilyChartView extends ItemView {
 				d3.select(this).select('path')
 					.attr('stroke', 'var(--text-muted)');
 			});
+		};
+	}
+
+	/**
+	 * Create callback for circle card style that replaces the entire card HTML.
+	 * Based on family-chart v2 example: external/family-chart/examples/htmls/v2/11-card-styling.html
+	 *
+	 * This approach uses setOnCardUpdate to replace the card's outerHTML with a custom
+	 * structure that properly centers the circle on the node position.
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	private createCircleCardCallback(): (d: any) => void {
+		const view = this;
+
+		return function(this: HTMLElement, d: any) {
+			const card = this.querySelector('.card');
+			if (!card) return;
+
+			// Build class list for gender styling
+			const classList = [];
+			const gender = d.data.data.gender as string;
+			if (gender === 'M') classList.push('card-male');
+			else if (gender === 'F') classList.push('card-female');
+			else classList.push('card-genderless');
+			if (d.data.main) classList.push('card-main');
+
+			// Build name
+			const firstName = d.data.data['first name'] || '';
+			const lastName = d.data.data['last name'] || '';
+			const name = `${firstName} ${lastName}`.trim() || 'Unknown';
+
+			// Build label with optional dates
+			const parts = [name];
+			if (view.showBirthDates && d.data.data.birthday) {
+				parts.push(d.data.data.birthday);
+			}
+			if (view.showDeathDates && d.data.data.deathday) {
+				parts.push(d.data.data.deathday);
+			}
+			const label = parts.join('<br>');
+
+			const avatar = d.data.data.avatar as string | undefined;
+
+			// Build card inner HTML based on whether avatar exists
+			let cardInner: string;
+			if (avatar) {
+				cardInner = `
+				<div class="card-image ${classList.join(' ')}">
+					<img src="${avatar}">
+					<div class="card-label">${label}</div>
+				</div>
+				`;
+			} else {
+				cardInner = `
+				<div class="card-text ${classList.join(' ')}">
+					${label}
+				</div>
+				`;
+			}
+
+			// Replace entire card HTML with properly centered structure
+			card.outerHTML = `
+			<div class="card" style="transform: translate(-50%, -50%); pointer-events: auto;">
+				${cardInner}
+			</div>
+			`;
+
+			// Re-attach click handler to the new card element
+			const newCard = this.querySelector('.card');
+			if (newCard) {
+				newCard.addEventListener('click', (e: Event) => {
+					view.handleCardClick(e as MouseEvent, d);
+				});
+			}
 		};
 	}
 
