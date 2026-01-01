@@ -13,15 +13,11 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Staging Management](#staging-management) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
 - [Future Considerations](#future-considerations)
-  - [Ghost Nodes for Unresolved Links](#ghost-nodes-for-unresolved-links)
   - [Research Tracking](#research-tracking)
   - [Dynasty Management](#dynasty-management)
   - [Universe Batch Operations](#universe-batch-operations)
-  - [Data Analysis Scope Expansion](#data-analysis-scope-expansion)
   - [Import Wizard Filename Parser Enhancements](#import-wizard-filename-parser-enhancements)
-  - [Person Note Templates](#person-note-templates)
   - [Accessibility](#accessibility)
-  - [Obsidian Publish Support](#obsidian-publish-support)
 - [Known Limitations](#known-limitations)
 - [Contributing](#contributing)
 
@@ -229,32 +225,6 @@ These features are under consideration but not yet prioritized.
 
 ---
 
-### Ghost Nodes for Unresolved Links
-
-**Priority:** 📋 Medium — Visualize incomplete data structures
-
-**Summary:** Display "ghost" or "stub" nodes on canvases for wikilinks in relationship fields that don't resolve to existing notes or notes lacking a `cr_id`. This allows users to visualize the complete intended structure of their family tree or world even when some notes are incomplete or missing.
-
-**Use Cases:**
-- **Work-in-progress trees:** See the full intended structure while still creating notes
-- **GEDCOM import preview:** Visualize what the tree would look like before all notes are created
-- **Research planning:** Show known relationships to people you haven't researched yet
-- **Worldbuilding:** Visualize mentioned-but-not-yet-documented characters, places, or organizations
-
-**Scope:** All entity types (people, places, organizations, events).
-
-**Features:**
-- Parse wikilinks in relationship fields (father, mother, spouse, parent_place, etc.) that don't resolve to files
-- Display stub nodes with distinct styling (dashed borders, muted colors, or "?" indicator)
-- Show inferred context on ghost nodes (e.g., if referenced as "father", display "Father of [X]")
-- Click-to-create action: clicking a ghost node offers to create the note with pre-filled relationships
-
-**Technical Approach:**
-1. During canvas generation, collect all wikilinks from relationship fields
-2. Check each link against resolved files and `cr_id` mappings
-3. For unresolved links, create placeholder nodes with ghost styling
-4. Populate ghost nodes with relationship context inferred from the referencing property
-
 ### Research Tracking
 
 **Summary:** Tools for tracking research progress toward GPS-compliant documentation.
@@ -289,21 +259,6 @@ Bulk operations for managing entities across universes:
 - Bulk universe assignment to existing entities
 - Universe merge/split tools
 
-### Data Analysis Scope Expansion
-
-Expand Data Quality → Data Analysis scope options beyond folder-based filtering to include note type filtering:
-
-**Current scope options:**
-- All records (main tree)
-- Staging folder only
-
-**Proposed additions:**
-- Filter by note type (Person, Place, Event, Source, etc.)
-- Combined folder + note type filtering
-- Note-type-specific validations (e.g., place notes check for missing coordinates, person notes check for missing birth date)
-
-This requires generalizing the `DataQualityIssue` interface to support multiple note types instead of just `PersonNode`.
-
 ### Import Wizard Filename Parser Enhancements
 
 Extend the Bulk Source Image Import wizard's filename parser to recognize additional naming conventions used by genealogists:
@@ -319,20 +274,12 @@ This pattern is already documented as a [recommended naming convention](Evidence
 
 **Note:** Canvas Roots intentionally avoids dictating naming conventions—this would be an opt-in enhancement for users who follow the ED/page pattern.
 
-### Person Note Templates
-
-Pre-configured templates for different use cases: Researcher (full fields with sources), Casual User (minimal), World-Builder (with universe/fictional dates), Quick Add (bare minimum).
-
 ### Accessibility
 
 - Screen reader support with ARIA labels
 - High contrast mode
 - Keyboard navigation
 - WCAG AA compliance
-
-### Obsidian Publish Support
-
-Static HTML/SVG tree generation for Publish sites with privacy-aware export.
 
 ---
 
