@@ -9,6 +9,7 @@ The Interactive Family Chart View is a persistent, interactive visualization pan
 - [Opening the Family Chart](#opening-the-family-chart)
 - [Navigation and Exploration](#navigation-and-exploration)
 - [Display Options](#display-options)
+  - [Card Styles](#card-styles)
 - [Edit Mode](#edit-mode)
 - [Exporting the Chart](#exporting-the-chart)
 - [Styling](#styling)
@@ -86,6 +87,29 @@ Toggle relationship labels on connecting lines to show how people are related:
 3. Links now display "Parent" or "Spouse" labels
 
 This helps clarify relationship types at a glance, especially useful when presenting or reviewing complex family structures.
+
+### Card Styles
+
+Choose from 4 card styles to match your visualization needs. Access via the **Style** menu → **Card Style** submenu.
+
+| Style | Description | Best For |
+|-------|-------------|----------|
+| **Rectangle** | Default cards with avatar thumbnails and full details (name, dates) | General use, detailed views |
+| **Circle** | Circular avatar cards with name labels below | Photo-centric trees, visual appeal |
+| **Compact** | Text-only cards without avatars | Large trees, structure focus |
+| **Mini** | Smaller name-only cards | High-level overviews, navigation |
+
+**Features:**
+- Card style persists across Obsidian restarts
+- All styles support the "Open note" button (smaller on Mini)
+- All styles work with PNG/PDF export
+- Circle style uses circular avatar cropping with gender-colored backgrounds
+
+**Choosing a Style:**
+- Use **Rectangle** for most genealogy work where you want to see photos and dates
+- Use **Circle** for presentations or when photos are the main focus
+- Use **Compact** when working with large trees (50+ people) to see more at once
+- Use **Mini** for quick navigation or getting an overview before zooming in
 
 ## Edit Mode
 
@@ -206,6 +230,7 @@ If you have the [Style Settings](https://github.com/mgmeyers/obsidian-style-sett
 The Family Chart View automatically saves and restores:
 - Root person selection
 - Color scheme preference
+- Card style preference
 - Edit mode state
 - Layout spacing settings
 - Date visibility preference
@@ -247,6 +272,7 @@ This allows you to:
 | Undo/Redo | Reverse or replay edits (edit mode only) |
 | Fit to view | Zoom to show entire tree |
 | Layout settings | Adjust spacing, date display, and kinship labels |
+| Style menu | Card style (Rectangle, Circle, Compact, Mini), display options |
 | Export | Open export wizard (PNG, SVG, PDF, ODT) |
 | Refresh | Reload data from notes |
 
