@@ -107,7 +107,9 @@ export class FamilyChartView extends ItemView {
 
 	// family-chart instances
 	private f3Chart: ReturnType<typeof f3.createChart> | null = null;
-	private f3Card: ReturnType<ReturnType<typeof f3.createChart>['setCardSvg']> | null = null;
+	private f3Card: ReturnType<ReturnType<typeof f3.createChart>['setCardSvg']>
+		| ReturnType<ReturnType<typeof f3.createChart>['setCardHtml']>
+		| null = null;
 	private f3EditTree: ReturnType<ReturnType<typeof f3.createChart>['editTree']> | null = null;
 
 	// UI elements
