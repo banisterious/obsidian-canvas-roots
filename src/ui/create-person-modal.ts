@@ -19,6 +19,7 @@ import { SourcePickerModal } from '../sources/ui/source-picker-modal';
 import { SourceService } from '../sources/services/source-service';
 import { EventService } from '../events/services/event-service';
 import type { EventNote } from '../events/types/event-types';
+import { EventPickerModal } from '../events/ui/event-picker-modal';
 
 /**
  * Relationship field data
@@ -1284,55 +1285,189 @@ export class CreatePersonModal extends Modal {
 	}
 
 	/**
-	 * Create the events display field (read-only in Phase 2.1)
-	 * Shows events that reference this person via their person/persons property
+	 * Create the events field
+	 * Shows events that reference this person and allows linking new events
 	 */
 	private createEventsField(container: HTMLElement): void {
 		const eventsContainer = container.createDiv({ cls: 'crc-events-field' });
 
-		// Header with label
+		// Header with label and add button
 		const header = eventsContainer.createDiv({ cls: 'crc-events-field__header' });
 		header.createSpan({ cls: 'crc-events-field__label', text: 'Events' });
+
+		const addBtn = header.createEl('button', {
+			cls: 'crc-btn crc-btn--secondary crc-btn--small'
+		});
+		const addIcon = createLucideIcon('plus', 14);
+		addBtn.appendChild(addIcon);
+		addBtn.appendText(' Link event');
 
 		// List of events referencing this person
 		const eventList = eventsContainer.createDiv({ cls: 'crc-events-field__list' });
 
-		// Get events for this person
-		const personEvents = this.getEventsForPerson();
+		// Render function to update the list
+		const renderEventList = () => {
+			eventList.empty();
 
-		if (personEvents.length === 0) {
-			const emptyState = eventList.createDiv({ cls: 'crc-events-field__empty' });
-			emptyState.setText('No events reference this person');
+			const personEvents = this.getEventsForPerson();
+
+			if (personEvents.length === 0) {
+				const emptyState = eventList.createDiv({ cls: 'crc-events-field__empty' });
+				emptyState.setText('No events reference this person');
+				return;
+			}
+
+			// Render each event
+			for (const event of personEvents) {
+				const eventItem = eventList.createDiv({ cls: 'crc-events-field__item' });
+
+				// Event info container (clickable to open note)
+				const infoContainer = eventItem.createDiv({ cls: 'crc-events-field__info' });
+
+				// Event title
+				const titleSpan = infoContainer.createSpan({ cls: 'crc-events-field__title' });
+				titleSpan.setText(event.title);
+
+				// Event type badge
+				if (event.eventType) {
+					const typeBadge = infoContainer.createSpan({ cls: 'crc-events-field__type' });
+					typeBadge.setText(event.eventType);
+				}
+
+				// Event date
+				if (event.date) {
+					const dateSpan = infoContainer.createSpan({ cls: 'crc-events-field__date' });
+					dateSpan.setText(event.date);
+				}
+
+				// Unlink button
+				const unlinkBtn = eventItem.createEl('button', {
+					cls: 'crc-btn crc-btn--icon crc-btn--danger',
+					attr: { 'aria-label': `Unlink ${event.title}` }
+				});
+				const unlinkIcon = createLucideIcon('unlink', 14);
+				unlinkBtn.appendChild(unlinkIcon);
+
+				unlinkBtn.addEventListener('click', async (e) => {
+					e.stopPropagation();
+					await this.unlinkEventFromPerson(event);
+					renderEventList();
+				});
+
+				// Click info area to open event note
+				infoContainer.addEventListener('click', () => {
+					void this.app.workspace.openLinkText(event.filePath, '', false);
+				});
+			}
+		};
+
+		// Initial render
+		renderEventList();
+
+		// Add button handler - open event picker
+		addBtn.addEventListener('click', () => {
+			if (!this.plugin) {
+				new Notice('Plugin not available');
+				return;
+			}
+
+			// Get currently linked event cr_ids to exclude
+			const linkedEvents = this.getEventsForPerson();
+			const excludeEvents = linkedEvents.map(e => e.crId);
+
+			new EventPickerModal(this.app, this.plugin, {
+				onSelect: async (event) => {
+					await this.linkEventToPerson(event);
+					renderEventList();
+				},
+				excludeEvents,
+				allowCreate: false  // For now, just link existing events
+			}).open();
+		});
+	}
+
+	/**
+	 * Link an event to this person by adding person to event's persons array
+	 */
+	private async linkEventToPerson(event: EventNote): Promise<void> {
+		const personName = this.personData.name;
+		if (!personName) {
+			new Notice('Person name is required to link events');
 			return;
 		}
 
-		// Render each event
-		for (const event of personEvents) {
-			const eventItem = eventList.createDiv({ cls: 'crc-events-field__item' });
+		const personWikilink = `[[${personName}]]`;
 
-			// Event info container
-			const infoContainer = eventItem.createDiv({ cls: 'crc-events-field__info' });
+		try {
+			await this.app.fileManager.processFrontMatter(event.file, (frontmatter) => {
+				// Initialize persons array if it doesn't exist
+				if (!frontmatter.persons) {
+					frontmatter.persons = [];
+				}
 
-			// Event title
-			const titleSpan = infoContainer.createSpan({ cls: 'crc-events-field__title' });
-			titleSpan.setText(event.title);
+				// Ensure it's an array
+				if (!Array.isArray(frontmatter.persons)) {
+					frontmatter.persons = [frontmatter.persons];
+				}
 
-			// Event type badge
-			if (event.eventType) {
-				const typeBadge = infoContainer.createSpan({ cls: 'crc-events-field__type' });
-				typeBadge.setText(event.eventType);
-			}
+				// Check if person is already linked
+				const alreadyLinked = frontmatter.persons.some((p: string) => {
+					const match = p.match(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/);
+					const refName = match ? match[1] : p;
+					return refName.toLowerCase() === personName.toLowerCase();
+				});
 
-			// Event date
-			if (event.date) {
-				const dateSpan = infoContainer.createSpan({ cls: 'crc-events-field__date' });
-				dateSpan.setText(event.date);
-			}
-
-			// Click to open event note
-			eventItem.addEventListener('click', () => {
-				void this.app.workspace.openLinkText(event.filePath, '', false);
+				if (!alreadyLinked) {
+					frontmatter.persons.push(personWikilink);
+				}
 			});
+
+			new Notice(`Linked "${event.title}" to ${personName}`);
+		} catch (error) {
+			console.error('Failed to link event:', error);
+			new Notice(`Failed to link event: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+	}
+
+	/**
+	 * Unlink an event from this person by removing person from event's persons array
+	 */
+	private async unlinkEventFromPerson(event: EventNote): Promise<void> {
+		const personName = this.personData.name;
+		if (!personName) return;
+
+		try {
+			await this.app.fileManager.processFrontMatter(event.file, (frontmatter) => {
+				if (!frontmatter.persons || !Array.isArray(frontmatter.persons)) {
+					return;
+				}
+
+				// Filter out this person
+				frontmatter.persons = frontmatter.persons.filter((p: string) => {
+					const match = p.match(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/);
+					const refName = match ? match[1] : p;
+					return refName.toLowerCase() !== personName.toLowerCase();
+				});
+
+				// Also check singular person property
+				if (frontmatter.person) {
+					const match = frontmatter.person.match(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/);
+					const refName = match ? match[1] : frontmatter.person;
+					if (refName.toLowerCase() === personName.toLowerCase()) {
+						delete frontmatter.person;
+					}
+				}
+
+				// Clean up empty persons array
+				if (frontmatter.persons.length === 0) {
+					delete frontmatter.persons;
+				}
+			});
+
+			new Notice(`Unlinked "${event.title}" from ${personName}`);
+		} catch (error) {
+			console.error('Failed to unlink event:', error);
+			new Notice(`Failed to unlink event: ${error instanceof Error ? error.message : 'Unknown error'}`);
 		}
 	}
 
