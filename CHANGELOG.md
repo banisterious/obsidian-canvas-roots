@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Export text overflow** - Fixed text spilling outside card bounds in PNG/PDF exports; clip-path attributes now preserved during SVG preparation ([#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88))
 - **High Contrast theme readability** - Fixed white text on bright cyan/magenta backgrounds in dark mode; High Contrast preset now uses black text for accessibility ([#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88))
 - **Multi-line date display** - Birth and death dates now display on separate lines when both are enabled; cards automatically resize to accommodate the extra line ([#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88))
+- **Spacing state persistence** - Node and level spacing settings now persist across Obsidian restarts; added checkmarks to spacing menu items to indicate current selection ([#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88))
 
 ---
 
