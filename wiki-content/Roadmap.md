@@ -8,6 +8,7 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
+  - [Circular Avatar Card Style](#circular-avatar-card-style) 📋 Medium
   - [Gramps Notes & Family Integration](#gramps-notes--family-integration) 📋 Medium
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Staging Management](#staging-management) 💡 Low
@@ -57,6 +58,25 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
+
+---
+
+### Circular Avatar Card Style
+
+**Priority:** 📋 Medium — Photo-centric visualization for Family Chart
+
+**Status:** Planning
+
+**Summary:** Add an optional "Circle" card style to the Family Chart view that displays person nodes with circular avatar images. When a person has no media attached, the card falls back to a rectangular text card showing name and dates.
+
+**Features:**
+- New toolbar dropdown to select card style (Rectangle or Circle)
+- Circular photos with gender-based background colors
+- Automatic fallback to rectangular cards when no avatar exists
+- No information loss for persons without photos
+
+**Documentation:**
+- See [Circular Avatar Card Style Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/circular-avatar-card-style.md) for detailed specifications
 
 ---
 
