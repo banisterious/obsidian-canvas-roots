@@ -10,6 +10,7 @@ Real-world examples of how people use Canvas Roots for genealogy, worldbuilding,
 - [Importing from Genealogy Software](#importing-from-genealogy-software)
 - [Building a Family Tree from Scratch](#building-a-family-tree-from-scratch)
 - [Adding a New Family Member](#adding-a-new-family-member)
+- [Deleting a Person and Cleaning Up References](#deleting-a-person-and-cleaning-up-references)
 - [Generating a Family Reunion Report](#generating-a-family-reunion-report)
 - [Visualizing Migration Patterns](#visualizing-migration-patterns)
 - [Tracking DNA Matches](#tracking-dna-matches)
@@ -186,6 +187,57 @@ Adding a child through the parent's relationship menu is intuitive but less effi
 - **Bidirectional linking:** Canvas Roots automatically creates the reverse relationship, so you don't need to manually add the child to both parents.
 - **Batch media uploads:** If you have multiple documents (birth certificate, hospital record, photos), you can upload them all at once via the media picker.
 - **Reuse places:** If the birth location already exists as a place note, linking is faster than creating a new one.
+
+---
+
+### Deleting a Person and Cleaning Up References
+
+**User type:** Genealogist
+**Features used:** File Explorer, Cleanup Wizard
+**Complexity:** Beginner
+
+**The Challenge**
+
+You received incorrect family information from a relative, or you've discovered duplicate entries in your tree. You need to delete these person notes while ensuring all references to them (in relationship fields, events, sources, etc.) are properly cleaned up.
+
+**The Approach**
+
+Canvas Roots doesn't currently have a one-click "Delete Person with cleanup" action, but the two-step workflow is straightforward:
+
+**Step 1: Delete the person note**
+
+1. Find the person note in the file explorer
+2. Right-click → **Delete** (or press `Delete` key)
+3. Obsidian moves the file to trash
+
+**Step 2: Clean up orphaned references**
+
+1. Open **Control Center** → **Data Quality**
+2. Click **Cleanup Wizard**
+3. Navigate to **Step 5: Clear orphan references**
+4. Click **Scan** to find all references to deleted notes
+5. Review the list of orphaned links
+6. Click **Fix All** to remove the broken references
+
+**What Gets Cleaned Up**
+
+The Cleanup Wizard detects and removes orphaned references in:
+- Relationship fields (`father`, `mother`, `spouse`, `children`)
+- Event participant links
+- Source person references
+- Any other wikilinks pointing to the deleted note
+
+**Tips**
+
+- **Check before deleting:** Use Obsidian's backlinks panel to see what references a person before deleting them.
+- **Batch deletions:** If deleting multiple people, delete all the notes first, then run the Cleanup Wizard once to fix all orphaned references at once.
+- **Undo available:** Deleted notes go to Obsidian's trash, so you can restore them if needed. The Cleanup Wizard also shows what will be changed before applying fixes.
+- **Events and sources:** Deleting a person doesn't automatically delete their associated events or sources. Review these separately if they're no longer needed.
+
+**Related**
+
+- [Data Quality](Data-Quality) — Full documentation for the Cleanup Wizard
+- [Staging and Cleanup](Staging-And-Cleanup) — Managing imported data
 
 ---
 
