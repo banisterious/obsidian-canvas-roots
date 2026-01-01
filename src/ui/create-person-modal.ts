@@ -183,6 +183,9 @@ export class CreatePersonModal extends Modal {
 				// Children
 				childIds?: string[];
 				childNames?: string[];
+				// Sources
+				sourceIds?: string[];
+				sourceNames?: string[];
 			};
 			// Universe options
 			existingUniverses?: string[];
@@ -275,6 +278,13 @@ export class CreatePersonModal extends Modal {
 				this.childrenField = {
 					crIds: [...ep.childIds],
 					names: ep.childNames ? [...ep.childNames] : []
+				};
+			}
+			// Sources
+			if (ep.sourceIds && ep.sourceIds.length > 0) {
+				this.sourcesField = {
+					crIds: [...ep.sourceIds],
+					names: ep.sourceNames ? [...ep.sourceNames] : []
 				};
 			}
 			// Get directory from file path

@@ -3188,6 +3188,14 @@ export class ControlCenterModal extends Modal {
 				childNames = children.map(c => extractName(String(c))).filter((n): n is string => !!n);
 			}
 
+			// Extract source IDs and names
+			const sourceIds = fm.sources_id;
+			let sourceNames: string[] | undefined;
+			if (fm.sources) {
+				const sources = Array.isArray(fm.sources) ? fm.sources : [fm.sources];
+				sourceNames = sources.map(s => extractName(String(s))).filter((n): n is string => !!n);
+			}
+
 			const placeGraph = this.plugin.createPlaceGraphService();
 			const familyGraph = this.plugin.createFamilyGraphService();
 			// Merge universes from both places and people
@@ -3218,6 +3226,8 @@ export class ControlCenterModal extends Modal {
 					spouseIds: Array.isArray(spouseIds) ? spouseIds : (spouseIds ? [spouseIds] : undefined),
 					childIds: Array.isArray(childIds) ? childIds : (childIds ? [childIds] : undefined),
 					childNames: childNames,
+					sourceIds: Array.isArray(sourceIds) ? sourceIds : (sourceIds ? [sourceIds] : undefined),
+					sourceNames: sourceNames,
 					collection: fm.collection,
 					universe: fm.universe
 				},
