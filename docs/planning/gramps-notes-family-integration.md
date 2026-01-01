@@ -164,6 +164,33 @@ Common note types in Gramps:
 
 ---
 
+## Phase Dependencies
+
+Phases 3, 4, and 5 are largely independent of each other:
+
+| Phase | Depends On | Description |
+|-------|------------|-------------|
+| 1 ✅ | — | Embedded person notes |
+| 2 ✅ | Phase 1 | Embedded notes for other entities |
+| 3 | Phases 1-2 | Family entity type (optional) |
+| 4 | Phases 1-2 | Separate note files (optional) |
+| 5 | Phase 4 | Export & sync to Gramps |
+
+**Key insight:** Phase 3 (Family Entity) is orthogonal to Phases 4-5. Since Phase 1 already attaches family notes to marriage events, Phase 3 is only needed for users who want families as first-class entities matching the Gramps data model.
+
+**Viable implementation paths:**
+
+| Path | Phases | Use Case |
+|------|--------|----------|
+| Minimal | 1, 2 ✅ | Most users — notes embedded, no sync needed |
+| Sync-ready | 1, 2, 4, 5 | Users wanting round-trip to Gramps |
+| Full fidelity | 1, 2, 3, 4, 5 | Power users wanting complete Gramps model |
+| Family-only | 1, 2, 3 | Users wanting Family entity but not sync |
+
+Phase 3 could be skipped entirely if the marriage event attachment approach satisfies users.
+
+---
+
 ## Proposed Implementation
 
 ### Phase 1: Embedded Person Notes (Conservative)
