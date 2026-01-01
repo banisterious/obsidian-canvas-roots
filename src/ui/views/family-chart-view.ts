@@ -858,6 +858,7 @@ export class FamilyChartView extends ItemView {
 
 		try {
 			// Create the chart with normal transition time
+			logger.debug('init-chart', 'Creating chart with spacing', { nodeSpacing: this.nodeSpacing, levelSpacing: this.levelSpacing });
 			this.f3Chart = f3.createChart(this.chartContainerEl, this.chartData)
 				.setTransitionTime(800)
 				.setCardXSpacing(this.nodeSpacing)
@@ -3307,15 +3308,15 @@ export class FamilyChartView extends ItemView {
 		});
 
 		menu.addItem((item) => {
-			item.setTitle('Compact (200px)')
+			item.setTitle(`${this.nodeSpacing === 200 ? '✓ ' : ''}Compact (200px)`)
 				.onClick(() => this.setNodeSpacing(200));
 		});
 		menu.addItem((item) => {
-			item.setTitle('Normal (250px)')
+			item.setTitle(`${this.nodeSpacing === 250 ? '✓ ' : ''}Normal (250px)`)
 				.onClick(() => this.setNodeSpacing(250));
 		});
 		menu.addItem((item) => {
-			item.setTitle('Spacious (350px)')
+			item.setTitle(`${this.nodeSpacing === 350 ? '✓ ' : ''}Spacious (350px)`)
 				.onClick(() => this.setNodeSpacing(350));
 		});
 
@@ -3329,15 +3330,15 @@ export class FamilyChartView extends ItemView {
 		});
 
 		menu.addItem((item) => {
-			item.setTitle('Compact (100px)')
+			item.setTitle(`${this.levelSpacing === 100 ? '✓ ' : ''}Compact (100px)`)
 				.onClick(() => this.setLevelSpacing(100));
 		});
 		menu.addItem((item) => {
-			item.setTitle('Normal (150px)')
+			item.setTitle(`${this.levelSpacing === 150 ? '✓ ' : ''}Normal (150px)`)
 				.onClick(() => this.setLevelSpacing(150));
 		});
 		menu.addItem((item) => {
-			item.setTitle('Spacious (200px)')
+			item.setTitle(`${this.levelSpacing === 200 ? '✓ ' : ''}Spacious (200px)`)
 				.onClick(() => this.setLevelSpacing(200));
 		});
 
@@ -4065,6 +4066,8 @@ export class FamilyChartView extends ItemView {
 			this.f3Chart.updateTree({});
 			new Notice(`Node spacing set to ${spacing}px`);
 		}
+		// Trigger Obsidian to save view state
+		this.app.workspace.requestSaveLayout();
 	}
 
 	/**
@@ -4077,6 +4080,8 @@ export class FamilyChartView extends ItemView {
 			this.f3Chart.updateTree({});
 			new Notice(`Level spacing set to ${spacing}px`);
 		}
+		// Trigger Obsidian to save view state
+		this.app.workspace.requestSaveLayout();
 	}
 
 	/**
@@ -4734,7 +4739,7 @@ export class FamilyChartView extends ItemView {
 	// ============ State Persistence ============
 
 	getState(): FamilyChartViewState {
-		logger.debug('get-state', 'Saving view state', { cardStyle: this.cardStyle });
+		logger.debug('get-state', 'Saving view state', { cardStyle: this.cardStyle, nodeSpacing: this.nodeSpacing, levelSpacing: this.levelSpacing });
 		return {
 			rootPersonId: this.rootPersonId,
 			colorScheme: this.colorScheme,
@@ -4759,6 +4764,7 @@ export class FamilyChartView extends ItemView {
 	// eslint-disable-next-line @typescript-eslint/require-await -- Base class requires Promise<void> return type
 	async setState(state: Partial<FamilyChartViewState>): Promise<void> {
 		logger.debug('set-state', 'Restoring view state', state);
+		logger.debug('set-state', 'Spacing values', { nodeSpacing: state.nodeSpacing, levelSpacing: state.levelSpacing });
 		logger.debug('set-state', 'Incoming cardStyle', { stateCardStyle: state.cardStyle, currentCardStyle: this.cardStyle });
 
 		if (state.rootPersonId !== undefined) {
