@@ -1153,7 +1153,6 @@
 }
 
 /* Make the circular card container fully round */
-/* Translate up by ~20px to account for label below, so lines connect to circle center */
 .cr-fcv-chart-container.f3 div.card-image-circle {
   display: flex;
   flex-direction: column;
@@ -1163,7 +1162,6 @@
   border-radius: 50%;
   width: 90px;
   height: 90px;
-  transform: translateY(-20px);
 }
 
 /* Image styling for circular cards */
