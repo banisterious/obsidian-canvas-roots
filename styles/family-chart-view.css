@@ -222,6 +222,8 @@
   width: 100%;
   height: 100%;
   font-family: var(--font-interface), "Roboto", sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
 }
 
 .cr-fcv-chart-container.f3 * {

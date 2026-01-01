@@ -2883,19 +2883,18 @@ export class FamilyChartView extends ItemView {
 			el.setAttribute('visibility', 'visible');
 		});
 
-		// Remove clip-path and mask references
-		svgClone.querySelectorAll('[clip-path]').forEach((el) => {
-			el.removeAttribute('clip-path');
-		});
+		// Remove mask references (but keep clip-path for text clipping!)
+		// The mask creates fade effect but doesn't export well; clip-path provides hard clipping
 		svgClone.querySelectorAll('[mask]').forEach((el) => {
 			el.removeAttribute('mask');
 		});
-		svgClone.querySelectorAll('[style*="clip-path"], [style*="mask"]').forEach((el) => {
+		svgClone.querySelectorAll('[style*="mask"]').forEach((el) => {
 			const style = el.getAttribute('style') || '';
-			el.setAttribute('style', style.replace(/clip-path:[^;]+;?/g, '').replace(/mask:[^;]+;?/g, ''));
+			el.setAttribute('style', style.replace(/mask:[^;]+;?/g, ''));
 		});
 
-		// CRITICAL: Remove text-overflow-mask elements - they cover the text when mask is removed!
+		// Remove text-overflow-mask elements - they cover the text when mask is removed
+		// The clip-path on .card-text will still clip long text
 		svgClone.querySelectorAll('.text-overflow-mask').forEach((el) => {
 			el.remove();
 		});
@@ -3491,7 +3490,7 @@ export class FamilyChartView extends ItemView {
 				backgroundLight: '#ffffff',
 				backgroundDark: '#000000',
 				textLight: '#000000',
-				textDark: '#ffffff'
+				textDark: '#000000' // Black text on bright colors for accessibility
 			}
 		},
 		mono: {
