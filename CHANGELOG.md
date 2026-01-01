@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Card Style Options** - Choose from 4 card styles in Family Chart view ([#87](https://github.com/banisterious/obsidian-canvas-roots/issues/87)):
+  - **Rectangle**: Default style with avatar thumbnails and full details
+  - **Circle**: Circular avatar cards with name labels below
+  - **Compact**: Text-only cards without avatars for denser layouts
+  - **Mini**: Smaller name-only cards for high-level overviews
+  - Card style persists across Obsidian restarts
+  - PNG/PDF export support for all card styles including circle
+
 - **Separate Note Files (Phase 4)** - Create standalone note entity files during Gramps import ([#79](https://github.com/banisterious/obsidian-canvas-roots/issues/79), [#80](https://github.com/banisterious/obsidian-canvas-roots/issues/80)):
 
   **Import Integration**
