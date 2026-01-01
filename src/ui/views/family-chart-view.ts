@@ -1260,13 +1260,14 @@ export class FamilyChartView extends ItemView {
 			if (d3.select(cardEl).select('.cr-open-note-btn').size() > 0) return;
 
 			// Create button group positioned in top-right corner
-			// Card dimensions: w=200, h=70
-			// Position at (185, 12) to keep button visible within card bounds
+			// Card dimensions: w=200, h=70, button radius=9
+			// Append to .card group (not .card-inner which has clip-path that clips the button)
+			// Position button center at (170, 12) - inside the card near right edge
 			const btnGroup = d3.select(cardEl)
-				.select('.card-inner')
+				.select('.card')
 				.append('g')
 				.attr('class', 'cr-open-note-btn')
-				.attr('transform', 'translate(185, 12)')
+				.attr('transform', 'translate(170, 12)')
 				.style('cursor', 'pointer');
 
 			// Add circle background
