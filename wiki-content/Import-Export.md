@@ -21,6 +21,7 @@ Canvas Roots supports importing and exporting family data in GEDCOM, Gramps XML,
   - [Place Linking](#place-linking)
   - [Supported Event Types](#supported-event-types)
   - [Notes Import](#notes-import)
+  - [Create Note Modal](#create-note-modal)
   - [Limitations](#limitations)
 - [CSV Import/Export](#csv-importexport)
   - [Importing from CSV/TSV](#importing-from-csvtsv)
@@ -365,9 +366,16 @@ The `Research Level` attribute is automatically recognized from Gramps person re
 
 ### Notes Import
 
-Notes attached to entities in Gramps are imported and appended to the corresponding Obsidian notes. The import wizard includes a **Notes** toggle (enabled by default) to control this behavior.
+Notes attached to entities in Gramps can be imported in two ways:
 
-**What gets imported:**
+1. **Embedded notes** (default) — Notes are appended to the corresponding entity note as a "## Notes" section
+2. **Separate note files** (opt-in) — Notes are created as standalone files in a dedicated Notes folder with wikilinks from the entity
+
+The import wizard includes two toggles for notes:
+- **Notes** — Enable/disable notes import entirely (enabled by default)
+- **Create separate note files** — When enabled, creates standalone note files instead of embedding (disabled by default)
+
+**Embedded notes (default behavior):**
 
 | Entity Type | Notes Location |
 |-------------|----------------|
@@ -375,6 +383,28 @@ Notes attached to entities in Gramps are imported and appended to the correspond
 | **Event** | Appended as "## Notes" section in event note |
 | **Place** | Appended as "## Notes" section in place note |
 | **Family** | Attached to marriage/family events (no separate family entity) |
+
+**Separate note files:**
+
+When "Create separate note files" is enabled:
+
+| Note | Created As |
+|------|------------|
+| **Note file** | Standalone file with `cr_type: note` in configured Notes folder |
+| **Entity link** | Wikilink added to entity's `notes` frontmatter property |
+| **Naming** | `{NoteType} on {EntityName}` (e.g., "Research on John Smith") |
+
+Separate note files include:
+- `cr_type: note` — Identifies as a note entity
+- `cr_id` — Unique identifier for sync support
+- `gramps_id` / `gramps_handle` — Original Gramps identifiers for round-tripping
+- `cr_note_type` — Note type from Gramps (Research, Person Note, Transcript, etc.)
+- `private: true` — When the Gramps note has the privacy flag set
+
+This approach is recommended when:
+- You want to maintain notes as separate, reusable research documents
+- Multiple entities share the same research note
+- You plan to export data back to Gramps (preserves note identity)
 
 **Note formatting:**
 
@@ -403,6 +433,53 @@ Each note's type from Gramps (e.g., "Person Note", "Research", "Source text") be
 
 If any note attached to an entity has the privacy flag set in Gramps (`priv="1"`), the imported Obsidian note will include `private: true` in its frontmatter. This allows you to filter or exclude private data when exporting.
 
+### Create Note Modal
+
+In addition to importing notes from Gramps, you can manually create note entities using the Create Note modal.
+
+**Opening the Create Note Modal:**
+
+| Method | How |
+|--------|-----|
+| **Command Palette** | `Ctrl/Cmd+P` → "Canvas Roots: Create note" |
+| **Control Center** | Click **Create Note** in the Quick Actions |
+
+**Create Note Form:**
+
+| Field | Description |
+|-------|-------------|
+| **Title** | Note title (used as filename) |
+| **Note type** | Classification: Research, Person Note, Transcript, Source text, General, or Custom |
+| **Custom type** | Shown when "Custom" is selected; enter your own type |
+| **Private** | Mark note as private (excluded from exports) |
+| **Linked entities** | Link to Person, Event, Place, or Source notes |
+| **Initial content** | Optional starting content for the note |
+
+**Linking Entities:**
+
+Click "Add entity" to open a dropdown menu with entity type options:
+- **Person** — Opens person picker to search and select people
+- **Event** — Opens event picker to search and select events
+- **Place** — Opens place picker to search and select places
+- **Source** — Opens source picker to search and select sources
+
+Selected entities appear as chips with remove buttons. These become wikilinks in the note's `linked_entities` frontmatter property.
+
+**Note File Structure:**
+
+```yaml
+---
+cr_type: note
+cr_id: note_abc123
+cr_note_type: Research
+linked_entities:
+  - "[[John Smith]]"
+  - "[[1850 Census]]"
+---
+
+Your note content here...
+```
+
 ### Place Type Mapping
 
 Gramps place types are preserved and mapped to Canvas Roots place types:
@@ -428,7 +505,6 @@ Media extracted from Gramps packages can be viewed using the [Media Gallery](Dyn
 
 ### Limitations
 
-- **Separate note files**: Notes are embedded in entity notes, not created as standalone files (planned for future phase)
 - **Repositories**: Repository records create properties on sources but not separate notes
 
 ## CSV Import/Export
