@@ -124,6 +124,7 @@ export class CreatePersonModal extends Modal {
 	// Edit mode properties
 	private editMode: boolean = false;
 	private editingFile?: TFile;
+	private originalName?: string; // Store original name for rename detection
 	private propertyAliases: Record<string, string> = {};
 	private includeDynamicBlocks: boolean = true;
 	private dynamicBlockTypes: DynamicBlockType[] = ['media', 'timeline', 'relationships'];
@@ -227,6 +228,7 @@ export class CreatePersonModal extends Modal {
 		if (options?.editFile && options?.editPersonData) {
 			this.editMode = true;
 			this.editingFile = options.editFile;
+			this.originalName = options.editPersonData.name; // Store for rename detection
 			const ep = options.editPersonData;
 			this.personData = {
 				name: ep.name,
@@ -2464,10 +2466,34 @@ export class CreatePersonModal extends Modal {
 
 			await updatePersonNote(this.app, this.editingFile, data);
 
-			new Notice(`Updated person note: ${this.editingFile.basename}`);
+			// Check if name changed and offer to rename file
+			let renamedFile: TFile | undefined;
+			if (this.originalName && this.personData.name !== this.originalName) {
+				const shouldRename = await this.showRenameConfirmation(this.originalName, this.personData.name);
+				if (shouldRename) {
+					// Get folder from current file path
+					const folder = this.editingFile.parent?.path || '';
+					const newPath = this.generateUniqueFilename(folder, this.personData.name);
+
+					try {
+						await this.app.vault.rename(this.editingFile, newPath);
+						// Get the renamed file reference
+						const newFile = this.app.vault.getAbstractFileByPath(newPath);
+						if (newFile instanceof TFile) {
+							renamedFile = newFile;
+							new Notice(`Renamed file to: ${newFile.basename}`);
+						}
+					} catch (renameError) {
+						console.error('Failed to rename file:', renameError);
+						new Notice(`Failed to rename file: ${renameError instanceof Error ? renameError.message : 'Unknown error'}`);
+					}
+				}
+			}
+
+			new Notice(`Updated person note: ${(renamedFile || this.editingFile).basename}`);
 
 			if (this.onUpdated) {
-				this.onUpdated(this.editingFile);
+				this.onUpdated(renamedFile || this.editingFile);
 			}
 
 			this.close();
@@ -2475,5 +2501,58 @@ export class CreatePersonModal extends Modal {
 			console.error('Failed to update person note:', error);
 			new Notice(`Failed to update person note: ${error instanceof Error ? error.message : 'Unknown error'}`);
 		}
+	}
+
+	/**
+	 * Show a confirmation dialog for renaming the file after name change
+	 */
+	private showRenameConfirmation(oldName: string, newName: string): Promise<boolean> {
+		return new Promise((resolve) => {
+			const modal = new Modal(this.app);
+			modal.titleEl.setText('Rename file?');
+
+			modal.contentEl.createEl('p', {
+				text: `You changed the person's name from "${oldName}" to "${newName}".`
+			});
+			modal.contentEl.createEl('p', {
+				text: 'Would you like to rename the note file to match?'
+			});
+
+			const buttonContainer = modal.contentEl.createDiv({ cls: 'modal-button-container' });
+
+			buttonContainer.createEl('button', { text: 'Keep original filename' })
+				.addEventListener('click', () => {
+					modal.close();
+					resolve(false);
+				});
+
+			const renameBtn = buttonContainer.createEl('button', {
+				text: 'Rename file',
+				cls: 'mod-cta'
+			});
+			renameBtn.addEventListener('click', () => {
+				modal.close();
+				resolve(true);
+			});
+
+			modal.open();
+		});
+	}
+
+	/**
+	 * Generate a unique filename by appending a number if the file already exists
+	 */
+	private generateUniqueFilename(folder: string, baseName: string): string {
+		let newPath = normalizePath(`${folder}/${baseName}.md`);
+
+		// Check if file already exists (and it's not our current file)
+		let counter = 1;
+		while (this.app.vault.getAbstractFileByPath(newPath) &&
+			   this.app.vault.getAbstractFileByPath(newPath) !== this.editingFile) {
+			newPath = normalizePath(`${folder}/${baseName} ${counter}.md`);
+			counter++;
+		}
+
+		return newPath;
 	}
 }
