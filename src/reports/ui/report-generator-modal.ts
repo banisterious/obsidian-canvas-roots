@@ -733,7 +733,7 @@ export class ReportGeneratorModal extends Modal {
 			};
 
 			img.onerror = () => reject(new Error('Failed to load image'));
-			reader.onerror = () => reject(reader.error);
+			reader.onerror = () => reject(reader.error ?? new Error('Failed to read file'));
 			reader.readAsDataURL(file);
 		});
 	}
