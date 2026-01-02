@@ -153,6 +153,10 @@ Add `cr_living` frontmatter property to manually override automatic detection.
 - Added to `PersonNode` interface in `family-graph.ts`
 - Extracted from frontmatter in `buildPersonNode()`
 - Passed to `applyPrivacy()` in all 4 exporters (GEDCOM, GEDCOM X, Gramps XML, CSV)
+- Added to `PersonData` interface in `person-note-writer.ts`
+- `updatePersonNote()` handles `cr_living` persistence
+- Edit Person modal includes "Living status override" dropdown (shown when privacy protection enabled)
+- Control Center passes `cr_living` to modal for editing
 - Documentation updates (Frontmatter Reference)
 
 **Behavior:**
@@ -168,10 +172,13 @@ Add `cr_living` frontmatter property to manually override automatic detection.
 **Files modified:**
 - `src/core/privacy-service.ts` — Added `cr_living` to interface, updated `isLikelyLiving()`
 - `src/core/family-graph.ts` — Added `cr_living` to `PersonNode`, extraction from frontmatter
+- `src/core/person-note-writer.ts` — Added `cr_living` to `PersonData`, handled in `updatePersonNote()`
 - `src/gedcom/gedcom-exporter.ts` — Pass `cr_living` to `applyPrivacy()`
 - `src/gedcomx/gedcomx-exporter.ts` — Pass `cr_living` to `applyPrivacy()`
 - `src/gramps/gramps-exporter.ts` — Pass `cr_living` to `applyPrivacy()`
 - `src/csv/csv-exporter.ts` — Pass `cr_living` to `applyPrivacy()`
+- `src/ui/create-person-modal.ts` — Added "Living status override" dropdown in edit mode
+- `src/ui/control-center.ts` — Pass `cr_living` from frontmatter to modal
 - `wiki-content/Frontmatter-Reference.md` — Documented `cr_living` property
 
 ---
@@ -505,7 +512,7 @@ Independent (can start anytime):
 - [x] Extract `cr_living` from frontmatter in `buildPersonNode()`
 - [x] Pass `cr_living` to `applyPrivacy()` in all 4 exporters
 - [x] Document `cr_living` property in Frontmatter Reference
-- [ ] Add toggle to Edit Person modal (optional - deferred)
+- [x] Add toggle to Edit Person modal (shown when privacy protection enabled)
 
 ### Phase 3: Underscore-Prefix Convention
 - [ ] Add `isPrivateField()` and `getPublicFields()` utilities

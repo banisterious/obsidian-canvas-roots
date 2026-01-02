@@ -71,6 +71,7 @@ export interface PersonData {
 	occupation?: string;
 	sex?: string;
 	pronouns?: string;      // Pronouns (e.g., "she/her", "they/them")
+	cr_living?: boolean;    // Manual override for living status detection
 	collection?: string;    // User-defined grouping
 	universe?: string;      // Fictional universe or world
 	father?: string;        // Legacy: name-based relationship (deprecated)
@@ -882,6 +883,13 @@ export async function updatePersonNote(
 				frontmatter.pronouns = person.pronouns;
 			} else {
 				delete frontmatter.pronouns;
+			}
+		}
+		if (person.cr_living !== undefined) {
+			if (typeof person.cr_living === 'boolean') {
+				frontmatter.cr_living = person.cr_living;
+			} else {
+				delete frontmatter.cr_living;
 			}
 		}
 		if (person.nickname !== undefined) {

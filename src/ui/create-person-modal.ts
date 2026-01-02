@@ -168,6 +168,7 @@ export class CreatePersonModal extends Modal {
 				deathPlaceName?: string;
 				occupation?: string;
 				researchLevel?: ResearchLevel;
+				cr_living?: boolean;
 				fatherId?: string;
 				fatherName?: string;
 				motherId?: string;
@@ -238,6 +239,7 @@ export class CreatePersonModal extends Modal {
 				deathPlace: ep.deathPlace,
 				occupation: ep.occupation,
 				researchLevel: ep.researchLevel,
+				cr_living: ep.cr_living,
 				collection: ep.collection,
 				universe: ep.universe
 			};
@@ -478,6 +480,27 @@ export class CreatePersonModal extends Modal {
 						.setValue(this.personData.researchLevel?.toString() || '')
 						.onChange(value => {
 							this.personData.researchLevel = value ? parseInt(value) as ResearchLevel : undefined;
+						});
+				});
+		}
+
+		// Living status override (only in edit mode, when privacy protection is enabled)
+		if (this.editMode && this.settings?.enablePrivacyProtection) {
+			new Setting(form)
+				.setName('Living status override')
+				.setDesc('Override automatic living/deceased detection for privacy protection in exports')
+				.addDropdown(dropdown => {
+					dropdown
+						.addOption('', '(Automatic)')
+						.addOption('true', 'Living (protected)')
+						.addOption('false', 'Deceased (not protected)')
+						.setValue(this.personData.cr_living === undefined ? '' : String(this.personData.cr_living))
+						.onChange(value => {
+							if (value === '') {
+								this.personData.cr_living = undefined;
+							} else {
+								this.personData.cr_living = value === 'true';
+							}
 						});
 				});
 		}
@@ -2314,6 +2337,7 @@ export class CreatePersonModal extends Modal {
 				deathDate: this.personData.deathDate,
 				sex: this.personData.sex,
 				pronouns: this.personData.pronouns,
+				cr_living: this.personData.cr_living,
 				occupation: this.personData.occupation,
 				researchLevel: this.personData.researchLevel
 			};

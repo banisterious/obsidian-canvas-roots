@@ -3211,6 +3211,7 @@ export class ControlCenterModal extends Modal {
 					sex: fm.sex,
 					gender: fm.gender,
 					pronouns: fm.pronouns,
+					cr_living: typeof fm.cr_living === 'boolean' ? fm.cr_living : undefined,
 					born: person.birthDate,
 					died: person.deathDate,
 					birthPlace: person.birthPlace?.placeName,
