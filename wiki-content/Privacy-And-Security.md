@@ -57,6 +57,21 @@ Canvas Roots includes built-in privacy protection for people who may still be li
 
 ### How Living Status is Determined
 
+Living status is determined in two ways:
+
+**1. Manual Override (takes precedence)**
+
+You can explicitly mark someone as living or deceased using the `cr_living` frontmatter property:
+
+```yaml
+cr_living: true   # Always treat as living (protected)
+cr_living: false  # Always treat as deceased (not protected)
+```
+
+You can also set this via the Edit Person modal when privacy protection is enabled—look for the "Living status override" dropdown.
+
+**2. Automatic Detection (when `cr_living` is not set)**
+
 A person is considered potentially living if:
 - They have **no death date** recorded, AND
 - They were born within the configured threshold (default: 100 years)
@@ -66,18 +81,10 @@ For example, with a 100-year threshold:
 - Born 1900, no death date → **Not protected** (over threshold)
 - Born 1980, died 2020 → **Not protected** (has death date)
 
-### Manual Override (Planned)
-
-> **Note:** This feature is planned but not yet implemented. Currently, living status is determined automatically based on dates only.
-
-In a future release, you will be able to explicitly mark someone as living or deceased using frontmatter:
-
-```yaml
-cr_living: true   # Always treat as living (protected)
-cr_living: false  # Always treat as deceased (not protected)
-```
-
-This will override the automatic detection based on dates.
+**Use cases for manual override:**
+- Person with unknown dates but known to be living
+- Person with death date not yet entered but known to be deceased
+- Override false positives from automatic detection
 
 ### Display Formats
 
@@ -249,7 +256,7 @@ If your family tree includes EU residents:
 |------|--------|
 | Enable privacy protection | Settings → Canvas Roots → Privacy section |
 | Set age threshold | Settings → Configure threshold (default 100) |
-| Mark someone as living | (Planned) Add `cr_living: true` to their frontmatter |
+| Mark someone as living | Add `cr_living: true` to frontmatter, or use Edit Person modal |
 | Export with privacy | Control Center → Export → Enable privacy options |
 | Exclude living from export | Choose "Exclude living persons" in export dialog |
 | Toggle log obfuscation | Settings → Canvas Roots → Logging → Obfuscate log exports |
