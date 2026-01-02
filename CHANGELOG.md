@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Pronouns field support** - Add and display pronouns for people ([#101](https://github.com/banisterious/obsidian-canvas-roots/issues/101)):
+  - New `pronouns` frontmatter property (free-form string, e.g., "she/her", "they/them")
+  - `showPronouns` setting in Settings → Display (default: enabled)
+  - Pronouns displayed in person pickers after name in parentheses
+  - Pronouns field added to Edit Person modal
+  - Pronouns included in all report outputs (Markdown, ODT, PDF)
+  - PDF reports updated: Individual Summary and Family Group Sheet vital statistics
+
 ### Fixed
 
 - **ESLint compliance for Obsidian plugin review** - Addressed lint issues flagged by Obsidian's plugin review bot:
