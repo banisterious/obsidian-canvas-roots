@@ -754,8 +754,10 @@ export class CanvasGenerator {
 	}
 
 	/**
-	 * Generates groups for nuclear families (parent pair + their children)
-	 * Each family unit (2 parents + children) gets its own group
+	 * Generates groups for couples who have children together
+	 * Groups contain only the parent pair (not their children)
+	 * This creates separate groups for different parenting partnerships
+	 * (e.g., bio parents in one group, step-parent + bio parent in another)
 	 */
 	private generateNuclearFamilyGroups(
 		familyTree: FamilyTree,
@@ -763,51 +765,30 @@ export class CanvasGenerator {
 		opts: { nodeWidth: number; nodeHeight: number; nodeSpacingX: number; nodeSpacingY: number }
 	): CanvasNode[] {
 		const groups: CanvasNode[] = [];
-		const padding = 30;
-		const processedFamilies = new Set<string>();
+		const padding = 20;
+		const processedCouples = new Set<string>();
 
-		// Find all parent pairs and their children
-		for (const [crId, person] of familyTree.nodes) {
-			// Look for people who have both parents
+		// Find all couples (parent pairs who have children together)
+		for (const [_crId, person] of familyTree.nodes) {
+			// Look for people who have parents
 			const fatherId = person.fatherCrId;
 			const motherId = person.motherCrId;
 
-			if (!fatherId && !motherId) continue;
+			// We need both parents to form a couple group
+			if (!fatherId || !motherId) continue;
 
-			// Create a family key from parent IDs (sorted for consistency)
-			const familyKey = [fatherId || '', motherId || ''].sort().join('|');
-			if (processedFamilies.has(familyKey)) continue;
-			processedFamilies.add(familyKey);
+			// Create a couple key from parent IDs (sorted for consistency)
+			const coupleKey = [fatherId, motherId].sort().join('|');
+			if (processedCouples.has(coupleKey)) continue;
+			processedCouples.add(coupleKey);
 
-			// Collect all family members: parents + children with same parents
-			const familyMembers: string[] = [];
+			// Check if both parents are in the tree and positioned
+			if (!nodeMap.has(fatherId) || !nodeMap.has(motherId)) continue;
 
-			// Add parents if they're in the tree
-			if (fatherId && nodeMap.has(fatherId)) {
-				familyMembers.push(fatherId);
-			}
-			if (motherId && nodeMap.has(motherId)) {
-				familyMembers.push(motherId);
-			}
-
-			// Find all children with these parents
-			for (const [childId, childPerson] of familyTree.nodes) {
-				if (childPerson.fatherCrId === fatherId && childPerson.motherCrId === motherId) {
-					if (nodeMap.has(childId)) {
-						familyMembers.push(childId);
-					}
-				}
-			}
-
-			// Need at least one parent and one child for a family group
-			const hasParent = (fatherId && nodeMap.has(fatherId)) || (motherId && nodeMap.has(motherId));
-			const hasChildren = familyMembers.length > (hasParent ? 1 : 0);
-
-			if (!hasParent || !hasChildren || familyMembers.length < 2) continue;
-
-			// Calculate bounding box
+			// Calculate bounding box for just the couple (not children)
+			const coupleMembers = [fatherId, motherId];
 			const bounds = this.calculateBoundingBox(
-				familyMembers,
+				coupleMembers,
 				nodeMap,
 				opts.nodeWidth,
 				opts.nodeHeight
@@ -815,16 +796,14 @@ export class CanvasGenerator {
 
 			if (!bounds) continue;
 
-			// Get family name from parents
-			const father = fatherId ? familyTree.nodes.get(fatherId) : undefined;
-			const mother = motherId ? familyTree.nodes.get(motherId) : undefined;
+			// Get couple names for the label
+			const father = familyTree.nodes.get(fatherId);
+			const mother = familyTree.nodes.get(motherId);
 			const fatherName = father?.name?.split(' ').pop() || '';
 			const motherName = mother?.name?.split(' ').pop() || '';
 			const label = fatherName && motherName
-				? `${fatherName} & ${motherName} Family`
-				: fatherName || motherName
-					? `${fatherName || motherName} Family`
-					: 'Family';
+				? `${fatherName} & ${motherName}`
+				: fatherName || motherName || 'Couple';
 
 			groups.push({
 				id: this.generateId(),

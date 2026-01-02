@@ -21,7 +21,7 @@ import { TreePreviewRenderer } from '../../ui/tree-preview';
 import { FamilyGraphService, TreeOptions } from '../../core/family-graph';
 import { CanvasGenerator, CanvasGenerationOptions } from '../../core/canvas-generator';
 import type { LayoutOptions } from '../../core/layout-engine';
-import type { CanvasColor, ColorScheme, LayoutType, RecentTreeInfo } from '../../settings';
+import type { CanvasColor, ColorScheme, CanvasGroupingStrategy, LayoutType, RecentTreeInfo } from '../../settings';
 import { ensureFolderExists } from '../../core/canvas-utils';
 import { getLogger } from '../../core/logging';
 import { isPersonNote } from '../../utils/note-type-detection';
@@ -139,6 +139,7 @@ interface UnifiedWizardFormData {
 	showSpouseEdges: boolean;
 	spouseEdgeLabelFormat: 'none' | 'date-only' | 'date-location' | 'full';
 	layoutAlgorithm: LayoutAlgorithm;
+	canvasGroupingStrategy: CanvasGroupingStrategy;
 
 	// PDF-specific (Step 4b)
 	pageSize: VisualTreePageSize;
@@ -258,6 +259,7 @@ export class UnifiedTreeWizardModal extends Modal {
 			showSpouseEdges: plugin.settings.showSpouseEdges,
 			spouseEdgeLabelFormat: plugin.settings.spouseEdgeLabelFormat,
 			layoutAlgorithm: plugin.settings.defaultLayoutType as LayoutAlgorithm,
+			canvasGroupingStrategy: plugin.settings.canvasGroupingStrategy,
 
 			// PDF defaults
 			pageSize: 'letter',
@@ -1096,6 +1098,17 @@ export class UnifiedTreeWizardModal extends Modal {
 				.onChange(value => { this.formData.layoutAlgorithm = value as LayoutAlgorithm; }));
 
 		new Setting(styleContent)
+			.setName('Canvas grouping')
+			.setDesc('Visual groups to organize related nodes')
+			.addDropdown(dropdown => dropdown
+				.addOption('none', 'None')
+				.addOption('generation', 'By generation')
+				.addOption('nuclear-family', 'By couples')
+				.addOption('collection', 'By collection')
+				.setValue(this.formData.canvasGroupingStrategy)
+				.onChange(value => { this.formData.canvasGroupingStrategy = value as CanvasGroupingStrategy; }));
+
+		new Setting(styleContent)
 			.setName('Node coloring')
 			.setDesc('How nodes are colored on the canvas')
 			.addDropdown(dropdown => dropdown
@@ -1711,6 +1724,7 @@ export class UnifiedTreeWizardModal extends Modal {
 				spouseEdgeLabelFormat: this.formData.spouseEdgeLabelFormat,
 				showSourceIndicators: this.plugin.settings.showSourceIndicators,
 				showResearchCoverage: this.plugin.settings.trackFactSourcing,
+				canvasGroupingStrategy: this.formData.canvasGroupingStrategy,
 				canvasRootsMetadata: {
 					plugin: 'canvas-roots',
 					generation: {
@@ -1843,7 +1857,8 @@ export class UnifiedTreeWizardModal extends Modal {
 				showSpouseEdges: true, // Always include spouse edges for Excalidraw (enables dashed styling)
 				spouseEdgeLabelFormat: this.formData.spouseEdgeLabelFormat,
 				showSourceIndicators: this.plugin.settings.showSourceIndicators,
-				showResearchCoverage: this.plugin.settings.trackFactSourcing
+				showResearchCoverage: this.plugin.settings.trackFactSourcing,
+				canvasGroupingStrategy: this.formData.canvasGroupingStrategy
 			};
 
 			const canvasGenerator = new CanvasGenerator();

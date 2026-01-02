@@ -1126,7 +1126,7 @@ export function renderCanvasStylingCard(
 		.addDropdown(dropdown => dropdown
 			.addOption('none', 'None - no grouping (default)')
 			.addOption('generation', 'By generation - group nodes by generation level')
-			.addOption('nuclear-family', 'By nuclear family - group parents with their children')
+			.addOption('nuclear-family', 'By couples - group parent pairs who share children')
 			.addOption('collection', 'By collection - group by family collection')
 			.setValue(plugin.settings.canvasGroupingStrategy)
 			.onChange(async (value) => {
