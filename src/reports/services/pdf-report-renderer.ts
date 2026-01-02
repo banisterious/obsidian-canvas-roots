@@ -802,6 +802,7 @@ export class PdfReportRenderer {
 		content.push(this.buildKeyValueTable([
 			{ label: 'Name', value: result.person.name },
 			{ label: 'Sex', value: result.person.sex || 'Unknown' },
+			{ label: 'Pronouns', value: result.person.pronouns || '' },
 			{ label: 'Birth date', value: result.person.birthDate || '' },
 			{ label: 'Birth place', value: this.stripWikilinks(result.person.birthPlace) },
 			{ label: 'Death date', value: result.person.deathDate || '' },
