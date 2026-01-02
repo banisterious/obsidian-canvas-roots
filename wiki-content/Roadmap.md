@@ -78,16 +78,15 @@ Features are prioritized to complete the data lifecycle: **import â†’ enhance â†
 
 **Planned (8 Phases):**
 
-| Phase | Feature | Priority | Description |
-|-------|---------|----------|-------------|
-| 1 | Sensitive field redaction | P1 | Wire up `SENSITIVE_FIELDS` to always exclude SSN/identity numbers from exports |
-| 2 | `cr_living` override | P2 | Manual frontmatter property to override automatic living detection |
-| 3 | Underscore-prefix convention | P2 | Treat `_`-prefixed fields as private (exclude from display, warn on export) |
-| 4 | Deadname protection | P2 | Automatic suppression of `_previous_names` in display contexts |
-| 5 | Export warnings | P2 | Confirmation dialog when exporting private fields |
-| 6 | Discoverability | P2 | First-run notice, export dialog warnings when privacy disabled |
-| 7 | Pronouns field | P3 | Add `pronouns` property for respectful communication |
-| 8 | Canvas privacy | P3 | Privacy-aware canvas generation (at generation time, not runtime) |
+| Phase | Feature | Issue | Status | Description |
+|-------|---------|-------|--------|-------------|
+| 1 | Sensitive field redaction | [#96](https://github.com/banisterious/obsidian-canvas-roots/issues/96) | | Wire up `SENSITIVE_FIELDS` to exclude SSN/identity numbers |
+| 2 | `cr_living` override | [#97](https://github.com/banisterious/obsidian-canvas-roots/issues/97) | | Manual frontmatter property to override living detection |
+| 3 | Underscore-prefix convention | [#98](https://github.com/banisterious/obsidian-canvas-roots/issues/98) | | Treat `_`-prefixed fields as private |
+| 4-5 | Deadname + Export warnings | [#99](https://github.com/banisterious/obsidian-canvas-roots/issues/99) | | Suppress `_previous_names`, warn on export |
+| 6 | Discoverability | [#100](https://github.com/banisterious/obsidian-canvas-roots/issues/100) | | First-run notice, export dialog warnings |
+| 7 | Pronouns field | [#101](https://github.com/banisterious/obsidian-canvas-roots/issues/101) | | Add `pronouns` property support |
+| 8 | Canvas privacy | [#102](https://github.com/banisterious/obsidian-canvas-roots/issues/102) | | Privacy-aware canvas generation |
 
 **Documentation:** See [Export Privacy Planning Document](../docs/planning/export-privacy-sensitive-data.md) for detailed implementation specifications.
 

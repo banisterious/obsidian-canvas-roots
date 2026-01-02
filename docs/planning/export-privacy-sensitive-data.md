@@ -418,28 +418,41 @@ Add privacy options to canvas tree generation.
 
 ---
 
-## Phase Dependencies
+## Phase Dependencies & Implementation Order
+
+### Independence Matrix
+
+| Phase | Issue | Independent? | Depends On | Effort |
+|-------|-------|--------------|------------|--------|
+| 1 | #96 Sensitive field redaction | ✅ Yes | — | Low-Medium |
+| 2 | #97 `cr_living` override | ✅ Yes | — | Low |
+| 3 | #98 Underscore-prefix convention | ✅ Yes | — | Medium |
+| 4-5 | #99 Deadname + Export warnings | ❌ No | Phase 3 | Medium-High |
+| 6 | #100 Discoverability | ✅ Yes | — | Medium |
+| 7 | #101 Pronouns field | ✅ Yes | — | Low |
+| 8 | #102 Canvas privacy | ✅ Yes | — | Medium-High |
+
+### Recommended Implementation Order (Quick Wins First)
+
+1. **#101 Pronouns field** — Lowest effort, completely isolated, immediate user value
+2. **#97 `cr_living` override** — Single function change, useful for edge cases
+3. **#96 Sensitive field redaction** — Infrastructure exists, wire to 4 exporters
+4. **#98 Underscore-prefix convention** — Medium effort, unlocks #99
+5. **#100 Discoverability** — New modals, import triggers
+6. **#99 Deadname + Export warnings** — Depends on #98
+7. **#102 Canvas privacy** — Larger scope, lower priority
+
+### Dependency Diagram
 
 ```
-Phase 1 (Sensitive Fields) ──────────────────────────┐
-                                                     │
-Phase 2 (cr_living Override) ────────────────────────┤
-                                                     │
-Phase 3 (Underscore Prefix) ─┬─ Phase 4 (Deadname) ──┼── Phase 5 (Export Warnings)
-                             │                       │
-                             └───────────────────────┤
-                                                     │
-Phase 6 (Discoverability) ───────────────────────────┤
-                                                     │
-Phase 7 (Pronouns) ──────────────────────────────────┤
-                                                     │
-Phase 8 (Canvas Privacy) ────────────────────────────┘
+Independent (can start anytime):
+  #96 Sensitive Fields ─────────┐
+  #97 cr_living Override ───────┤
+  #98 Underscore Prefix ────────┼───► #99 Deadname + Export Warnings
+  #100 Discoverability ─────────┤         (depends on #98)
+  #101 Pronouns ────────────────┤
+  #102 Canvas Privacy ──────────┘
 ```
-
-- Phase 1 is independent and highest priority
-- Phases 2, 3, 6, 7, 8 are independent of each other
-- Phase 4 depends on Phase 3 (uses underscore convention)
-- Phase 5 depends on Phase 3 (warns about underscore fields)
 
 ---
 
