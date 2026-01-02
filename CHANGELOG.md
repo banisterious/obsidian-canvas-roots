@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Sibling ordering in Family Tree canvas** - Children from different parent pairs are now grouped together instead of being interleaved ([#103](https://github.com/banisterious/obsidian-canvas-roots/issues/103)):
+  - Added post-processing step to group full-siblings by parent pair
+  - Works around upstream family-chart library layout issue with multi-spouse families
+
 - **ESLint compliance for Obsidian plugin review** - Addressed lint issues flagged by Obsidian's plugin review bot:
   - Removed deprecated `substr()` calls in GEDCOM parser, replaced with `substring()`
   - Eliminated `@typescript-eslint/no-explicit-any` violations by adding proper type definitions for pdfmake and family-chart libraries
