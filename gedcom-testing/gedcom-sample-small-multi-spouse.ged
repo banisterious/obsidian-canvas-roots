@@ -1,0 +1,143 @@
+0 HEAD
+1 SOUR Canvas Roots Test
+2 VERS 1.0
+2 NAME Canvas Roots Multi-Spouse Test
+1 DEST ANY
+1 DATE 02 JAN 2026
+1 SUBM @SUBM1@
+1 FILE gedcom-sample-small-multi-spouse.ged
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+1 NOTE This test file is designed to verify sibling ordering when a person has multiple spouses.
+2 CONT The children from each spouse should be grouped together, not interleaved.
+2 CONT Test case: George Wilson has two wives (Mary Smith, then Elizabeth Brown).
+2 CONT Expected grouping: [Alice, Bob] from Mary, then [Charles, Diana, Edward] from Elizabeth.
+0 @SUBM1@ SUBM
+1 NAME Canvas Roots User
+0 @I1@ INDI
+1 NAME George /Wilson/
+2 GIVN George
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 10 MAR 1950
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F1@
+1 FAMS @F2@
+0 @I2@ INDI
+1 NAME Mary /Smith/
+2 GIVN Mary
+2 SURN Smith
+1 SEX F
+1 BIRT
+2 DATE 15 JUN 1952
+2 PLAC New York, New York, USA
+1 DEAT
+2 DATE 20 AUG 1985
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F1@
+0 @I3@ INDI
+1 NAME Elizabeth /Brown/
+2 GIVN Elizabeth
+2 SURN Brown
+1 SEX F
+1 BIRT
+2 DATE 22 SEP 1955
+2 PLAC Philadelphia, Pennsylvania, USA
+1 FAMS @F2@
+0 @I4@ INDI
+1 NAME Alice /Wilson/
+2 GIVN Alice
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 5 JAN 1975
+2 PLAC Boston, Massachusetts, USA
+1 FAMC @F1@
+0 @I5@ INDI
+1 NAME Bob /Wilson/
+2 GIVN Bob
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 12 MAR 1978
+2 PLAC Boston, Massachusetts, USA
+1 FAMC @F1@
+0 @I6@ INDI
+1 NAME Charles /Wilson/
+2 GIVN Charles
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 8 NOV 1988
+2 PLAC Boston, Massachusetts, USA
+1 FAMC @F2@
+0 @I7@ INDI
+1 NAME Diana /Wilson/
+2 GIVN Diana
+2 SURN Wilson
+1 SEX F
+1 BIRT
+2 DATE 3 APR 1990
+2 PLAC Boston, Massachusetts, USA
+1 FAMC @F2@
+0 @I8@ INDI
+1 NAME Edward /Wilson/
+2 GIVN Edward
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 17 JUL 1993
+2 PLAC Boston, Massachusetts, USA
+1 FAMC @F2@
+0 @I9@ INDI
+1 NAME Henry /Wilson/
+2 GIVN Henry
+2 SURN Wilson
+1 SEX M
+1 BIRT
+2 DATE 20 FEB 1920
+2 PLAC Chicago, Illinois, USA
+1 DEAT
+2 DATE 15 DEC 1995
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F3@
+0 @I10@ INDI
+1 NAME Martha /Jones/
+2 GIVN Martha
+2 SURN Jones
+1 SEX F
+1 BIRT
+2 DATE 8 MAY 1922
+2 PLAC Detroit, Michigan, USA
+1 DEAT
+2 DATE 3 JAN 2000
+2 PLAC Boston, Massachusetts, USA
+1 FAMS @F3@
+0 @F1@ FAM
+1 HUSB @I1@
+1 WIFE @I2@
+1 MARR
+2 DATE 15 JUN 1974
+2 PLAC Boston, Massachusetts, USA
+1 CHIL @I4@
+1 CHIL @I5@
+0 @F2@ FAM
+1 HUSB @I1@
+1 WIFE @I3@
+1 MARR
+2 DATE 10 SEP 1987
+2 PLAC Boston, Massachusetts, USA
+1 CHIL @I6@
+1 CHIL @I7@
+1 CHIL @I8@
+0 @F3@ FAM
+1 HUSB @I9@
+1 WIFE @I10@
+1 MARR
+2 DATE 5 APR 1945
+2 PLAC Chicago, Illinois, USA
+1 CHIL @I1@
+0 TRLR

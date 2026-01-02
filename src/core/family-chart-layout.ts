@@ -174,7 +174,12 @@ export class FamilyChartLayoutEngine {
 
 		// Post-process positions to enforce minimum spacing
 		// Family-chart doesn't always respect our spacing parameters with complex trees
-		const adjustedPositions = this.enforceMinimumSpacing(positions, opts);
+		const spacedPositions = this.enforceMinimumSpacing(positions, opts);
+
+		// Re-sort siblings by parent pair to ensure full-siblings are grouped together
+		// This works around an issue in family-chart where children from different
+		// parent pairs can be interleaved instead of grouped by family unit
+		const adjustedPositions = this.resortSiblingsByParentPair(spacedPositions, opts);
 
 		return {
 			positions: adjustedPositions,
@@ -263,6 +268,119 @@ export class FamilyChartLayoutEngine {
 		scoredAncestors.sort((a, b) => b.score - a.score);
 
 		return scoredAncestors[0].ancestor;
+	}
+
+	/**
+	 * Re-sorts siblings within each generation to group full-siblings together
+	 * This works around an issue in the family-chart library where children from
+	 * different parent pairs can be interleaved instead of grouped by family unit.
+	 *
+	 * The algorithm:
+	 * 1. Group nodes by Y coordinate (generation level)
+	 * 2. Within each generation, identify parent pairs for each child
+	 * 3. Re-order so children sharing both parents are adjacent
+	 * 4. Re-assign X coordinates while maintaining spacing
+	 *
+	 * @param positions Positions after spacing enforcement
+	 * @param options Layout options including spacing requirements
+	 * @returns Adjusted positions with siblings grouped by parent pair
+	 */
+	private resortSiblingsByParentPair(
+		positions: NodePosition[],
+		options: Required<LayoutOptions>
+	): NodePosition[] {
+		// Calculate minimum spacing (same as enforceMinimumSpacing)
+		const minSpacing = options.nodeWidth + 200;
+
+		// Group nodes by Y coordinate (generation level)
+		const byGeneration = new Map<number, NodePosition[]>();
+		for (const pos of positions) {
+			const y = pos.y;
+			if (!byGeneration.has(y)) {
+				byGeneration.set(y, []);
+			}
+			byGeneration.get(y)!.push(pos);
+		}
+
+		const adjusted: NodePosition[] = [];
+
+		for (const [, nodesAtLevel] of byGeneration) {
+			// Sort by current X to establish initial order
+			const sorted = [...nodesAtLevel].sort((a, b) => a.x - b.x);
+
+			// Create a parent pair key for each node
+			// Key format: "fatherId|motherId" (sorted to be consistent)
+			const getParentPairKey = (node: NodePosition): string => {
+				const parents = [
+					node.person.fatherCrId || '',
+					node.person.motherCrId || ''
+				].sort();
+				return parents.join('|');
+			};
+
+			// Group nodes by their parent pair
+			const parentPairGroups = new Map<string, NodePosition[]>();
+			const noParentNodes: NodePosition[] = []; // Nodes with no parents (ancestors)
+
+			for (const node of sorted) {
+				const key = getParentPairKey(node);
+				if (key === '|') {
+					// No parents - this is an ancestor, keep original position
+					noParentNodes.push(node);
+				} else {
+					if (!parentPairGroups.has(key)) {
+						parentPairGroups.set(key, []);
+					}
+					parentPairGroups.get(key)!.push(node);
+				}
+			}
+
+			// If there are no parent-pair groups (all ancestors), keep original order
+			if (parentPairGroups.size === 0) {
+				adjusted.push(...sorted);
+				continue;
+			}
+
+			// Determine group order by the leftmost node in each group
+			// This preserves the general layout from family-chart while grouping siblings
+			const groupOrder = Array.from(parentPairGroups.entries())
+				.map(([key, nodes]) => ({
+					key,
+					nodes,
+					leftmostX: Math.min(...nodes.map(n => n.x))
+				}))
+				.sort((a, b) => a.leftmostX - b.leftmostX);
+
+			// Also sort ancestor nodes by X
+			noParentNodes.sort((a, b) => a.x - b.x);
+
+			// Merge ancestor nodes and sibling groups by their X positions
+			// This keeps ancestors in their proper positions relative to their descendants
+			const allGroups: { nodes: NodePosition[]; leftmostX: number }[] = [
+				...groupOrder.map(g => ({ nodes: g.nodes, leftmostX: g.leftmostX })),
+				...noParentNodes.map(n => ({ nodes: [n], leftmostX: n.x }))
+			].sort((a, b) => a.leftmostX - b.leftmostX);
+
+			// Re-assign X coordinates while maintaining spacing
+			// Find the leftmost X to use as starting point
+			const startX = Math.min(...sorted.map(n => n.x));
+			let currentX = startX;
+
+			for (const group of allGroups) {
+				// Sort nodes within group by their original X (preserves birth order if any)
+				const groupNodes = [...group.nodes].sort((a, b) => a.x - b.x);
+
+				for (const node of groupNodes) {
+					adjusted.push({
+						...node,
+						x: currentX
+					});
+					currentX += minSpacing;
+				}
+			}
+		}
+
+		return adjusted;
 	}
 
 	/**
