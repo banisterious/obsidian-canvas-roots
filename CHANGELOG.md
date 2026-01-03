@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Timeline block missing space before place name** - Fixed whitespace collapsing in dynamic timeline display ([#122](https://github.com/banisterious/obsidian-canvas-roots/issues/122)):
+  - Changed place text from separate text node to leading space in span content
+  - Fixes "Residencein" appearing instead of "Residence in"
+
 ---
 
 ## [0.18.19] - 2026-01-03
