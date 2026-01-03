@@ -34,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Only counts people as "potentially living" if birth year is within threshold and no death date
   - Previously counted anyone without a death date as "living", which was misleading for historical data
 
+- **Gramps import creates invalid cr_id formats** - Relationship references now use proper cr_ids ([#119](https://github.com/banisterious/obsidian-canvas-roots/issues/119)):
+  - Fixed cr_id replacement in second pass to respect property aliases
+  - Previously, if user had property aliases configured, the Gramps handles were never replaced with cr_ids
+  - Now `father_id`, `mother_id`, `spouse_id`, `children_id`, and other relationship fields are correctly updated
+
 ---
 
 ## [0.18.19] - 2026-01-03

@@ -868,6 +868,10 @@ export class GrampsImporter {
 		// Read the file
 		const content = await this.app.vault.read(file);
 
+		// Helper to get aliased property name
+		const aliases = options.propertyAliases || {};
+		const prop = (canonical: string) => this.getWriteProperty(canonical, aliases);
+
 		// Update frontmatter with real cr_ids (replacing temporary Gramps handles)
 		let updatedContent = content;
 
@@ -876,9 +880,10 @@ export class GrampsImporter {
 			const fatherCrId = grampsToCrId.get(person.fatherRef);
 			if (fatherCrId) {
 				const escapedRef = this.escapeRegex(person.fatherRef);
+				const propName = prop('father_id');
 				updatedContent = updatedContent.replace(
-					new RegExp(`father_id: ${escapedRef}`, 'g'),
-					`father_id: ${fatherCrId}`
+					new RegExp(`${propName}: ${escapedRef}`, 'g'),
+					`${propName}: ${fatherCrId}`
 				);
 			}
 		}
@@ -888,18 +893,20 @@ export class GrampsImporter {
 			const motherCrId = grampsToCrId.get(person.motherRef);
 			if (motherCrId) {
 				const escapedRef = this.escapeRegex(person.motherRef);
+				const propName = prop('mother_id');
 				updatedContent = updatedContent.replace(
-					new RegExp(`mother_id: ${escapedRef}`, 'g'),
-					`mother_id: ${motherCrId}`
+					new RegExp(`${propName}: ${escapedRef}`, 'g'),
+					`${propName}: ${motherCrId}`
 				);
 			}
 		}
 
 		// Replace spouse_id references with real cr_ids
 		// Use a targeted approach to avoid cross-contamination with other arrays
+		const spouseIdProp = prop('spouse_id');
 		if (person.spouseRefs.length > 0) {
 			// Handle array format
-			const spouseIdMatch = updatedContent.match(/^spouse_id:\n((?:\s{2}-\s+[^\n]+\n?)+)/m);
+			const spouseIdMatch = updatedContent.match(new RegExp(`^${spouseIdProp}:\\n((?:\\s{2}-\\s+[^\\n]+\\n?)+)`, 'm'));
 			if (spouseIdMatch) {
 				let spouseIdBlock = spouseIdMatch[0];
 				for (const spouseRef of person.spouseRefs) {
@@ -920,7 +927,7 @@ export class GrampsImporter {
 				if (spouseCrId) {
 					const escapedRef = this.escapeRegex(spouseRef);
 					updatedContent = updatedContent.replace(
-						new RegExp(`^(spouse_id:\\s+)${escapedRef}$`, 'gm'),
+						new RegExp(`^(${spouseIdProp}:\\s+)${escapedRef}$`, 'gm'),
 						`$1${spouseCrId}`
 					);
 				}
@@ -929,7 +936,8 @@ export class GrampsImporter {
 
 		// Replace children_id references with real cr_ids
 		// Use a targeted approach: extract, replace, and re-insert the children_id block
-		const childrenIdMatch = updatedContent.match(/^children_id:\n((?:\s{2}-\s+[^\n]+\n?)+)/m);
+		const childrenIdProp = prop('children_id');
+		const childrenIdMatch = updatedContent.match(new RegExp(`^${childrenIdProp}:\\n((?:\\s{2}-\\s+[^\\n]+\\n?)+)`, 'm'));
 		if (childrenIdMatch) {
 			let childrenIdBlock = childrenIdMatch[0];
 			for (const [childHandle] of grampsToCrId) {
@@ -950,7 +958,7 @@ export class GrampsImporter {
 			if (childCrId && content.includes(childHandle)) {
 				const escapedRef = this.escapeRegex(childHandle);
 				updatedContent = updatedContent.replace(
-					new RegExp(`^(children_id:\\s+)${escapedRef}$`, 'gm'),
+					new RegExp(`^(${childrenIdProp}:\\s+)${escapedRef}$`, 'gm'),
 					`$1${childCrId}`
 				);
 			}
@@ -958,9 +966,10 @@ export class GrampsImporter {
 
 		// Replace stepfather_id references with real cr_ids
 		// Use a targeted approach to avoid cross-contamination with other arrays
+		const stepfatherIdProp = prop('stepfather_id');
 		if (person.stepfatherRefs.length > 0) {
 			// Handle array format
-			const stepfatherIdMatch = updatedContent.match(/^stepfather_id:\n((?:\s{2}-\s+[^\n]+\n?)+)/m);
+			const stepfatherIdMatch = updatedContent.match(new RegExp(`^${stepfatherIdProp}:\\n((?:\\s{2}-\\s+[^\\n]+\\n?)+)`, 'm'));
 			if (stepfatherIdMatch) {
 				let stepfatherIdBlock = stepfatherIdMatch[0];
 				for (const stepfatherRef of person.stepfatherRefs) {
@@ -981,7 +990,7 @@ export class GrampsImporter {
 				if (stepfatherCrId) {
 					const escapedRef = this.escapeRegex(stepfatherRef);
 					updatedContent = updatedContent.replace(
-						new RegExp(`^(stepfather_id:\\s+)${escapedRef}$`, 'gm'),
+						new RegExp(`^(${stepfatherIdProp}:\\s+)${escapedRef}$`, 'gm'),
 						`$1${stepfatherCrId}`
 					);
 				}
@@ -990,9 +999,10 @@ export class GrampsImporter {
 
 		// Replace stepmother_id references with real cr_ids
 		// Use a targeted approach to avoid cross-contamination with other arrays
+		const stepmotherIdProp = prop('stepmother_id');
 		if (person.stepmotherRefs.length > 0) {
 			// Handle array format
-			const stepmotherIdMatch = updatedContent.match(/^stepmother_id:\n((?:\s{2}-\s+[^\n]+\n?)+)/m);
+			const stepmotherIdMatch = updatedContent.match(new RegExp(`^${stepmotherIdProp}:\\n((?:\\s{2}-\\s+[^\\n]+\\n?)+)`, 'm'));
 			if (stepmotherIdMatch) {
 				let stepmotherIdBlock = stepmotherIdMatch[0];
 				for (const stepmotherRef of person.stepmotherRefs) {
@@ -1013,7 +1023,7 @@ export class GrampsImporter {
 				if (stepmotherCrId) {
 					const escapedRef = this.escapeRegex(stepmotherRef);
 					updatedContent = updatedContent.replace(
-						new RegExp(`^(stepmother_id:\\s+)${escapedRef}$`, 'gm'),
+						new RegExp(`^(${stepmotherIdProp}:\\s+)${escapedRef}$`, 'gm'),
 						`$1${stepmotherCrId}`
 					);
 				}
@@ -1025,9 +1035,10 @@ export class GrampsImporter {
 			const adoptiveFatherCrId = grampsToCrId.get(person.adoptiveFatherRef);
 			if (adoptiveFatherCrId) {
 				const escapedRef = this.escapeRegex(person.adoptiveFatherRef);
+				const adoptiveFatherIdProp = prop('adoptive_father_id');
 				updatedContent = updatedContent.replace(
-					new RegExp(`adoptive_father_id: ${escapedRef}`, 'g'),
-					`adoptive_father_id: ${adoptiveFatherCrId}`
+					new RegExp(`${adoptiveFatherIdProp}: ${escapedRef}`, 'g'),
+					`${adoptiveFatherIdProp}: ${adoptiveFatherCrId}`
 				);
 			}
 		}
@@ -1037,9 +1048,10 @@ export class GrampsImporter {
 			const adoptiveMotherCrId = grampsToCrId.get(person.adoptiveMotherRef);
 			if (adoptiveMotherCrId) {
 				const escapedRef = this.escapeRegex(person.adoptiveMotherRef);
+				const adoptiveMotherIdProp = prop('adoptive_mother_id');
 				updatedContent = updatedContent.replace(
-					new RegExp(`adoptive_mother_id: ${escapedRef}`, 'g'),
-					`adoptive_mother_id: ${adoptiveMotherCrId}`
+					new RegExp(`${adoptiveMotherIdProp}: ${escapedRef}`, 'g'),
+					`${adoptiveMotherIdProp}: ${adoptiveMotherCrId}`
 				);
 			}
 		}
