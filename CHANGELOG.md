@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed subtitle from "Items needing attention" to "Missing births + orphans + unsourced events"
   - The total intentionally includes only core actionable issues, not all quality metrics
 
+- **Data Quality checker flags `male`/`female` as non-standard sex format** - Now accepts common synonyms ([#117](https://github.com/banisterious/obsidian-canvas-roots/issues/117)):
+  - Sex validation now accepts both canonical GEDCOM codes (M/F/X/U) and common synonyms (male/female)
+  - Uses existing value alias system for consistent synonym handling
+  - Updated error message to mention accepted synonyms
+
 ---
 
 ## [0.18.19] - 2026-01-03

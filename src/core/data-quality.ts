@@ -668,19 +668,25 @@ export class DataQualityService {
 			});
 		}
 
-		// Non-standard gender value - flag values that can be normalized to canonical GEDCOM codes
+		// Non-standard gender value - flag values that cannot be normalized to canonical GEDCOM codes
 		// Canonical values are: M, F, X (nonbinary/other), U (unknown)
-		const canonicalGenders = ['M', 'F', 'X', 'U'];
+		// Also accept common synonyms like male/female that map to M/F via value alias system
 		const rawSex = fm?.['sex'] as string | undefined;
-		if (rawSex && !canonicalGenders.includes(rawSex)) {
-			issues.push({
-				code: 'INVALID_GENDER',
-				message: `Gender value "${rawSex}" is not standard GEDCOM format (expected M/F/X/U)`,
-				severity: 'warning',
-				category: 'data_format',
-				person,
-				details: { value: rawSex },
-			});
+		if (rawSex) {
+			const normalizedKey = rawSex.toLowerCase().trim();
+			const isCanonical = CANONICAL_SEX_VALUES.includes(rawSex as CanonicalSex);
+			const hasSynonym = normalizedKey in BUILTIN_SYNONYMS.sex;
+
+			if (!isCanonical && !hasSynonym) {
+				issues.push({
+					code: 'INVALID_GENDER',
+					message: `Sex value "${rawSex}" is not recognized (expected M/F/X/U or common synonyms like male/female)`,
+					severity: 'warning',
+					category: 'data_format',
+					person,
+					details: { value: rawSex },
+				});
+			}
 		}
 
 		return issues;
