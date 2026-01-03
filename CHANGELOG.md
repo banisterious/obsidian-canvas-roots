@@ -39,6 +39,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Previously, if user had property aliases configured, the Gramps handles were never replaced with cr_ids
   - Now `father_id`, `mother_id`, `spouse_id`, `children_id`, and other relationship fields are correctly updated
 
+### Added
+
+- **Distinguish actionable errors from informational data gaps** - Data quality section now groups issues by severity ([#120](https://github.com/banisterious/obsidian-canvas-roots/issues/120)):
+  - **Errors** (red): Date inconsistencies and other fixable problems
+  - **Data Gaps** (yellow/orange): Missing data that may be unavailable for historical records
+  - **Informational** (blue): Neutral metrics like places without coordinates
+  - Each group has a header explaining its meaning
+  - Moved "unsourced events" from info to data gaps category
+
 ---
 
 ## [0.18.19] - 2026-01-03

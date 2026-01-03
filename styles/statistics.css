@@ -508,13 +508,48 @@
 }
 
 .cr-sv-quality-warning {
-  background-color: var(--background-modifier-error);
-  border-left: 3px solid var(--color-red);
+  background-color: hsla(40, 100%, 50%, 0.15);
+  border-left: 3px solid var(--color-yellow);
 }
 
 .cr-sv-quality-info {
   background-color: var(--background-secondary);
   border-left: 3px solid var(--color-blue);
+}
+
+/* Quality section headers for grouping by severity */
+.cr-sv-quality-section {
+  margin-bottom: var(--size-4-3);
+}
+
+.cr-sv-quality-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--size-4-2);
+  padding: var(--size-4-1) var(--size-4-2);
+  margin-bottom: var(--size-4-1);
+  border-radius: var(--radius-s);
+}
+
+.cr-sv-quality-section-title {
+  font-weight: var(--font-semibold);
+  font-size: var(--font-ui-small);
+}
+
+.cr-sv-quality-section-desc {
+  font-size: var(--font-ui-smaller);
+}
+
+.cr-sv-quality-section-error .cr-sv-quality-section-title {
+  color: var(--color-red);
+}
+
+.cr-sv-quality-section-warning .cr-sv-quality-section-title {
+  color: var(--color-yellow);
+}
+
+.cr-sv-quality-section-info .cr-sv-quality-section-title {
+  color: var(--color-blue);
 }
 
 .cr-sv-quality-alert-icon {

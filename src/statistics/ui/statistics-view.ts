@@ -526,10 +526,9 @@ export class StatisticsView extends ItemView {
 			return content;
 		}
 
-		const alertsList = content.createDiv({ cls: 'cr-sv-quality-alerts' });
-
 		// Helper to create expandable quality alerts
 		const createExpandableAlert = (
+			container: HTMLElement,
 			icon: string,
 			label: string,
 			count: number,
@@ -541,7 +540,7 @@ export class StatisticsView extends ItemView {
 			const drilldownKey = `quality:${issueType}`;
 			const isExpanded = this.expandedDrilldowns.has(drilldownKey);
 
-			const alertWrapper = alertsList.createDiv({ cls: 'cr-sv-quality-alert-wrapper' });
+			const alertWrapper = container.createDiv({ cls: 'cr-sv-quality-alert-wrapper' });
 			const alert = alertWrapper.createDiv({
 				cls: `cr-sv-quality-alert cr-sv-quality-${severity} cr-sv-quality-clickable ${isExpanded ? 'cr-sv-quality-expanded' : ''}`
 			});
@@ -565,18 +564,46 @@ export class StatisticsView extends ItemView {
 			}
 		};
 
-		// High severity (errors)
-		createExpandableAlert('alert-triangle', 'Date inconsistencies', quality.dateInconsistencies, 'error', 'dateInconsistencies');
+		// Group 1: Errors - Things that are actually wrong and should be fixed
+		const hasErrors = quality.dateInconsistencies > 0;
+		if (hasErrors) {
+			const errorSection = content.createDiv({ cls: 'cr-sv-quality-section' });
+			const errorHeader = errorSection.createDiv({ cls: 'cr-sv-quality-section-header cr-sv-quality-section-error' });
+			errorHeader.createSpan({ text: 'Errors', cls: 'cr-sv-quality-section-title' });
+			errorHeader.createSpan({ text: 'Data problems that should be fixed', cls: 'cr-sv-quality-section-desc crc-text-muted' });
 
-		// Medium severity (warnings)
-		createExpandableAlert('alert-circle', 'Missing birth dates', quality.missingBirthDate, 'warning', 'missingBirthDate');
-		createExpandableAlert('calendar-x', 'Missing death dates', quality.missingDeathDate, 'warning', 'missingDeathDate');
-		createExpandableAlert('link', 'Orphaned people', quality.orphanedPeople, 'warning', 'orphanedPeople');
-		createExpandableAlert('users', 'Incomplete parents', quality.incompleteParents, 'warning', 'incompleteParents');
+			const errorAlerts = errorSection.createDiv({ cls: 'cr-sv-quality-alerts' });
+			createExpandableAlert(errorAlerts, 'alert-triangle', 'Date inconsistencies', quality.dateInconsistencies, 'error', 'dateInconsistencies');
+		}
 
-		// Low severity (info)
-		createExpandableAlert('archive', 'Unsourced events', quality.unsourcedEvents, 'info', 'unsourcedEvents');
-		createExpandableAlert('map-pin', 'Places without coordinates', quality.placesWithoutCoordinates, 'info', 'placesWithoutCoordinates');
+		// Group 2: Data Gaps - Missing data that could be improved (but may be unfixable for historical records)
+		const hasGaps = quality.missingBirthDate > 0 || quality.missingDeathDate > 0 ||
+			quality.orphanedPeople > 0 || quality.incompleteParents > 0 || quality.unsourcedEvents > 0;
+		if (hasGaps) {
+			const gapSection = content.createDiv({ cls: 'cr-sv-quality-section' });
+			const gapHeader = gapSection.createDiv({ cls: 'cr-sv-quality-section-header cr-sv-quality-section-warning' });
+			gapHeader.createSpan({ text: 'Data Gaps', cls: 'cr-sv-quality-section-title' });
+			gapHeader.createSpan({ text: 'Missing data (may be unavailable for historical records)', cls: 'cr-sv-quality-section-desc crc-text-muted' });
+
+			const gapAlerts = gapSection.createDiv({ cls: 'cr-sv-quality-alerts' });
+			createExpandableAlert(gapAlerts, 'alert-circle', 'Missing birth dates', quality.missingBirthDate, 'warning', 'missingBirthDate');
+			createExpandableAlert(gapAlerts, 'calendar-x', 'Missing death dates', quality.missingDeathDate, 'warning', 'missingDeathDate');
+			createExpandableAlert(gapAlerts, 'link', 'Orphaned people (no relationships)', quality.orphanedPeople, 'warning', 'orphanedPeople');
+			createExpandableAlert(gapAlerts, 'users', 'Incomplete parents (one parent only)', quality.incompleteParents, 'warning', 'incompleteParents');
+			createExpandableAlert(gapAlerts, 'archive', 'Unsourced events', quality.unsourcedEvents, 'warning', 'unsourcedEvents');
+		}
+
+		// Group 3: Informational - Nice to have, not an issue
+		const hasInfo = quality.placesWithoutCoordinates > 0;
+		if (hasInfo) {
+			const infoSection = content.createDiv({ cls: 'cr-sv-quality-section' });
+			const infoHeader = infoSection.createDiv({ cls: 'cr-sv-quality-section-header cr-sv-quality-section-info' });
+			infoHeader.createSpan({ text: 'Informational', cls: 'cr-sv-quality-section-title' });
+			infoHeader.createSpan({ text: 'Neutral metrics', cls: 'cr-sv-quality-section-desc crc-text-muted' });
+
+			const infoAlerts = infoSection.createDiv({ cls: 'cr-sv-quality-alerts' });
+			createExpandableAlert(infoAlerts, 'map-pin', 'Places without coordinates', quality.placesWithoutCoordinates, 'info', 'placesWithoutCoordinates');
+		}
 
 		// Living people count (informational, not an issue)
 		if (quality.livingPeople > 0) {
