@@ -1209,6 +1209,14 @@ export class FamilyGraphService {
 				}
 			}
 
+			// Add this person as child to gender-neutral parents (inferred from parents/parents_id fields)
+			for (const parentCrId of person.parentCrIds) {
+				const parent = this.personCache.get(parentCrId);
+				if (parent && !parent.childrenCrIds.includes(crId)) {
+					parent.childrenCrIds.push(crId);
+				}
+			}
+
 			// Also ensure all explicitly declared children are valid
 			// (filter out any that don't exist in the cache)
 			person.childrenCrIds = person.childrenCrIds.filter(childCrId =>

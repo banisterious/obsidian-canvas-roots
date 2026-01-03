@@ -88,9 +88,18 @@ export class RelationshipCalculator {
 		}
 
 		// Find path using BFS
+		logger.debug('calculate-relationship', 'Starting path search', {
+			personACrId: personA.crId,
+			personBCrId: personB.crId
+		});
+
 		const path = this.findPath(personA, personB);
 
 		if (!path || path.length === 0) {
+			logger.warn('calculate-relationship', 'No path found between people', {
+				personACrId: personA.crId,
+				personBCrId: personB.crId
+			});
 			return {
 				personA,
 				personB,
@@ -102,6 +111,11 @@ export class RelationshipCalculator {
 				isBloodRelation: false
 			};
 		}
+
+		logger.debug('calculate-relationship', 'Path found', {
+			pathLength: path.length,
+			pathCrIds: path.map(step => step.person.crId)
+		});
 
 		// Analyze the path to determine relationship
 		const analysis = this.analyzePath(path);
@@ -136,11 +150,21 @@ export class RelationshipCalculator {
 
 		visited.add(personA.crId);
 
-		while (queue.length > 0) {
+		// Track exploration for debugging
+		let iterations = 0;
+		const maxIterations = 10000; // Safety limit
+
+		while (queue.length > 0 && iterations < maxIterations) {
+			iterations++;
 			const current = queue.shift()!;
 
 			// Check if we found the target
 			if (current.person.crId === personB.crId) {
+				logger.debug('find-path', 'Target found', {
+					iterations,
+					visitedCount: visited.size,
+					pathLength: current.path.length
+				});
 				return current.path;
 			}
 
@@ -153,6 +177,12 @@ export class RelationshipCalculator {
 						person: father,
 						path: [...current.path, { person: father, relationship: 'father', direction: 'up' }]
 					});
+				} else if (!father && current.person.fatherCrId) {
+					// Father ID exists but person not found in cache - data issue
+					logger.debug('find-path', 'Father not in cache', {
+						personCrId: current.person.crId,
+						fatherCrId: current.person.fatherCrId
+					});
 				}
 			}
 
@@ -163,6 +193,31 @@ export class RelationshipCalculator {
 					queue.push({
 						person: mother,
 						path: [...current.path, { person: mother, relationship: 'mother', direction: 'up' }]
+					});
+				} else if (!mother && current.person.motherCrId) {
+					// Mother ID exists but person not found in cache - data issue
+					logger.debug('find-path', 'Mother not in cache', {
+						personCrId: current.person.crId,
+						motherCrId: current.person.motherCrId
+					});
+				}
+			}
+
+			// Explore gender-neutral parents (going up)
+			for (const parentCrId of current.person.parentCrIds) {
+				const parent = this.familyGraph.getPersonByCrId(parentCrId);
+				if (parent && !visited.has(parent.crId)) {
+					visited.add(parent.crId);
+					queue.push({
+						person: parent,
+						// Use 'father' as relationship type for consistency with path analysis
+						// The direction 'up' is what matters for relationship calculation
+						path: [...current.path, { person: parent, relationship: 'father', direction: 'up' }]
+					});
+				} else if (!parent) {
+					logger.debug('find-path', 'Gender-neutral parent not in cache', {
+						personCrId: current.person.crId,
+						parentCrId
 					});
 				}
 			}
@@ -191,6 +246,18 @@ export class RelationshipCalculator {
 				}
 			}
 		}
+
+		// Log detailed info when no path found
+		logger.warn('find-path', 'No path found - BFS exhausted', {
+			iterations,
+			visitedCount: visited.size,
+			queueExhausted: queue.length === 0,
+			hitMaxIterations: iterations >= maxIterations,
+			personACrId: personA.crId,
+			personBCrId: personB.crId,
+			// Include visited cr_ids to help identify which component was explored
+			visitedSample: Array.from(visited).slice(0, 20)
+		});
 
 		return null; // No path found
 	}
