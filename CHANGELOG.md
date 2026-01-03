@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Relationship calculator not traversing gender-neutral parents** - BFS pathfinding now correctly traverses `parents`/`parents_id` relationships ([#109](https://github.com/banisterious/obsidian-canvas-roots/issues/109)):
+  - Added traversal of `parentCrIds` in relationship calculator so paths can go "up" through gender-neutral parents
+  - Added reverse child inference from `parentCrIds` in family graph cache so parents using gender-neutral fields have `childrenCrIds` populated
+  - Added debug logging to help diagnose asymmetric relationship calculation issues
+
 ---
 
 ## [0.18.18] - 2026-01-02
