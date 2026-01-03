@@ -332,27 +332,67 @@ export class FamilyChartLayoutEngine {
 				return parents.join('|');
 			};
 
+			// Build a lookup of nodes by crId for spouse resolution
+			const nodesByCrId = new Map<string, NodePosition>();
+			for (const node of sorted) {
+				nodesByCrId.set(node.person.crId, node);
+			}
+
 			// Separate nodes into:
 			// 1. Blood relatives (parents in tree) - will be grouped by parent pair
-			// 2. In-laws/spouses (parents not in tree) - keep original position
+			// 2. In-laws/spouses - will be attached to their blood-relative spouse's group
 			// 3. Ancestors (no parents at all) - keep original position
 			const parentPairGroups = new Map<string, NodePosition[]>();
 			const keepOriginalPosition: NodePosition[] = [];
+			const assignedToGroup = new Set<string>(); // Track nodes already assigned
 
+			// First pass: identify blood relatives and group by parent pair
 			for (const node of sorted) {
 				const key = getParentPairKey(node);
 				if (key === '|') {
 					// No parents - this is an ancestor, keep original position
 					keepOriginalPosition.push(node);
+					assignedToGroup.add(node.person.crId);
 				} else if (hasParentsInTree(node)) {
 					// Blood relative - group by parent pair
 					if (!parentPairGroups.has(key)) {
 						parentPairGroups.set(key, []);
 					}
 					parentPairGroups.get(key)!.push(node);
-				} else {
-					// In-law/spouse - parents not in tree, keep original position
+					assignedToGroup.add(node.person.crId);
+				}
+				// In-laws will be handled in second pass
+			}
+
+			// Second pass: attach in-laws/spouses to their blood-relative spouse's group
+			for (const node of sorted) {
+				if (assignedToGroup.has(node.person.crId)) {
+					continue; // Already assigned
+				}
+
+				// This is an in-law (parents not in tree)
+				// Find their spouse(s) who are blood relatives and attach to that group
+				const spouseIds = node.person.spouseCrIds || [];
+				let attachedToGroup = false;
+
+				for (const spouseId of spouseIds) {
+					const spouseNode = nodesByCrId.get(spouseId);
+					if (spouseNode && hasParentsInTree(spouseNode)) {
+						// Spouse is a blood relative - attach this in-law to spouse's group
+						const spouseKey = getParentPairKey(spouseNode);
+						if (parentPairGroups.has(spouseKey)) {
+							parentPairGroups.get(spouseKey)!.push(node);
+							assignedToGroup.add(node.person.crId);
+							attachedToGroup = true;
+							break;
+						}
+					}
+				}
+
+				if (!attachedToGroup) {
+					// No blood-relative spouse found, keep original position
 					keepOriginalPosition.push(node);
+					assignedToGroup.add(node.person.crId);
 				}
 			}
 
