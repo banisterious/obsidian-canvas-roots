@@ -1167,10 +1167,11 @@ export class FamilyChartView extends ItemView {
 			parents.push(person.motherCrId);
 		}
 
-		// If no biological parents, try gender-neutral parents
-		if (parents.length === 0 && person.parentCrIds) {
+		// Also add gender-neutral parents (allows mixing father/mother with parents property)
+		// family-chart allows max 2 parents, so only add if we have room
+		if (person.parentCrIds) {
 			for (const parentId of person.parentCrIds) {
-				if (validIds.has(parentId)) {
+				if (validIds.has(parentId) && !parents.includes(parentId) && parents.length < 2) {
 					parents.push(parentId);
 				}
 			}
@@ -1213,11 +1214,9 @@ export class FamilyChartView extends ItemView {
 			if (childPerson.fatherCrId === person.crId || childPerson.motherCrId === person.crId) {
 				return true;
 			}
-			// Check gender-neutral parent relationship (if child has no biological parents)
-			if (!childPerson.fatherCrId && !childPerson.motherCrId) {
-				if (childPerson.parentCrIds && childPerson.parentCrIds.includes(person.crId)) {
-					return true;
-				}
+			// Check gender-neutral parent relationship (allows mixing with father/mother)
+			if (childPerson.parentCrIds && childPerson.parentCrIds.includes(person.crId)) {
+				return true;
 			}
 			// Check adoptive parent relationship (only if child has no biological or gender-neutral parents)
 			// This matches the parent logic: adoptive parents only used when no biological/gender-neutral parents

@@ -52,24 +52,24 @@ export const DEFAULT_RELATIONSHIP_TYPES: RelationshipTypeDefinition[] = [
 		familyGraphMapping: 'spouse'
 	},
 	{
-		id: 'parent',
+		id: 'parents',
 		name: 'Parent',
 		category: 'family',
 		color: '#22c55e',
 		lineStyle: 'solid',
-		inverse: 'child',
+		inverse: 'children',
 		symmetric: false,
 		builtIn: true,
 		includeOnFamilyTree: true,
 		familyGraphMapping: 'parent'
 	},
 	{
-		id: 'child',
+		id: 'children',
 		name: 'Child',
 		category: 'family',
 		color: '#22c55e',
 		lineStyle: 'solid',
-		inverse: 'parent',
+		inverse: 'parents',
 		symmetric: false,
 		builtIn: true,
 		includeOnFamilyTree: true,
