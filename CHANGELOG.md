@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Uses existing value alias system for consistent synonym handling
   - Updated error message to mention accepted synonyms
 
+- **"Living people" calculation is inaccurate for historical genealogy data** - Now uses age threshold ([#118](https://github.com/banisterious/obsidian-canvas-roots/issues/118)):
+  - Living person count now uses `livingPersonAgeThreshold` setting (default 100 years)
+  - Only counts people as "potentially living" if birth year is within threshold and no death date
+  - Previously counted anyone without a death date as "living", which was misleading for historical data
+
 ---
 
 ## [0.18.19] - 2026-01-03

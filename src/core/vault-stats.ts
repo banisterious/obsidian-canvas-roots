@@ -15,7 +15,7 @@ export interface VaultStats {
 	peopleWithMother: number;
 	peopleWithSpouse: number;
 	orphanedPeople: number;  // No relationships
-	livingPeople: number;    // Has birth date but no death date
+	livingPeople: number;    // Potentially living (birth within age threshold, no death date)
 }
 
 /**
@@ -210,12 +210,14 @@ export class VaultStatsService {
 			// Birth/death statistics
 			if (personData.hasBirthDate) {
 				peopleWithBirthDate++;
-				if (!personData.hasDeathDate) {
-					livingPeople++;
-				}
 			}
 			if (personData.hasDeathDate) {
 				peopleWithDeathDate++;
+			}
+
+			// Living person check: uses age threshold, not just "no death date"
+			if (this.couldBeLiving(personData.birthYear, personData.hasDeathDate)) {
+				livingPeople++;
 			}
 
 			// Relationship statistics
@@ -317,6 +319,7 @@ export class VaultStatsService {
 		hasFather: boolean;
 		hasMother: boolean;
 		spouseCount: number;
+		birthYear: number | null;
 	} | null {
 		try {
 			const cache = this.app.metadataCache.getFileCache(file);
@@ -331,13 +334,18 @@ export class VaultStatsService {
 				return null;
 			}
 
+			// Extract birth year for living person calculation
+			const birthDate = fm.born || fm.birth_date;
+			const birthYear = this.extractYear(birthDate);
+
 			return {
 				hasCrId: true,
 				hasBirthDate: !!(fm.born || fm.birth_date),
 				hasDeathDate: !!(fm.died || fm.death_date),
 				hasFather: !!(fm.father || fm.father_id),
 				hasMother: !!(fm.mother || fm.mother_id),
-				spouseCount: this.getSpouseCount(fm.spouse || fm.spouse_id)
+				spouseCount: this.getSpouseCount(fm.spouse || fm.spouse_id),
+				birthYear
 			};
 		} catch (error: unknown) {
 			console.error('Error extracting person data from file:', file.path, error);
@@ -352,5 +360,52 @@ export class VaultStatsService {
 		if (!spouse) return 0;
 		if (Array.isArray(spouse)) return spouse.length;
 		return 1;
+	}
+
+	/**
+	 * Extract year from a date value (supports various formats)
+	 */
+	private extractYear(dateValue: unknown): number | null {
+		if (!dateValue) return null;
+
+		// Handle Date objects
+		if (dateValue instanceof Date) {
+			return dateValue.getFullYear();
+		}
+
+		// Handle numbers (year as number)
+		if (typeof dateValue === 'number') {
+			return dateValue;
+		}
+
+		// Handle strings
+		if (typeof dateValue === 'string') {
+			// Try YYYY-MM-DD or YYYY format
+			const yearMatch = dateValue.match(/\b(\d{4})\b/);
+			if (yearMatch) {
+				return parseInt(yearMatch[1], 10);
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Check if a person could plausibly still be alive based on birth year
+	 * Uses the livingPersonAgeThreshold setting (default 100)
+	 */
+	private couldBeLiving(birthYear: number | null, hasDeathDate: boolean): boolean {
+		// If they have a death date, they're not living
+		if (hasDeathDate) return false;
+
+		// If no birth year, we can't determine if living
+		if (birthYear === null) return false;
+
+		// Calculate age and compare to threshold
+		const currentYear = new Date().getFullYear();
+		const age = currentYear - birthYear;
+		const threshold = this.settings?.livingPersonAgeThreshold ?? 100;
+
+		return age < threshold;
 	}
 }
