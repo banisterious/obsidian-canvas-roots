@@ -4429,6 +4429,7 @@ export default class CanvasRootsPlugin extends Plugin {
 			if (this.folderFilter) {
 				this.bidirectionalLinker.setFolderFilter(this.folderFilter);
 			}
+			this.bidirectionalLinker.setEnableInclusiveParents(this.settings.enableInclusiveParents);
 		}
 
 		// Run after a 1-second delay to not impact plugin load performance
@@ -4555,6 +4556,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (this.folderFilter) {
 							this.bidirectionalLinker.setFolderFilter(this.folderFilter);
 						}
+						this.bidirectionalLinker.setEnableInclusiveParents(this.settings.enableInclusiveParents);
 					}
 					await this.bidirectionalLinker.syncRelationships(file);
 				} catch (error: unknown) {
@@ -4597,6 +4599,11 @@ export default class CanvasRootsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+
+		// Update bidirectional linker with current settings
+		if (this.bidirectionalLinker) {
+			this.bidirectionalLinker.setEnableInclusiveParents(this.settings.enableInclusiveParents);
+		}
 	}
 
 	/**
@@ -5280,6 +5287,23 @@ export default class CanvasRootsPlugin extends Plugin {
 			}
 		}
 
+		// Extract gender-neutral parents names/IDs
+		const parentNames: string[] = [];
+		const parentIds: string[] = [];
+		if (fm.parents) {
+			const parents = Array.isArray(fm.parents) ? fm.parents : [fm.parents];
+			for (const p of parents) {
+				const name = extractName(String(p));
+				if (name) parentNames.push(name);
+			}
+		}
+		if (fm.parents_id) {
+			const ids = Array.isArray(fm.parents_id) ? fm.parents_id : [fm.parents_id];
+			for (const id of ids) {
+				parentIds.push(String(id));
+			}
+		}
+
 		// Get family graph for collection options
 		const familyGraph = new FamilyGraphService(this.app);
 		void familyGraph.reloadCache();
@@ -5318,6 +5342,8 @@ export default class CanvasRootsPlugin extends Plugin {
 				childNames: childNames.length > 0 ? childNames : undefined,
 				sourceIds: sourceIds.length > 0 ? sourceIds : undefined,
 				sourceNames: sourceNames.length > 0 ? sourceNames : undefined,
+				parentIds: parentIds.length > 0 ? parentIds : undefined,
+				parentNames: parentNames.length > 0 ? parentNames : undefined,
 				collection: fm.collection,
 				universe: fm.universe
 			},

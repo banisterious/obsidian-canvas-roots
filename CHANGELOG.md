@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Couples grouping not detecting all couples** - "By couples" grouping now correctly groups all couples with `spouse_id` set ([#105](https://github.com/banisterious/obsidian-canvas-roots/issues/105)):
+  - Changed from child-parent inference to direct spouse relationship detection
+  - Fixes couples without children not being grouped
+  - Fixes couples whose children use gender-neutral `parents` field instead of `father`/`mother`
+
+- **Gender-neutral parents not respected** - Fixed two issues with the gender-neutral `parents`/`parents_id` fields ([#108](https://github.com/banisterious/obsidian-canvas-roots/issues/108)):
+  - Bidirectional linker no longer auto-adds `father`/`mother` fields when `parents`/`parents_id` already exist and "Enable inclusive/gender-neutral parent fields" is enabled
+  - Edit Person modal now correctly displays existing `parents` relationships when opened via file explorer context menu or Control Center
+
 ---
 
 ## [0.18.17] - 2026-01-02
@@ -35,11 +46,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Note: Current exporters already protect these fields implicitly by working with `PersonNode` interface, which excludes sensitive fields by design
 
 ### Fixed
-
-- **Couples grouping not detecting all couples** - "By couples" grouping now correctly groups all couples with `spouse_id` set ([#105](https://github.com/banisterious/obsidian-canvas-roots/issues/105)):
-  - Changed from child-parent inference to direct spouse relationship detection
-  - Fixes couples without children not being grouped
-  - Fixes couples whose children use gender-neutral `parents` field instead of `father`/`mother`
 
 - **Children display property not accumulating** - When adding multiple children via "Add child" button, the `children` display property now correctly shows all children instead of just the first ([#106](https://github.com/banisterious/obsidian-canvas-roots/issues/106)):
   - Fixed reading from legacy `child` property instead of normalized `children` property

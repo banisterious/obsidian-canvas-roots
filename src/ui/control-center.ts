@@ -3173,6 +3173,7 @@ export class ControlCenterModal extends Modal {
 			const motherId = fm.mother_id || fm.mother;
 			const spouseIds = fm.spouse_id || fm.spouse;
 			const childIds = fm.children_id || fm.child;
+			const parentIds = fm.parents_id;
 
 			// Extract child names from wikilinks
 			const extractName = (value: unknown): string | undefined => {
@@ -3192,6 +3193,13 @@ export class ControlCenterModal extends Modal {
 			if (fm.sources) {
 				const sources = Array.isArray(fm.sources) ? fm.sources : [fm.sources];
 				sourceNames = sources.map(s => extractName(String(s))).filter((n): n is string => !!n);
+			}
+
+			// Extract gender-neutral parent names
+			let parentNames: string[] | undefined;
+			if (fm.parents) {
+				const parents = Array.isArray(fm.parents) ? fm.parents : [fm.parents];
+				parentNames = parents.map(p => extractName(String(p))).filter((n): n is string => !!n);
 			}
 
 			const placeGraph = this.plugin.createPlaceGraphService();
@@ -3228,6 +3236,8 @@ export class ControlCenterModal extends Modal {
 					childNames: childNames,
 					sourceIds: Array.isArray(sourceIds) ? sourceIds : (sourceIds ? [sourceIds] : undefined),
 					sourceNames: sourceNames,
+					parentIds: Array.isArray(parentIds) ? parentIds : (parentIds ? [parentIds] : undefined),
+					parentNames: parentNames,
 					collection: fm.collection,
 					universe: fm.universe
 				},

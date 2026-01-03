@@ -44,8 +44,17 @@ export class BidirectionalLinker {
 	private relationshipSnapshots: Map<string, RelationshipSnapshot> = new Map();
 	private folderFilter: FolderFilterService | null = null;
 	private suspended = false;
+	private enableInclusiveParents = false;
 
 	constructor(private app: App) {}
+
+	/**
+	 * Set whether gender-neutral parent terminology is enabled
+	 * When enabled, children with parents/parents_id set will not have father/mother auto-added
+	 */
+	setEnableInclusiveParents(enabled: boolean): void {
+		this.enableInclusiveParents = enabled;
+	}
 
 	/**
 	 * Set the folder filter service for filtering person notes by folder
@@ -742,6 +751,27 @@ export class BidirectionalLinker {
 		}
 
 		const childFm = childCache.frontmatter;
+
+		// If gender-neutral parents are enabled and child already has parents/parents_id,
+		// don't auto-add father/mother fields - respect the user's choice
+		if (this.enableInclusiveParents) {
+			const hasParents = childFm.parents && (
+				Array.isArray(childFm.parents) ? childFm.parents.length > 0 : !!childFm.parents
+			);
+			const hasParentsId = childFm.parents_id && (
+				Array.isArray(childFm.parents_id) ? childFm.parents_id.length > 0 : !!childFm.parents_id
+			);
+
+			if (hasParents || hasParentsId) {
+				logger.debug('bidirectional-linking', 'Child has gender-neutral parents set, skipping father/mother auto-population', {
+					childFile: childFile.path,
+					parentFile: parentFile.path,
+					hasParents,
+					hasParentsId
+				});
+				return;
+			}
+		}
 
 		// Create wikilink using basename if it differs from name, otherwise use name
 		const parentLinkText = parentFile.basename !== parentName
