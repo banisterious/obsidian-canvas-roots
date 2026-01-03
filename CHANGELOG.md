@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Completion screen now shows counts from import results instead of file preview counts
   - Entity types not selected for import no longer appear in the summary
 
+- **Family Tree canvas separates spouses when grouping siblings** - Spouses now stay adjacent when siblings are grouped by parent pair ([#103](https://github.com/banisterious/obsidian-canvas-roots/issues/103)):
+  - In-laws are now attached to their blood-relative spouse's parent-pair group
+  - Prevents spouses from being "captured" into different sibling groups
+
 ---
 
 ## [0.18.18] - 2026-01-02
