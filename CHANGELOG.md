@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated relationship-history, data-quality, and base-template to use normalized `children` property
   - Read operations still support legacy `child` property for backward compatibility
 
+- **Import completion screen shows wrong entity counts** - Fixed completion screen to show actual imported counts ([#111](https://github.com/banisterious/obsidian-canvas-roots/issues/111)):
+  - Completion screen now shows counts from import results instead of file preview counts
+  - Entity types not selected for import no longer appear in the summary
+
 ---
 
 ## [0.18.18] - 2026-01-02
