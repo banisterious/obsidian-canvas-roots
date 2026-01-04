@@ -724,57 +724,126 @@ export class GedcomImporterV2 {
 		}
 
 		// Fix wikilinks to use actual filenames (handles duplicate names)
-		// When files are created with suffixes like "John Smith-1.md" for duplicates,
-		// the wikilinks need to point to the actual filename, not the display name
-		const wikilinkReplacements: Array<{ displayName: string; actualFilename: string }> = [];
+		// When files are created with suffixes like "John Smith 1.md" for duplicates,
+		// the wikilinks need to point to the actual filename, not the display name.
+		// We use cr_id-targeted replacement to handle cases where multiple people
+		// have the same display name (e.g., father and child both named "George Hall").
 
-		// Father
+		// Helper to fix a wikilink for a specific relationship using cr_id matching
+		const fixWikilinkByCrId = (
+			content: string,
+			propertyName: string,
+			idPropertyName: string,
+			targetCrId: string,
+			displayName: string,
+			actualFilename: string
+		): string => {
+			if (actualFilename === displayName) return content; // No change needed
+
+			// For single-value properties (father, mother), match the property line
+			// Pattern: property: "[[DisplayName]]" followed by property_id: cr_id
+			const singleValuePattern = new RegExp(
+				`(${propertyName}:\\s*)"\\[\\[${this.escapeRegex(displayName)}\\]\\]"(\\n${idPropertyName}:\\s*${this.escapeRegex(targetCrId)})`,
+				'm'
+			);
+			if (singleValuePattern.test(content)) {
+				return content.replace(singleValuePattern, `$1"[[${actualFilename}]]"$2`);
+			}
+
+			// Also try reverse order (id before wikilink)
+			const reversePattern = new RegExp(
+				`(${idPropertyName}:\\s*${this.escapeRegex(targetCrId)}\\n${propertyName}:\\s*)"\\[\\[${this.escapeRegex(displayName)}\\]\\]"`,
+				'm'
+			);
+			if (reversePattern.test(content)) {
+				return content.replace(reversePattern, `$1"[[${actualFilename}]]"`);
+			}
+
+			return content;
+		};
+
+		// Helper to fix a wikilink in an array using cr_id index matching
+		const fixWikilinkInArrayByCrId = (
+			content: string,
+			arrayPropertyName: string,
+			idArrayPropertyName: string,
+			targetCrId: string,
+			displayName: string,
+			actualFilename: string
+		): string => {
+			if (actualFilename === displayName) return content; // No change needed
+
+			// Find the _id array and get the index of the target cr_id
+			const idArrayMatch = content.match(new RegExp(`${idArrayPropertyName}:\\n((?:\\s{2}-\\s+[^\\n]+\\n?)+)`, 'm'));
+			if (!idArrayMatch) return content;
+
+			const idLines = idArrayMatch[1].split('\n').filter(line => line.trim().startsWith('- '));
+			const targetIndex = idLines.findIndex(line => line.includes(targetCrId));
+			if (targetIndex === -1) return content;
+
+			// Find the wikilink array and replace the item at the same index
+			const wikilinkArrayMatch = content.match(new RegExp(`(${arrayPropertyName}:\\n)((?:\\s{2}-\\s+[^\\n]+\\n?)+)`, 'm'));
+			if (!wikilinkArrayMatch) return content;
+
+			const wikilinkLines = wikilinkArrayMatch[2].split('\n').filter(line => line.trim().startsWith('- '));
+			if (targetIndex >= wikilinkLines.length) return content;
+
+			// Check if this line contains the display name we're looking for
+			const targetLine = wikilinkLines[targetIndex];
+			if (!targetLine.includes(`[[${displayName}]]`)) return content;
+
+			// Replace only this specific line
+			const newLine = targetLine.replace(`[[${displayName}]]`, `[[${actualFilename}]]`);
+			wikilinkLines[targetIndex] = newLine;
+
+			// Rebuild the array section
+			const newArrayContent = wikilinkLines.join('\n') + '\n';
+			return content.replace(wikilinkArrayMatch[0], `${wikilinkArrayMatch[1]}${newArrayContent}`);
+		};
+
+		// Father (single value)
 		if (individual.fatherRef) {
 			const fatherPath = gedcomToNotePath.get(individual.fatherRef);
 			const father = gedcomData.individuals.get(individual.fatherRef);
-			if (fatherPath && father?.name) {
+			const fatherCrId = gedcomToCrId.get(individual.fatherRef);
+			if (fatherPath && father?.name && fatherCrId) {
 				const actualFilename = this.getFilenameFromPath(fatherPath);
-				if (actualFilename !== father.name) {
-					wikilinkReplacements.push({ displayName: father.name, actualFilename });
-				}
+				updatedContent = fixWikilinkByCrId(updatedContent, 'father', 'father_id', fatherCrId, father.name, actualFilename);
 			}
 		}
 
-		// Mother
+		// Mother (single value)
 		if (individual.motherRef) {
 			const motherPath = gedcomToNotePath.get(individual.motherRef);
 			const mother = gedcomData.individuals.get(individual.motherRef);
-			if (motherPath && mother?.name) {
+			const motherCrId = gedcomToCrId.get(individual.motherRef);
+			if (motherPath && mother?.name && motherCrId) {
 				const actualFilename = this.getFilenameFromPath(motherPath);
-				if (actualFilename !== mother.name) {
-					wikilinkReplacements.push({ displayName: mother.name, actualFilename });
-				}
+				updatedContent = fixWikilinkByCrId(updatedContent, 'mother', 'mother_id', motherCrId, mother.name, actualFilename);
 			}
 		}
 
-		// Spouses
+		// Spouses (array)
 		for (const spouseRef of individual.spouseRefs) {
 			const spousePath = gedcomToNotePath.get(spouseRef);
 			const spouse = gedcomData.individuals.get(spouseRef);
-			if (spousePath && spouse?.name) {
+			const spouseCrId = gedcomToCrId.get(spouseRef);
+			if (spousePath && spouse?.name && spouseCrId) {
 				const actualFilename = this.getFilenameFromPath(spousePath);
-				if (actualFilename !== spouse.name) {
-					wikilinkReplacements.push({ displayName: spouse.name, actualFilename });
-				}
+				updatedContent = fixWikilinkInArrayByCrId(updatedContent, 'spouse', 'spouse_id', spouseCrId, spouse.name, actualFilename);
 			}
 		}
 
-		// Children (from families where this person is a parent)
+		// Children (array) - from families where this person is a parent
 		for (const family of gedcomData.families.values()) {
 			if (family.husbandRef === individual.id || family.wifeRef === individual.id) {
 				for (const childRef of family.childRefs) {
 					const childPath = gedcomToNotePath.get(childRef);
 					const child = gedcomData.individuals.get(childRef);
-					if (childPath && child?.name) {
+					const childCrId = gedcomToCrId.get(childRef);
+					if (childPath && child?.name && childCrId) {
 						const actualFilename = this.getFilenameFromPath(childPath);
-						if (actualFilename !== child.name) {
-							wikilinkReplacements.push({ displayName: child.name, actualFilename });
-						}
+						updatedContent = fixWikilinkInArrayByCrId(updatedContent, 'children', 'children_id', childCrId, child.name, actualFilename);
 					}
 				}
 			}
@@ -782,51 +851,49 @@ export class GedcomImporterV2 {
 
 		// Step/adoptive parents
 		const stepAdoptiveParentsForWikilinks = this.extractStepAdoptiveParents(individual, gedcomData);
+
+		// Stepfathers (array)
 		for (const stepfatherRef of stepAdoptiveParentsForWikilinks.stepfatherRefs) {
 			const stepfatherPath = gedcomToNotePath.get(stepfatherRef);
 			const stepfather = gedcomData.individuals.get(stepfatherRef);
-			if (stepfatherPath && stepfather?.name) {
+			const stepfatherCrId = gedcomToCrId.get(stepfatherRef);
+			if (stepfatherPath && stepfather?.name && stepfatherCrId) {
 				const actualFilename = this.getFilenameFromPath(stepfatherPath);
-				if (actualFilename !== stepfather.name) {
-					wikilinkReplacements.push({ displayName: stepfather.name, actualFilename });
-				}
-			}
-		}
-		for (const stepmotherRef of stepAdoptiveParentsForWikilinks.stepmotherRefs) {
-			const stepmotherPath = gedcomToNotePath.get(stepmotherRef);
-			const stepmother = gedcomData.individuals.get(stepmotherRef);
-			if (stepmotherPath && stepmother?.name) {
-				const actualFilename = this.getFilenameFromPath(stepmotherPath);
-				if (actualFilename !== stepmother.name) {
-					wikilinkReplacements.push({ displayName: stepmother.name, actualFilename });
-				}
-			}
-		}
-		if (stepAdoptiveParentsForWikilinks.adoptiveFatherRef) {
-			const adoptiveFatherPath = gedcomToNotePath.get(stepAdoptiveParentsForWikilinks.adoptiveFatherRef);
-			const adoptiveFather = gedcomData.individuals.get(stepAdoptiveParentsForWikilinks.adoptiveFatherRef);
-			if (adoptiveFatherPath && adoptiveFather?.name) {
-				const actualFilename = this.getFilenameFromPath(adoptiveFatherPath);
-				if (actualFilename !== adoptiveFather.name) {
-					wikilinkReplacements.push({ displayName: adoptiveFather.name, actualFilename });
-				}
-			}
-		}
-		if (stepAdoptiveParentsForWikilinks.adoptiveMotherRef) {
-			const adoptiveMotherPath = gedcomToNotePath.get(stepAdoptiveParentsForWikilinks.adoptiveMotherRef);
-			const adoptiveMother = gedcomData.individuals.get(stepAdoptiveParentsForWikilinks.adoptiveMotherRef);
-			if (adoptiveMotherPath && adoptiveMother?.name) {
-				const actualFilename = this.getFilenameFromPath(adoptiveMotherPath);
-				if (actualFilename !== adoptiveMother.name) {
-					wikilinkReplacements.push({ displayName: adoptiveMother.name, actualFilename });
-				}
+				updatedContent = fixWikilinkInArrayByCrId(updatedContent, 'stepfather', 'stepfather_id', stepfatherCrId, stepfather.name, actualFilename);
 			}
 		}
 
-		// Apply wikilink replacements
-		for (const { displayName, actualFilename } of wikilinkReplacements) {
-			const pattern = new RegExp(`\\[\\[${this.escapeRegex(displayName)}\\]\\]`, 'g');
-			updatedContent = updatedContent.replace(pattern, `[[${actualFilename}]]`);
+		// Stepmothers (array)
+		for (const stepmotherRef of stepAdoptiveParentsForWikilinks.stepmotherRefs) {
+			const stepmotherPath = gedcomToNotePath.get(stepmotherRef);
+			const stepmother = gedcomData.individuals.get(stepmotherRef);
+			const stepmotherCrId = gedcomToCrId.get(stepmotherRef);
+			if (stepmotherPath && stepmother?.name && stepmotherCrId) {
+				const actualFilename = this.getFilenameFromPath(stepmotherPath);
+				updatedContent = fixWikilinkInArrayByCrId(updatedContent, 'stepmother', 'stepmother_id', stepmotherCrId, stepmother.name, actualFilename);
+			}
+		}
+
+		// Adoptive father (single value)
+		if (stepAdoptiveParentsForWikilinks.adoptiveFatherRef) {
+			const adoptiveFatherPath = gedcomToNotePath.get(stepAdoptiveParentsForWikilinks.adoptiveFatherRef);
+			const adoptiveFather = gedcomData.individuals.get(stepAdoptiveParentsForWikilinks.adoptiveFatherRef);
+			const adoptiveFatherCrId = gedcomToCrId.get(stepAdoptiveParentsForWikilinks.adoptiveFatherRef);
+			if (adoptiveFatherPath && adoptiveFather?.name && adoptiveFatherCrId) {
+				const actualFilename = this.getFilenameFromPath(adoptiveFatherPath);
+				updatedContent = fixWikilinkByCrId(updatedContent, 'adoptive_father', 'adoptive_father_id', adoptiveFatherCrId, adoptiveFather.name, actualFilename);
+			}
+		}
+
+		// Adoptive mother (single value)
+		if (stepAdoptiveParentsForWikilinks.adoptiveMotherRef) {
+			const adoptiveMotherPath = gedcomToNotePath.get(stepAdoptiveParentsForWikilinks.adoptiveMotherRef);
+			const adoptiveMother = gedcomData.individuals.get(stepAdoptiveParentsForWikilinks.adoptiveMotherRef);
+			const adoptiveMotherCrId = gedcomToCrId.get(stepAdoptiveParentsForWikilinks.adoptiveMotherRef);
+			if (adoptiveMotherPath && adoptiveMother?.name && adoptiveMotherCrId) {
+				const actualFilename = this.getFilenameFromPath(adoptiveMotherPath);
+				updatedContent = fixWikilinkByCrId(updatedContent, 'adoptive_mother', 'adoptive_mother_id', adoptiveMotherCrId, adoptiveMother.name, actualFilename);
+			}
 		}
 
 		if (updatedContent !== content) {
