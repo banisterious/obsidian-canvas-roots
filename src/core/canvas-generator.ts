@@ -11,6 +11,7 @@ import { FamilyChartLayoutEngine } from './family-chart-layout';
 import { TimelineLayoutEngine } from './timeline-layout';
 import { HourglassLayoutEngine } from './hourglass-layout';
 import { getLogger } from './logging';
+import type { PrivacyService, PrivacyResult } from './privacy-service';
 import type { ArrowStyle, SpouseEdgeLabelFormat } from '../settings';
 import type { SpouseRelationship } from '../models/person';
 import type { StyleOverrides } from './canvas-style-overrides';
@@ -200,12 +201,20 @@ export class CanvasGenerator {
 	private familyChartLayoutEngine: FamilyChartLayoutEngine;
 	private timelineLayoutEngine: TimelineLayoutEngine;
 	private hourglassLayoutEngine: HourglassLayoutEngine;
+	private privacyService?: PrivacyService;
 
 	constructor() {
 		this.layoutEngine = new LayoutEngine();
 		this.familyChartLayoutEngine = new FamilyChartLayoutEngine();
 		this.timelineLayoutEngine = new TimelineLayoutEngine();
 		this.hourglassLayoutEngine = new HourglassLayoutEngine();
+	}
+
+	/**
+	 * Set the privacy service for privacy-aware canvas generation
+	 */
+	setPrivacyService(privacyService: PrivacyService): void {
+		this.privacyService = privacyService;
 	}
 
 	/**
@@ -1234,6 +1243,81 @@ export class CanvasGenerator {
 			default:
 				return this.getPersonColor(person);  // Fallback to sex
 		}
+	}
+
+	/**
+	 * Creates a privacy-protected canvas node for a living person.
+	 * Returns either a text node with obfuscated info or a file node depending on format.
+	 *
+	 * @param person - The person node to protect
+	 * @param privacyResult - The privacy analysis result with display name
+	 * @param canvasId - The unique canvas ID for this node
+	 * @param x - X position
+	 * @param y - Y position
+	 * @param width - Node width
+	 * @param height - Node height
+	 * @param color - Optional color code
+	 * @param format - 'text' for obfuscated text node, 'file' for file node with original file
+	 */
+	private createPrivacyProtectedNode(
+		person: PersonNode,
+		privacyResult: PrivacyResult,
+		canvasId: string,
+		x: number,
+		y: number,
+		width: number,
+		height: number,
+		color: string | undefined,
+		format: 'text' | 'file'
+	): CanvasNode {
+		if (format === 'text') {
+			// Create text node with obfuscated content - shows protected name but no file link
+			return {
+				id: canvasId,
+				type: 'text',
+				text: `**${privacyResult.displayName}**\n\n_Privacy protected_`,
+				x,
+				y,
+				width,
+				height,
+				color
+			};
+		} else {
+			// File format: keep as file node (clickable) but the name will be obfuscated in UI
+			// Note: This still links to the actual file, which may reveal identity
+			return {
+				id: canvasId,
+				type: 'file',
+				file: person.file.path,
+				x,
+				y,
+				width,
+				height,
+				color
+			};
+		}
+	}
+
+	/**
+	 * Check if a person should have privacy protection applied
+	 * Returns privacy result if protected, null if not
+	 */
+	private checkPersonPrivacy(
+		person: PersonNode,
+		applyPrivacy: boolean
+	): PrivacyResult | null {
+		if (!applyPrivacy || !this.privacyService) {
+			return null;
+		}
+
+		const result = this.privacyService.applyPrivacy({
+			name: person.name,
+			birthDate: person.birthDate,
+			deathDate: person.deathDate,
+			cr_living: person.cr_living
+		});
+
+		return result.isProtected ? result : null;
 	}
 
 	/**
