@@ -8,6 +8,7 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
+  - [DNA Match Tracking](#dna-match-tracking) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Staging Management](#staging-management) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
@@ -55,6 +56,43 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
+
+---
+
+### DNA Match Tracking
+
+**Priority:** 💡 Low — Specialized for genetic genealogists
+
+**Status:** Planning
+
+**Summary:** Lightweight DNA match tracking for genetic genealogists, designed to record key DNA matches alongside family tree research. Keeps advanced features out of the way of users who don't need them.
+
+**Design Philosophy:**
+- Canvas Roots is not a DNA analysis tool—specialized tools (DNAPainter, Genetic Affairs, etc.) handle that well
+- Focus on tracking "key matches" (BKM/BMM methodology) rather than comprehensive DNA management
+- All phases are opt-in via settings; default experience is unchanged
+
+**Phased Approach (all opt-in):**
+
+| Phase | Feature | Gated By |
+|-------|---------|----------|
+| 1 | Frontmatter properties (`dna_shared_cm`, `dna_match_type`, etc.) | Documentation only |
+| 2 | DNA Match person subtype with UI support | `enableDnaTracking` setting |
+| 3 | DNA relationship type (bidirectional, non-transitive) | `enableDnaTracking` setting |
+| 4 | Visualization & reports | `enableDnaVisualization` setting |
+
+**Match Types:**
+- `BKM` — Best Known Match (confirmed relationship, high confidence)
+- `BMM` — Best Mystery Match (strong match, relationship unknown)
+- `confirmed` — DNA confirms documented relationship
+- `unconfirmed` — Match recorded but not yet analyzed
+
+**Non-Goals:**
+- Segment analysis, chromosome browser, match management (use specialized tools)
+- Automatic relationship prediction
+- DNA import from testing companies
+
+See [DNA Match Tracking Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/dna-match-tracking.md) for detailed specifications.
 
 ---
 
@@ -213,8 +251,9 @@ These features are under consideration but not yet prioritized.
 
 **Potential Future Additions:**
 - Research to-do tracking (per-person or per-fact task lists)
-- DNA match tracking (cM values, shared segments, match relationships)
 - Research log notes (session-based research journals)
+
+For DNA match tracking, see [DNA Match Tracking](#dna-match-tracking) in Planned Features.
 
 See [Evidence and Sources](Evidence-And-Sources) for documentation on existing features.
 
