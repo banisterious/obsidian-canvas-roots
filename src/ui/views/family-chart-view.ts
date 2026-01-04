@@ -1184,13 +1184,13 @@ export class FamilyChartView extends ItemView {
 			if (person.adoptiveFatherCrId && validIds.has(person.adoptiveFatherCrId)) {
 				parents.push(person.adoptiveFatherCrId);
 			}
-			if (person.adoptiveMotherCrId && validIds.has(person.adoptiveMotherCrId)) {
+			if (person.adoptiveMotherCrId && validIds.has(person.adoptiveMotherCrId) && !parents.includes(person.adoptiveMotherCrId)) {
 				parents.push(person.adoptiveMotherCrId);
 			}
-			// Gender-neutral adoptive parents
+			// Gender-neutral adoptive parents (may overlap with gender-specific, so deduplicate)
 			if (person.adoptiveParentCrIds) {
 				for (const adoptiveParentId of person.adoptiveParentCrIds) {
-					if (validIds.has(adoptiveParentId) && parents.length < 2) {
+					if (validIds.has(adoptiveParentId) && !parents.includes(adoptiveParentId) && parents.length < 2) {
 						parents.push(adoptiveParentId);
 					}
 				}
