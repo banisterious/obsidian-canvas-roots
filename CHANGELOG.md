@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.18.22] - 2026-01-04
+
 ### Added
 
 - **Privacy-aware canvas generation** ([#102](https://github.com/banisterious/obsidian-canvas-roots/issues/102)):
