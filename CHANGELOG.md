@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **GPKG import hangs during gzip decompression** ([#134](https://github.com/banisterious/obsidian-canvas-roots/issues/134)):
+  - Added 30-second timeout to `DecompressionStream` operations to prevent indefinite hanging
+  - Improved logging with progress details for decompression operations
+  - Added proper error handling with descriptive messages when decompression fails
+
 ---
 
 ## [0.18.22] - 2026-01-04
