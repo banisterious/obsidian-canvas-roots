@@ -37,6 +37,7 @@ export class PlaceGraphService {
 	private folderFilter: FolderFilterService | null = null;
 	private valueAliases: ValueAliasSettings = { eventType: {}, sex: {}, gender_identity: {}, placeCategory: {}, noteType: {} };
 	private settings: CanvasRootsSettings | null = null;
+	private isLoading = false; // Prevents re-entrant cache loading
 
 	constructor(app: App) {
 		this.app = app;
@@ -139,9 +140,19 @@ export class PlaceGraphService {
 	 * Ensures the place cache is loaded
 	 */
 	ensureCacheLoaded(): void {
+		// Prevent re-entrant loading which causes stack overflow
+		if (this.isLoading) {
+			return;
+		}
+
 		if (this.placeCache.size === 0) {
-			this.loadPlaceCache();
-			this.loadPlaceReferences();
+			this.isLoading = true;
+			try {
+				this.loadPlaceCache();
+				this.loadPlaceReferences();
+			} finally {
+				this.isLoading = false;
+			}
 		}
 	}
 

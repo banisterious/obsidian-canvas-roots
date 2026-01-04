@@ -145,6 +145,9 @@ export class PlacePickerModal extends Modal {
 
 		const placeNodes = graphService.getAllPlaces();
 		for (const node of placeNodes) {
+			// Skip places without an id - they can't be linked
+			if (!node.id) continue;
+
 			const file = this.app.vault.getAbstractFileByPath(node.filePath);
 			if (!file || !(file instanceof TFile)) continue;
 
