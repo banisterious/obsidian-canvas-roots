@@ -21,6 +21,7 @@ import { PersonPickerModal, type PersonInfo } from './person-picker';
 import { GrampsParser } from '../gramps/gramps-parser';
 import { extractGpkg, type GpkgExtractionResult } from '../gramps/gpkg-extractor';
 import { GrampsImporter, type GrampsImportOptions, type GrampsImportResult } from '../gramps/gramps-importer';
+import { PrivacyNoticeModal } from './privacy-notice-modal';
 
 /**
  * Import format types
@@ -94,6 +95,7 @@ interface ImportWizardFormData {
 	// Step 7: Complete
 	importComplete: boolean;
 	skippedCount: number;
+	privacyNoticeShown: boolean;
 }
 
 /**
@@ -225,7 +227,8 @@ export class ImportWizardModal extends Modal {
 
 			// Step 7
 			importComplete: false,
-			skippedCount: 0
+			skippedCount: 0,
+			privacyNoticeShown: false
 		};
 	}
 
@@ -1334,6 +1337,115 @@ export class ImportWizardModal extends Modal {
 				new CleanupWizardModal(this.app, this.plugin).open();
 			});
 		});
+
+		// Check for privacy notice (after first import with living persons)
+		void this.checkPrivacyNotice();
+	}
+
+	/**
+	 * Check if we should show the privacy notice after import.
+	 * Shows notice when:
+	 * - Privacy protection is not enabled
+	 * - User hasn't dismissed the notice
+	 * - People were imported (potential living persons)
+	 */
+	private async checkPrivacyNotice(): Promise<void> {
+		// Don't show if already shown this session
+		if (this.formData.privacyNoticeShown) {
+			return;
+		}
+
+		// Don't show if user has permanently dismissed
+		if (this.plugin.settings.privacyNoticeDismissed) {
+			return;
+		}
+
+		// Don't show if privacy protection is already enabled
+		if (this.plugin.settings.enablePrivacyProtection) {
+			return;
+		}
+
+		// Don't show if no people were imported
+		const result = this.formData.importResult;
+		if (!result || result.individualsImported === 0) {
+			return;
+		}
+
+		// Count potential living persons using the threshold logic
+		const livingCount = this.countPotentialLivingPersons();
+		if (livingCount === 0) {
+			return;
+		}
+
+		// Mark as shown for this session
+		this.formData.privacyNoticeShown = true;
+
+		// Show the privacy notice modal
+		const modal = new PrivacyNoticeModal(this.app, livingCount);
+		const decision = await modal.waitForDecision();
+
+		if (decision === 'configure') {
+			// Open plugin settings (privacy section)
+			// @ts-expect-error - Obsidian internal API for opening plugin settings
+			this.app.setting?.open();
+			// @ts-expect-error - Navigate to plugin tab
+			this.app.setting?.openTabById?.(this.plugin.manifest.id);
+		} else if (decision === 'dismiss') {
+			// Remember not to show again
+			this.plugin.settings.privacyNoticeDismissed = true;
+			await this.plugin.saveSettings();
+		}
+		// 'later' - do nothing, notice will show again next import
+	}
+
+	/**
+	 * Count people who might be living based on birth/death data.
+	 * Uses same logic as privacy service but without requiring privacy to be enabled.
+	 */
+	private countPotentialLivingPersons(): number {
+		const currentYear = new Date().getFullYear();
+		const threshold = this.plugin.settings.livingPersonAgeThreshold;
+		let count = 0;
+
+		// Get all people from cache
+		const files = this.app.vault.getMarkdownFiles();
+		const peopleFolder = this.plugin.settings.peopleFolder;
+
+		for (const file of files) {
+			// Only check files in people folder
+			if (!file.path.startsWith(peopleFolder)) {
+				continue;
+			}
+
+			const cache = this.app.metadataCache.getFileCache(file);
+			const fm = cache?.frontmatter;
+			if (!fm) continue;
+
+			// Check if person has entity type marker
+			if (fm.cr_type !== 'person' && !fm.cr_id) continue;
+
+			// Has death date = not living
+			if (fm.death_date || fm.deathDate) continue;
+
+			// Check birth date
+			const birthDate = fm.birth_date || fm.birthDate;
+			if (birthDate) {
+				const birthYear = this.extractBirthYear(String(birthDate));
+				if (birthYear && (currentYear - birthYear) < threshold) {
+					count++;
+				}
+			}
+		}
+
+		return count;
+	}
+
+	/**
+	 * Extract year from a date string
+	 */
+	private extractBirthYear(dateStr: string): number | null {
+		const match = dateStr.match(/\b(1[89]\d{2}|20\d{2})\b/);
+		return match ? parseInt(match[1], 10) : null;
 	}
 
 	/**
