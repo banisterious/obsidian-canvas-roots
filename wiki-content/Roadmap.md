@@ -8,6 +8,7 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
+  - [DMS Coordinate Conversion](#dms-coordinate-conversion) 💡 Low
   - [DNA Match Tracking](#dna-match-tracking) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Staging Management](#staging-management) 💡 Low
@@ -56,6 +57,38 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
+
+---
+
+### DMS Coordinate Conversion
+
+**Priority:** 💡 Low — Specialized for genealogists working with historical maps
+
+**Status:** Planning
+
+**Summary:** Opt-in support for entering coordinates in DMS (degrees, minutes, seconds) format when creating places. When enabled, coordinate input fields accept both decimal degrees and DMS formats, automatically converting DMS to decimal for storage.
+
+**Use Case:** Genealogical researchers often copy coordinates from historical maps that use DMS notation (e.g., `33°51'08"N, 83°37'06"W`). Currently, users must manually convert to decimal degrees before entering.
+
+**Feature Toggle:**
+- Setting: "Accept DMS coordinate format" (default: off)
+- Location: Places section in settings
+- When enabled, coordinate inputs accept formats like `33°51'08"N` or `33 51 08 N`
+
+**Supported Formats:**
+- `33°51'08"N` — Standard DMS with symbols
+- `33 51 08 N` — Space-separated
+- `33-51-08-N` — Hyphen-separated
+- `N 33 51 08` — Direction prefix
+- `33.8522` — Decimal pass-through (always supported)
+
+**Implementation:**
+- New utility: `src/utils/coordinate-converter.ts`
+- Settings toggle in Places section
+- Integration with Create Place modal coordinate inputs
+- Unit tests for parser
+
+See [DMS Coordinate Conversion Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/dms-coordinate-conversion.md) for detailed specifications.
 
 ---
 

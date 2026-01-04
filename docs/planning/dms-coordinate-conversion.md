@@ -1,7 +1,14 @@
 # Plan: DMS to Decimal Degrees Coordinate Conversion (Issue #121)
 
 ## Overview
-Add smart DMS (degrees, minutes, seconds) parsing to coordinate input fields in the place creation modal. Users can enter coordinates in either decimal or DMS format, and the system automatically detects and converts DMS to decimal.
+Add opt-in DMS (degrees, minutes, seconds) parsing to coordinate input fields in the place creation modal. When enabled via settings, users can enter coordinates in either decimal or DMS format, and the system automatically detects and converts DMS to decimal.
+
+## Feature Toggle
+This feature is **opt-in** via a settings toggle:
+- **Setting name**: "Accept DMS coordinate format"
+- **Default**: Off (disabled)
+- **Location**: Places section in settings
+- **Rationale**: Keeps existing behavior unchanged for users who don't need DMS; avoids unexpected conversions
 
 ## Current Architecture
 
@@ -24,8 +31,8 @@ Input (create-place-modal.ts) → Storage (frontmatter) → Parsing (map-data-se
 | `src/maps/services/geocoding-service.ts` | Nominatim API lookups |
 | `src/core/place-note-writer.ts` | Writes flat coordinate properties |
 
-## Recommended Approach: Smart Input Parsing (Option A)
-Enhance existing coordinate input fields to auto-detect DMS format and convert on-the-fly. No separate dialog needed.
+## Recommended Approach: Opt-in Smart Input Parsing
+Enhance existing coordinate input fields to auto-detect DMS format and convert on-the-fly when enabled. No separate dialog needed.
 
 ## Implementation Steps
 
@@ -57,21 +64,29 @@ formatDecimal(value: number, precision?: number): string
 - Minutes: 0 to 59
 - Seconds: 0 to 59.999
 
-### 2. Integrate into Create Place Modal
+### 2. Add Settings Toggle
+**File**: `src/settings.ts`
+
+**Changes**:
+- Add `enableDMSCoordinates: boolean` setting (default: `false`)
+- Add toggle in Places section: "Accept DMS coordinate format"
+- Description: "Allow entering coordinates in degrees, minutes, seconds format (e.g., 33°51'08\"N)"
+
+### 3. Integrate into Create Place Modal
 **File**: `src/ui/create-place-modal.ts`
 
 **Changes to `updateCoordinates()` method** (~line 1154):
-- Before parsing as float, attempt DMS parse
+- Check if `settings.enableDMSCoordinates` is true
+- If enabled, attempt DMS parse before falling back to parseFloat
 - If DMS detected, convert to decimal and update field
-- Show feedback if format unrecognized
-- Preserve existing decimal input behavior
+- If disabled, use existing decimal-only behavior
 
-**UI Enhancements**:
+**UI Enhancements** (when DMS enabled):
 - Update placeholder text: `"33.8522 or 33°51'08\"N"`
 - Add helper text below coordinate inputs showing accepted formats
 - Optional: Show converted value below input when DMS is entered
 
-### 3. Add Unit Tests
+### 4. Add Unit Tests
 **File**: `tests/coordinate-converter.test.ts` (new)
 
 Test cases:
@@ -86,7 +101,8 @@ Test cases:
 | File | Action | Purpose |
 |------|--------|---------|
 | `src/utils/coordinate-converter.ts` | Create | DMS parsing logic |
-| `src/ui/create-place-modal.ts` | Modify | Integrate parser into coordinate inputs |
+| `src/settings.ts` | Modify | Add `enableDMSCoordinates` setting and toggle |
+| `src/ui/create-place-modal.ts` | Modify | Integrate parser into coordinate inputs (when enabled) |
 | `tests/coordinate-converter.test.ts` | Create | Unit tests for parser |
 
 ## Edge Cases to Handle
