@@ -79,13 +79,17 @@ dev-deploy.sh
 # Generated log files
 canvas-roots-logs-*.json
 
-# GEDCOM testing - keep small fixtures, ignore results and large generated files
-gedcom-testing/testing-results.md
-gedcom-testing/gedcom-sample-xlarge.ged
-gedcom-testing/gedcom-sample-large.ged
-gedcom-testing/gedcom-sample-medium.ged
-gedcom-testing/*.gpkg
-gedcom-testing/gramps-app-export-*
+# Test fixtures - keep small samples, ignore large/generated files
+tests/fixtures/gedcom/testing-results.md
+tests/fixtures/gedcom/gedcom-sample-xlarge.ged
+tests/fixtures/gedcom/gedcom-sample-xxxlarge.ged
+tests/fixtures/gedcom/gedcom-sample-large*.ged
+tests/fixtures/gedcom/gedcom-sample-medium.ged
+tests/fixtures/gedcom/gedcom-sample-royal-families-in-europe.ged
+tests/fixtures/gedcom/*.gpkg
+tests/fixtures/gedcom/gramps-app-export-*
+tests/fixtures/gedcom/source-images/
+tests/fixtures/gedcom/linking-test-images/
 
 # Release packages
 canvas-roots-v*.zip
