@@ -92,6 +92,8 @@ export interface PersonPickerOptions {
 	createContext?: RelationshipContext;
 	/** Plugin reference for quick create modal */
 	plugin?: CanvasRootsPlugin;
+	/** Optional pre-cached FamilyGraphService to avoid expensive recomputation */
+	familyGraph?: FamilyGraphService;
 }
 
 /**
@@ -124,6 +126,7 @@ export class PersonPickerModal extends Modal {
 	private onCreateNew?: (context: RelationshipContext) => void;
 	private createContext?: RelationshipContext;
 	private plugin?: CanvasRootsPlugin;
+	private cachedFamilyGraph?: FamilyGraphService;
 
 	constructor(app: App, onSelect: (person: PersonInfo) => void, options?: PersonPickerOptions | FolderFilterService) {
 		super(app);
@@ -141,6 +144,7 @@ export class PersonPickerModal extends Modal {
 			this.onCreateNew = opts.onCreateNew;
 			this.createContext = opts.createContext;
 			this.plugin = opts.plugin;
+			this.cachedFamilyGraph = opts.familyGraph;
 		}
 	}
 
@@ -240,9 +244,18 @@ export class PersonPickerModal extends Modal {
 	 */
 	private loadFamilyComponents(): void {
 		try {
-			const graphService = new FamilyGraphService(this.app);
-			if (this.folderFilter) {
-				graphService.setFolderFilter(this.folderFilter);
+			// Use cached graph if available, then plugin's factory, otherwise create new one
+			let graphService: FamilyGraphService;
+			if (this.cachedFamilyGraph) {
+				graphService = this.cachedFamilyGraph;
+			} else if (this.plugin) {
+				// Use plugin's factory method which applies proper configuration
+				graphService = this.plugin.createFamilyGraphService();
+			} else {
+				graphService = new FamilyGraphService(this.app);
+				if (this.folderFilter) {
+					graphService.setFolderFilter(this.folderFilter);
+				}
 			}
 			this.familyComponents = graphService.findAllFamilyComponents();
 

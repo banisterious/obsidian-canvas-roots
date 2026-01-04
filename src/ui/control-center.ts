@@ -5658,7 +5658,7 @@ export class ControlCenterModal extends Modal {
 					new Notice(`Failed to assign numbers: ${getErrorMessage(error)}`);
 				}
 			})();
-		}, { title, subtitle });
+		}, { title, subtitle, familyGraph: this.getCachedFamilyGraph() });
 		picker.open();
 	}
 
@@ -8898,7 +8898,7 @@ export class ControlCenterModal extends Modal {
 				linkBtn.appendChild(unlinkIcon);
 				linkBtn.appendText('Unlink');
 				this.updateHelpText(helpText, fieldData);
-			});
+			}, { familyGraph: this.getCachedFamilyGraph() });
 			picker.open();
 		});
 
