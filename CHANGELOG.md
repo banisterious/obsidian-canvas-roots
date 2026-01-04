@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Event edit modal loses person link on save** ([#135](https://github.com/banisterious/obsidian-canvas-roots/issues/135)):
+  - Fixed bug where editing an event would silently remove the person link
+  - The modal only checked the legacy `person:` property but events are now created with `persons:` array
+  - Now properly loads person from `persons[0]` first, then falls back to `person` for compatibility
+
 ---
 
 ## [0.18.23] - 2026-01-04
@@ -22,11 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed built-in Templater snippets to leave `cr_id` empty (Canvas Roots auto-generates when notes are indexed)
 
 ### Fixed
-
-- **Event edit modal loses person link on save** ([#135](https://github.com/banisterious/obsidian-canvas-roots/issues/135)):
-  - Fixed bug where editing an event would silently remove the person link
-  - The modal only checked the legacy `person:` property but events are now created with `persons:` array
-  - Now properly loads person from `persons[0]` first, then falls back to `person` for compatibility
 
 - **Gramps import hangs during gzip decompression** ([#134](https://github.com/banisterious/obsidian-canvas-roots/issues/134)):
   - Fixed .gpkg and .gramps file imports hanging indefinitely when decompressing gzip data
