@@ -1,0 +1,841 @@
+0 HEAD
+1 SOUR Gramps
+2 VERS 6.0.5
+2 NAME Gramps
+1 DATE 4 JAN 2026
+2 TIME 09:37:22
+1 SUBM @SUBM@
+1 FILE /home/jeff/Downloads/Halls.ged
+1 COPR Copyright (c) 2026 Jeff Hatfield.
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+1 LANG English
+0 @SUBM@ SUBM
+1 NAME Jeff Hatfield
+0 @I0011@ INDI
+1 NAME George /Hall/
+2 TYPE birth
+2 GIVN George
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE 1745
+1 DEAT
+2 DATE 1783
+1 FAMS @F0013@
+1 FAMS @F0011@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:37
+0 @I0019@ INDI
+1 NAME Abigail Cary /Briggs/
+2 TYPE birth
+2 GIVN Abigail Cary
+2 SURN Briggs
+1 SEX F
+1 BIRT
+2 DATE 14 DEC 1773
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 29 MAR 2016
+3 TIME 19:31:22
+0 @I0020@ INDI
+1 NAME Clark /Hall/
+2 TYPE birth
+2 GIVN Clark
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE MAR 1777
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 29 MAR 2016
+3 TIME 17:20:27
+0 @I0040@ INDI
+1 NAME George /Hall/
+2 TYPE birth
+2 GIVN George
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE 7 JUN 1779
+1 DEAT
+2 DATE 1843
+1 FAMC @F0011@
+2 PEDI birth
+1 FAMS @F0012@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 29 MAR 2016
+3 TIME 17:20:58
+0 @I0041@ INDI
+1 NAME Elizabeth /Hall/
+2 TYPE birth
+2 GIVN Elizabeth
+2 SURN Hall
+1 SEX F
+1 BIRT
+2 DATE 26 MAR 1781
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 29 MAR 2016
+3 TIME 17:20:42
+0 @I0042@ INDI
+1 NAME Rachel /Hall/
+2 TYPE birth
+2 GIVN Rachel
+2 SURN Hall
+1 SEX F
+1 BIRT
+2 DATE 11 APR 1783
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 29 MAR 2016
+3 TIME 17:25:37
+0 @I0043@ INDI
+1 NAME Alice /Hall/
+2 TYPE birth
+2 GIVN Alice
+2 SURN Hall
+1 SEX F
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:40
+0 @I0044@ INDI
+1 NAME Briggs /Hall/
+2 TYPE birth
+2 GIVN Briggs
+2 SURN Hall
+1 SEX M
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:39
+0 @I0045@ INDI
+1 NAME Reuben /Hall/
+2 TYPE birth
+2 GIVN Reuben
+2 SURN Hall
+1 SEX M
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:39
+0 @I0046@ INDI
+1 NAME Diana /Hall/
+2 TYPE birth
+2 GIVN Diana
+2 SURN Hall
+1 SEX F
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:37
+0 @I0047@ INDI
+1 NAME Thomas /Hall/
+2 TYPE birth
+2 GIVN Thomas
+2 SURN Hall
+1 SEX M
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:37
+0 @I0048@ INDI
+1 NAME Caleb /Hall/
+2 TYPE birth
+2 GIVN Caleb
+2 SURN Hall
+1 SEX M
+1 FAMC @F0011@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:39
+0 @I0051@ INDI
+1 NAME Bennyman /Hall/
+2 TYPE birth
+2 GIVN Bennyman
+2 SURN Hall
+1 SEX M
+1 FAMC @F0013@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:37
+0 @I0052@ INDI
+1 NAME John /Hall/
+2 TYPE birth
+2 GIVN John
+2 SURN Hall
+1 SEX M
+1 FAMC @F0013@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:37
+0 @I0053@ INDI
+1 NAME Oliver /Hall/
+2 TYPE birth
+2 GIVN Oliver
+2 SURN Hall
+1 SEX M
+1 FAMC @F0012@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:39
+0 @I0054@ INDI
+1 NAME Rachel /Hall/
+2 TYPE birth
+2 GIVN Rachel
+2 SURN Hall
+1 SEX F
+1 FAMC @F0012@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:36
+0 @I0055@ INDI
+1 NAME Clark /Hall/
+2 TYPE birth
+2 GIVN Clark
+2 SURN Hall
+1 SEX M
+1 FAMC @F0012@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:37
+0 @I0056@ INDI
+1 NAME Polly /Hall/
+2 TYPE birth
+2 GIVN Polly
+2 SURN Hall
+1 SEX F
+1 FAMC @F0012@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:39
+0 @I0057@ INDI
+1 NAME Mitilda /Hall/
+2 TYPE birth
+2 GIVN Mitilda
+2 SURN Hall
+1 SEX F
+1 FAMC @F0012@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:38
+0 @I0058@ INDI
+1 NAME Amanda /Hall/
+2 TYPE birth
+2 GIVN Amanda
+2 SURN Hall
+1 SEX F
+1 FAMC @F0012@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:37
+0 @I0059@ INDI
+1 NAME Gaylord /Hall/
+2 TYPE birth
+2 GIVN Gaylord
+2 SURN Hall
+1 SEX M
+1 FAMC @F0012@
+2 PEDI birth
+1 FAMS @F0014@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:37
+0 @I0060@ INDI
+1 NAME Elsa /Hall/
+2 TYPE birth
+2 GIVN Elsa
+2 SURN Hall
+1 SEX F
+1 FAMC @F0012@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:39
+0 @I0061@ INDI
+1 NAME Henry /Hall/
+2 TYPE birth
+2 GIVN Henry
+2 SURN Hall
+1 SEX M
+1 FAMC @F0012@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:38
+0 @I0063@ INDI
+1 NAME William /Hall/
+2 TYPE birth
+2 GIVN William
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE 6 OCT 1847
+2 PLAC Headlands, OH, USA
+1 FAMC @F0014@
+2 PEDI birth
+1 SOUR @S0000@
+1 CHAN
+2 DATE 29 MAR 2016
+3 TIME 17:26:07
+0 @I0064@ INDI
+1 NAME George /Hall/
+2 TYPE birth
+2 GIVN George
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE 6 OCT 1853
+2 PLAC Headlands, OH, USA
+1 DEAT
+2 DATE 1909
+2 PLAC Villisca, Montgomery, IA, USA
+3 MAP
+4 LATI N40.929712
+4 LONG W94.976093
+1 FAMC @F0014@
+2 PEDI birth
+1 FAMS @F0015@
+1 SOUR @S0000@
+1 OBJE @O0029@
+1 OBJE @O0089@
+1 OBJE @O0090@
+1 CHAN
+2 DATE 13 APR 2016
+3 TIME 06:40:49
+0 @I0066@ INDI
+1 NAME Harry Wallace /Hall/
+2 TYPE birth
+2 GIVN Harry Wallace
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE 11 OCT 1875
+2 PLAC Kirkwood, Warren, IL, USA
+3 MAP
+4 LATI N40.865872
+4 LONG W90.74847
+1 DEAT
+2 DATE 26 JUN 1948
+1 FAMC @F0015@
+2 PEDI birth
+1 FAMS @F0016@
+1 SOUR @S0000@
+1 OBJE @O0027@
+1 OBJE @O0077@
+1 OBJE @O0078@
+1 OBJE @O0079@
+1 OBJE @O0080@
+1 OBJE @O0081@
+1 OBJE @O0082@
+1 OBJE @O0083@
+1 OBJE @O0084@
+1 CHAN
+2 DATE 13 APR 2016
+3 TIME 19:47:41
+0 @I0067@ INDI
+1 NAME Charles /Hall/
+2 TYPE birth
+2 GIVN Charles
+2 SURN Hall
+1 SEX M
+1 FAMC @F0015@
+2 PEDI birth
+1 SOUR @S0000@
+1 OBJE @O0092@
+1 OBJE @O0104@
+1 OBJE @O0105@
+1 OBJE @O0106@
+1 OBJE @O0107@
+1 CHAN
+2 DATE 13 APR 2016
+3 TIME 07:01:31
+0 @I0068@ INDI
+1 NAME Roy /Hall/
+2 TYPE birth
+2 GIVN Roy
+2 SURN Hall
+1 SEX M
+1 FAMC @F0015@
+2 PEDI birth
+1 SOUR @S0000@
+1 OBJE @O0093@
+1 CHAN
+2 DATE 13 APR 2016
+3 TIME 06:52:12
+0 @I0069@ INDI
+1 NAME Mabel /Hall/
+2 TYPE birth
+2 GIVN Mabel
+2 SURN Hall
+1 NAME  /Bloodgood/
+2 TYPE married
+2 SURN Bloodgood
+1 SEX F
+1 FAMC @F0015@
+2 PEDI birth
+1 FAMS @F1444@
+1 SOUR @S0000@
+1 OBJE @O0094@
+1 CHAN
+2 DATE 13 APR 2016
+3 TIME 06:53:23
+0 @I0071@ INDI
+1 NAME Harold Charles /Hall/
+2 TYPE birth
+2 GIVN Harold Charles
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE 3 DEC 1899
+2 PLAC Villisca, Montgomery, IA, USA
+3 MAP
+4 LATI N40.929712
+4 LONG W94.976093
+1 DEAT
+2 DATE 25 JAN 1923
+1 FAMC @F0016@
+2 PEDI birth
+1 SOUR @S0000@
+1 OBJE @O0085@
+1 OBJE @O0086@
+1 OBJE @O0087@
+1 OBJE @O0088@
+1 CHAN
+2 DATE 13 APR 2016
+3 TIME 18:53:39
+0 @I0072@ INDI
+1 NAME Laura Berniece /Hall/
+2 TYPE birth
+2 GIVN Laura Berniece
+2 SURN Hall
+2 NICK Beese
+1 SEX F
+1 BIRT
+2 DATE 7 DEC 1910
+2 PLAC Villisca, Montgomery, IA, USA
+3 MAP
+4 LATI N40.929712
+4 LONG W94.976093
+1 DEAT
+2 DATE 21 JUL 1997
+2 PLAC Council Bluffs, Pottawattamie, IA, USA
+3 MAP
+4 LATI N41.261944
+4 LONG W95.860833
+1 BURI
+2 DATE 28 JUL 1997
+2 PLAC Villisca, Montgomery, IA, USA
+3 MAP
+4 LATI N40.929712
+4 LONG W94.976093
+1 FAMC @F0016@
+2 PEDI birth
+1 FAMS @F0017@
+1 SOUR @S0000@
+1 OBJE @O0014@
+1 CHAN
+2 DATE 28 DEC 2025
+3 TIME 08:26:57
+0 @I0073@ INDI
+1 NAME Herman Wallace /Hall/
+2 TYPE birth
+2 GIVN Herman Wallace
+2 SURN Hall
+1 SEX M
+1 BIRT
+2 DATE 19 OCT 1913
+2 PLAC Villisca, Montgomery, IA, USA
+3 MAP
+4 LATI N40.929712
+4 LONG W94.976093
+1 DEAT
+2 DATE 27 JUN 1992
+2 PLAC Red Oak, Montgomery, IA, USA
+3 MAP
+4 LATI N41.009715
+4 LONG W95.225547
+1 FAMC @F0016@
+2 PEDI birth
+1 FAMS @F0372@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 13 APR 2016
+3 TIME 07:06:10
+0 @F0011@ FAM
+1 HUSB @I0011@
+1 MARR
+2 DATE 1772
+1 CHIL @I0019@
+1 CHIL @I0020@
+1 CHIL @I0040@
+1 CHIL @I0041@
+1 CHIL @I0042@
+1 CHIL @I0043@
+1 CHIL @I0044@
+1 CHIL @I0045@
+1 CHIL @I0046@
+1 CHIL @I0047@
+1 CHIL @I0048@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:35
+0 @F0012@ FAM
+1 HUSB @I0040@
+1 CHIL @I0053@
+1 CHIL @I0054@
+1 CHIL @I0055@
+1 CHIL @I0056@
+1 CHIL @I0057@
+1 CHIL @I0058@
+1 CHIL @I0059@
+1 CHIL @I0060@
+1 CHIL @I0061@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:35
+0 @F0013@ FAM
+1 HUSB @I0011@
+1 CHIL @I0051@
+1 CHIL @I0052@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:35
+0 @F0014@ FAM
+1 HUSB @I0059@
+1 MARR
+2 DATE 6 OCT 1841
+1 CHIL @I0063@
+1 CHIL @I0064@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:35
+0 @F0015@ FAM
+1 HUSB @I0064@
+1 MARR
+2 PLAC Dirdwood, IL, USA
+1 CHIL @I0066@
+1 CHIL @I0067@
+1 CHIL @I0068@
+1 CHIL @I0069@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:35
+0 @F0016@ FAM
+1 HUSB @I0066@
+1 MARR
+2 DATE 25 FEB 1899
+2 PLAC Villisca, Montgomery, IA, USA
+3 MAP
+4 LATI N40.929712
+4 LONG W94.976093
+1 CHIL @I0071@
+1 CHIL @I0072@
+1 CHIL @I0073@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:35
+0 @F0017@ FAM
+1 WIFE @I0072@
+1 MARR
+2 DATE 23 NOV 1930
+2 PLAC Villisca, Montgomery, IA, USA
+3 MAP
+4 LATI N40.929712
+4 LONG W94.976093
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:35
+0 @F0372@ FAM
+1 HUSB @I0073@
+1 SOUR @S0000@
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:35
+0 @F1444@ FAM
+1 WIFE @I0069@
+1 CHAN
+2 DATE 16 DEC 2010
+3 TIME 16:10:32
+0 @S0000@ SOUR
+1 TITL Import from FAMILY.GED
+1 AUTH Jeff Hatfield
+1 CHAN
+2 DATE 5 DEC 2008
+3 TIME 14:34:36
+0 @N0546@ NOTE HAROLD C. HALL
+1 CONT Harold C. Hall died Thursday afternoon of last week about 5 o'clock at t
+1 CONC he home of his parents, Mr. and Mrs. Harry Hall living six miles southea
+1 CONC st of Villisca, his death resulting from double pleurisy. He was 23 th
+1 CONC e time of his death. | At the age of two and one-half years he moved wit
+1 CONC h his parents to the home where he died, residing there continuously wit
+1 CONC h the exception of two years spent on a farm near Corning. He attended t
+1 CONC he Villisca public schools, graduating with the class of 1919, and sinc
+1 CONC e then has been engaged in farming with his father. He was a member of t
+1 CONC he Methodist church, having joined at the age of fourteen years and hold
+1 CONC ing his membership in Villisca at the time of his death. He belonged als
+1 CONC o to the Epworth League of Nodaway, and he was a member of the I. O. O
+1 CONC . F. and Rebekah orders of Willisca. Besides his parents he leaves a sis
+1 CONC ter Bernice, a brother Herman, his grandmothers, Mrs. Elizabeth Hall an
+1 CONC d Mrs. Harriett Hyde, and many other relatives and friends. He was engag
+1 CONC ed to wed Miss Erma Lewis of the Guss neighborhood who with her
+1 CONT family also are among the bereaved.
+1 CONT The funeral was held Sunday afternoon in the Methodist church in Villisc
+1 CONC a, Dr. A. P. Walton and Rev. J. L. Boyd having charge of the service. Th
+1 CONC e funeral sermon was preached by Dr. Walton. The pall bearers were Chas
+1 CONC , and Roy Hall, Elmer, Stanley and Robert Hyde and Bert King, and buria
+1 CONC l was in the Villisca cemetery. Those who were here from a distance to a
+1 CONC ttend the service were Mrs. Mary E. Hall, Albuquerque, N. M.; Mrs. Dais
+1 CONC y Foster, Kansas City; Mr. and Mrs. Walter Googler, Council Bluffs; Rev
+1 CONC . Nichols, IndianoIa, Iowa; Mr. and Mrs. Alva Hicks
+1 CONT 
+0 @N0547@ NOTE HARRY W. HALL
+1 CONT 
+1 CONT Funeral services were held Monday afternoon at the Methodist church fo
+1 CONC r Harry W. Hall who died at his home here Saturday. The services were co
+1 CONC nducted by the Rev. L. H. Athey, and the singing was by Helen Penwell, a
+1 CONC ccompanied by Mrs. Frances Gray. 
+1 CONT In charge of the flowers were Mrs. Fay Still, Mrs. Grover Holt pallbeare
+1 CONC rs were Floyd Gourley, Martin Taylor, John Brannan, Harold Todd, Tim Nor
+1 CONC thup and Lloyd Query. Interment was in the Villisca cemetery.
+1 CONT 
+1 CONT Harry W. Hall, son of George and
+1 CONT Mary Hall, was born at Kirkwood, Ill., Oct. 11, 1875, and was 72 year
+1 CONT old at the time of his death. He came to Iowa with his parents when he w
+1 CONC as 9 years of age, and the family settled on a farm five miles southwes
+1 CONC t of Villisca where he grew to manhood.
+1 CONT He attended the Villisca schools and united with the Presbyterian churc
+1 CONC h in childhood. After moving to Villisca, he transferred his church memb
+1 CONC ership to the Methodist church.
+1 CONT 
+1 CONT He was united in marriage with Miss Allie Hyde on Feb. 25, 1899, and the
+1 CONC y began housekeeping on a farm two miles northwest of Villisca where the
+1 CONC y lived two years. Then they bought a farm southeast of Villisca where t
+1 CONC hey made their home 33 years. -
+1 CONT To Mr. and Mrs. Hall, three children were born: Harold, who died at th
+1 CONC e age of 23 years; Mrs. Bernice Marvick and Herman Hall, who with thei
+1 CONC r mother survive. Mr. Hall leaves also six grandchildren. He was the las
+1 CONC t of his immediate family, he having been preceded in death by his fathe
+1 CONC r, mother a two brothers and a sister.
+0 @O0014@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Marvick, Floyd - Laura Berniece, Jeanne and Joann - Family.JPG
+2 FORM JPG
+2 TITL Marvick, Floyd - Laura Berniece, Jeanne and Joann - Family
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0027@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry - with cow.JPG
+2 FORM JPG
+2 TITL Hall, Harry - with cow
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0029@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, George.jpg
+2 FORM jpg
+2 TITL Hall, George
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0077@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry and Allie.JPG
+2 FORM JPG
+2 TITL Hall, Harry and Allie
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0078@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry and Mann W.jpg
+2 FORM jpg
+2 TITL Hall, Harry and Mann W
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0079@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry - Death Certificate.JPG
+2 FORM JPG
+2 TITL Hall, Harry - Death Certificate
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0080@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry - Funeral Card.JPG
+2 FORM JPG
+2 TITL Hall, Harry - Funeral Card
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0081@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry - Draft Registration Card.JPG
+2 FORM JPG
+2 TITL Hall, Harry - Draft Registration Card
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0082@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry - Obit.JPG
+2 FORM JPG
+2 TITL Hall, Harry - Obit
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0083@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry ration book inside.jpg
+2 FORM jpg
+2 TITL Hall, Harry ration book inside
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0084@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harry ration book outside.jpg
+2 FORM jpg
+2 TITL Hall, Harry ration book outside
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0085@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harold - 3 weeks.jpg
+2 FORM jpg
+2 TITL Hall, Harold - 3 weeks
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0086@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harold - Death Notice.jpg
+2 FORM jpg
+2 TITL Hall, Harold - Death Notice
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0087@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harold - Letter from Besse.jpg
+2 FORM jpg
+2 TITL Hall, Harold - Letter from Besse
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0088@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Harold - Obit.jpg
+2 FORM jpg
+2 TITL Hall, Harold - Obit
+1 NOTE @N0546@
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0089@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, George - Back.jpg
+2 FORM jpg
+2 TITL Hall, George - Back
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0090@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, George - Family.jpg
+2 FORM jpg
+2 TITL Hall, George - Family
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0092@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Charlie.jpg
+2 FORM jpg
+2 TITL Hall, Charlie
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0093@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, George - Family.jpg
+2 FORM jpg
+2 TITL Hall, George - Family
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0094@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, George - Family.jpg
+2 FORM jpg
+2 TITL Hall, George - Family
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0104@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, C E - Auto Registration 1930.jpg
+2 FORM jpg
+2 TITL Hall, C E - Auto Registration 1930
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0105@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall,Chas.jpg
+2 FORM jpg
+2 TITL Hall,Chas
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0106@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Chas.jpg
+2 FORM jpg
+2 TITL Hall, Chas
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 @O0107@ OBJE
+1 FILE /media/linuxstore/pictures/Ancesters And Relatives/Marvick/Hall/Hall, Chas 2.jpg
+2 FORM jpg
+2 TITL Hall, Chas 2
+1 CHAN
+2 DATE 28 JUN 2025
+3 TIME 17:18:14
+0 TRLR

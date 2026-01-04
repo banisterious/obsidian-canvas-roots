@@ -505,11 +505,14 @@ export class GrampsImporter {
 			const peopleTotal = grampsData.persons.size;
 			reportProgress('people', 0, peopleTotal, 'Creating person notes...');
 
+			// Track handle → note path for wikilink correction
+			const grampsHandleToNotePath = new Map<string, string>();
+
 			// First pass: Create all person notes
 			let personIndex = 0;
 			for (const [handle, person] of grampsData.persons) {
 				try {
-					const crId = await this.importPerson(
+					const { crId, notePath } = await this.importPerson(
 						person,
 						grampsData,
 						options,
@@ -520,6 +523,7 @@ export class GrampsImporter {
 					);
 
 					grampsToCrId.set(handle, crId);
+					grampsHandleToNotePath.set(handle, notePath);
 					result.individualsImported++;
 					result.notesCreated++;
 
@@ -549,6 +553,7 @@ export class GrampsImporter {
 						person,
 						grampsData,
 						grampsToCrId,
+						grampsHandleToNotePath,
 						options
 					);
 				} catch (error: unknown) {
@@ -667,7 +672,7 @@ export class GrampsImporter {
 		placeNameToWikilink: Map<string, string>,
 		mediaHandleToPath?: Map<string, string>,
 		noteHandleToWikilink?: Map<string, string>
-	): Promise<string> {
+	): Promise<{ crId: string; notePath: string }> {
 		const crId = generateCrId();
 
 		// Convert place names to wikilinks if place notes were created
@@ -829,7 +834,7 @@ export class GrampsImporter {
 
 		// Write person note using the createPersonNote function
 		// Disable bidirectional linking during import - we'll fix relationships in pass 2
-		await createPersonNote(this.app, personData, {
+		const file = await createPersonNote(this.app, personData, {
 			directory: options.peopleFolder,
 			addBidirectionalLinks: false,
 			propertyAliases: options.propertyAliases,
@@ -837,16 +842,17 @@ export class GrampsImporter {
 			dynamicBlockTypes: options.dynamicBlockTypes
 		});
 
-		return crId;
+		return { crId, notePath: file.path };
 	}
 
 	/**
-	 * Update relationships with actual cr_ids
+	 * Update relationships with actual cr_ids and fix wikilinks for duplicate names
 	 */
 	private async updateRelationships(
 		person: ParsedGrampsPerson,
-		_grampsData: ParsedGrampsData,
+		grampsData: ParsedGrampsData,
 		grampsToCrId: Map<string, string>,
+		grampsHandleToNotePath: Map<string, string>,
 		options: GrampsImportOptions
 	): Promise<void> {
 		const crId = grampsToCrId.get(person.handle);
@@ -1066,6 +1072,180 @@ export class GrampsImporter {
 		// Log if cleanup removed unresolved handles
 		if (beforeCleanup !== updatedContent) {
 			logger.info('updateRelationships', 'Cleaned unresolved Gramps handles', { path: file.path });
+		}
+
+		// Fix wikilinks to use actual filenames (handles duplicate names)
+		// When files are created with suffixes like "John Smith 1.md" for duplicates,
+		// the wikilinks need to point to the actual filename, not the display name.
+		// We use cr_id-targeted replacement to handle cases where multiple people
+		// have the same display name (e.g., father and child both named "George Hall").
+
+		// Helper to get filename without extension from path
+		const getFilenameFromPath = (path: string): string => {
+			const parts = path.split('/');
+			const filename = parts[parts.length - 1];
+			return filename.replace(/\.md$/, '');
+		};
+
+		// Helper to fix a wikilink for a specific relationship using cr_id matching
+		const fixWikilinkByCrId = (
+			content: string,
+			propertyName: string,
+			idPropertyName: string,
+			targetCrId: string,
+			displayName: string,
+			actualFilename: string
+		): string => {
+			if (actualFilename === displayName) return content; // No change needed
+
+			// For single-value properties (father, mother), match the property line
+			// Pattern: property: "[[DisplayName]]" followed by property_id: cr_id
+			const singleValuePattern = new RegExp(
+				`(${propertyName}:\\s*)"\\[\\[${this.escapeRegex(displayName)}\\]\\]"(\\n${idPropertyName}:\\s*${this.escapeRegex(targetCrId)})`,
+				'm'
+			);
+			if (singleValuePattern.test(content)) {
+				return content.replace(singleValuePattern, `$1"[[${actualFilename}]]"$2`);
+			}
+
+			// Also try reverse order (id before wikilink)
+			const reversePattern = new RegExp(
+				`(${idPropertyName}:\\s*${this.escapeRegex(targetCrId)}\\n${propertyName}:\\s*)"\\[\\[${this.escapeRegex(displayName)}\\]\\]"`,
+				'm'
+			);
+			if (reversePattern.test(content)) {
+				return content.replace(reversePattern, `$1"[[${actualFilename}]]"`);
+			}
+
+			return content;
+		};
+
+		// Helper to fix a wikilink in an array using cr_id index matching
+		const fixWikilinkInArrayByCrId = (
+			content: string,
+			arrayPropertyName: string,
+			idArrayPropertyName: string,
+			targetCrId: string,
+			displayName: string,
+			actualFilename: string
+		): string => {
+			if (actualFilename === displayName) return content; // No change needed
+
+			// Find the _id array and get the index of the target cr_id
+			const idArrayMatch = content.match(new RegExp(`${idArrayPropertyName}:\\n((?:\\s{2}-\\s+[^\\n]+\\n?)+)`, 'm'));
+			if (!idArrayMatch) return content;
+
+			const idLines = idArrayMatch[1].split('\n').filter(line => line.trim().startsWith('- '));
+			const targetIndex = idLines.findIndex(line => line.includes(targetCrId));
+			if (targetIndex === -1) return content;
+
+			// Find the wikilink array and replace the item at the same index
+			const wikilinkArrayMatch = content.match(new RegExp(`(${arrayPropertyName}:\\n)((?:\\s{2}-\\s+[^\\n]+\\n?)+)`, 'm'));
+			if (!wikilinkArrayMatch) return content;
+
+			const wikilinkLines = wikilinkArrayMatch[2].split('\n').filter(line => line.trim().startsWith('- '));
+			if (targetIndex >= wikilinkLines.length) return content;
+
+			// Check if this line contains the display name we're looking for
+			const targetLine = wikilinkLines[targetIndex];
+			if (!targetLine.includes(`[[${displayName}]]`)) return content;
+
+			// Replace only this specific line
+			const newLine = targetLine.replace(`[[${displayName}]]`, `[[${actualFilename}]]`);
+			wikilinkLines[targetIndex] = newLine;
+
+			// Rebuild the array section
+			const newArrayContent = wikilinkLines.join('\n') + '\n';
+			return content.replace(wikilinkArrayMatch[0], `${wikilinkArrayMatch[1]}${newArrayContent}`);
+		};
+
+		// Father (single value)
+		if (person.fatherRef) {
+			const fatherPath = grampsHandleToNotePath.get(person.fatherRef);
+			const father = grampsData.persons.get(person.fatherRef);
+			const fatherCrId = grampsToCrId.get(person.fatherRef);
+			if (fatherPath && father?.name && fatherCrId) {
+				const actualFilename = getFilenameFromPath(fatherPath);
+				updatedContent = fixWikilinkByCrId(updatedContent, prop('father'), prop('father_id'), fatherCrId, father.name, actualFilename);
+			}
+		}
+
+		// Mother (single value)
+		if (person.motherRef) {
+			const motherPath = grampsHandleToNotePath.get(person.motherRef);
+			const mother = grampsData.persons.get(person.motherRef);
+			const motherCrId = grampsToCrId.get(person.motherRef);
+			if (motherPath && mother?.name && motherCrId) {
+				const actualFilename = getFilenameFromPath(motherPath);
+				updatedContent = fixWikilinkByCrId(updatedContent, prop('mother'), prop('mother_id'), motherCrId, mother.name, actualFilename);
+			}
+		}
+
+		// Spouses (array)
+		for (const spouseRef of person.spouseRefs) {
+			const spousePath = grampsHandleToNotePath.get(spouseRef);
+			const spouse = grampsData.persons.get(spouseRef);
+			const spouseCrId = grampsToCrId.get(spouseRef);
+			if (spousePath && spouse?.name && spouseCrId) {
+				const actualFilename = getFilenameFromPath(spousePath);
+				updatedContent = fixWikilinkInArrayByCrId(updatedContent, prop('spouse'), prop('spouse_id'), spouseCrId, spouse.name, actualFilename);
+			}
+		}
+
+		// Children (array) - find children of this person
+		for (const [childHandle, child] of grampsData.persons) {
+			if (child.fatherRef === person.handle || child.motherRef === person.handle) {
+				const childPath = grampsHandleToNotePath.get(childHandle);
+				const childCrId = grampsToCrId.get(childHandle);
+				if (childPath && child.name && childCrId) {
+					const actualFilename = getFilenameFromPath(childPath);
+					updatedContent = fixWikilinkInArrayByCrId(updatedContent, prop('children'), prop('children_id'), childCrId, child.name, actualFilename);
+				}
+			}
+		}
+
+		// Stepfathers (array)
+		for (const stepfatherRef of person.stepfatherRefs) {
+			const stepfatherPath = grampsHandleToNotePath.get(stepfatherRef);
+			const stepfather = grampsData.persons.get(stepfatherRef);
+			const stepfatherCrId = grampsToCrId.get(stepfatherRef);
+			if (stepfatherPath && stepfather?.name && stepfatherCrId) {
+				const actualFilename = getFilenameFromPath(stepfatherPath);
+				updatedContent = fixWikilinkInArrayByCrId(updatedContent, prop('stepfather'), prop('stepfather_id'), stepfatherCrId, stepfather.name, actualFilename);
+			}
+		}
+
+		// Stepmothers (array)
+		for (const stepmotherRef of person.stepmotherRefs) {
+			const stepmotherPath = grampsHandleToNotePath.get(stepmotherRef);
+			const stepmother = grampsData.persons.get(stepmotherRef);
+			const stepmotherCrId = grampsToCrId.get(stepmotherRef);
+			if (stepmotherPath && stepmother?.name && stepmotherCrId) {
+				const actualFilename = getFilenameFromPath(stepmotherPath);
+				updatedContent = fixWikilinkInArrayByCrId(updatedContent, prop('stepmother'), prop('stepmother_id'), stepmotherCrId, stepmother.name, actualFilename);
+			}
+		}
+
+		// Adoptive father (single value)
+		if (person.adoptiveFatherRef) {
+			const adoptiveFatherPath = grampsHandleToNotePath.get(person.adoptiveFatherRef);
+			const adoptiveFather = grampsData.persons.get(person.adoptiveFatherRef);
+			const adoptiveFatherCrId = grampsToCrId.get(person.adoptiveFatherRef);
+			if (adoptiveFatherPath && adoptiveFather?.name && adoptiveFatherCrId) {
+				const actualFilename = getFilenameFromPath(adoptiveFatherPath);
+				updatedContent = fixWikilinkByCrId(updatedContent, prop('adoptive_father'), prop('adoptive_father_id'), adoptiveFatherCrId, adoptiveFather.name, actualFilename);
+			}
+		}
+
+		// Adoptive mother (single value)
+		if (person.adoptiveMotherRef) {
+			const adoptiveMotherPath = grampsHandleToNotePath.get(person.adoptiveMotherRef);
+			const adoptiveMother = grampsData.persons.get(person.adoptiveMotherRef);
+			const adoptiveMotherCrId = grampsToCrId.get(person.adoptiveMotherRef);
+			if (adoptiveMotherPath && adoptiveMother?.name && adoptiveMotherCrId) {
+				const actualFilename = getFilenameFromPath(adoptiveMotherPath);
+				updatedContent = fixWikilinkByCrId(updatedContent, prop('adoptive_mother'), prop('adoptive_mother_id'), adoptiveMotherCrId, adoptiveMother.name, actualFilename);
+			}
 		}
 
 		// Write updated content if changed
