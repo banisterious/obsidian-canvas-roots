@@ -121,7 +121,9 @@ export class CreateEventModal extends Modal {
 			this.date = event.date || '';
 			this.dateEnd = event.dateEnd || '';
 			this.datePrecision = event.datePrecision;
-			this.person = event.person?.replace(/^\[\[/, '').replace(/\]\]$/, '') || '';
+			// Check persons array first (new format), then fall back to person (legacy)
+			const primaryPerson = event.persons?.[0] || event.person || '';
+			this.person = primaryPerson.replace(/^\[\[/, '').replace(/\]\]$/, '');
 			this.place = event.place?.replace(/^\[\[/, '').replace(/\]\]$/, '') || '';
 			this.confidence = event.confidence;
 			this.description = event.description || '';
