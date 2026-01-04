@@ -10,6 +10,7 @@ Canvas Roots handles sensitive genealogical data including names, dates, relatio
 - [What Data is Stored](#what-data-is-stored)
 - [Network Privacy](#network-privacy)
 - [Privacy-Aware Export](#privacy-aware-export)
+- [Canvas Privacy Protection](#canvas-privacy-protection)
 - [Log Export Privacy](#log-export-privacy)
 - [Vault Security](#vault-security)
 - [Sharing Family Trees](#sharing-family-trees)
@@ -137,6 +138,47 @@ Privacy protection also works with:
 - GEDCOM X (JSON format for modern applications)
 - Gramps XML (for Gramps genealogy software)
 
+## Canvas Privacy Protection
+
+When generating canvas or Excalidraw trees, you can apply privacy protection to living persons.
+
+### Enabling Canvas Privacy
+
+1. Open the **Tree Wizard** (Control Center → Visual Trees → New Tree)
+2. Select your root person and tree type
+3. Choose **Canvas** or **Excalidraw** as output format
+4. In the **Canvas Options** step, expand **Privacy protection**
+5. Enable **Apply privacy protection to living persons**
+6. Choose a format:
+   - **Text node**: Shows obfuscated name as a text box (e.g., "Living", "Private", or initials)
+   - **File node**: Keeps clickable file link but reveals identity
+
+### What Gets Protected
+
+When privacy protection is enabled:
+- **Text nodes**: Replace the person's name with your chosen display format
+- **Wikilinks included**: Text nodes include `[[filename]]` for navigation back to the original note
+- **Preview count**: The wizard preview shows how many living persons will be protected
+
+### Important Limitations
+
+Canvas privacy protection is designed for **reducing casual visibility**, not for secure data protection:
+
+| Limitation | What This Means |
+|------------|-----------------|
+| File nodes reveal identity | If using 'file' format, the filename is visible in canvas JSON |
+| Wikilinks in text nodes | Text nodes include `[[filename]]` for navigation, which reveals the original name |
+| Canvas JSON is plain text | Anyone viewing the `.canvas` file can see all data |
+| Generation-time only | Privacy is applied when the canvas is created |
+| Edges preserved | Relationship lines remain, showing family structure |
+
+### Recommendations
+
+For maximum privacy when generating canvases:
+- Use the **hidden** display format to exclude living persons entirely
+- **Do not share** generated canvas files containing living persons
+- Consider that anyone with file access can view the raw canvas JSON
+
 ## Log Export Privacy
 
 When troubleshooting issues, you may need to export logs and share them with developers or support. Canvas Roots protects your family's privacy in log exports.
@@ -228,10 +270,11 @@ Consider these questions:
 
 ### Sharing Screenshots
 
-Canvas displays full data regardless of privacy settings (protection applies to exports only). When taking screenshots:
-- Review for sensitive information
-- Consider cropping or blurring names
-- Canvas obfuscation mode is planned for a future release
+When taking screenshots of canvases:
+- **Generate with privacy enabled**: Use the privacy protection option in the tree wizard to create canvases with obfuscated names
+- Review for sensitive information before sharing
+- Consider cropping or blurring any remaining identifiable details
+- Note: Privacy protection only applies to newly generated canvases, not existing ones
 
 ## Compliance Considerations
 
@@ -259,6 +302,7 @@ If your family tree includes EU residents:
 | Mark someone as living | Add `cr_living: true` to frontmatter, or use Edit Person modal |
 | Export with privacy | Control Center → Export → Enable privacy options |
 | Exclude living from export | Choose "Exclude living persons" in export dialog |
+| Generate canvas with privacy | Tree Wizard → Canvas Options → Enable privacy protection |
 | Toggle log obfuscation | Settings → Canvas Roots → Logging → Obfuscate log exports |
 | Export logs | Settings → Canvas Roots → Logging → Export button |
 

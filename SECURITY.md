@@ -152,7 +152,7 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
 2. **No Access Controls**: Anyone with vault access can view all data
 3. **No Audit Logging**: The plugin does not log data access (but see Log Export Privacy below)
 4. **Privacy Protection is Opt-in**: Users must manually enable privacy protection in settings
-5. **Canvas Display Not Protected**: Privacy settings apply to exports only; canvas displays full data
+5. **Canvas Privacy Limitations**: See [Canvas Privacy Protection](#canvas-privacy-protection) for important limitations
 
 ## Reporting a Vulnerability
 
@@ -248,12 +248,30 @@ When sharing logs for debugging or support, PII is automatically protected:
 - **Configurable**: Can be disabled in Settings → Logging when debugging privately
 - **Non-destructive**: Original log data remains intact; obfuscation applies only to exports
 
-### Canvas Obfuscation (Planned)
+### Canvas Privacy Protection
 
-- **Temporary display mode**: Toggle obfuscation for screenshots/presentations
-- **Visual indicators**: Clear indication when obfuscation is active
-- **Non-destructive**: Original notes remain unchanged
-- **Configurable levels**: Match export privacy settings
+Canvas generation includes privacy protection options when enabled in the tree wizard:
+
+- **Text node obfuscation**: Living persons shown as text nodes with obfuscated names (e.g., "Living", "Private", or initials)
+- **Hidden option**: Exclude living persons entirely from generated canvas
+- **Wikilinks preserved**: Text nodes include wikilinks for navigation back to original notes
+- **Preview integration**: Wizard shows count of privacy-protected persons before generation
+
+**Important limitations:**
+
+| Limitation | Impact |
+|------------|--------|
+| File nodes reveal identity | When using 'file' format, filename in canvas JSON is visible to anyone viewing the `.canvas` file |
+| Wikilinks in text nodes | Text nodes include `[[filename]]` wikilinks which contain the original person's filename |
+| Canvas JSON not encrypted | Canvas files store all node data in plain JSON format |
+| Generation-time only | Privacy applied when canvas is created; no runtime hooks available |
+| Shared canvases | If you share a canvas file, recipients can see the underlying data |
+| Edges preserved | Relationship edges remain, showing family structure |
+
+**What this means:** Canvas privacy protection is designed for **reducing casual visibility** when viewing canvases, not for secure data protection. For maximum privacy:
+- Use the "hidden" display format to exclude living persons entirely
+- Do not share generated canvas files containing living persons
+- Consider the underlying canvas JSON visible to anyone with file access
 
 ### Use Cases
 
@@ -294,7 +312,9 @@ Canvas Roots helps users discover privacy features:
 
 Additional planned improvements:
 
-- **Canvas obfuscation mode**: Temporary display mode for screenshots/presentations
+- **Interactive family chart privacy**: Apply privacy protection to the family chart view
+- **Report privacy**: Apply privacy protection to markdown/ODT/PDF reports
+- **Runtime canvas obfuscation**: Temporary display mode toggle for screenshots/presentations
 - Optional encryption for cr_id values
 - Audit logging capabilities
 - Access control recommendations

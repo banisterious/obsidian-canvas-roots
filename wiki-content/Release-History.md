@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.18.x](#v018x)
+  - [Export Privacy & Sensitive Data](#export-privacy--sensitive-data-v01822)
   - [Card Style Options](#card-style-options-v01815)
   - [Gramps Notes Integration](#gramps-notes-integration-v01813)
   - [Edit Person Events & Sources](#edit-person-events--sources-v01814)
@@ -83,6 +84,52 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.18.x
+
+### Export Privacy & Sensitive Data (v0.18.22)
+
+Comprehensive privacy protection for sensitive genealogical data during exports and canvas generation.
+
+**GitHub Issue:** [#95](https://github.com/banisterious/obsidian-canvas-roots/issues/95)
+
+**Features Implemented:**
+
+| Phase | Feature | Description |
+|-------|---------|-------------|
+| 1 | Sensitive field redaction | SSN, identity numbers automatically excluded via `PersonNode` whitelist |
+| 2 | `cr_living` override | Manual frontmatter property to override automatic living detection |
+| 3 | Private fields list | `private_fields` frontmatter property for user-defined sensitive fields |
+| 4-5 | Deadname + Export warnings | Confirmation dialog before exporting private fields |
+| 6 | Discoverability | Post-import notice, export preview warning when privacy disabled |
+| 7 | Pronouns field | `pronouns` property displayed in pickers and reports |
+| 8 | Canvas privacy | Privacy-aware canvas/Excalidraw generation in Tree Wizard |
+
+**Canvas Privacy Protection:**
+
+| Feature | Description |
+|---------|-------------|
+| Text node obfuscation | Living persons shown as text nodes with obfuscated names |
+| Hidden option | Exclude living persons entirely from generated canvas |
+| Wikilinks preserved | Text nodes include `[[filename]]` for navigation |
+| Preview integration | Wizard shows count of privacy-protected persons |
+| Format choice | "Text node" (obfuscated) or "File node" (clickable) |
+
+**Known Limitations:**
+- Canvas JSON is plain text (not encrypted)
+- File nodes reveal identity in canvas JSON
+- Wikilinks in text nodes contain original filename
+- Privacy applied at generation time only (no runtime toggle)
+
+**Files Modified:**
+- `src/core/canvas-generator.ts` — Privacy node creation helpers
+- `src/core/privacy-service.ts` — Sensitive field utilities
+- `src/trees/ui/unified-tree-wizard-modal.ts` — Privacy UI and preview count
+
+**Documentation:**
+- [Privacy & Security](Privacy-And-Security) — User guide
+- [SECURITY.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/SECURITY.md) — Security policy
+- [Export Privacy Planning](../docs/planning/export-privacy-sensitive-data.md) — Implementation details
+
+---
 
 ### Card Style Options (v0.18.15)
 

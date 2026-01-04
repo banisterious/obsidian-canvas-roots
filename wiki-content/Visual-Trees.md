@@ -16,6 +16,7 @@ Generate visual family tree diagrams in multiple formats: interactive Canvas fil
   - [PDF/ODT Path](#pdfodt-path)
 - [Tree Types Explained](#tree-types-explained)
 - [Canvas Layout Algorithms](#canvas-layout-algorithms)
+- [Privacy Options](#privacy-options)
 - [PDF/ODT Options](#pdfodt-options)
 - [Next Steps](#next-steps)
 
@@ -103,10 +104,12 @@ After selecting, the wizard branches into format-specific steps:
 **Options Step:**
 - **Scope options**: Include step-parents, adoptive parents, filter by collection/place/universe
 - **Style options**: Color scheme, edge styles, spouse edge display
+- **Privacy protection**: Enable privacy for living persons (see [Privacy Options](#privacy-options) below)
 
 **Preview Step:**
 - Interactive preview with pan and zoom
 - Tree statistics (people count, generations, edges)
+- Privacy-protected persons count (when privacy enabled)
 - Verify layout before generating
 
 **Excalidraw Style Step (Excalidraw only):**
@@ -195,6 +198,41 @@ When generating canvas output, choose a layout algorithm:
 | **Compact** | 50% tighter spacing | Large trees (50+ people) |
 | **Timeline** | Chronological by birth year | Visualizing when people lived |
 | **Hourglass** | Root centered, ancestors up, descendants down | Person-focused context |
+
+---
+
+## Privacy Options
+
+Canvas and Excalidraw generation supports privacy protection for living persons.
+
+### Enabling Privacy Protection
+
+1. In the **Canvas Options** step, expand the **Privacy protection** section
+2. Enable **Apply privacy protection to living persons**
+3. Choose a format:
+
+| Format | Description |
+|--------|-------------|
+| **Text node** | Living persons shown as text boxes with obfuscated names |
+| **File node** | Keeps clickable file link (reveals identity in canvas JSON) |
+
+### How It Works
+
+When privacy protection is enabled:
+- **Obfuscated names**: Uses your display format setting ("Living", "Private", initials, etc.)
+- **Text nodes include wikilinks**: `[[filename]]` links for navigation back to original notes
+- **Hidden format**: Completely excludes living persons from the canvas
+- **Preview shows count**: See how many persons will be privacy-protected before generating
+
+### What Privacy Protection Does NOT Do
+
+Canvas privacy protection reduces casual visibility but has important limitations:
+- Canvas files store data in plain JSON (viewable by anyone with file access)
+- Wikilinks in text nodes contain original filenames
+- Relationship edges remain, showing family structure
+- Protection is applied at generation time only
+
+For details on limitations, see [Privacy & Security](Privacy-And-Security#canvas-privacy-protection).
 
 ---
 

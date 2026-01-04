@@ -370,9 +370,9 @@ The `PrivacyService` (`src/core/privacy-service.ts`) protects living individuals
 - GEDCOM X export (`src/gedcomx/gedcomx-exporter.ts`)
 - Gramps XML export (`src/gramps/gramps-exporter.ts`)
 - CSV export (`src/csv/csv-exporter.ts`)
+- Canvas generation (`src/core/canvas-generator.ts`) - when enabled in wizard
 
 **Not yet applied to:**
-- Canvas display (shows full data)
 - Interactive family chart view
 - Reports (markdown output)
 
@@ -471,11 +471,48 @@ To help users discover privacy features, the plugin provides contextual notices:
 - Shown in Step 4 preview when privacy disabled but living persons will be exported
 - Links directly to privacy configuration in settings
 
-### Planned Features (Not Yet Implemented)
+### Canvas Privacy Protection
 
-The following are documented for future implementation:
+Canvas generation supports privacy-aware output through the unified tree wizard.
 
-- **Canvas privacy obfuscation** - Apply privacy protection to canvas display, not just exports (#102)
+**Enabling in wizard:**
+1. In Step 4 (Canvas options), expand "Privacy protection" section
+2. Enable "Apply privacy protection to living persons"
+3. Choose format: "Text node" (obfuscated) or "File node" (clickable but reveals identity)
+
+**Implementation** (`src/core/canvas-generator.ts`):
+- `CanvasGenerationOptions.applyCanvasPrivacy` - Enable privacy protection
+- `CanvasGenerationOptions.canvasPrivacyFormat` - Choose 'text' or 'file' output
+- `setPrivacyService(service)` - Inject privacy service before generation
+- `createPrivacyProtectedNode()` - Creates obfuscated text nodes for protected persons
+
+**Text node format:**
+```
+**Living**
+
+[[Original Filename]]
+
+_Privacy protected_
+```
+
+The wikilink provides navigation back to the original note while keeping the displayed name obfuscated.
+
+**Preview integration:**
+The wizard preview (Step 5) shows count of privacy-protected persons when privacy is enabled.
+
+**Known limitations:**
+| Limitation | Description |
+|------------|-------------|
+| File nodes reveal identity | When using 'file' format, filename in canvas JSON is visible |
+| Wikilinks in text nodes | Text nodes include wikilinks for navigation, which contain original filename |
+| Canvas JSON not encrypted | Canvas files store node data in plain JSON |
+| No runtime protection | Privacy applied at generation time only; Obsidian Canvas API has no hooks |
+| Shared canvases | If canvas file is shared, privacy-protected nodes are still visible to recipients |
+| Edges remain | Relationship edges connect to protected nodes, preserving tree structure |
+
+**Planned features (not yet implemented):**
+- Interactive family chart view privacy
+- Report (markdown) privacy
 
 ### Design Rationale
 

@@ -8,7 +8,6 @@ This document outlines planned features for Canvas Roots. For completed features
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
-  - [Export Privacy & Sensitive Data](#export-privacy--sensitive-data) 📋 Medium
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Staging Management](#staging-management) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
@@ -29,6 +28,7 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.18.22 | [Export Privacy & Sensitive Data](Release-History#export-privacy--sensitive-data-v01822) | Complete privacy feature set: canvas privacy, sensitive field redaction, private fields, deadname protection, discoverability |
 | v0.18.15 | [Gramps Notes Phase 4](Release-History#gramps-notes-integration-v01813) | Separate note files (opt-in) with Create Note modal and Notes folder |
 | v0.18.15 | [Card Style Options](Release-History#card-style-options-v01815) | 4 card styles (Rectangle, Circle, Compact, Mini) for Family Chart with state persistence and export support |
 | v0.18.13 | [Gramps Notes Phases 1-2](Release-History#gramps-notes-integration-v01813) | Import notes from Gramps entities with style conversion and privacy handling |
@@ -55,42 +55,6 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
-
----
-
-### Export Privacy & Sensitive Data
-
-**Priority:** 📋 Medium — Protect sensitive information in exports and UI display
-
-**Status:** Partial — Core privacy features complete, advanced features planned
-
-**GitHub Issue:** [#95](https://github.com/banisterious/obsidian-canvas-roots/issues/95)
-
-**Summary:** Comprehensive privacy protection for sensitive genealogical data during exports and display. Covers sensitive field redaction, user-defined private fields, deadname protection, and improved discoverability of existing privacy features.
-
-**Already Implemented:**
-- **Living person detection** — Automatic detection with configurable age threshold (default: 100 years)
-- **Privacy display formats** — Four formats: `living`, `private`, `initials`, `hidden`
-- **Export privacy protection** — Applied in GEDCOM, GEDCOM X, Gramps XML, and CSV exports
-- **Log export obfuscation** — Names, dates, and IDs obfuscated in exported logs (enabled by default)
-- **Gender identity model** — `sex`/`gender`/`gender_identity` data model (see [Specialized Features](../docs/developer/implementation/specialized-features.md#privacy-and-gender-identity-protection))
-- **Sensitive field protection** — `SENSITIVE_FIELDS` constant and utilities in `privacy-service.ts`; exporters use `PersonNode` whitelist providing implicit protection
-- **Manual living override** — `cr_living` frontmatter property to override automatic detection
-- **Pronouns field** — `pronouns` property displayed in pickers and reports
-
-**Planned (8 Phases):**
-
-| Phase | Feature | Issue | Status | Description |
-|-------|---------|-------|--------|-------------|
-| 1 | Sensitive field redaction | [#96](https://github.com/banisterious/obsidian-canvas-roots/issues/96) | ✅ | Implicit via `PersonNode` whitelist + explicit utilities |
-| 2 | `cr_living` override | [#97](https://github.com/banisterious/obsidian-canvas-roots/issues/97) | ✅ | Manual frontmatter property to override living detection |
-| 3 | Explicit private fields list | [#98](https://github.com/banisterious/obsidian-canvas-roots/issues/98) | ✅ | `private_fields` frontmatter property |
-| 4-5 | Deadname + Export warnings | [#99](https://github.com/banisterious/obsidian-canvas-roots/issues/99) | ✅ | Confirmation dialog before exporting private fields |
-| 6 | Discoverability | [#100](https://github.com/banisterious/obsidian-canvas-roots/issues/100) | ✅ | First-run notice, export preview warning |
-| 7 | Pronouns field | [#101](https://github.com/banisterious/obsidian-canvas-roots/issues/101) | ✅ | Add `pronouns` property support |
-| 8 | Canvas privacy | [#102](https://github.com/banisterious/obsidian-canvas-roots/issues/102) | | Privacy-aware canvas generation |
-
-**Documentation:** See [Export Privacy Planning Document](../docs/planning/export-privacy-sensitive-data.md) for detailed implementation specifications.
 
 ---
 
