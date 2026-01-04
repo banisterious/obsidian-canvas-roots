@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Auto-exclude template folders from note discovery** ([#136](https://github.com/banisterious/obsidian-canvas-roots/issues/136)):
+  - Automatically detects and excludes template folders configured in core Templates, Templater, and QuickAdd plugins
+  - Template files (containing Templater syntax like `<% tp.file.title %>`) no longer appear in person/place/event lists
+  - New settings in Advanced section: toggle for auto-detection, info box showing detected folders, text area for additional folders
+  - Changed built-in Templater snippets to leave `cr_id` empty (Canvas Roots auto-generates when notes are indexed)
+
 ### Fixed
 
 - **Gramps import hangs during gzip decompression** ([#134](https://github.com/banisterious/obsidian-canvas-roots/issues/134)):
