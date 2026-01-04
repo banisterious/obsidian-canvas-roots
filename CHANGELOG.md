@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.18.23] - 2026-01-04
+
 ### Added
 
 - **Auto-exclude template folders from note discovery** ([#136](https://github.com/banisterious/obsidian-canvas-roots/issues/136)):
