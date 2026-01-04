@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Control Center freezes on large vaults** ([#113](https://github.com/banisterious/obsidian-canvas-roots/issues/113)):
+  - Clicking names in Control Center or using Edit Person caused 30+ second freezes on macOS with large vaults
+  - Added caching for graph services at the modal level to avoid expensive recomputation on every click
+  - Graph data is now computed once and reused, with cache invalidation when data changes
+
 - **Relationship calculator asymmetry with unresolved Gramps handles** ([#109](https://github.com/banisterious/obsidian-canvas-roots/issues/109)):
   - Root cause 1: When a referenced person doesn't exist in the Gramps data (e.g., ancestors not in database), the import left Gramps handles (e.g., `_PTHMF88SXO93W8QTDJ`) in `_id` fields instead of cr_ids
   - Root cause 2: When multiple people have the same name, the import's relationship update pass was reading the wrong file due to filename collisions
