@@ -17,6 +17,8 @@ This document covers fictional date systems, privacy protection, and Obsidian Ba
   - [Living Person Privacy](#living-person-privacy)
   - [Log Export Obfuscation](#log-export-obfuscation)
   - [Pronouns Field](#pronouns-field)
+  - [Private Fields](#private-fields)
+  - [Privacy Feature Discoverability](#privacy-feature-discoverability)
   - [Planned Features](#planned-features-not-yet-implemented)
   - [Design Rationale](#design-rationale)
 - [Obsidian Bases Integration](#obsidian-bases-integration)
@@ -429,14 +431,51 @@ pronouns: she/her   # Free-form string
 - Extracted from frontmatter in `buildPersonNode()`
 - Passed to person picker modals and report generators
 
+### Private Fields
+
+Users can mark specific frontmatter fields as private using the `private_fields` property:
+
+```yaml
+name: Alex Johnson
+previous_names:
+  - Alexandra Johnson
+private_fields:
+  - previous_names
+```
+
+**Implementation** (`src/core/privacy-service.ts`):
+- `scanForPrivateFields(people)` - Scans people for private fields, returns summary for warnings
+- `filterPrivateFields(data, privateFields)` - Removes private fields from export data
+- `PrivateFieldSummary` interface - Tracks field names and affected person counts
+
+**Export behavior:**
+- Before export, `scanForPrivateFields()` checks if any people have private fields
+- If found, `PrivateFieldsWarningModal` shows a confirmation dialog
+- Users can choose to include, exclude, or cancel the export
+- When excluded, private field values are removed from export output
+
+**Common use cases:**
+- Deadname protection via `previous_names` + `private_fields`
+- Medical notes, legal information, personal details
+
+### Privacy Feature Discoverability
+
+To help users discover privacy features, the plugin provides contextual notices:
+
+**Post-import notice** (`src/ui/privacy-notice-modal.ts`):
+- Shown after import when living persons detected and privacy protection disabled
+- Offers: "Configure Privacy Settings", "Remind Me Later", "Don't Show Again"
+- Controlled by `settings.privacyNoticeDismissed` (persists dismiss choice)
+
+**Export preview notice** (`src/ui/export-wizard-modal.ts`):
+- Shown in Step 4 preview when privacy disabled but living persons will be exported
+- Links directly to privacy configuration in settings
+
 ### Planned Features (Not Yet Implemented)
 
 The following are documented for future implementation:
 
-- **Underscore-prefix privacy convention** - Fields like `_previous_names` excluded from search/display
-- **Deadname protection** - Automatic suppression of historical names
-- **Export warnings** - Confirmation when exporting private fields
-- **Canvas privacy obfuscation** - Apply privacy protection to canvas display, not just exports
+- **Canvas privacy obfuscation** - Apply privacy protection to canvas display, not just exports (#102)
 
 ### Design Rationale
 
