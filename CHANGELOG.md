@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Privacy-aware canvas generation** ([#102](https://github.com/banisterious/obsidian-canvas-roots/issues/102)):
+  - New privacy options in Tree Wizard for canvas and Excalidraw generation
+  - Living persons can be obfuscated with text nodes showing "Living", "Private", or initials
+  - Choose between 'text' format (no file link) or 'file' format (keeps clickable link)
+  - Option follows global privacy setting by default, can be overridden per-generation
+  - Supports 'hidden' privacy setting to completely exclude living persons from canvas
+
 ### Fixed
 
 - **Adoptive relationships: duplicate nodes and missing children in family chart** ([#129](https://github.com/banisterious/obsidian-canvas-roots/issues/129)):
