@@ -1238,11 +1238,13 @@ export class CanvasGenerator {
 		format: 'text' | 'file'
 	): CanvasNode {
 		if (format === 'text') {
-			// Create text node with obfuscated content - shows protected name but no file link
+			// Create text node with obfuscated content but include wikilink for navigation
+			// Extract filename without extension for wikilink
+			const fileName = person.file.basename;
 			return {
 				id: canvasId,
 				type: 'text',
-				text: `**${privacyResult.displayName}**\n\n_Privacy protected_`,
+				text: `**${privacyResult.displayName}**\n\n[[${fileName}]]\n\n_Privacy protected_`,
 				x,
 				y,
 				width,
