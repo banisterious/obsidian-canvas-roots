@@ -605,6 +605,30 @@ export class ExportWizardModal extends Modal {
 			countEl.createDiv({ cls: 'crc-export-preview-count-label', text: item.label });
 		}
 
+		// Privacy disabled notice - show when privacy is off but living persons exist
+		if (this.formData.privacyHandling === 'include' && this.formData.livingCount > 0) {
+			const noticeEl = section.createDiv({ cls: 'crc-export-privacy-notice' });
+			const infoIcon = noticeEl.createSpan({ cls: 'crc-export-privacy-notice__icon' });
+			setIcon(infoIcon, 'info');
+			const content = noticeEl.createDiv({ cls: 'crc-export-privacy-notice__content' });
+			content.createDiv({
+				cls: 'crc-export-privacy-notice__text',
+				text: `Privacy protection is disabled. ${this.formData.livingCount} living ${this.formData.livingCount === 1 ? 'person' : 'persons'} will be exported with full details.`
+			});
+			const link = content.createDiv({
+				cls: 'crc-export-privacy-notice__link',
+				text: 'Configure privacy settings'
+			});
+			link.addEventListener('click', () => {
+				this.close();
+				// Open plugin settings
+				// @ts-expect-error - Obsidian internal API for opening plugin settings
+				this.app.setting?.open();
+				// @ts-expect-error - Navigate to plugin tab
+				this.app.setting?.openTabById?.(this.plugin.manifest.id);
+			});
+		}
+
 		// Ready message
 		const readyEl = section.createDiv({ cls: 'crc-export-preview-ready' });
 		readyEl.createSpan({ text: 'Ready to export. Click Export to proceed.' });
