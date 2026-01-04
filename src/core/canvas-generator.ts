@@ -271,7 +271,9 @@ export class CanvasGenerator {
 			spouseEdgeLabelFormat: effectiveStyles.spouseEdgeLabelFormat,
 			showSourceIndicators: options.showSourceIndicators ?? false,
 			showResearchCoverage: options.showResearchCoverage ?? false,
-			canvasGroupingStrategy: options.canvasGroupingStrategy ?? 'none' as const
+			canvasGroupingStrategy: options.canvasGroupingStrategy ?? 'none' as const,
+			applyCanvasPrivacy: options.applyCanvasPrivacy ?? false,
+			canvasPrivacyFormat: options.canvasPrivacyFormat ?? 'text' as const
 		};
 
 		logger.debug('canvas-generation', 'Canvas generation options', {
@@ -321,17 +323,12 @@ export class CanvasGenerator {
 			// Store position for edge generation
 			nodeMap.set(crId, { x, y });
 
-			// Create canvas node using generated canvas ID
-			canvasNodes.push({
-				id: canvasId,
-				type: 'file',
-				file: person.file.path,
-				x,
-				y,
-				width: opts.nodeWidth,
-				height: opts.nodeHeight,
-				color: this.getNodeColor(person, generation, opts.nodeColorScheme)
-			});
+			// Create canvas node with privacy protection if needed
+			const node = this.createPersonNode(person, canvasId, x, y, generation, opts);
+			if (node) {
+				canvasNodes.push(node);
+			}
+			// If node is null, the person is excluded from output (privacy setting 'hidden')
 		}
 
 		// Add nodes that appear in edges but weren't positioned by the layout engine
@@ -361,16 +358,10 @@ export class CanvasGenerator {
 						// Spouses have the same generation
 						const generation = generationMap.get(edge.from);
 
-						canvasNodes.push({
-							id: canvasId,
-							type: 'file',
-							file: spouse.file.path,
-							x: spousePos.x,
-							y: spousePos.y,
-							width: opts.nodeWidth,
-							height: opts.nodeHeight,
-							color: this.getNodeColor(spouse, generation, opts.nodeColorScheme)
-						});
+						const node = this.createPersonNode(spouse, canvasId, spousePos.x, spousePos.y, generation, opts);
+						if (node) {
+							canvasNodes.push(node);
+						}
 					}
 				} else if (toPos && !fromPos) {
 					const spouse = familyTree.nodes.get(edge.from);
@@ -383,16 +374,10 @@ export class CanvasGenerator {
 						// Spouses have the same generation
 						const generation = generationMap.get(edge.to);
 
-						canvasNodes.push({
-							id: canvasId,
-							type: 'file',
-							file: spouse.file.path,
-							x: spousePos.x,
-							y: spousePos.y,
-							width: opts.nodeWidth,
-							height: opts.nodeHeight,
-							color: this.getNodeColor(spouse, generation, opts.nodeColorScheme)
-						});
+						const node = this.createPersonNode(spouse, canvasId, spousePos.x, spousePos.y, generation, opts);
+						if (node) {
+							canvasNodes.push(node);
+						}
 					}
 				} else if (!fromPos && !toPos) {
 					// Both spouses are missing - find a child to position relative to
@@ -424,30 +409,18 @@ export class CanvasGenerator {
 							const canvasId1 = this.generateId();
 							crIdToCanvasId.set(edge.from, canvasId1);
 							nodeMap.set(edge.from, parent1Pos);
-							canvasNodes.push({
-								id: canvasId1,
-								type: 'file',
-								file: spouse1.file.path,
-								x: parent1Pos.x,
-								y: parent1Pos.y,
-								width: opts.nodeWidth,
-								height: opts.nodeHeight,
-								color: this.getNodeColor(spouse1, parentGeneration, opts.nodeColorScheme)
-							});
+							const node1 = this.createPersonNode(spouse1, canvasId1, parent1Pos.x, parent1Pos.y, parentGeneration, opts);
+							if (node1) {
+								canvasNodes.push(node1);
+							}
 
 							const canvasId2 = this.generateId();
 							crIdToCanvasId.set(edge.to, canvasId2);
 							nodeMap.set(edge.to, parent2Pos);
-							canvasNodes.push({
-								id: canvasId2,
-								type: 'file',
-								file: spouse2.file.path,
-								x: parent2Pos.x,
-								y: parent2Pos.y,
-								width: opts.nodeWidth,
-								height: opts.nodeHeight,
-								color: this.getNodeColor(spouse2, parentGeneration, opts.nodeColorScheme)
-							});
+							const node2 = this.createPersonNode(spouse2, canvasId2, parent2Pos.x, parent2Pos.y, parentGeneration, opts);
+							if (node2) {
+								canvasNodes.push(node2);
+							}
 						}
 					}
 				}
@@ -506,16 +479,10 @@ export class CanvasGenerator {
 						const childGeneration = generationMap.get(childCrId);
 						const parentGeneration = childGeneration !== undefined ? childGeneration - 1 : undefined;
 
-						canvasNodes.push({
-							id: canvasId,
-							type: 'file',
-							file: parent.file.path,
-							x: newParentPos.x,
-							y: newParentPos.y,
-							width: opts.nodeWidth,
-							height: opts.nodeHeight,
-							color: this.getNodeColor(parent, parentGeneration, opts.nodeColorScheme)
-						});
+						const node = this.createPersonNode(parent, canvasId, newParentPos.x, newParentPos.y, parentGeneration, opts);
+						if (node) {
+							canvasNodes.push(node);
+						}
 					}
 				}
 			}
@@ -1318,6 +1285,58 @@ export class CanvasGenerator {
 		});
 
 		return result.isProtected ? result : null;
+	}
+
+	/**
+	 * Creates a canvas node for a person, applying privacy protection if needed.
+	 * Returns null if the person should be excluded from output.
+	 */
+	private createPersonNode(
+		person: PersonNode,
+		canvasId: string,
+		x: number,
+		y: number,
+		generation: number | undefined,
+		opts: {
+			nodeWidth: number;
+			nodeHeight: number;
+			nodeColorScheme: import('../settings').ColorScheme;
+			applyCanvasPrivacy: boolean;
+			canvasPrivacyFormat: 'text' | 'file';
+		}
+	): CanvasNode | null {
+		const privacyResult = this.checkPersonPrivacy(person, opts.applyCanvasPrivacy);
+		const nodeColor = this.getNodeColor(person, generation, opts.nodeColorScheme);
+
+		if (privacyResult) {
+			if (privacyResult.excludeFromOutput) {
+				return null; // Person should be excluded entirely
+			}
+			// Create privacy-protected node
+			return this.createPrivacyProtectedNode(
+				person,
+				privacyResult,
+				canvasId,
+				x,
+				y,
+				opts.nodeWidth,
+				opts.nodeHeight,
+				nodeColor,
+				opts.canvasPrivacyFormat
+			);
+		}
+
+		// Create standard file node
+		return {
+			id: canvasId,
+			type: 'file',
+			file: person.file.path,
+			x,
+			y,
+			width: opts.nodeWidth,
+			height: opts.nodeHeight,
+			color: nodeColor
+		};
 	}
 
 	/**
