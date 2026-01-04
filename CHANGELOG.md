@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed async/await bug in gzip decompression that caused the import wizard to hang indefinitely
   - The decompression stream writer operations were not being awaited, preventing the reader from completing
 
+- **GEDCOM import: wikilinks point to wrong person when names are duplicated** ([#132](https://github.com/banisterious/obsidian-canvas-roots/issues/132)):
+  - When multiple people share the same name (e.g., father and child both named "George Hall"), wikilinks now correctly point to the right person's file
+  - Previously, global string replacement caused all `[[George Hall]]` references to point to the same file
+  - Now uses cr_id-targeted replacement to match each wikilink with its corresponding `_id` field
+
 ---
 
 ## [0.18.21] - 2026-01-03
