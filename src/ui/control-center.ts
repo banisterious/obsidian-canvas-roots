@@ -473,12 +473,6 @@ export class ControlCenterModal extends Modal {
 					new ImportExportHubModal(this.app, this.plugin).open();
 				});
 				break;
-			case 'staging':
-				// Import and open staging management modal
-				void import('./staging-management-modal').then(({ StagingManagementModal }) => {
-					new StagingManagementModal(this.app, this.plugin).open();
-				});
-				break;
 			case 'statistics':
 				// Open statistics view leaf (includes access to reports)
 				void this.plugin.activateStatisticsView();

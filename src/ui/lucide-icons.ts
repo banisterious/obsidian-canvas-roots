@@ -273,12 +273,6 @@ export const TOOL_CONFIGS: ToolConfig[] = [
 		description: 'Import and export genealogical data'
 	},
 	{
-		id: 'staging',
-		name: 'Staging Area',
-		icon: 'package',
-		description: 'Manage staged imports before promoting'
-	},
-	{
 		id: 'statistics',
 		name: 'Statistics & Reports',
 		icon: 'chart-bar-decreasing',
