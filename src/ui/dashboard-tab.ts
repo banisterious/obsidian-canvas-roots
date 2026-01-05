@@ -548,7 +548,7 @@ function renderClippedNotesSection(
 
 	// Icon
 	const iconEl = section.createSpan({ cls: 'crc-dashboard-clipped-icon' });
-	setLucideIcon(iconEl, 'clipboard', 20);
+	setLucideIcon(iconEl, 'clipboard-check', 20);
 
 	// Content
 	const content = section.createDiv({ cls: 'crc-dashboard-clipped-content' });
