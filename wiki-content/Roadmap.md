@@ -69,7 +69,7 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | Phase | Feature | Status |
 |-------|---------|--------|
 | 1 | Template Distribution | Ready to implement |
-| 2 | File Watcher | Blocked by [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) |
+| 2 | File Watcher | Enabled by [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) |
 | 3 | Enhanced Extraction | Conceptual |
 
 **Phase 1 — Template Distribution:**
