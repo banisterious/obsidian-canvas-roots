@@ -113,6 +113,11 @@
   color: var(--text-normal);
 }
 
+.cr-timeline__title p {
+  display: inline;
+  margin: 0;
+}
+
 .cr-timeline__title a {
   color: var(--text-accent);
   text-decoration: none;
