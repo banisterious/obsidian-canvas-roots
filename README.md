@@ -1,6 +1,6 @@
 # Canvas Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.18.23-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-0.18.24-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
 
 **Canvas Roots** brings professional genealogical tools to Obsidian—import, organize, visualize, and share family histories and fictional worlds without leaving your vault. From GEDCOM imports to PDF reports, interactive charts to map views, manage your research with the power of linked Markdown notes. Built for genealogists, historians, writers, and world-builders.
 
@@ -57,7 +57,7 @@
 | **Dual Storage** | Wikilinks for readability + `cr_id` references for robust tracking |
 | **Smart Duplicate Detection** | Fuzzy name matching and date proximity analysis |
 | **Merge Wizard** | Field-level conflict resolution with automatic relationship reconciliation |
-| **Staging Workflow** | Isolated staging folder for safe import processing |
+| **Staging Workflow** | Dedicated Staging Manager for reviewing imports: batch cards, expandable file previews, duplicate detection, promote/delete actions |
 | **[Data Quality Tools](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Quality)** | Quality scores, 15+ issue types, batch normalization |
 | **Post-Import Cleanup Wizard** | 14-step guided workflow for data quality after import (dates, genders, relationships, places, sources, property migrations) with batch progress indicators and keyboard navigation |
 | **Family Creation Wizard** | 5-step guided workflow for creating interconnected family groups with automatic bidirectional relationship linking |

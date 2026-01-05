@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.18.24] - 2026-01-04
+
+### Added
+
+- **Staging Management UI** ([#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137)):
+  - New dedicated modal for managing staged imports with batch organization
+  - View staging folder statistics: total files, batches, and potential duplicates
+  - Expandable batch cards showing entity breakdown (people, places, sources, events, organizations)
+  - Click batch headers to preview individual files before promoting
+  - Per-batch actions: Check duplicates, Promote to main tree, Delete batch
+  - Bulk actions: Promote all, Delete all staging data
+  - Cross-import duplicate detection using name similarity (Levenshtein), date proximity, and gender matching
+  - Access via Dashboard (yellow indicator when staging has data), Command palette, or Import Wizard success screen
+
+### Changed
+
+- **Staging settings consolidation**:
+  - Moved "Staging isolation" toggle from Data settings to Preferences section
+  - Renamed "Staging folder" setting label for clarity
+
 ### Fixed
 
 - **Event edit modal loses person link on save** ([#135](https://github.com/banisterious/obsidian-canvas-roots/issues/135)):
