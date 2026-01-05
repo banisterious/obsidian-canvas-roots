@@ -20,6 +20,7 @@ import { FamilyCreationWizardModal } from './family-creation-wizard';
 import { FamilyGraphService } from '../core/family-graph';
 import { PlaceGraphService } from '../core/place-graph';
 import { EventService } from '../events/services/event-service';
+import { StagingService } from '../core/staging-service';
 import type { RecentFileEntry } from '../settings';
 
 /**
@@ -61,6 +62,9 @@ export function renderDashboardTab(options: DashboardTabOptions): void {
 
 	// Quick Actions section
 	renderQuickActionsSection(container, plugin, app, switchTab, closeModal);
+
+	// Staging section (if there are staged imports)
+	renderStagingSection(container, plugin, app, closeModal);
 
 	// Recent section (if there are recent files)
 	renderRecentSection(container, plugin, app, closeModal);
@@ -456,6 +460,68 @@ function renderRecentSection(
 			}
 		});
 	}
+}
+
+/**
+ * Render the Staging section (only if there are staged imports)
+ */
+function renderStagingSection(
+	container: HTMLElement,
+	plugin: CanvasRootsPlugin,
+	app: App,
+	closeModal: () => void
+): void {
+	const stagingService = new StagingService(app, plugin.settings);
+
+	// Only show if staging is configured and has data
+	if (!stagingService.isConfigured()) return;
+
+	const stats = stagingService.getStagingStats();
+	if (stats.totalFiles === 0) return;
+
+	// Section container with alert styling
+	const section = container.createDiv({ cls: 'crc-dashboard-staging-section' });
+
+	// Icon
+	const iconEl = section.createSpan({ cls: 'crc-dashboard-staging-icon' });
+	setLucideIcon(iconEl, 'package', 20);
+
+	// Content
+	const content = section.createDiv({ cls: 'crc-dashboard-staging-content' });
+
+	// Title
+	content.createEl('strong', { text: 'Staged Imports' });
+
+	// Stats summary
+	const statsText = content.createSpan({ cls: 'crc-dashboard-staging-stats' });
+
+	// Build entity breakdown
+	const parts: string[] = [];
+	const counts = stats.entityCounts;
+	if (counts.person > 0) parts.push(`${counts.person} ${counts.person === 1 ? 'person' : 'people'}`);
+	if (counts.place > 0) parts.push(`${counts.place} ${counts.place === 1 ? 'place' : 'places'}`);
+	if (counts.event > 0) parts.push(`${counts.event} ${counts.event === 1 ? 'event' : 'events'}`);
+	if (counts.source > 0) parts.push(`${counts.source} ${counts.source === 1 ? 'source' : 'sources'}`);
+	if (counts.organization > 0) parts.push(`${counts.organization} ${counts.organization === 1 ? 'organization' : 'organizations'}`);
+	if (counts.other > 0) parts.push(`${counts.other} other`);
+
+	if (parts.length > 0) {
+		statsText.setText(` — ${parts.join(', ')}`);
+	} else {
+		statsText.setText(` — ${stats.totalFiles} ${stats.totalFiles === 1 ? 'file' : 'files'}`);
+	}
+
+	// Action button
+	const manageBtn = section.createEl('button', {
+		cls: 'crc-dashboard-staging-btn',
+		text: 'Manage'
+	});
+
+	manageBtn.addEventListener('click', async () => {
+		closeModal();
+		const { StagingManagementModal } = await import('./staging-management-modal');
+		new StagingManagementModal(app, plugin).open();
+	});
 }
 
 /**
