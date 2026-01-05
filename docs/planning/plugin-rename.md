@@ -65,11 +65,11 @@ Rename to **Charted Roots** because:
 
 1. **Plugin Metadata:**
    - `manifest.json` — `name`, `id` fields
-   - `package.json` — `name`, `description` fields
+   - `package.json` — `name`, `description` fields; add "canvas-roots" to keywords for searchability
    - `versions.json` — No changes needed (historical record)
 
 2. **Documentation:**
-   - `README.md` — All references to "Canvas Roots"
+   - `README.md` — All references to "Canvas Roots"; add "Formerly known as Canvas Roots" note near top
    - `CONTRIBUTING.md` — Plugin name references
    - `wiki-content/*.md` — All wiki pages
    - `docs/developer/**/*.md` — Developer documentation
@@ -190,11 +190,22 @@ If critical issues arise:
 
 ---
 
-## Open Questions
+## Decisions
 
-1. Should this be a major version bump (v1.0.0) or minor (v0.19.0)?
-2. How long should we monitor Discussion #58 before proceeding?
-3. Should we preserve "Canvas Roots" anywhere for searchability/legacy?
+1. **Version bump: v0.19.0 (minor)**
+   - Non-breaking change (all data, CSS, properties remain compatible)
+   - v1.0.0 reserved for major feature completion or API stability milestone
+   - v0.19.0 signals significant change without implying breaking changes
+
+2. **Discussion monitoring: 24-48 hours**
+   - Wait for community feedback on Discussion #58
+   - Proceed if no major objections emerge
+   - Can revisit if feedback comes later
+
+3. **Preserve "Canvas Roots" for searchability: Yes, strategically**
+   - Add "Formerly known as Canvas Roots" note in README
+   - Include both "canvas-roots" and "charted-roots" in package.json keywords
+   - Remove legacy references after 6-12 months once search rankings stabilize
 
 ---
 
