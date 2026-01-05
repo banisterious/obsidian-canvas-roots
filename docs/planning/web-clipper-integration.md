@@ -2,10 +2,10 @@
 
 Planning document for integrating Obsidian Web Clipper with Canvas Roots for genealogical research.
 
-- **Status:** Planning
+- **Status:** Ready for implementation
 - **GitHub Issue:** [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128)
 - **Created:** 2025-01-04
-- **Updated:** 2026-01-05
+- **Updated:** 2026-01-05 (Phase 1 decisions finalized based on community feedback)
 - **Enabled By:** [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) (Staging Management UI, completed v0.18.24)
 
 ---
@@ -68,20 +68,28 @@ Canvas Roots will monitor staging folder for files containing these properties.
    - Show count: "3 new"
    - Click opens Staging Manager with filter: `clip_source_type:*` or `clipped_from:*`
 
-3. **Optional notification:**
-   - Desktop notification on clip detection (user setting)
-   - Debounce to avoid spam during bulk clips
-
-4. **Staging Manager filter:**
+3. **Staging Manager filter:**
    - Add filter option: "Clipped notes only"
    - Shows files with clipper metadata
    - Optionally persist filter selection
 
 ### Implementation Details & Decisions
 
+**Dashboard indicator approach:**
+- Dashboard indicator only for Phase 1 (simpler, less intrusive)
+- No notices/notifications for clip detection
+- Rationale: Less intrusive, user checks when ready; simpler MVP implementation
+
+**Filter persistence:**
+- No persistence initially
+- Staging currently contains imports and clippings; simple approach should suffice
+- Can add persistence later if users accumulate large backlogs over extended periods
+
 **Unreviewed tracking:**
-- Start with simple approach: count resets when Staging Manager is opened with clips visible
-- Can enhance later with per-file tracking if users request it
+- Count resets when Staging Manager opens (simple approach)
+- Anything in staging is inherently unprocessed
+- Count indicates "new clips since you last checked staging"
+- Can enhance with per-file tracking if users request it
 
 **Detection scope:**
 - Only monitor staging folder (as configured in settings)
@@ -89,10 +97,12 @@ Canvas Roots will monitor staging folder for files containing these properties.
 - User must configure Web Clipper to output to staging folder
 - Clips outside staging folder won't be detected
 
-**Property conflicts:**
-- Use unprefixed properties (`clipped_from`, `clip_source_type`) for simplicity
-- Low risk of conflict since these are clearly clipper-specific
-- Document in Phase 1 user guide
+**Property standardization:**
+- All three properties recommended but optional: `clip_source_type`, `clipped_from`, `clipped_date`
+- Minimal standardization makes implementation easier
+- Document benefits of including properties and what's lost without them
+- Gives users flexibility while enabling better integration
+- Properties are unprefixed for simplicity (low risk of conflict)
 
 **Filter mechanism:**
 - Extend existing Staging Manager search/filter to support property matching
@@ -181,38 +191,6 @@ More sophisticated extraction capabilities.
 
 ---
 
-## Open Questions
-
-1. **Notification vs indicator only** — Should Phase 1 include desktop notifications, or just Dashboard indicator?
-   - Indicator: Less intrusive, user checks when ready
-   - Notification: More immediate awareness, but could be annoying
-
-2. **Filter persistence** — Should Staging Manager remember "clipped notes only" filter across sessions?
-
-3. **Property standardization** — Should we document recommended clipper metadata properties now, or wait for community patterns?
-
-4. **Phase 2 timing** — What signals indicate we should move forward with official templates?
-   - X number of users requesting them?
-   - Stable patterns emerging in Discussions?
-   - Web Clipper schema stability?
-
-5. **Community contributions** — How to handle user-shared templates?
-   - Curated list in Discussions?
-   - Community wiki page?
-   - Eventually accept PRs to docs/clipper-templates/?
-
-6. **"Unreviewed" tracking** — How to determine when clipped notes have been reviewed?
-   - Option A: Count resets when Dashboard indicator is clicked (current plan)
-   - Option B: Track per-file when promoted/deleted from staging
-   - Option C: Manual reset button in Dashboard/Staging Manager
-
-7. **Detection scope** — Where should Canvas Roots detect clipped notes?
-   - Staging folder only (current plan - simpler, better performance)
-   - Anywhere in vault (more flexible, performance concern)
-   - Configurable setting?
-
----
-
 ## Documentation Updates (Phase 1)
 
 ### Wiki Pages to Create/Update
@@ -253,5 +231,17 @@ clipped_date: "{{date}}"
 ## Notes
 
 This plan was created based on GitHub issue [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128) discussion. Key community input:
-- @wilbry tested templates and noted Web Clipper requires double quotes in prompts
+
+**Initial testing (@wilbry):**
+- Web Clipper requires double quotes in prompts (not single quotes)
 - Clipper variables in context field improve LLM extraction quality
+- Larger Mistral models (8B, Small 3.2) perform better than smaller models
+- LLM hallucination observed (fabricating birth years when not in source)
+- Hallucination issue reinforces value of staging review workflow
+
+**Phase 1 design decisions (@wilbry feedback):**
+- Dashboard indicator only for simpler MVP
+- No filter persistence initially (staging volume expected to be manageable)
+- Reset unreviewed count when Staging Manager opens
+- Staging folder detection only (performance and simplicity)
+- All three clipper properties recommended but optional

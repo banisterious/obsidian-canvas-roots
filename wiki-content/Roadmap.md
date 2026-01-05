@@ -146,7 +146,7 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **Priority:** 📋 Medium — Streamlines research capture for all genealogists
 
-**Status:** Planning
+**Status:** Ready for implementation
 
 **GitHub Issue:** [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128)
 
@@ -158,16 +158,16 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 | Phase | Feature | Status |
 |-------|---------|--------|
-| 1 | File Watcher & Dashboard Integration | Enabled by [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) (v0.18.24) |
+| 1 | File Watcher & Dashboard Integration | Ready for implementation |
 | 2 | Official Template Distribution | After community feedback |
 | 3 | Enhanced Extraction | Conceptual |
 
 **Phase 1 — File Watcher & Dashboard Integration:**
-- Detect clipped notes in staging folder (files with `clip_source_type` or `clipped_from` properties)
+- Detect clipped notes in staging folder (files with `clip_source_type`, `clipped_from`, or `clipped_date` properties)
 - Show Dashboard indicator: "3 new clipped notes"
 - Click to open Staging Manager filtered to clipped notes
-- Optional desktop notification when clips detected
 - Works with any user-created Web Clipper templates
+- All clipper properties recommended but optional
 
 **Phase 2 — Official Template Distribution (Future):**
 - Curated JSON template files in `docs/clipper-templates/`
