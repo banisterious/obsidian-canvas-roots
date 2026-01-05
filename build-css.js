@@ -36,6 +36,7 @@ const CONFIG = {
     'place-modals.css',  // Place-specific modals
     'media-modals.css',  // Media management modals
     'import-export-wizard.css', // Import/Export wizard modals
+    'staging-manager.css', // Staging management modal
     'cleanup-wizard.css', // Cleanup wizard modal (all steps)
     'duplicate-detection.css', // Duplicate detection modal
     'tree-statistics.css', // Tree statistics modal

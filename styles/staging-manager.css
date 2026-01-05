@@ -1,0 +1,397 @@
+/* =============================================================================
+   Staging Manager Modal
+   UI for managing staged imports: view, check duplicates, promote, delete
+   ============================================================================= */
+
+/* Modal sizing */
+.modal:has(.crc-staging-modal) {
+  max-width: 700px;
+  width: 90vw;
+}
+
+.modal:has(.crc-staging-modal) .modal-content {
+  padding: 0;
+}
+
+.crc-staging-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+/* -----------------------------------------------------------------------------
+   Header
+   ----------------------------------------------------------------------------- */
+
+.crc-staging-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.crc-staging-header-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(var(--interactive-accent-rgb), 0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--interactive-accent);
+}
+
+.crc-staging-header-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.crc-staging-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* -----------------------------------------------------------------------------
+   Empty State
+   ----------------------------------------------------------------------------- */
+
+.crc-staging-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.crc-staging-empty-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--background-secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.crc-staging-empty-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.crc-staging-empty h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.crc-staging-empty p {
+  margin: 0 0 16px 0;
+  color: var(--text-muted);
+  max-width: 360px;
+}
+
+.crc-staging-empty .crc-staging-path {
+  font-size: 12px;
+  color: var(--text-faint);
+  margin-bottom: 16px;
+  font-family: var(--font-monospace);
+}
+
+/* -----------------------------------------------------------------------------
+   Overview Section
+   ----------------------------------------------------------------------------- */
+
+.crc-staging-overview {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.crc-staging-info {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  font-family: var(--font-monospace);
+  background: var(--background-secondary);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.crc-staging-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.crc-staging-stat-card {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.crc-staging-stat-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(var(--interactive-accent-rgb), 0.15);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--interactive-accent);
+  margin-bottom: 8px;
+}
+
+.crc-staging-stat-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.crc-staging-stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.crc-staging-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.crc-staging-breakdown {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.crc-staging-breakdown-label {
+  font-weight: 500;
+}
+
+.crc-staging-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.crc-staging-type-badge-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.crc-staging-type-badge-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.crc-staging-separator {
+  color: var(--text-faint);
+}
+
+/* -----------------------------------------------------------------------------
+   Subfolder List
+   ----------------------------------------------------------------------------- */
+
+.crc-staging-list {
+  padding: 20px 24px;
+}
+
+.crc-staging-list h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.crc-staging-item {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+
+.crc-staging-item:last-child {
+  margin-bottom: 0;
+}
+
+.crc-staging-item-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.crc-staging-item-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(var(--interactive-accent-rgb), 0.1);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--interactive-accent);
+  flex-shrink: 0;
+}
+
+.crc-staging-item-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.crc-staging-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.crc-staging-item-name {
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.crc-staging-item-stats {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.crc-staging-item-date {
+  color: var(--text-faint);
+}
+
+.crc-staging-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* -----------------------------------------------------------------------------
+   Buttons
+   ----------------------------------------------------------------------------- */
+
+.crc-staging-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  transition: all 0.15s ease;
+}
+
+.crc-staging-btn:hover {
+  border-color: var(--interactive-accent);
+  background: rgba(var(--interactive-accent-rgb), 0.08);
+}
+
+.crc-staging-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.crc-staging-btn-check {
+  color: var(--text-accent);
+}
+
+.crc-staging-btn-check:hover {
+  color: var(--interactive-accent);
+}
+
+.crc-staging-btn-promote {
+  color: rgb(74, 222, 128);
+}
+
+.crc-staging-btn-promote:hover {
+  border-color: rgb(74, 222, 128);
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.crc-staging-btn-delete {
+  color: rgb(248, 113, 113);
+}
+
+.crc-staging-btn-delete:hover {
+  border-color: rgb(248, 113, 113);
+  background: rgba(248, 113, 113, 0.1);
+}
+
+/* -----------------------------------------------------------------------------
+   Bulk Actions
+   ----------------------------------------------------------------------------- */
+
+.crc-staging-actions {
+  padding: 20px 24px;
+  border-top: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary-alt);
+}
+
+.crc-staging-actions-header {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.crc-staging-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* -----------------------------------------------------------------------------
+   Confirmation Modal
+   ----------------------------------------------------------------------------- */
+
+.crc-confirmation-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.crc-btn-secondary {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.crc-btn-secondary:hover {
+  background: var(--background-modifier-hover);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 500px) {
+  .crc-staging-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .crc-staging-item-actions {
+    flex-direction: column;
+  }
+
+  .crc-staging-actions-row {
+    flex-direction: column;
+  }
+
+  .crc-staging-btn {
+    justify-content: center;
+  }
+}
