@@ -5,148 +5,136 @@ Planning document for integrating Obsidian Web Clipper with Canvas Roots for gen
 - **Status:** Planning
 - **GitHub Issue:** [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128)
 - **Created:** 2025-01-04
-- **Updated:** 2025-01-04
-- **Depends On:** [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) (Staging Management UI) for Phase 2
+- **Updated:** 2026-01-05
+- **Enabled By:** [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) (Staging Management UI, completed v0.18.24)
 
 ---
 
 ## Overview
 
-Obsidian Web Clipper is an official browser extension that captures web content into Obsidian notes. This integration provides ready-to-use templates for capturing genealogical data from common sources like obituaries, Find A Grave, FamilySearch, and Wikipedia biographies.
+Obsidian Web Clipper is an official browser extension that captures web content into Obsidian notes. With the Staging Management UI now complete, users can already configure Web Clipper to output to their staging folder and use Staging Manager to review/promote clipped notes. This integration adds convenience features and (eventually) standardized templates.
 
 ### Goals
 
-1. **Streamline research capture** — One-click clipping of genealogical data with structured frontmatter
-2. **Reduce manual data entry** — Auto-extract names, dates, relationships from web sources
-3. **Integrate with staging workflow** — Clipped notes land in staging for review before promotion
+1. **Streamline clipped note detection** — Auto-detect clipped notes and show Dashboard indicator
+2. **Leverage existing staging workflow** — Enhance the clip → stage → review → promote workflow
+3. **Enable community experimentation** — Let users test templates before standardization
+4. **Eventually provide curated templates** — After learning from community usage
 
 ### Non-Goals
 
 - Building a custom web scraper (Web Clipper handles extraction)
-- Modifying Web Clipper itself (we distribute templates only)
+- Modifying Web Clipper itself (we provide integration only)
 - Real-time sync with genealogy websites
+- Opinionated auto-import (staging review workflow is more flexible)
 
 ---
 
-## Phase 1: Template Distribution
+## Phase 1: File Watcher & Dashboard Integration
 
-**Status:** Ready to implement
+**Status:** Ready to implement (enabled by #137)
 
-Distribute ready-to-use JSON template files that users manually import into Web Clipper.
+Detect clipped notes and provide convenience features for the existing workflow.
 
-### Template Location
+### Clipper Metadata Properties
 
-**Option A (Recommended):** `docs/clipper-templates/` in main repo
-- Simpler maintenance
-- Templates versioned with plugin releases
-- Users can find templates alongside documentation
+To detect clipped notes, users should include one or more of these properties in their Web Clipper templates:
 
-**Option B:** Separate repository
-- Independent versioning
-- Cleaner separation of concerns
-- More overhead to maintain
+- `clip_source_type` - Type of source (e.g., `obituary`, `findagrave`, `census`)
+- `clipped_from` - Original URL (`{{url}}` in Web Clipper)
+- `clipped_date` - Clip timestamp (`{{date}}` in Web Clipper)
 
-### Proposed Templates
-
-| Template | Source | Extraction Method |
-|----------|--------|-------------------|
-| Generic Obituary | Any obituary site | LLM extraction |
-| Find A Grave | findagrave.com | CSS selectors + LLM |
-| FamilySearch Person | familysearch.org | CSS selectors |
-| Wikipedia Biography | wikipedia.org | Schema.org + infobox parsing |
-
-### Template Structure
-
-Each template produces a note with Canvas Roots frontmatter:
-
-```yaml
----
-cr_type: person
-cr_id:
-name: "Extracted Name"
-born: "YYYY-MM-DD"
-died: "YYYY-MM-DD"
-birth_place: "City, State"
-death_place: "City, State"
-# Clipping metadata
-clipped_from: "{{url}}"
-clipped_date: "{{date}}"
-clip_source_type: obituary
----
-
-# {{title}}
-
-{{content}}
-```
-
-### Property Alias Handling
-
-**Challenge:** Users may have custom property aliases (e.g., `birth_date` instead of `born`).
-
-**Options:**
-
-1. **Document canonical names** — Templates use canonical names; users adjust manually if needed
-2. **Multiple template variants** — Provide common alias variations
-3. **Post-processing script** — User runs cleanup wizard step after clipping
-
-**Recommendation:** Option 1 (document canonical names) for Phase 1. The Cleanup Wizard can handle property normalization for users with custom aliases.
+Canvas Roots will monitor staging folder for files containing these properties.
 
 ### User Workflow
 
-1. Install Obsidian Web Clipper browser extension
-2. Download template JSON from `docs/clipper-templates/`
-3. Import template in Web Clipper settings
-4. Configure output folder to staging folder (e.g., `Family/People/Staging/clips`)
-5. Browse genealogy site, click Web Clipper, select template
-6. Note created in staging folder with extracted data
-7. Review and edit in Obsidian
-8. Use Staging Manager ([#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137)) to promote to main tree
+1. User creates their own Web Clipper templates (or obtains from community)
+2. Configure Web Clipper to output to staging folder (e.g., `Family/Staging/clips`)
+3. Include `clip_source_type` or `clipped_from` in template frontmatter
+4. Clip genealogical content from web
+5. Canvas Roots detects new clips and shows Dashboard indicator: "3 new clipped notes"
+6. Click indicator to open Staging Manager filtered to clipped notes
+7. Review and promote to main tree
 
 ### Implementation Steps
 
-1. Create `docs/clipper-templates/` directory
-2. Create `README.md` with setup instructions
-3. Create `generic-obituary.json` template
-4. Create `find-a-grave.json` template
-5. Create `familysearch-person.json` template
-6. Create `wikipedia-biography.json` template
-7. Add wiki documentation page
-8. Link from Data Entry documentation
+1. **File watching:**
+   - Use `vault.on('create', ...)` to detect new files in staging folder
+   - Parse frontmatter for clipper metadata properties
+   - Track count of unreviewed clipped notes
 
-### Template Development Notes
+2. **Dashboard integration:**
+   - Add "Clipped Notes" indicator (similar to existing staging indicator)
+   - Show count: "3 new"
+   - Click opens Staging Manager with filter: `clip_source_type:*` or `clipped_from:*`
 
-Based on community feedback:
-- Web Clipper requires double quotes in extraction instructions
-- Include clipper variables in the context field for better LLM extraction
-- Test templates against real pages before release
+3. **Optional notification:**
+   - Desktop notification on clip detection (user setting)
+   - Debounce to avoid spam during bulk clips
+
+4. **Staging Manager filter:**
+   - Add filter option: "Clipped notes only"
+   - Shows files with clipper metadata
+   - Optionally persist filter selection
+
+### Benefits
+
+- Works with any user-created templates (no repo commitment needed)
+- Users can experiment and share templates in Discussions
+- Minimal implementation effort (leverage existing Staging Manager UI)
+- Learn from real usage before standardizing templates
 
 ---
 
-## Phase 2: File Watcher (Future)
+## Phase 2: Official Template Distribution (Future)
 
-**Status:** Blocked by [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) (Staging Management UI)
+**Status:** After community feedback
 
-Automatically detect clipped notes and offer guided import.
+Provide curated, tested templates based on real-world usage patterns.
 
-### Concept
+### Rationale for Delay
 
-1. Monitor staging folder for new files
-2. Detect files with `clip_source_type` frontmatter
-3. Show notification or badge: "3 new clipped notes to review"
-4. Open Staging Manager with filter for clipped notes
-5. Guide user through review and promotion
+- Let users experiment with their own templates first
+- Learn what sources are actually used (Find A Grave? Ancestry? Newspapers?)
+- Understand which extraction methods work best (LLM vs CSS selectors)
+- Avoid committing to templates that may need frequent updates
+- Reduce initial maintenance burden
 
-### Dependencies
+### When to Proceed
 
-- **[#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) Staging Management UI** — Provides the review/promote workflow
-- File watching capability (Obsidian's vault events)
+Consider moving forward when:
+- Multiple users sharing similar templates in Discussions
+- Clear patterns emerge for most-used sources
+- Web Clipper API/schema stabilizes
+- Community requests official templates
 
-### Implementation Considerations
+### Proposed Template Location
 
-- Use Obsidian's `vault.on('create', ...)` event
-- Filter for files in staging folder with clip metadata
-- Debounce notifications to avoid spam during bulk imports
-- Consider "auto-assign cr_id" option for clipped notes
+**docs/clipper-templates/** in main repo with:
+- Individual JSON files for each template
+- README with setup instructions and compatibility notes
+- Version compatibility metadata (`canvas_roots_min_version`)
+
+### Candidate Templates
+
+Based on initial community interest:
+
+| Template | Source | Extraction Method | Priority |
+|----------|--------|-------------------|----------|
+| Generic Obituary | Any obituary site | LLM extraction | High |
+| Find A Grave | findagrave.com | CSS selectors | High |
+| FamilySearch Person | familysearch.org | CSS selectors | Medium |
+| Wikipedia Biography | wikipedia.org | Schema.org | Low |
+
+### Template Standards
+
+When/if official templates are created:
+- Use canonical Canvas Roots property names
+- Include all clipper metadata properties (`clip_source_type`, `clipped_from`, `clipped_date`)
+- Document property mappings and known limitations
+- Include URL triggers for auto-selection
+- Test against real pages before release
+- Version templates alongside plugin releases
 
 ---
 
@@ -171,116 +159,43 @@ More sophisticated extraction capabilities.
 
 ---
 
-## Template Specifications
+## Open Questions
 
-### Generic Obituary Template
+1. **Notification vs indicator only** — Should Phase 1 include desktop notifications, or just Dashboard indicator?
+   - Indicator: Less intrusive, user checks when ready
+   - Notification: More immediate awareness, but could be annoying
 
-**Target:** Any obituary page (newspapers, funeral homes, legacy.com)
+2. **Filter persistence** — Should Staging Manager remember "clipped notes only" filter across sessions?
 
-**Extraction Strategy:** LLM-based with structured prompts
+3. **Property standardization** — Should we document recommended clipper metadata properties now, or wait for community patterns?
 
-**Fields to Extract:**
-- Full name (including maiden name if mentioned)
-- Birth date and place
-- Death date and place
-- Parents' names
-- Spouse name(s)
-- Children's names
-- Siblings' names
-- Key life events mentioned
+4. **Phase 2 timing** — What signals indicate we should move forward with official templates?
+   - X number of users requesting them?
+   - Stable patterns emerging in Discussions?
+   - Web Clipper schema stability?
 
-**Prompt Structure:**
-```
-Extract the following from this obituary:
-- Full name of the deceased
-- Birth date (format: YYYY-MM-DD or partial)
-- Death date (format: YYYY-MM-DD or partial)
-- Birth place (city, state/country)
-- Death place (city, state/country)
-- Spouse name(s)
-- Parents' names
-- Children's names (comma-separated)
-```
-
-### Find A Grave Template
-
-**Target:** findagrave.com memorial pages
-
-**Extraction Strategy:** CSS selectors (stable structure) + LLM for bio
-
-**Key Selectors:**
-- Name: `#bio-name`
-- Birth date: `#birthDateLabel`
-- Death date: `#deathDateLabel`
-- Birth place: `#birthLocationLabel`
-- Death place: `#deathLocationLabel`
-- Cemetery: `#cemeteryNameLabel`
-
-**Additional Fields:**
-- Memorial ID (from URL)
-- Plot location
-- Inscription text
-
-### FamilySearch Person Template
-
-**Target:** familysearch.org/tree/person/[ID]
-
-**Extraction Strategy:** CSS selectors
-
-**Key Fields:**
-- Name, birth, death, parents, spouses, children
-- FamilySearch PID (for future linking)
-- Sources count
-
-### Wikipedia Biography Template
-
-**Target:** wikipedia.org biography pages
-
-**Extraction Strategy:** Schema.org + infobox parsing
-
-**Key Fields:**
-- Name from title
-- Birth/death from infobox
-- Summary paragraph for notes
+5. **Community contributions** — How to handle user-shared templates?
+   - Curated list in Discussions?
+   - Community wiki page?
+   - Eventually accept PRs to docs/clipper-templates/?
 
 ---
 
-## Documentation Updates
+## Documentation Updates (Phase 1)
 
 ### Wiki Pages to Create/Update
 
-- [ ] Create: `Web-Clipper-Integration.md` — Setup guide and template catalog
-- [ ] Update: `Data-Entry.md` — Add Web Clipper as import method
-- [ ] Update: `Roadmap.md` — Add Web Clipper integration entry
+- [ ] Create or update: `Data-Entry.md` — Document Web Clipper workflow with Canvas Roots
+- [ ] Update: `Roadmap.md` — Reflect revised phasing ✅
+- [ ] Update: Planning doc — Reflect revised phasing ✅
 
-### Template README
+### User Guide Content
 
-Each template should include:
-- Target site(s)
-- Setup instructions
-- Field mappings
-- Known limitations
-- Version history
-
----
-
-## Open Questions
-
-1. **Template versioning** — How to handle schema changes that break templates?
-   - Semantic versioning in template metadata?
-   - Compatibility notes in wiki?
-
-2. **LLM vs CSS selectors** — When to prefer each?
-   - CSS: Stable, predictable sites (Find A Grave, FamilySearch)
-   - LLM: Variable format sites (obituaries, newspapers)
-
-3. **Property alias support** — Worth supporting in Phase 1?
-   - Current recommendation: No, use canonical names
-   - Cleanup Wizard handles normalization
-
-4. **Community contributions** — How to accept template contributions?
-   - PR to main repo?
-   - Template gallery in discussions?
+Document how to:
+1. Create Web Clipper templates with clipper metadata properties
+2. Configure output folder to staging
+3. Use Dashboard indicator to review clipped notes
+4. Share templates in Discussions
 
 ---
 
