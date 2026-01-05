@@ -58,6 +58,7 @@ import { MediaPickerModal } from './src/core/ui/media-picker-modal';
 import { MediaManageModal } from './src/core/ui/media-manage-modal';
 import { CleanupWizardModal } from './src/ui/cleanup-wizard-modal';
 import { MigrationNoticeView, VIEW_TYPE_MIGRATION_NOTICE } from './src/ui/views/migration-notice-view';
+import { WebClipperService } from './src/core/web-clipper-service';
 
 const logger = getLogger('CanvasRootsPlugin');
 
@@ -71,6 +72,7 @@ export default class CanvasRootsPlugin extends Plugin {
 	private eventService: EventService | null = null;
 	private recentFilesService: RecentFilesService | null = null;
 	private mediaService: MediaService | null = null;
+	private webClipperService: WebClipperService | null = null;
 
 	/**
 	 * Flag to temporarily disable bidirectional sync during bulk operations (e.g., import)
@@ -146,6 +148,13 @@ export default class CanvasRootsPlugin extends Plugin {
 	 */
 	getEventService(): EventService | null {
 		return this.eventService;
+	}
+
+	/**
+	 * Get the Web Clipper service for detecting clipped notes
+	 */
+	getWebClipperService(): WebClipperService | null {
+		return this.webClipperService;
 	}
 
 	/**
@@ -273,6 +282,10 @@ export default class CanvasRootsPlugin extends Plugin {
 
 		// Initialize media service
 		this.mediaService = new MediaService(this.app, this.settings);
+
+		// Initialize Web Clipper service
+		this.webClipperService = new WebClipperService(this.app, this.settings);
+		this.webClipperService.startWatching();
 
 		// Run migration for property rename (collection_name -> group_name)
 		await this.migrateCollectionNameToGroupName();
@@ -4605,6 +4618,11 @@ export default class CanvasRootsPlugin extends Plugin {
 		// Clean up event handlers
 		if (this.fileModifyEventRef) {
 			this.app.metadataCache.offref(this.fileModifyEventRef);
+		}
+
+		// Stop Web Clipper file watching
+		if (this.webClipperService) {
+			this.webClipperService.stopWatching();
 		}
 	}
 
