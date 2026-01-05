@@ -2,7 +2,7 @@
 
 Planning document for adding staging management functionality to Import/Export wizards.
 
-- **Status:** In Progress
+- **Status:** Complete
 - **GitHub Issue:** [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137)
 - **Created:** 2025-12-28
 - **Updated:** 2026-01-04
@@ -302,9 +302,9 @@ The following CSS classes were used in the deprecated tab and should be reused o
 
 ### Phase 3: Integration
 
-- [ ] Connect Import Wizard "Import to Staging" → auto-open staging manager post-import
-- [ ] Add badge/indicator on Dashboard when staging has data
-- [ ] Refresh staging stats after import/promote/delete operations
+- [x] Connect Import Wizard "Import to Staging" → show "Manage Staging" button on success screen
+- [x] Add badge/indicator on Dashboard when staging has data (yellow staging section)
+- [x] Refresh staging stats after import/promote/delete operations (modal re-renders)
 
 ---
 
