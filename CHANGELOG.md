@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Timeline event location spacing: fixed missing space between event links and location text (e.g., "Murder of Agrippina in Baiae")
+
 ---
 
 ## [0.18.24] - 2026-01-04
@@ -30,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Staging settings consolidation**:
   - Moved "Staging isolation" toggle from Data settings to Preferences section
   - Renamed "Staging folder" setting label for clarity
+- Removed Staging Area from Control Center Tools section navigation (still accessible via Dashboard, Command palette, and Import Wizard)
 
 ### Fixed
 
