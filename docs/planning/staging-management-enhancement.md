@@ -5,7 +5,7 @@ Planning document for adding staging management functionality to Import/Export w
 - **Status:** In Progress
 - **GitHub Issue:** [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137)
 - **Created:** 2025-12-28
-- **Updated:** 2025-01-04
+- **Updated:** 2026-01-04
 
 ---
 
@@ -296,9 +296,9 @@ The following CSS classes were used in the deprecated tab and should be reused o
 ### Phase 2: Entry Points
 
 - [x] Add command: "Canvas Roots: Manage staging area"
-- [ ] Add "Manage Staging" button to Import Wizard success screen
-- [ ] Add "Staging" tile to Dashboard (when staging has data)
-- [ ] Add "Staging" entry to TOOL_CONFIGS
+- [x] Add "Manage Staging" button to Import Wizard success screen
+- [x] Add "Staging" section to Dashboard (when staging has data)
+- [x] Add "Staging" entry to TOOL_CONFIGS
 
 ### Phase 3: Integration
 
