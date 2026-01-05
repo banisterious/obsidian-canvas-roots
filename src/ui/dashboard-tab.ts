@@ -66,6 +66,9 @@ export function renderDashboardTab(options: DashboardTabOptions): void {
 	// Staging section (if there are staged imports)
 	renderStagingSection(container, plugin, app, closeModal);
 
+	// Clipped Notes section (if there are clipped notes)
+	renderClippedNotesSection(container, plugin, app, closeModal);
+
 	// Recent section (if there are recent files)
 	renderRecentSection(container, plugin, app, closeModal);
 
@@ -521,6 +524,54 @@ function renderStagingSection(
 		closeModal();
 		const { StagingManagementModal } = await import('./staging-management-modal');
 		new StagingManagementModal(app, plugin).open();
+	});
+}
+
+/**
+ * Render the Clipped Notes section (only if there are clipped notes)
+ */
+function renderClippedNotesSection(
+	container: HTMLElement,
+	plugin: CanvasRootsPlugin,
+	app: App,
+	closeModal: () => void
+): void {
+	const webClipperService = plugin.getWebClipperService();
+	if (!webClipperService) return;
+
+	// Only show if there are unread clipped notes
+	const unreadCount = webClipperService.getUnreadClipCount();
+	if (unreadCount === 0) return;
+
+	// Section container with alert styling (similar to staging)
+	const section = container.createDiv({ cls: 'crc-dashboard-clipped-section' });
+
+	// Icon
+	const iconEl = section.createSpan({ cls: 'crc-dashboard-clipped-icon' });
+	setLucideIcon(iconEl, 'clipboard', 20);
+
+	// Content
+	const content = section.createDiv({ cls: 'crc-dashboard-clipped-content' });
+
+	// Title
+	content.createEl('strong', { text: 'Clipped Notes' });
+
+	// Stats summary
+	const statsText = content.createSpan({ cls: 'crc-dashboard-clipped-stats' });
+	statsText.setText(` — ${unreadCount} new ${unreadCount === 1 ? 'clip' : 'clips'}`);
+
+	// Action button
+	const reviewBtn = section.createEl('button', {
+		cls: 'crc-dashboard-clipped-btn',
+		text: 'Review'
+	});
+
+	reviewBtn.addEventListener('click', async () => {
+		closeModal();
+		// Reset count when user opens Staging Manager
+		webClipperService.resetUnreadCount();
+		const { StagingManagementModal } = await import('./staging-management-modal');
+		new StagingManagementModal(app, plugin, { filterClipped: true }).open();
 	});
 }
 

@@ -20,6 +20,13 @@ import { FolderFilterService } from '../core/folder-filter';
 import type { NoteType } from '../utils/note-type-detection';
 
 /**
+ * Options for StagingManagementModal
+ */
+export interface StagingManagementOptions {
+	filterClipped?: boolean;
+}
+
+/**
  * Staging Management Modal
  */
 export class StagingManagementModal extends Modal {
@@ -27,11 +34,13 @@ export class StagingManagementModal extends Modal {
 	private stagingService: StagingService;
 	private crossImportService: CrossImportDetectionService | null = null;
 	private expandedBatches: Set<string> = new Set();
+	private filterClipped: boolean;
 
-	constructor(app: App, plugin: CanvasRootsPlugin) {
+	constructor(app: App, plugin: CanvasRootsPlugin, options?: StagingManagementOptions) {
 		super(app);
 		this.plugin = plugin;
 		this.stagingService = new StagingService(app, plugin.settings);
+		this.filterClipped = options?.filterClipped ?? false;
 	}
 
 	onOpen(): void {
@@ -355,7 +364,16 @@ export class StagingManagementModal extends Modal {
 	 * Render the file list for an expanded batch
 	 */
 	private renderFileList(container: HTMLElement, subfolderPath: string): void {
-		const files = this.stagingService.getSubfolderFiles(subfolderPath);
+		let files = this.stagingService.getSubfolderFiles(subfolderPath);
+
+		// Apply clipped notes filter if enabled
+		if (this.filterClipped) {
+			const webClipperService = this.plugin.getWebClipperService();
+			if (webClipperService) {
+				files = files.filter(({ file }) => webClipperService.isClippedNote(file));
+			}
+		}
+
 		if (files.length === 0) return;
 
 		const fileList = container.createDiv({ cls: 'crc-staging-file-list' });
