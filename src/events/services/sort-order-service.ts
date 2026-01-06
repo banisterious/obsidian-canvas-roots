@@ -111,7 +111,7 @@ export async function computeSortOrder(
 	// Sort by date first, then add to queue
 	const sortedByDate = [...events].sort((a, b) => {
 		if (a.date && b.date) {
-			return a.date.localeCompare(b.date);
+			return compareDates(a.date, b.date);
 		}
 		if (a.date) return -1;
 		if (b.date) return 1;
@@ -133,7 +133,7 @@ export async function computeSortOrder(
 		// Sort queue by date for stable ordering
 		queue.sort((a, b) => {
 			if (a.date && b.date) {
-				return a.date.localeCompare(b.date);
+				return compareDates(a.date, b.date);
 			}
 			if (a.date) return -1;
 			if (b.date) return 1;
@@ -213,6 +213,31 @@ function normalizeWikilink(link: string): string {
 		.replace(/^\[\[/, '')
 		.replace(/\]\]$/, '')
 		.trim();
+}
+
+/**
+ * Compare two date strings, handling BCE dates (negative years) correctly
+ * Supports ISO 8601 format with negative years: -YYYY-MM-DD
+ * Returns: negative if a < b, 0 if equal, positive if a > b
+ */
+function compareDates(a: string, b: string): number {
+	// Extract year from date string (handles negative years for BCE)
+	const extractYear = (date: string): number => {
+		// Match ISO format with optional negative sign: -YYYY or YYYY
+		const match = date.match(/^(-?\d+)/);
+		return match ? parseInt(match[1], 10) : 0;
+	};
+
+	const yearA = extractYear(a);
+	const yearB = extractYear(b);
+
+	// Compare years numerically (handles negative years correctly)
+	if (yearA !== yearB) {
+		return yearA - yearB;
+	}
+
+	// Years are equal, fall back to string comparison for full precision
+	return a.localeCompare(b);
 }
 
 /**
