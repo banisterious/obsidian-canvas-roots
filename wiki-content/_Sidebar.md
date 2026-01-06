@@ -7,6 +7,7 @@
 - [Control Center](Control-Center)
 - [Data Entry](Data-Entry)
 - [Import & Export](Import-Export)
+- [Web Clipper Integration](Web-Clipper-Integration)
 - [Templater Integration](Templater-Integration)
 - [Bases Integration](Bases-Integration)
 
