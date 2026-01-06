@@ -12,6 +12,7 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Optional Person Names](#optional-person-names) 📋 Medium
   - [Web Clipper Integration](#web-clipper-integration) 📋 Medium
   - [GPS Research Workflow Integration](#gps-research-workflow-integration) 📋 Medium
+  - [MyHeritage GEDCOM Import Compatibility](#myheritage-gedcom-import-compatibility) 📋 Medium
   - [DMS Coordinate Conversion](#dms-coordinate-conversion) 💡 Low
   - [DNA Match Tracking](#dna-match-tracking) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
@@ -244,6 +245,45 @@ See [Release History](Release-History#web-clipper-integration---phase-1-v01825) 
 **Documentation:**
 - See [Research Workflow Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/research-workflow-integration.md) for detailed specifications
 - Community contributors: @ANYroots (IRN structure, GPS methodology, templates), @wilbry (lightweight approach, unified design)
+
+---
+
+### MyHeritage GEDCOM Import Compatibility
+
+**Priority:** 📋 Medium — Improves import workflow for non-technical users
+
+**Status:** Planning
+
+**GitHub Issue:** [#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)
+
+**Summary:** Automatically detect and fix MyHeritage GEDCOM export issues during import, enabling non-technical users to import their family trees without manual file cleanup.
+
+**The Problem:** MyHeritage GEDCOM exports contain formatting issues that prevent import:
+- UTF-8 byte order mark (BOM) at file start
+- Malformed CONC continuation fields with double-encoded HTML entities (`&amp;lt;br&amp;gt;`)
+- HTML entities split across CONC lines mid-character
+
+Non-technical users cannot import these files without using hex editors or text processing tools.
+
+**The Solution:** Opt-in preprocessing with auto-detection:
+- **Auto mode** (default): Detect MyHeritage files and apply fixes automatically
+- **MyHeritage mode**: Always apply fixes
+- **None mode**: Disable preprocessing (current behavior)
+
+**Preprocessing Fixes:**
+1. **Strip UTF-8 BOM** — Remove `ef bb bf` bytes before parsing
+2. **Normalize CONC fields** — Join split HTML entities, decode double-encoded entities, remove embedded newlines
+3. **Transparent reporting** — Show what was fixed in import results modal
+
+**Key Features:**
+- **Auto-detection** — Checks for UTF-8 BOM, MyHeritage source tag, double-encoded entities
+- **Preserves original** — Creates cleaned temp content; original file unchanged
+- **No regressions** — Only applies fixes when MyHeritage detected or explicitly enabled
+- **Performance target** — <1 second preprocessing for typical files
+
+**Documentation:**
+- See [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/myheritage-gedcom-compatibility.md) for detailed specifications
+- User report: @wilbry in [Discussion #142](https://github.com/banisterious/obsidian-canvas-roots/discussions/142#discussioncomment-15425345)
 
 ---
 
