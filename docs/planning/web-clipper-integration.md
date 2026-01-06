@@ -122,55 +122,54 @@ Canvas Roots will monitor staging folder for files containing these properties.
 
 ---
 
-## Phase 2: Official Template Distribution (Future)
+## Phase 2: Official Template Distribution
 
-**Status:** After community feedback
+**Status:** ✅ In Progress (v0.18.26+)
 
-Provide curated, tested templates based on real-world usage patterns.
+Provide curated, tested templates for common genealogical sources.
 
-### Rationale for Delay
+### Implementation (In Progress)
 
-- Let users experiment with their own templates first
-- Learn what sources are actually used (Find A Grave? Ancestry? Newspapers?)
-- Understand which extraction methods work best (LLM vs CSS selectors)
-- Avoid committing to templates that may need frequent updates
-- Reduce initial maintenance burden
+**Template Location:** `docs/clipper-templates/`
 
-### When to Proceed
+Initial templates created and tested:
 
-Consider moving forward when:
-- Multiple users sharing similar templates in Discussions
-- Clear patterns emerge for most-used sources
-- Web Clipper API/schema stabilizes
-- Community requests official templates
+| Template | Source | Extraction Method | Status |
+|----------|--------|-------------------|--------|
+| Find A Grave | findagrave.com | CSS selectors + LLM | ✅ Released |
+| Generic Obituary | Any obituary site | LLM extraction | 📋 Planned |
+| FamilySearch Person | familysearch.org | CSS selectors | 📋 Planned |
+| Ancestry Record | ancestry.com | Schema.org/CSS | 📋 Planned |
 
-### Proposed Template Location
+### Template Standards (Implemented)
 
-**docs/clipper-templates/** in main repo with:
-- Individual JSON files for each template
-- README with setup instructions and compatibility notes
-- Version compatibility metadata (`canvas_roots_min_version`)
+All official templates follow these standards:
+- ✅ Use canonical Canvas Roots property names
+- ✅ Include all clipper metadata properties (`clip_source_type`, `clipped_from`, `clipped_date`)
+- ✅ Include URL triggers for auto-selection
+- ✅ Tested against real pages before release
+- ✅ Documented in README with setup instructions and compatibility notes
+- ✅ Schema version compatibility documented
 
-### Candidate Templates
+### Find a Grave Template Details
 
-Based on initial community interest:
+**File:** `docs/clipper-templates/findagrave-person-llm.json`
+**Extraction Strategy:** Hybrid (CSS selectors for structured data + LLM for biography/family)
 
-| Template | Source | Extraction Method | Priority |
-|----------|--------|-------------------|----------|
-| Generic Obituary | Any obituary site | LLM extraction | High |
-| Find A Grave | findagrave.com | CSS selectors | High |
-| FamilySearch Person | familysearch.org | CSS selectors | Medium |
-| Wikipedia Biography | wikipedia.org | Schema.org | Low |
+**CSS Selectors Used:**
+- `#birthLocationLabel` - Birth place
+- `#deathDateLabel` - Death date
+- `#deathLocationLabel` - Death place
+- `#cemeteryNameLabel`, `#cemeteryCityName`, `#cemeteryCountyName`, `#cemeteryStateName`, `#cemeteryCountryName` - Full burial location
 
-### Template Standards
+**LLM-Extracted Fields:**
+- Person's full name (for filename)
+- Biography text (if available)
+- Family information (spouse, children, etc.)
 
-When/if official templates are created:
-- Use canonical Canvas Roots property names
-- Include all clipper metadata properties (`clip_source_type`, `clipped_from`, `clipped_date`)
-- Document property mappings and known limitations
-- Include URL triggers for auto-selection
-- Test against real pages before release
-- Version templates alongside plugin releases
+**Requirements:**
+- Interpreter must be enabled for LLM extraction
+- Recommended model: Claude Sonnet 4.5 or equivalent
 
 ---
 
