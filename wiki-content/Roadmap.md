@@ -33,6 +33,7 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.18.25 | [Web Clipper Integration - Phase 1](Release-History#web-clipper-integration---phase-1-v01825) | Auto-detect web-clipped notes with metadata properties, Dashboard breakdown, Staging Manager filtering (All/Clipped/Other), file watcher integration |
 | v0.18.24 | [Staging Management](Release-History#staging-management-v01824) | Dedicated UI for managing staged imports: view stats, check duplicates, promote to main tree, expandable file lists |
 | v0.18.22 | [Export Privacy & Sensitive Data](Release-History#export-privacy--sensitive-data-v01822) | Complete privacy feature set: canvas privacy, sensitive field redaction, private fields, deadname protection, discoverability |
 | v0.18.15 | [Card Style Options](Release-History#card-style-options-v01815) | 4 card styles (Rectangle, Circle, Compact, Mini) for Family Chart with state persistence and export support |
@@ -163,7 +164,10 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | 2 | Official Template Distribution | After community feedback |
 | 3 | Enhanced Extraction | Conceptual |
 
-**Phase 1 — File Watcher & Dashboard Integration:** ✅ Complete
+**Phase 1 — File Watcher & Dashboard Integration:** ✅ Complete (v0.18.25)
+
+See [Release History](Release-History#web-clipper-integration---phase-1-v01825) for full implementation details.
+
 - Detects clipped notes in staging folder (files with `clip_source_type`, `clipped_from`, or `clipped_date` properties)
 - Unified Dashboard "Staging" card shows breakdown: "3 clips (1 new), 1 other"
 - Toggle buttons in Staging Manager: [All] [Clipped] [Other]

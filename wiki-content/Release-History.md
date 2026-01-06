@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.18.x](#v018x)
+  - [Web Clipper Integration - Phase 1](#web-clipper-integration---phase-1-v01825)
   - [Staging Management](#staging-management-v01824)
   - [Export Privacy & Sensitive Data](#export-privacy--sensitive-data-v01822)
   - [Card Style Options](#card-style-options-v01815)
@@ -85,6 +86,77 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.18.x
+
+### Web Clipper Integration - Phase 1 (v0.18.25)
+
+Auto-detect and manage web-clipped notes in staging workflow with dedicated filtering and tracking.
+
+**GitHub Issue:** [#128](https://github.com/banisterious/obsidian-plugins/issues/128)
+
+**Features Implemented:**
+
+| Feature | Description |
+|---------|-------------|
+| Clipper metadata detection | Auto-detect notes with `clip_source_type`, `clipped_from`, or `clipped_date` properties |
+| File watcher integration | Real-time detection when Web Clipper creates notes in staging folder |
+| Dashboard indicator | Unified "Staging" card shows breakdown: X clipped / Y other notes |
+| Staging Manager filtering | Toggle buttons: [All] [Clipped] [Other] with multi-level filtering |
+| Unread clip tracking | Unread clip count resets when Staging Manager opens |
+| Template flexibility | Works with any user-created Web Clipper templates |
+
+**Clipper Metadata Properties:**
+
+| Property | Description | Example |
+|----------|-------------|---------|
+| `clip_source_type` | Type of clipped content | `obituary`, `census`, `article` |
+| `clipped_from` | Original source URL | `https://example.com/article` |
+| `clipped_date` | Date content was clipped | `2026-01-05` |
+
+**Staging Workflow Integration:**
+
+```
+Web Clipper creates note → Auto-detected in staging →
+Review in Staging Manager (filter: Clipped) →
+Promote to main tree → Cleanup
+```
+
+**Multi-Level Filtering:**
+
+The toggle buttons filter at three levels:
+1. **Stats summary** — Only counts matching entities
+2. **Batch cards** — Only shows batches containing matches
+3. **File lists** — Only shows matching files within batches
+
+**UI Components:**
+
+| Component | Description |
+|-----------|-------------|
+| Dashboard card | Shows "X clipped / Y other" breakdown when clips present |
+| Filter toggles | Three buttons: All (default), Clipped, Other |
+| Active state | Selected filter highlighted with accent color |
+| Empty states | "No clipped notes" / "No other notes" when filter yields no results |
+
+**Files Modified:**
+
+- `src/core/staging-service.ts` — Clipper metadata detection, file watcher
+- `src/ui/staging-management-modal.ts` — Filter UI and multi-level filtering logic
+- `src/ui/views/control-center-view.ts` — Dashboard card hybrid visibility
+- `styles/staging-manager.css` — Filter button styles
+
+**Documentation:**
+
+- [Web Clipper Integration](Web-Clipper-Integration) — User guide with setup and workflow
+- [Data Entry](Data-Entry#clipping-from-web-sources) — Comparison with other data entry methods
+- [Web Clipper Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/web-clipper-integration.md) — Implementation details
+
+**Future Phases:**
+
+Phase 2 and beyond (planned):
+- LLM extraction guidance in wiki
+- Multi-person clipping from census pages
+- Auto-create source notes linked to clipped people
+
+---
 
 ### Staging Management (v0.18.24)
 
