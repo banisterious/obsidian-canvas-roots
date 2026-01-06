@@ -80,6 +80,40 @@ Enhanced template that uses AI to extract person's name and parse biography/fami
 - `death_date`, `death_place`
 - `burial_place`
 
+---
+
+### Obituary - Generic
+**File:** `obituary-generic.json`
+**URL Pattern:** Works on any obituary website
+**Auto-triggers:** No (manual selection)
+
+AI-powered template that extracts biographical information from obituaries across any website. Works with Legacy.com, Tributes.com, newspaper obituaries, and funeral home websites.
+
+**Extracts:**
+- Full name (via AI)
+- Birth date and place
+- Death date and place
+- Age at death
+- Funeral/memorial service information
+- Surviving family members
+- Predeceased family members
+- Biography and life story
+
+**Requirements:**
+- Interpreter must be enabled
+- Recommended model: Claude Sonnet 4.5 or equivalent
+
+**Canvas Roots Properties:**
+- `clip_source_type`: "obituary"
+- `clipped_from`: Obituary URL
+- `clipped_date`: Date clipped
+- `note_type`: "person"
+- `name`: Person's full name
+- `birth_date`, `birth_place`
+- `death_date`, `death_place`
+
+**Note:** Because obituary websites vary widely, this template does not auto-trigger. Select it manually when clipping obituaries.
+
 ## Using Templates with Canvas Roots
 
 Once you've imported a template and clipped content:

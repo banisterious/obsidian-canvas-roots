@@ -1,0 +1,56 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Obituary - Generic",
+	"behavior": "create",
+	"noteNameFormat": "Obituary - {{\"person's full name\"}}",
+	"path": "",
+	"noteContentFormat": "# {{\"person's full name\"}}\n\n## Vital Information\n\n**Born:** {{\"birth date in format DD MMM YYYY\"}}\n**Birth Place:** {{\"birth place\"}}\n**Died:** {{\"death date in format DD MMM YYYY\"}}\n**Death Place:** {{\"death place\"}}\n**Age at Death:** {{\"age at death\"}}\n\n## Services\n\n{{\"funeral or memorial service information\"}}\n\n## Survived By\n\n{{\"list of surviving family members\"}}\n\n## Preceded in Death By\n\n{{\"list of family members who died before this person\"}}\n\n## Biography\n\n{{\"biographical information and life story\"}}\n\n## Photo\n\n{{image}}\n\n## Source\n\nObituary: {{url}}\nClipped: {{date}}",
+	"properties": [
+		{
+			"name": "clip_source_type",
+			"value": "obituary",
+			"type": "text"
+		},
+		{
+			"name": "clipped_from",
+			"value": "{{url}}",
+			"type": "text"
+		},
+		{
+			"name": "clipped_date",
+			"value": "{{date}}",
+			"type": "text"
+		},
+		{
+			"name": "note_type",
+			"value": "person",
+			"type": "text"
+		},
+		{
+			"name": "name",
+			"value": "{{\"person's full name\"}}",
+			"type": "text"
+		},
+		{
+			"name": "birth_date",
+			"value": "{{\"birth date in format DD MMM YYYY\"}}",
+			"type": "text"
+		},
+		{
+			"name": "birth_place",
+			"value": "{{\"birth place\"}}",
+			"type": "text"
+		},
+		{
+			"name": "death_date",
+			"value": "{{\"death date in format DD MMM YYYY\"}}",
+			"type": "text"
+		},
+		{
+			"name": "death_place",
+			"value": "{{\"death place\"}}",
+			"type": "text"
+		}
+	],
+	"context": "Extract information from this obituary. Page URL: {{url}}. Page content: {{content}}.\n\nExtract the following fields from the obituary text. Return ONLY the requested data with NO explanatory text. If a field is not found, return an empty string.\n\nPerson's full name (without titles like Mr., Mrs., Dr.)\nBirth date in format DD MMM YYYY (e.g., 17 Dec 1923)\nBirth place (city, state/country)\nDeath date in format DD MMM YYYY (e.g., 23 Mar 1987)\nDeath place (city, state/country)\nAge at death (just the number, or empty if not stated)\nFuneral or memorial service information (date, time, location)\nList of surviving family members (spouse, children, grandchildren, etc.)\nList of family members who died before this person (predeceased by)\nBiographical information and life story (career, hobbies, accomplishments, personality)"
+}
