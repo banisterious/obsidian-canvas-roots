@@ -146,6 +146,68 @@ AI-powered template that extracts biographical information from any FamilySearch
 
 **Note:** This template adapts to different FamilySearch record types. Properties will only populate if the specific record contains that data (e.g., residence records won't have death information).
 
+---
+
+### Wikipedia - Biography (LLM)
+**File:** `wikipedia-biography-llm.json`
+**URL Pattern:** `wikipedia.org/wiki/`
+**Auto-triggers:** Yes
+
+AI-powered template that extracts structured biographical information from Wikipedia person articles, handling varied infobox formats and article structures.
+
+**Extracts:**
+- Full name (cleaned, without disambiguators like "(politician)")
+- Birth date and place
+- Death date and place
+- Vital information summary (nationality, key dates/places)
+- 2-3 paragraph biographical summary (synthesized from article)
+- Occupations and notable achievements list
+
+**Requirements:**
+- Interpreter must be enabled
+- Recommended model: Claude Sonnet 4.5 or equivalent
+
+**Canvas Roots Properties:**
+- `clip_source_type`: "wikipedia"
+- `clipped_from`: Wikipedia URL
+- `clipped_date`: Date clipped
+- `note_type`: "person"
+- `name`: Person's full name
+- `birth_date`, `birth_place`
+- `death_date`, `death_place`
+
+**Note:** This template extracts from both infobox data and article text to provide comprehensive biographical information.
+
+---
+
+### Wikipedia - Biography (Basic)
+**File:** `wikipedia-biography-basic.json`
+**URL Pattern:** `wikipedia.org/wiki/`
+**Auto-triggers:** Yes
+
+Simple template that captures Wikipedia article content without AI processing. Fast and works without Interpreter setup.
+
+**Extracts:**
+- Page title (as filename, includes disambiguators)
+- Infobox HTML (preserved as table)
+- Full article content
+- Article images
+
+**Requirements:**
+- No Interpreter needed
+- Works immediately after import
+
+**Canvas Roots Properties:**
+- `clip_source_type`: "wikipedia"
+- `clipped_from`: Wikipedia URL
+- `clipped_date`: Date clipped
+- `note_type`: "person"
+- `name`: Page title
+
+**Note:** This template is ideal for quick reference capture when you want the full article text preserved. For structured extraction into Canvas Roots properties, use the LLM version.
+
+---
+
 ## Using Templates with Canvas Roots
 
 Once you've imported a template and clipped content:

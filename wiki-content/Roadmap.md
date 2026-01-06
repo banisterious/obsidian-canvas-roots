@@ -177,8 +177,8 @@ See [Release History](Release-History#web-clipper-integration---phase-1-v01825) 
 
 **Phase 2 — Official Template Distribution:** ✅ In Progress (v0.18.26+)
 - Curated JSON template files in `docs/clipper-templates/`
-- Templates released: Find A Grave (CSS selectors), Find A Grave (LLM), Generic Obituary (LLM), FamilySearch Person (LLM)
-- Templates planned: Wikipedia Biography (Schema.org), Ancestry Record
+- Templates released: Find A Grave (CSS selectors), Find A Grave (LLM), Generic Obituary (LLM), FamilySearch Person (LLM), Wikipedia Biography (LLM), Wikipedia Biography (Basic)
+- Templates planned: Ancestry Record
 - Use canonical Canvas Roots property names
 - Comprehensive README with setup instructions
 

@@ -1,0 +1,36 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Wikipedia - Biography (Basic)",
+	"behavior": "create",
+	"noteNameFormat": "Wikipedia - {{title}}",
+	"path": "",
+	"noteContentFormat": "# {{title}}\n\n## Infobox Data\n\n{{selectorHtml:.infobox}}\n\n## Article Summary\n\n{{content}}\n\n## Image\n\n{{image}}\n\n## Source\n\nWikipedia: {{url}}\nClipped: {{date}}",
+	"properties": [
+		{
+			"name": "clip_source_type",
+			"value": "wikipedia",
+			"type": "text"
+		},
+		{
+			"name": "clipped_from",
+			"value": "{{url}}",
+			"type": "text"
+		},
+		{
+			"name": "clipped_date",
+			"value": "{{date}}",
+			"type": "text"
+		},
+		{
+			"name": "note_type",
+			"value": "person",
+			"type": "text"
+		},
+		{
+			"name": "name",
+			"value": "{{title}}",
+			"type": "text"
+		}
+	],
+	"triggers": ["wikipedia.org/wiki/"]
+}

@@ -218,6 +218,8 @@ Canvas Roots provides curated, tested templates in the `docs/clipper-templates/`
 - **Find a Grave - Person (LLM)** (Enhanced with AI extraction)
 - **Obituary - Generic** (AI-powered, works on any obituary site)
 - **FamilySearch - Person** (AI-powered, handles all record types)
+- **Wikipedia - Biography (LLM)** (AI-powered, structured biographical extraction)
+- **Wikipedia - Biography (Basic)** (CSS selectors, no AI required)
 
 **How to Use:**
 1. Download template `.json` files from [docs/clipper-templates/](https://github.com/banisterious/obsidian-canvas-roots/tree/main/docs/clipper-templates)
@@ -225,7 +227,7 @@ Canvas Roots provides curated, tested templates in the `docs/clipper-templates/`
 3. Click **Import** and select the downloaded template
 4. Templates auto-trigger on matching URLs (Find a Grave, FamilySearch) or can be manually selected (Obituary)
 
-See the [template README](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/clipper-templates/README.md) for detailed documentation on each template, including:
+See the [template documentation](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/clipper-templates/CLIPPER-TEMPLATES.md) for detailed documentation on each template, including:
 - Prerequisites and setup
 - Fields extracted
 - AI requirements

@@ -1,0 +1,57 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Wikipedia - Biography (LLM)",
+	"behavior": "create",
+	"noteNameFormat": "Wikipedia - {{\"person's full name\"}}",
+	"path": "",
+	"noteContentFormat": "# {{\"person's full name\"}}\n\n## Vital Information\n\n{{\"vital information summary\"}}\n\n## Biography\n\n{{\"biographical summary\"}}\n\n## Occupations & Notable Achievements\n\n{{\"occupations and notable achievements\"}}\n\n## Image\n\n{{image}}\n\n## Source\n\nWikipedia: {{url}}\nClipped: {{date}}",
+	"properties": [
+		{
+			"name": "clip_source_type",
+			"value": "wikipedia",
+			"type": "text"
+		},
+		{
+			"name": "clipped_from",
+			"value": "{{url}}",
+			"type": "text"
+		},
+		{
+			"name": "clipped_date",
+			"value": "{{date}}",
+			"type": "text"
+		},
+		{
+			"name": "note_type",
+			"value": "person",
+			"type": "text"
+		},
+		{
+			"name": "name",
+			"value": "{{\"person's full name\"}}",
+			"type": "text"
+		},
+		{
+			"name": "birth_date",
+			"value": "{{\"birth date\"}}",
+			"type": "text"
+		},
+		{
+			"name": "birth_place",
+			"value": "{{\"birth place\"}}",
+			"type": "text"
+		},
+		{
+			"name": "death_date",
+			"value": "{{\"death date\"}}",
+			"type": "text"
+		},
+		{
+			"name": "death_place",
+			"value": "{{\"death place\"}}",
+			"type": "text"
+		}
+	],
+	"triggers": ["wikipedia.org/wiki/"],
+	"context": "Extract biographical information from this Wikipedia article. Page URL: {{url}}. Page content: {{content}}.\n\nThis is a Wikipedia biography article. Extract information from both the infobox (if present) and the article text.\n\nReturn ONLY the requested data with NO explanatory text or prefixes. If a field is not found, return an empty string.\n\nPerson's full name (without parenthetical disambiguators or dates)\nBirth date (in format DD MMM YYYY if possible, e.g., 15 Dec 1922)\nBirth place (full location with city, state/country)\nDeath date (in format DD MMM YYYY if possible)\nDeath place (full location)\nVital information summary (format as markdown list with bold labels like **Born:** date in place, **Died:** date in place, **Nationality:** country, etc. - ONLY include lines for fields that have data, skip fields with no data)\nBiographical summary (2-3 paragraph summary of the person's life, focusing on key events, achievements, and historical context - synthesize from article text, do not just copy the lead paragraph)\nOccupations and notable achievements (list primary occupations, positions held, major accomplishments, awards, publications, etc. - format as markdown list)"
+}

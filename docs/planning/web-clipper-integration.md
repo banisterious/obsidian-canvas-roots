@@ -140,6 +140,8 @@ Initial templates created and tested:
 | Find A Grave - Person (LLM) | findagrave.com | CSS selectors + AI | ✅ Released |
 | Obituary - Generic | Any obituary site | AI extraction | ✅ Released |
 | FamilySearch - Person | familysearch.org | AI extraction | ✅ Released |
+| Wikipedia - Biography (LLM) | wikipedia.org | AI extraction | ✅ Released |
+| Wikipedia - Biography (Basic) | wikipedia.org | CSS selectors only | ✅ Released |
 | Ancestry Record | ancestry.com | Schema.org/CSS | 📋 Planned |
 
 ### Template Standards (Implemented)
