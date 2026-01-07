@@ -260,6 +260,8 @@ export interface CanvasRootsSettings {
 	placeTypeCategoryCustomizations: Record<string, Partial<PlaceTypeCategoryDefinition>>;
 	/** Hidden/deleted built-in place type category IDs */
 	hiddenPlaceTypeCategories: string[];
+	/** Accept DMS coordinate format in place creation modal */
+	enableDMSCoordinates: boolean;
 	// Custom relationship types
 	customRelationshipTypes: RelationshipTypeDefinition[];
 	showBuiltInRelationshipTypes: boolean;
@@ -602,6 +604,7 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	customPlaceTypeCategories: [],           // User-defined place type categories
 	placeTypeCategoryCustomizations: {},     // Overrides for built-in place type category names
 	hiddenPlaceTypeCategories: [],           // Hidden/deleted built-in place type categories
+	enableDMSCoordinates: false,             // Opt-in: accept DMS coordinate format
 	// Custom relationship types
 	customRelationshipTypes: [],   // User-defined relationship types (built-ins are always available)
 	showBuiltInRelationshipTypes: true,  // Whether to show built-in types in UI
@@ -787,6 +790,17 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.noteTypeDetection.enableTagDetection)
 				.onChange(async (value) => {
 					this.plugin.settings.noteTypeDetection.enableTagDetection = value;
+					await this.plugin.saveSettings();
+				}));
+
+		// Accept DMS coordinate format
+		new Setting(dataContent)
+			.setName('Accept DMS coordinate format')
+			.setDesc('Allow entering coordinates in degrees, minutes, seconds format (e.g., 33°51\'08"N)')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enableDMSCoordinates)
+				.onChange(async (value) => {
+					this.plugin.settings.enableDMSCoordinates = value;
 					await this.plugin.saveSettings();
 				}));
 

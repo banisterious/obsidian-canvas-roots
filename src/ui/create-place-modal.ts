@@ -13,6 +13,7 @@ import { getDefaultPlaceCategory, CanvasRootsSettings } from '../settings';
 import { GeocodingService } from '../maps/services/geocoding-service';
 import type CanvasRootsPlugin from '../../main';
 import { ModalStatePersistence, renderResumePromptBanner } from './modal-state-persistence';
+import { parseLatitude, parseLongitude, isDMSFormat } from '../utils/coordinate-converter';
 
 /**
  * Parent place option for dropdown
@@ -803,12 +804,15 @@ export class CreatePlaceModal extends Modal {
 
 		const coordInputs = this.coordSectionEl.createDiv({ cls: 'crc-coord-inputs' });
 
+		// Check if DMS format is enabled
+		const dmsEnabled = this.settings?.enableDMSCoordinates ?? false;
+
 		// Latitude
 		const latSetting = new Setting(coordInputs)
 			.setName('Latitude')
 			.addText(text => {
 				this.latInputEl = text.inputEl;
-				text.setPlaceholder('-90 to 90')
+				text.setPlaceholder(dmsEnabled ? "33.8522 or 33°51'08\"N" : '-90 to 90')
 					.onChange(value => {
 						this.updateCoordinates('lat', value);
 					});
@@ -829,7 +833,7 @@ export class CreatePlaceModal extends Modal {
 			.setName('Longitude')
 			.addText(text => {
 				this.longInputEl = text.inputEl;
-				text.setPlaceholder('-180 to 180')
+				text.setPlaceholder(dmsEnabled ? "83.6183 or 83°37'06\"W" : '-180 to 180')
 					.onChange(value => {
 						this.updateCoordinates('long', value);
 					});
@@ -1149,7 +1153,9 @@ export class CreatePlaceModal extends Modal {
 	}
 
 	/**
-	 * Update coordinates from input with validation
+	 * Update coordinates from input with validation.
+	 * When DMS parsing is enabled in settings, attempts to parse DMS format first.
+	 * If DMS is detected and parsed, updates the input field to show decimal value.
 	 */
 	private updateCoordinates(field: 'lat' | 'long', value: string): void {
 		const trimmed = value.trim();
@@ -1173,23 +1179,52 @@ export class CreatePlaceModal extends Modal {
 			return;
 		}
 
-		const num = parseFloat(trimmed);
-		if (isNaN(num)) return;
+		let num: number | null = null;
+		let wasDMS = false;
 
-		// Validate ranges
-		if (field === 'lat' && (num < -90 || num > 90)) {
-			new Notice('Latitude must be between -90 and 90');
-			return;
-		}
-		if (field === 'long' && (num < -180 || num > 180)) {
-			new Notice('Longitude must be between -180 and 180');
-			return;
+		// If DMS parsing is enabled, try DMS parse first
+		if (this.settings?.enableDMSCoordinates) {
+			if (field === 'lat') {
+				num = parseLatitude(trimmed);
+			} else {
+				num = parseLongitude(trimmed);
+			}
+
+			// Check if input was actually DMS format (vs decimal pass-through)
+			if (num !== null && isDMSFormat(trimmed)) {
+				wasDMS = true;
+			}
 		}
 
+		// Fall back to plain parseFloat if DMS not enabled or parse failed
+		if (num === null) {
+			num = parseFloat(trimmed);
+			if (isNaN(num)) return;
+
+			// Validate ranges for plain decimal input
+			if (field === 'lat' && (num < -90 || num > 90)) {
+				new Notice('Latitude must be between -90 and 90');
+				return;
+			}
+			if (field === 'long' && (num < -180 || num > 180)) {
+				new Notice('Longitude must be between -180 and 180');
+				return;
+			}
+		}
+
+		// Store the coordinate
 		if (field === 'lat') {
 			this.placeData.coordinates.lat = num;
+			// If DMS was converted, update input to show decimal value
+			if (wasDMS && this.latInputEl) {
+				this.latInputEl.value = num.toFixed(6);
+			}
 		} else {
 			this.placeData.coordinates.long = num;
+			// If DMS was converted, update input to show decimal value
+			if (wasDMS && this.longInputEl) {
+				this.longInputEl.value = num.toFixed(6);
+			}
 		}
 	}
 
