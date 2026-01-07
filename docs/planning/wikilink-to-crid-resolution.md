@@ -14,7 +14,7 @@ Enable automatic resolution of wikilinks to `cr_id` values in relationship field
 
 ### Goals
 
-1. **Improved UX** — Users can write `father: "[[John Smith]]"` and have it work automatically
+1. **Improved UX** — Wikilinks in relationship fields (e.g., `father: "[[John Smith]]"`) are automatically resolved to `cr_id` values, creating the relationship in the family graph without requiring manual `_id` field population
 2. **Backward compatibility** — Existing `_id` fields continue to work and take precedence
 3. **Performance** — Resolution is cached to avoid repeated vault scans
 4. **Graceful degradation** — Ambiguous or missing resolutions produce warnings, not errors
@@ -366,7 +366,7 @@ Consolidate duplicate map-building code:
 
 ---
 
-## Open Questions
+## Open Questions (Resolved)
 
 ### 1. Should resolution log warnings for every unresolved wikilink?
 
@@ -375,7 +375,7 @@ Consolidate duplicate map-building code:
 - B) Only log when field looks like a relationship field
 - C) Silent resolution, rely on Data Quality report
 
-**Recommendation:** Option B — log when resolving father/mother/spouse/child fields
+**Decision:** Option B — log when resolving father/mother/spouse/child fields. Wikilinks appear throughout notes (to sources, places, research notes), so logging every unresolved wikilink would be noisy. Relationship fields are where resolution matters for graph building.
 
 ### 2. Should ambiguous resolution prefer certain paths?
 
@@ -385,7 +385,7 @@ Consolidate duplicate map-building code:
 - B) Prefer paths matching folder filter settings
 - C) Prefer most recently modified
 
-**Recommendation:** Option A — explicit disambiguation via `_id` is clearer
+**Decision:** Option A — explicit disambiguation via `_id` is clearer. Automatic disambiguation creates "magic" behavior that's hard to debug. Users expect explicit control over identity resolution—this is fundamental to genealogy.
 
 ### 3. Should the index include non-person notes with cr_id?
 
@@ -394,7 +394,31 @@ Consolidate duplicate map-building code:
 - A) Person notes only (`cr_type: person`)
 - B) Any note with `cr_id`
 
-**Recommendation:** Option B — more flexible, enables future cross-type linking
+**Decision:** Option B — index any note with `cr_id`. More flexible for future cross-type linking (e.g., linking to sources, places). `cr_id` is already the universal identifier pattern in Canvas Roots.
+
+### 4. Should resolved wikilinks auto-populate _id fields?
+
+**Question:** Should resolution automatically write `_id` fields to frontmatter?
+
+**Decision:** No — keep resolution read-only. Modifying user files during read operations is surprising behavior, creates sync conflicts in multi-device setups. Users can manually add `_id` fields if they want explicit resolution. Could be a separate "Data Quality Fix" action in the future.
+
+### 5. When is the index built and updated?
+
+**Decision:**
+- **Initial build:** On plugin load, after metadataCache is ready
+- **Incremental updates:** Subscribe to `metadataCache.on('changed', 'deleted', 'renamed')`
+- **No blocking:** Index building shouldn't block plugin startup; use background initialization
+
+### 6. How to handle path resolution in wikilinks?
+
+**Question:** How to handle `[[Folder/John Smith]]` vs `[[John Smith]]`?
+
+**Decision:** Try path match first, then basename fallback:
+```typescript
+// 1. Try exact path match: [[People/John Smith]] → People/John Smith.md
+// 2. Fallback to basename match: [[John Smith]] → */John Smith.md
+// 3. If multiple basename matches → ambiguous, return null
+```
 
 ---
 
