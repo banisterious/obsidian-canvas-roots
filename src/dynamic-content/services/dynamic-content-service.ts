@@ -293,12 +293,39 @@ export class DynamicContentService {
 
 	/**
 	 * Extract year from a date string for display purposes
+	 * Handles: ISO format (-0011, 0014), BCE/AD suffix (11 BCE, 14 AD), plain years
+	 * Returns the year as a string, with negative sign for BCE dates
 	 */
 	extractYear(dateStr: string | undefined): string {
 		if (!dateStr) return '';
 
+		// Check for BCE/BC suffix (e.g., "11 BCE", "39 BC")
+		const bceMatch = dateStr.match(/(\d+)\s*(?:BCE|BC)\b/i);
+		if (bceMatch) {
+			return `-${bceMatch[1]}`;
+		}
+
+		// Check for ISO format with negative year (e.g., "-0011-01-15")
+		const negativeIsoMatch = dateStr.match(/^-(\d+)/);
+		if (negativeIsoMatch) {
+			return `-${parseInt(negativeIsoMatch[1], 10)}`;
+		}
+
+		// Check for AD/CE suffix (e.g., "14 AD", "100 CE") - return positive
+		const adMatch = dateStr.match(/(\d+)\s*(?:AD|CE)\b/i);
+		if (adMatch) {
+			return adMatch[1];
+		}
+
+		// Standard positive year (4 digits)
 		const yearMatch = dateStr.match(/\b(\d{4})\b/);
-		return yearMatch ? yearMatch[1] : '';
+		if (yearMatch) {
+			return yearMatch[1];
+		}
+
+		// Fallback: any digits
+		const anyDigits = dateStr.match(/(\d+)/);
+		return anyDigits ? anyDigits[1] : '';
 	}
 
 	/**
