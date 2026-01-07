@@ -17,6 +17,7 @@ import { createPersonNote, PersonData } from '../core/person-note-writer';
 import { generateCrId } from '../core/uuid';
 import { getErrorMessage } from '../core/error-utils';
 import { getLogger } from '../core/logging';
+import { sanitizeName } from '../utils/name-sanitization';
 
 const logger = getLogger('GedcomXImporter');
 
@@ -426,11 +427,13 @@ export class GedcomXImporter {
 		};
 
 		// Add relationship references with GEDCOM X IDs (temporary) and names
+		// Relationship names are sanitized to match filename sanitization, preventing wikilink
+		// resolution failures when names contain special characters (#139)
 		if (person.fatherRef) {
 			personData.fatherCrId = person.fatherRef; // Temporary GEDCOM X ID
 			const father = gedcomXData.persons.get(person.fatherRef);
 			if (father) {
-				personData.fatherName = father.name || 'Unknown';
+				personData.fatherName = sanitizeName(father.name || 'Unknown');
 			}
 		}
 
@@ -438,7 +441,7 @@ export class GedcomXImporter {
 			personData.motherCrId = person.motherRef; // Temporary GEDCOM X ID
 			const mother = gedcomXData.persons.get(person.motherRef);
 			if (mother) {
-				personData.motherName = mother.name || 'Unknown';
+				personData.motherName = sanitizeName(mother.name || 'Unknown');
 			}
 		}
 
@@ -446,7 +449,7 @@ export class GedcomXImporter {
 			personData.spouseCrId = person.spouseRefs; // Temporary GEDCOM X IDs
 			personData.spouseName = person.spouseRefs.map(ref => {
 				const spouse = gedcomXData.persons.get(ref);
-				return spouse?.name || 'Unknown';
+				return sanitizeName(spouse?.name || 'Unknown');
 			});
 			// Note: Marriage date/place is tracked in the ParsedGedcomXPerson.marriages Map
 			// but PersonData doesn't support it directly - this would need to be added
@@ -458,7 +461,7 @@ export class GedcomXImporter {
 			personData.stepfatherCrId = person.stepfatherRefs; // Temporary GEDCOM X IDs
 			personData.stepfatherName = person.stepfatherRefs.map(ref => {
 				const stepfather = gedcomXData.persons.get(ref);
-				return stepfather?.name || 'Unknown';
+				return sanitizeName(stepfather?.name || 'Unknown');
 			});
 		}
 
@@ -466,7 +469,7 @@ export class GedcomXImporter {
 			personData.stepmotherCrId = person.stepmotherRefs; // Temporary GEDCOM X IDs
 			personData.stepmotherName = person.stepmotherRefs.map(ref => {
 				const stepmother = gedcomXData.persons.get(ref);
-				return stepmother?.name || 'Unknown';
+				return sanitizeName(stepmother?.name || 'Unknown');
 			});
 		}
 
@@ -475,7 +478,7 @@ export class GedcomXImporter {
 			personData.adoptiveFatherCrId = person.adoptiveFatherRef; // Temporary GEDCOM X ID
 			const adoptiveFather = gedcomXData.persons.get(person.adoptiveFatherRef);
 			if (adoptiveFather) {
-				personData.adoptiveFatherName = adoptiveFather.name || 'Unknown';
+				personData.adoptiveFatherName = sanitizeName(adoptiveFather.name || 'Unknown');
 			}
 		}
 
@@ -483,7 +486,7 @@ export class GedcomXImporter {
 			personData.adoptiveMotherCrId = person.adoptiveMotherRef; // Temporary GEDCOM X ID
 			const adoptiveMother = gedcomXData.persons.get(person.adoptiveMotherRef);
 			if (adoptiveMother) {
-				personData.adoptiveMotherName = adoptiveMother.name || 'Unknown';
+				personData.adoptiveMotherName = sanitizeName(adoptiveMother.name || 'Unknown');
 			}
 		}
 
@@ -494,7 +497,7 @@ export class GedcomXImporter {
 			if (child.fatherRef === person.id || child.motherRef === person.id) {
 				if (!childRefs.includes(childId)) {
 					childRefs.push(childId);
-					childNames.push(child.name || 'Unknown');
+					childNames.push(sanitizeName(child.name || 'Unknown'));
 				}
 			}
 		}
