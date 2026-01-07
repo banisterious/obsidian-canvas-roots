@@ -159,7 +159,7 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **Priority:** 📋 Medium — Improves import workflow for non-technical users
 
-**Status:** Planning
+**Status:** Ready for Implementation (open questions resolved 2026-01-07)
 
 **GitHub Issue:** [#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)
 
@@ -167,8 +167,9 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **The Problem:** MyHeritage GEDCOM exports contain formatting issues that prevent import:
 - UTF-8 byte order mark (BOM) at file start
-- Malformed CONC continuation fields with double-encoded HTML entities (`&amp;lt;br&amp;gt;`)
-- HTML entities split across CONC lines mid-character
+- Double-encoded HTML entities (`&amp;lt;br&amp;gt;` instead of `<br>`)
+- Single-encoded entities mixed with double-encoded in same record
+- `<br>` tags that should be newlines
 
 Non-technical users cannot import these files without using hex editors or text processing tools.
 
@@ -178,15 +179,23 @@ Non-technical users cannot import these files without using hex editors or text 
 - **None mode**: Disable preprocessing (current behavior)
 
 **Preprocessing Fixes:**
-1. **Strip UTF-8 BOM** — Remove `ef bb bf` bytes before parsing
-2. **Normalize CONC fields** — Join split HTML entities, decode double-encoded entities, remove embedded newlines
-3. **Transparent reporting** — Show what was fixed in import results modal
+1. **Strip UTF-8 BOM** — Remove byte order mark before parsing
+2. **Decode double-encoded entities** — `&amp;lt;` → `<`, `&amp;nbsp;` → space
+3. **Decode single-encoded entities** — `&lt;br&gt;` → `<br>` (mixed encoding)
+4. **Convert `<br>` to newlines** — Per user feedback, these represent line breaks
+5. **Strip decorative HTML** — Remove `<a>text</a>` tags without href
+6. **Transparent reporting** — Show what was fixed in import results modal
 
 **Key Features:**
-- **Auto-detection** — Checks for UTF-8 BOM, MyHeritage source tag, double-encoded entities
+- **Auto-detection** — Checks for `1 SOUR MYHERITAGE` tag and double-encoded entities
 - **Preserves original** — Creates cleaned temp content; original file unchanged
 - **No regressions** — Only applies fixes when MyHeritage detected or explicitly enabled
 - **Performance target** — <1 second preprocessing for typical files
+
+**Sample Data Analysis** (from @wilbry):
+- CONC lines split at ~100-120 chars, mid-word but NOT mid-entity
+- No split-entity repair needed (simpler implementation)
+- Mixed encoding common: double-encoded in DATA/TEXT, single-encoded elsewhere
 
 **Documentation:**
 - See [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/myheritage-gedcom-compatibility.md) for detailed specifications
