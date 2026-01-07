@@ -12,6 +12,7 @@ This document outlines planned features for Canvas Roots. For completed features
   - [GPS Research Workflow Integration](#gps-research-workflow-integration) 📋 Medium
   - [MyHeritage GEDCOM Import Compatibility](#myheritage-gedcom-import-compatibility) 📋 Medium
   - [DNA Match Tracking](#dna-match-tracking) 💡 Low
+  - [Per-Map Marker Assignment](#per-map-marker-assignment) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
 - [Future Considerations](#future-considerations)
@@ -233,6 +234,55 @@ Non-technical users cannot import these files without using hex editors or text 
 - DNA import from testing companies
 
 See [DNA Match Tracking Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/dna-match-tracking.md) for detailed specifications.
+
+---
+
+### Per-Map Marker Assignment
+
+**Priority:** 💡 Low — Enables regional and era-specific map organization
+
+**Status:** Planning
+
+**GitHub Issue:** [#153](https://github.com/banisterious/obsidian-canvas-roots/issues/153)
+
+**Summary:** Allow places to be restricted to specific custom maps rather than appearing on all maps within a universe. Enables regional maps, era-specific views, and detail-level separation.
+
+**The Problem:** Currently, place markers are filtered by universe only. All places with a matching universe appear on every map that shares that universe. This creates limitations when:
+- You have separate regional maps within the same universe (e.g., "Eastern Europe" and "Western Europe" maps for a WWI research project)
+- You want different detail levels (e.g., a "London city map" vs. a "Southeast England" regional map)
+- You have era-specific maps (e.g., "Colonial America 1750" vs. "Revolutionary War 1776")
+
+**The Solution:** Add optional `maps` (array) or `map_id` (string) property to place notes:
+
+```yaml
+# Historical example
+name: Fort Ticonderoga
+universe: colonial-america
+maps:
+  - french-indian-war-map
+  - revolutionary-war-map
+```
+
+**Filtering Logic:**
+- If place has no `maps`/`map_id`: Show on all maps with matching universe (current behavior)
+- If place has `maps`/`map_id`: Only show on specified map(s)
+- Events inherit filtering from their places automatically
+- Paths appear only if both endpoints are visible on current map
+
+**Phased Approach:**
+
+| Phase | Feature | Effort | Status |
+|-------|---------|--------|--------|
+| 1 | Core filtering logic, path filtering | Low | Planning |
+| 2 | UI integration (Create/Edit Place modals) | Medium | Future |
+| 3 | Documentation updates | Low | Future |
+
+**User Impact:** Non-breaking change
+- Existing places without `maps` continue working as today
+- Opt-in via frontmatter property
+- Supports both single-map and multi-map assignment
+
+See [Per-Map Marker Assignment Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/per-map-marker-assignment.md) for detailed specifications.
 
 ---
 
