@@ -2185,12 +2185,6 @@ export class CreatePersonModal extends Modal {
 	 * Create the person note
 	 */
 	private async createPerson(): Promise<void> {
-		// Validate required fields
-		if (!this.personData.name.trim()) {
-			new Notice('Please enter a name for the person');
-			return;
-		}
-
 		try {
 			// Ensure directory exists
 			if (this.directory) {
@@ -2321,12 +2315,6 @@ export class CreatePersonModal extends Modal {
 	 * Update the existing person note
 	 */
 	private async updatePerson(): Promise<void> {
-		// Validate required fields
-		if (!this.personData.name.trim()) {
-			new Notice('Please enter a name for the person');
-			return;
-		}
-
 		if (!this.editingFile) {
 			new Notice('No file to update');
 			return;
