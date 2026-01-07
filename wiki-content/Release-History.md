@@ -373,7 +373,7 @@ Comprehensive privacy protection for sensitive genealogical data during exports 
 **Documentation:**
 - [Privacy & Security](Privacy-And-Security) — User guide
 - [SECURITY.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/SECURITY.md) — Security policy
-- [Export Privacy Planning](../docs/planning/export-privacy-sensitive-data.md) — Implementation details
+- [Export Privacy Planning](../docs/planning/archive/export-privacy-sensitive-data.md) — Implementation details
 
 ---
 
@@ -458,10 +458,10 @@ Import notes attached to Gramps entities during Gramps XML/.gpkg import.
 
 **Deferred Phases:**
 
-Phases 3 (Family Entity) and 5 (Export & Sync) are deferred indefinitely pending user demand. See [planning doc](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/gramps-notes-family-integration.md) for rationale.
+Phases 3 (Family Entity) and 5 (Export & Sync) are deferred indefinitely pending user demand. See [planning doc](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/gramps-notes-family-integration.md) for rationale.
 
 **Documentation:**
-- See [Gramps Notes & Family Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/gramps-notes-family-integration.md) for detailed specifications
+- See [Gramps Notes & Family Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/gramps-notes-family-integration.md) for detailed specifications
 
 ---
 
