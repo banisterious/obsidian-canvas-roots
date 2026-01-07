@@ -108,11 +108,12 @@ export function parseDMSCoordinate(input: string): CoordinateParseResult | null 
 		trimmed = dirPrefixMatch[2].trim();
 	}
 
-	// Check for direction at end (e.g., "33 51 08 N" or "33°51'08"N")
-	const dirSuffixMatch = trimmed.match(/^(.+?)\s*([NSEW])$/i);
+	// Check for direction at end (e.g., "33 51 08 N" or "33°51'08"N" or "33-51-08-N")
+	const dirSuffixMatch = trimmed.match(/^(.+?)[\s-]*([NSEW])$/i);
 	if (dirSuffixMatch && !direction) {
 		direction = dirSuffixMatch[2].toUpperCase() as CardinalDirection;
-		trimmed = dirSuffixMatch[1].trim();
+		// Remove trailing hyphen if present
+		trimmed = dirSuffixMatch[1].trim().replace(/-$/, '');
 	}
 
 	// Now parse the DMS components
