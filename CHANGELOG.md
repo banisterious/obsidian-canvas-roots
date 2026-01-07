@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Event edit modal deletes custom frontmatter properties** ([#150](https://github.com/banisterious/obsidian-canvas-roots/issues/150)): Fixed editing events through the context menu deleting custom properties added via Templater or manually. The edit modal was rebuilding frontmatter from scratch, only preserving known properties. Solution: Switched to Obsidian's `processFrontMatter` API which safely updates only managed properties while preserving all others.
+
 ---
 
 ## [0.18.26] - 2026-01-07
