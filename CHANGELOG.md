@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.18.26] - 2026-01-07
+
 ### Fixed
 
 - **BCE/AD date sorting in timelines** ([#146](https://github.com/banisterious/obsidian-canvas-roots/issues/146)): Fixed incorrect chronological ordering of events spanning the BCE/AD boundary. Events with BCE dates (e.g., "11 BCE") now properly sort before AD dates (e.g., "14 AD"). Root cause: sort-order-service.ts used lexicographic string comparison which doesn't handle negative years correctly. Solution: Added compareDates() helper that extracts years numerically for proper chronological ordering.
