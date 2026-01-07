@@ -172,24 +172,29 @@ export class PdfReportRenderer {
 
 		new Notice('Preparing PDF export...');
 
+		// Load our bundled font VFS (includes Roboto + Roboto Mono)
+		const { vfsFonts } = await import('../fonts/vfs_fonts_all');
+
 		// Dynamic import - only loads when needed
 		const pdfMakeModule = await import('pdfmake/build/pdfmake');
 		this._pdfMake = (pdfMakeModule.default ?? pdfMakeModule) as unknown as PdfMakeInstance;
 
-		// Load the virtual file system with embedded Roboto font
-		const vfsFonts = await import('pdfmake/build/vfs_fonts');
-		const vfsModule = vfsFonts as VfsFontsModule;
-		const vfs = vfsModule.pdfMake?.vfs ?? vfsModule.default?.pdfMake?.vfs ?? vfsModule.vfs ?? {};
-		this._pdfMake.vfs = vfs;
+		// Set the VFS with all fonts
+		this._pdfMake.vfs = vfsFonts;
 
-		// Use Roboto font (included in vfs_fonts.js)
-		// Map our font names to Roboto variants
+		// Configure fonts: Roboto for general text, DejaVu Sans Mono for monospace
 		this._pdfMake.fonts = {
 			Roboto: {
 				normal: 'Roboto-Regular.ttf',
 				bold: 'Roboto-Medium.ttf',
 				italics: 'Roboto-Italic.ttf',
 				bolditalics: 'Roboto-MediumItalic.ttf'
+			},
+			DejaVuSansMono: {
+				normal: 'DejaVuSansMono.ttf',
+				bold: 'DejaVuSansMono.ttf',
+				italics: 'DejaVuSansMono-Oblique.ttf',
+				bolditalics: 'DejaVuSansMono-Oblique.ttf'
 			}
 		};
 	}
@@ -264,7 +269,7 @@ export class PdfReportRenderer {
 				color: COLORS.lightMuted
 			},
 			monospace: {
-				font: 'Roboto',  // No monospace font bundled; use Roboto
+				font: 'DejaVuSansMono',  // Comprehensive Unicode support including box-drawing characters
 				fontSize: 9
 			}
 		};
@@ -1084,7 +1089,7 @@ export class PdfReportRenderer {
 		content.push({ text: coverTitle, style: 'title' });
 		content.push({ text: subtitle, style: 'subtitle' });
 
-		// ASCII tree in monospace
+		// Tree visualization with Unicode box-drawing characters
 		content.push(this.buildSectionHeader('Ancestor Tree'));
 		content.push({
 			text: result.treeContent,

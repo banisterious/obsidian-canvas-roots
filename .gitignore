@@ -57,6 +57,9 @@ Thumbs.db
 # External documentation and reference libraries (cloned repos for local reference)
 external/
 
+# Font source files (bundled into vfs_fonts_all.ts by build-fonts.js)
+src/reports/fonts/*.ttf
+
 # Developer working files
 docs/developer/pr-reviews/
 docs/developer/custom-timeline-css/
