@@ -86,6 +86,7 @@ export interface DataQualitySummary {
 
 	/** Data completeness metrics */
 	completeness: {
+		withName: number;
 		withBirthDate: number;
 		withDeathDate: number;
 		withBothParents: number;
@@ -572,6 +573,17 @@ export class DataQualityService {
 	private checkMissingData(person: PersonNode): DataQualityIssue[] {
 		const issues: DataQualityIssue[] = [];
 
+		// No name
+		if (!person.name) {
+			issues.push({
+				code: 'NO_NAME',
+				message: 'Name not specified',
+				severity: 'warning',
+				category: 'missing_data',
+				person,
+			});
+		}
+
 		// No parents at all
 		if (!person.fatherCrId && !person.motherCrId) {
 			issues.push({
@@ -1052,6 +1064,7 @@ export class DataQualityService {
 
 		// Completeness metrics
 		const completeness = {
+			withName: people.filter(p => p.name).length,
 			withBirthDate: people.filter(p => p.birthDate).length,
 			withDeathDate: people.filter(p => p.deathDate).length,
 			withBothParents: people.filter(p => p.fatherCrId && p.motherCrId).length,

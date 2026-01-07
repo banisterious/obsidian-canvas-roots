@@ -45,7 +45,7 @@ interface MultiRelationshipField {
  * Form data structure for persistence
  */
 interface PersonFormData {
-	name: string;
+	name?: string;
 	sex?: string;
 	pronouns?: string;
 	birthDate?: string;
@@ -400,7 +400,7 @@ export class CreatePersonModal extends Modal {
 			.setDesc('Full name of the person')
 			.addText(text => text
 				.setPlaceholder('e.g., John Robert Smith')
-				.setValue(this.personData.name)
+				.setValue(this.personData.name || '')
 				.onChange(value => {
 					this.personData.name = value;
 				}));
@@ -2457,12 +2457,13 @@ export class CreatePersonModal extends Modal {
 
 			// Check if name changed and offer to rename file
 			let renamedFile: TFile | undefined;
-			if (this.originalName && this.personData.name !== this.originalName) {
-				const shouldRename = await this.showRenameConfirmation(this.originalName, this.personData.name);
+			const currentName = this.personData.name || '';
+			if (this.originalName && currentName !== this.originalName) {
+				const shouldRename = await this.showRenameConfirmation(this.originalName, currentName);
 				if (shouldRename) {
 					// Get folder from current file path
 					const folder = this.editingFile.parent?.path || '';
-					const newPath = this.generateUniqueFilename(folder, this.personData.name);
+					const newPath = this.generateUniqueFilename(folder, currentName || 'Untitled Person');
 
 					try {
 						// Get cr_id before rename for updating relationships
@@ -2477,12 +2478,12 @@ export class CreatePersonModal extends Modal {
 							new Notice(`Renamed file to: ${newFile.basename}`);
 
 							// Update relationship wikilinks in other notes
-							if (personCrId) {
+							if (personCrId && currentName) {
 								const relationshipManager = new RelationshipManager(this.app);
 								await relationshipManager.updateRelationshipWikilinks(
 									personCrId,
 									this.originalName,
-									this.personData.name,
+									currentName,
 									newFile
 								);
 							}

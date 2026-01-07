@@ -558,22 +558,25 @@ export async function createPersonNote(
 	const file = await app.vault.create(finalPath, noteContent);
 
 	// Handle bidirectional linking for relationships
+	// Use person name or empty string for wikilink display
+	const personDisplayName = person.name || '';
+
 	if (addBidirectionalLinks) {
 		// Spouse linking
 		if (person.spouseCrId && person.spouseCrId.length > 0) {
 			for (const spouseCrId of person.spouseCrId) {
-				await addBidirectionalSpouseLink(app, spouseCrId, crId, person.name, directory);
+				await addBidirectionalSpouseLink(app, spouseCrId, crId, personDisplayName, directory);
 			}
 		}
 
 		// Parent-child linking: add this person as child to father
 		if (person.fatherCrId && person.fatherName) {
-			await addChildToParent(app, person.fatherCrId, crId, person.name, directory);
+			await addChildToParent(app, person.fatherCrId, crId, personDisplayName, directory);
 		}
 
 		// Parent-child linking: add this person as child to mother
 		if (person.motherCrId && person.motherName) {
-			await addChildToParent(app, person.motherCrId, crId, person.name, directory);
+			await addChildToParent(app, person.motherCrId, crId, personDisplayName, directory);
 		}
 
 		// Reverse parent-child linking: add children to this person's children array
@@ -581,7 +584,7 @@ export async function createPersonNote(
 			for (let i = 0; i < person.childCrId.length; i++) {
 				const childCrId = person.childCrId[i];
 				// childName is available but not needed for the addParentToChild call
-				await addParentToChild(app, childCrId, crId, person.name, person.sex, directory);
+				await addParentToChild(app, childCrId, crId, personDisplayName, person.sex, directory);
 			}
 		}
 	}
