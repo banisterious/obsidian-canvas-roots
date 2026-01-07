@@ -217,6 +217,8 @@
 }
 
 .crc-staging-breakdown {
+  display: flex;
+  align-items: flex-end;
   font-size: 13px;
   color: var(--text-muted);
 }

@@ -288,9 +288,6 @@ export class StagingManagementModal extends Modal {
 		// Total entities
 		this.renderStatCard(statsGrid, 'users', stats.totalEntities.toString(), 'Total Entities');
 
-		// Subfolders
-		this.renderStatCard(statsGrid, 'folders', stats.subfolderCount.toString(), 'Import Batches');
-
 		// Entity breakdown
 		const breakdown = overview.createDiv({ cls: 'crc-staging-breakdown' });
 		breakdown.createEl('span', { text: 'By type: ', cls: 'crc-staging-breakdown-label' });
@@ -364,7 +361,6 @@ export class StagingManagementModal extends Modal {
 		if (subfolders.length === 0) return;
 
 		const list = container.createDiv({ cls: 'crc-staging-list' });
-		list.createEl('h3', { text: 'Import Batches' });
 
 		for (const subfolder of subfolders) {
 			this.renderSubfolderItem(list, subfolder);

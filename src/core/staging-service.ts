@@ -191,7 +191,7 @@ export class StagingService {
 		const subfolders = this.getStagingSubfolders();
 		const entityCounts = this.countEntityTypes(files);
 		const totalEntities = entityCounts.person + entityCounts.place +
-			entityCounts.source + entityCounts.event + entityCounts.organization;
+			entityCounts.source + entityCounts.event + entityCounts.organization + entityCounts.other;
 
 		return {
 			totalFiles: files.length,
