@@ -389,6 +389,9 @@ export class GedcomImporterV2 {
 			if (options.createPeopleNotes) {
 				const totalPeople = gedcomData.individuals.size;
 				let personIndex = 0;
+				// Track created person paths to handle duplicate filenames
+				// (vault indexing may not catch up fast enough between sequential creates)
+				const createdPersonPaths = new Set<string>();
 				for (const [gedcomId, individual] of gedcomData.individuals) {
 					reportProgress({ phase: 'people', current: personIndex, total: totalPeople });
 					try {
@@ -397,7 +400,8 @@ export class GedcomImporterV2 {
 							gedcomData,
 							options,
 							gedcomToCrId,
-							placeToNoteInfo
+							placeToNoteInfo,
+							createdPersonPaths
 						);
 
 						gedcomToCrId.set(gedcomId, crId);
@@ -535,7 +539,8 @@ export class GedcomImporterV2 {
 		gedcomData: GedcomDataV2,
 		options: GedcomImportOptionsV2,
 		gedcomToCrId: Map<string, string>,
-		placeToNoteInfo: Map<string, PlaceNoteInfo>
+		placeToNoteInfo: Map<string, PlaceNoteInfo>,
+		createdPersonPaths?: Set<string>
 	): Promise<{ crId: string; notePath: string }> {
 		const crId = generateCrId();
 
@@ -656,7 +661,8 @@ export class GedcomImporterV2 {
 			propertyAliases: options.propertyAliases,
 			filenameFormat: this.getFormatForType('people', options),
 			includeDynamicBlocks: options.includeDynamicBlocks,
-			dynamicBlockTypes: options.dynamicBlockTypes
+			dynamicBlockTypes: options.dynamicBlockTypes,
+			createdPaths: createdPersonPaths
 		});
 
 		return { crId, notePath: file.path };

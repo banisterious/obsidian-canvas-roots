@@ -145,6 +145,12 @@ export interface CreatePersonNoteOptions {
 	includeDynamicBlocks?: boolean;
 	/** Which dynamic block types to include (default: ['media', 'timeline', 'relationships']) */
 	dynamicBlockTypes?: DynamicBlockType[];
+	/**
+	 * Set of paths already created in this batch import session.
+	 * Used to track duplicates when vault indexing hasn't caught up.
+	 * The function will add the final path to this set after creation.
+	 */
+	createdPaths?: Set<string>;
 }
 
 /**
@@ -542,10 +548,11 @@ export async function createPersonNote(
 		? normalizePath(`${directory}/${filename}`)
 		: normalizePath(filename);
 
-	// Check if file already exists
+	// Check if file already exists (check both vault index and batch-created paths)
+	const createdPaths = options.createdPaths;
 	let finalPath = fullPath;
 	let counter = 1;
-	while (app.vault.getAbstractFileByPath(finalPath)) {
+	while (app.vault.getAbstractFileByPath(finalPath) || createdPaths?.has(finalPath)) {
 		const baseName = person.name || 'Untitled Person';
 		const newFilename = formatFilename(`${baseName} ${counter}`, filenameFormat);
 		finalPath = directory
@@ -554,8 +561,40 @@ export async function createPersonNote(
 		counter++;
 	}
 
-	// Create the file
-	const file = await app.vault.create(finalPath, noteContent);
+	// Track this path as created before actually creating the file
+	createdPaths?.add(finalPath);
+
+	// Create the file with retry logic for race conditions
+	// where the vault index hasn't caught up with recently created files
+	const maxRetries = 10;
+	let lastError: Error | null = null;
+	let file: TFile | null = null;
+
+	for (let attempt = 0; attempt < maxRetries; attempt++) {
+		try {
+			file = await app.vault.create(finalPath, noteContent);
+			break;
+		} catch (error) {
+			if (error instanceof Error && error.message.includes('File already exists')) {
+				// File exists but wasn't detected by vault.getAbstractFileByPath
+				// Increment counter and try again
+				const baseName = person.name || 'Untitled Person';
+				const newFilename = formatFilename(`${baseName} ${counter}`, filenameFormat);
+				finalPath = directory
+					? normalizePath(`${directory}/${newFilename}`)
+					: normalizePath(newFilename);
+				createdPaths?.add(finalPath);
+				counter++;
+				lastError = error;
+			} else {
+				throw error;
+			}
+		}
+	}
+
+	if (!file) {
+		throw lastError || new Error(`Failed to create person note after ${maxRetries} attempts`);
+	}
 
 	// Handle bidirectional linking for relationships
 	// Use person name or empty string for wikilink display
