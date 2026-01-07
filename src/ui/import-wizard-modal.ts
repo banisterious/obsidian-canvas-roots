@@ -924,6 +924,7 @@ export class ImportWizardModal extends Modal {
 					createPlaceNotes: this.formData.importPlaces,
 					includeDynamicBlocks: this.formData.includeDynamicBlocks,
 					dynamicBlockTypes: ['media', 'timeline', 'relationships'],
+					compatibilityMode: settings.gedcomCompatibilityMode,
 					onProgress: (progress) => {
 						// Update UI based on progress
 						const percent = progress.total > 0 ? Math.round((progress.current / progress.total) * 100) : 0;
@@ -1299,6 +1300,30 @@ export class ImportWizardModal extends Modal {
 				statEl.createDiv({ cls: `crc-import-complete-stat-value crc-import-complete-stat-value--${stat.color}`, text: String(stat.value) });
 				statEl.createDiv({ cls: 'crc-import-complete-stat-label', text: stat.label });
 			}
+		}
+
+		// Preprocessing info (MyHeritage compatibility fixes)
+		if (result?.preprocessingApplied && result.preprocessingFixes) {
+			const preprocessingEl = section.createDiv({ cls: 'crc-import-preprocessing-info' });
+			const preprocessingTitle = preprocessingEl.createDiv({ cls: 'crc-import-preprocessing-title' });
+			const preprocessingIcon = preprocessingTitle.createSpan({ cls: 'crc-import-preprocessing-icon' });
+			setIcon(preprocessingIcon, 'wrench');
+			preprocessingTitle.createSpan({ text: 'Compatibility Fixes Applied' });
+
+			const fixesList = preprocessingEl.createEl('ul', { cls: 'crc-import-preprocessing-fixes' });
+
+			if (result.preprocessingFixes.bomRemoved) {
+				fixesList.createEl('li', { text: 'Removed UTF-8 byte order mark (BOM)' });
+			}
+
+			if (result.preprocessingFixes.concFieldsNormalized > 0) {
+				fixesList.createEl('li', {
+					text: `Fixed ${result.preprocessingFixes.concFieldsNormalized} fields with HTML encoding issues`
+				});
+			}
+
+			const preprocessingNote = preprocessingEl.createDiv({ cls: 'crc-import-preprocessing-note' });
+			preprocessingNote.createSpan({ text: 'MyHeritage GEDCOM issues were automatically corrected. Your original file was not modified.' });
 		}
 
 		// Skipped/duplicates info
