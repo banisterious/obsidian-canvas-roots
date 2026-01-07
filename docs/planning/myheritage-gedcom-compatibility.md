@@ -1,9 +1,10 @@
 # MyHeritage GEDCOM Import Compatibility
 
 **GitHub Issue:** [#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)
-**Status:** Planning
+**Status:** Ready for Implementation
 **Priority:** Medium
 **Labels:** `accepted`, `enhancement`, `gedcom`
+**Updated:** 2026-01-07 (open questions resolved with sample data from @wilbry)
 
 ## Problem Summary
 
@@ -80,8 +81,8 @@ export interface CanvasRootsSettings {
 
 Auto-detect MyHeritage files by checking for:
 1. UTF-8 BOM at file start (`ef bb bf`)
-2. `SOUR` tag with value `MyHeritage` (common in header)
-3. Presence of double-encoded entities in first 500 lines
+2. `SOUR` tag with value `MYHERITAGE` (uppercase in header)
+3. Presence of double-encoded entities in first 50KB
 
 ```typescript
 // gedcom-preprocessor.ts
@@ -99,12 +100,13 @@ function detectMyHeritage(content: string): PreprocessorDetection {
 		 content.charCodeAt(1) === 0xBB &&
 		 content.charCodeAt(2) === 0xBF);
 
-	// Check for MyHeritage source tag
-	const isMyHeritage = /1\s+SOUR\s+MyHeritage/i.test(content.substring(0, 2000));
+	// Check for MyHeritage source tag (uppercase "MYHERITAGE" per real samples)
+	const isMyHeritage = /1\s+SOUR\s+MYHERITAGE/i.test(content.substring(0, 2000));
 
 	// Check for double-encoded entities (sample first 50KB)
+	// Includes &amp;nbsp; which appears in MyHeritage exports
 	const sample = content.substring(0, 50000);
-	const hasDoubleEncodedEntities = /&amp;(?:lt|gt|amp|quot);/i.test(sample);
+	const hasDoubleEncodedEntities = /&amp;(?:lt|gt|amp|quot|nbsp);/i.test(sample);
 
 	return {
 		hasUtf8Bom,
@@ -201,21 +203,17 @@ function repairHtmlEntities(text: string): { content: string; fixed: boolean } {
 	let fixed = false;
 	let result = text;
 
-	// Step 1: Repair split entities (e.g., "&am" + ";lt;" -> "&lt;")
-	// Look for incomplete entity at end of text segments
-	const splitEntityPattern = /&[a-z]{0,3}$/;
-	const continuationPattern = /^[a-z]{0,3};/;
+	// Note: Split entity repair not needed per real-world sample analysis.
+	// MyHeritage splits at word boundaries, not mid-entity.
 
-	// This is tricky - we'd need context of line splits
-	// For now, focus on the double-encoding fix
-
-	// Step 2: Decode double-encoded entities
+	// Step 1: Decode double-encoded entities
 	// &amp;lt; -> &lt; -> <
 	// &amp;gt; -> &gt; -> >
 	// &amp;amp; -> &amp; -> &
 	// &amp;quot; -> &quot; -> "
+	// &amp;nbsp; -> &nbsp; -> (non-breaking space)
 
-	const doubleEncodedPattern = /&amp;(lt|gt|amp|quot|#\d+|#x[0-9a-fA-F]+);/gi;
+	const doubleEncodedPattern = /&amp;(lt|gt|amp|quot|nbsp|#\d+|#x[0-9a-fA-F]+);/gi;
 	if (doubleEncodedPattern.test(result)) {
 		fixed = true;
 		// First decode: &amp;lt; -> &lt;
@@ -224,7 +222,31 @@ function repairHtmlEntities(text: string): { content: string; fixed: boolean } {
 		result = decodeHtmlEntities(result);
 	}
 
-	// Step 3: Remove embedded newlines (violate GEDCOM spec)
+	// Step 2: Decode single-encoded entities (also present in MyHeritage exports)
+	// These appear mixed with double-encoded in the same record
+	if (/&(?:lt|gt|nbsp);/i.test(result)) {
+		fixed = true;
+		result = decodeHtmlEntities(result);
+	}
+
+	// Step 3: Convert <br> tags to newlines (per @wilbry's decision)
+	// Handles: <br>, <br/>, <br />, <BR />, etc.
+	const brPattern = /<br\s*\/?>/gi;
+	if (brPattern.test(result)) {
+		fixed = true;
+		result = result.replace(brPattern, '\n');
+	}
+
+	// Step 4: Strip decorative HTML tags that don't add meaning
+	// <a>text</a> (without href) -> text
+	// <p></p> -> (remove empty paragraphs)
+	const decorativeAnchorPattern = /<a>([^<]*)<\/a>/gi;
+	if (decorativeAnchorPattern.test(result)) {
+		fixed = true;
+		result = result.replace(decorativeAnchorPattern, '$1');
+	}
+
+	// Step 5: Remove embedded newlines (violate GEDCOM spec)
 	const newlinePattern = /\\n|\\r\\n|\\r/g;
 	if (newlinePattern.test(result)) {
 		fixed = true;
@@ -241,14 +263,15 @@ function decodeHtmlEntities(text: string): string {
 		'&amp;': '&',
 		'&quot;': '"',
 		'&apos;': "'",
-		'&#39;': "'"
+		'&#39;': "'",
+		'&nbsp;': ' '  // Non-breaking space -> regular space
 	};
 
 	let result = text;
 
 	// Replace named entities
 	for (const [entity, char] of Object.entries(entities)) {
-		result = result.replace(new RegExp(entity, 'g'), char);
+		result = result.replace(new RegExp(entity, 'gi'), char);
 	}
 
 	// Replace numeric entities (&#60; or &#x3C;)
@@ -592,17 +615,55 @@ Section on adding new vendor-specific preprocessors to `gedcom-preprocessor.ts`.
 
 ---
 
-## Open Questions
+## Open Questions (Resolved)
 
-1. **CONC split entity repair** - The current approach assumes entities are split at predictable boundaries. What if MyHeritage splits mid-number in numeric entities (`&#60` + `;`)? Need real-world examples to test.
+### 1. CONC split entity repair
 
-2. **Preserve vs. decode** - Should we preserve `<br>` tags or decode them to actual newlines in note text? This affects how source citations are displayed.
+**Question:** What if MyHeritage splits entities mid-character (e.g., `&#6` + `0;`)?
 
-3. **Versioning** - Should we track which version of MyHeritage produced the file and apply version-specific fixes?
+**Decision:** Not a concern. Real-world sample from @wilbry shows entities are NOT split mid-character. MyHeritage splits at word/phrase boundaries, not mid-entity. No special repair logic needed beyond standard CONC joining.
 
-4. **User override** - Should users be able to disable specific fixes (BOM but not CONC, for example)?
+### 2. Preserve vs. decode HTML tags
 
-5. **Test data** - Need to obtain sanitized real MyHeritage GEDCOM samples from @wilbry for comprehensive testing.
+**Question:** Should we preserve `<br>` tags or decode them to newlines?
+
+**Decision:** Replace `<br>` tags with actual newlines. Per @wilbry: "I think we can replace them, I think it was a limitation of how MyHeritage was displaying things and not allowing you to enter blank lines on your own." This applies to both `<br>`, `<br/>`, and `<BR />` variants.
+
+### 3. Versioning
+
+**Question:** Should we track which version of MyHeritage produced the file?
+
+**Decision:** Not needed for MVP. The sample shows `1 SOUR MYHERITAGE` with `2 VERS 5.5.1` but version-specific behavior hasn't been observed. Can add later if needed.
+
+### 4. User override (granular control)
+
+**Question:** Should users be able to disable individual fixes?
+
+**Decision:** No. Per @wilbry: "I think it doesn't need to be granular." The three-mode setting (auto/myheritage/none) is sufficient.
+
+### 5. Test data
+
+**Question:** Need real MyHeritage GEDCOM samples.
+
+**Decision:** ✅ Resolved. @wilbry provided a sanitized sample in [issue #144](https://github.com/banisterious/obsidian-canvas-roots/issues/144). Key findings from the sample:
+
+**Observed patterns:**
+- `1 SOUR MYHERITAGE` (uppercase) — use for detection
+- Double-encoded entities: `&amp;lt;br&amp;gt;` in DATA/TEXT fields
+- Single-encoded entities: `&lt;br&gt;`, `&lt;a&gt;`, `&amp;nbsp;` in DATA/TEXT fields
+- HTML tags: `<a href="...">`, `<p>`, `</p>` in NOTE fields
+- Mixed encoding within same record
+
+**Entity types found:**
+- `&amp;lt;` and `&amp;gt;` — double-encoded angle brackets
+- `&amp;nbsp;` — double-encoded non-breaking space
+- `&lt;br&gt;`, `&lt;BR /&gt;` — single-encoded line breaks
+- `&lt;a&gt;`, `&lt;/a&gt;` — single-encoded anchor tags (display only, not links)
+
+**CONC field behavior:**
+- Lines split at ~100-120 character boundaries
+- Splits occur mid-word but NOT mid-entity
+- Level numbers are consistent (3 TEXT → 4 CONC)
 
 ---
 
