@@ -170,12 +170,8 @@ export class PedigreeChartGenerator {
 
 		// For a cleaner presentation, we'll use a different approach:
 		// Build the tree as an indented list where each level shows parents
-
-		lines.push('```');
-		lines.push(this.buildTreeNode(1, ancestors, options, 0, '', ''));
-		lines.push('```');
-
-		return lines.join('\n');
+		// Return raw tree content (PDF renderer uses this directly)
+		return this.buildTreeNode(1, ancestors, options, 0, '', '');
 	}
 
 	/**
@@ -305,7 +301,10 @@ export class PedigreeChartGenerator {
 		// Tree visualization
 		lines.push('## Ancestor Tree');
 		lines.push('');
+		// Wrap tree in code block for markdown display
+		lines.push('```');
 		lines.push(treeContent);
+		lines.push('```');
 		lines.push('');
 
 		// Detailed list by generation

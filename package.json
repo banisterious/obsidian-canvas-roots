@@ -5,7 +5,8 @@
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run build:css -- --no-fail-on-lint",
+		"build": "npm run build:fonts && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run build:css -- --no-fail-on-lint",
+		"build:fonts": "node build-fonts.js",
 		"build:css": "node build-css.js",
 		"build:css:watch": "node build-css.js --watch",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
@@ -32,6 +33,7 @@
 		"url": "https://github.com/banisterious/obsidian-canvas-roots.git"
 	},
 	"devDependencies": {
+		"@fontsource/roboto-mono": "^5.2.8",
 		"@types/d3": "^7.4.3",
 		"@types/d3-hierarchy": "^3.1.7",
 		"@types/d3-selection": "^3.0.11",
