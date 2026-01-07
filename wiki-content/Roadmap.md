@@ -11,6 +11,7 @@ This document outlines planned features for Canvas Roots. For completed features
   - [Plugin Rename: Charted Roots](#plugin-rename-charted-roots) 📋 Medium
   - [GPS Research Workflow Integration](#gps-research-workflow-integration) 📋 Medium
   - [MyHeritage GEDCOM Import Compatibility](#myheritage-gedcom-import-compatibility) 📋 Medium
+  - [Automatic Wikilink Resolution](#automatic-wikilink-resolution) 📋 Medium
   - [DNA Match Tracking](#dna-match-tracking) 💡 Low
   - [Per-Map Marker Assignment](#per-map-marker-assignment) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
@@ -190,6 +191,50 @@ Non-technical users cannot import these files without using hex editors or text 
 **Documentation:**
 - See [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/myheritage-gedcom-compatibility.md) for detailed specifications
 - User report: @wilbry in [Discussion #142](https://github.com/banisterious/obsidian-canvas-roots/discussions/142#discussioncomment-15425345)
+
+---
+
+### Automatic Wikilink Resolution
+
+**Priority:** 📋 Medium — Streamlines relationship entry and reduces manual work
+
+**Status:** Planning
+
+**GitHub Issue:** [#104](https://github.com/banisterious/obsidian-canvas-roots/issues/104)
+
+**Summary:** Automatically resolve wikilinks in relationship fields to `cr_id` values, creating family graph relationships without requiring manual `_id` field population.
+
+**The Problem:** Currently, writing `father: "[[John Smith]]"` in frontmatter does not create a relationship in the family graph. Users must manually add `father_id: "abc-123-def-456"` with John Smith's `cr_id` for the relationship to be recognized. This is tedious and error-prone, especially for users accustomed to Obsidian's native wikilink behavior.
+
+**The Solution:** Create a `PersonIndexService` that maintains cached lookups between filenames and `cr_id` values, enabling automatic resolution at graph-building time:
+
+```yaml
+# This will "just work" after implementation
+father: "[[John Smith]]"
+# No father_id needed — resolved automatically
+```
+
+**Key Design Decisions:**
+- **Precedence**: Explicit `_id` fields always take precedence over wikilink resolution
+- **Ambiguity handling**: When multiple files share the same basename (e.g., two "John Smith" notes), resolution returns null and a Data Quality warning is shown
+- **Read-only**: Resolution does not modify user files
+- **Performance**: Index built on plugin load, updated incrementally via `metadataCache` events
+
+**Phased Approach:**
+
+| Phase | Feature | Effort | Status |
+|-------|---------|--------|--------|
+| 1 | PersonIndexService with core lookups | Medium | Planning |
+| 2 | Integration with FamilyGraph | Low | Planning |
+| 3 | Data Quality warnings for ambiguous wikilinks | Low | Planning |
+| 4 | Consolidate duplicate map-building code | Medium | Future |
+
+**User Impact:** Non-breaking change
+- Existing `_id` fields continue to work exactly as before
+- Wikilinks that previously did nothing will now create relationships
+- Ambiguous cases surface in Data Quality report
+
+See [Wikilink Resolution Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/wikilink-to-crid-resolution.md) for detailed specifications.
 
 ---
 
