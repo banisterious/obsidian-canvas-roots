@@ -61,7 +61,8 @@ function createSmartWikilink(name: string, app: App): string {
  * Person data for note creation
  */
 export interface PersonData {
-	name: string;
+	/** Display name (optional - allows creating placeholder persons) */
+	name?: string;
 	crId?: string;
 	nickname?: string;           // Informal name, alias, or nickname (e.g., "Bobby" for Robert)
 	birthDate?: string;
