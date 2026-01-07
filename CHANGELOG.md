@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Special character sanitization for all importers** ([#139](https://github.com/banisterious/obsidian-canvas-roots/issues/139)): Extended relationship name sanitization to Gramps, CSV, and GedcomX importers. Previously only the GEDCOM importer sanitized names containing special characters like `"`, `()`, `[]`, `{}`. Now all importers use a shared `sanitizeName()` utility to ensure wikilinks in relationship fields (father, mother, spouse, stepparents, adoptive parents, children) match sanitized filenames, preventing "linked to person who doesn't exist" warnings.
+
 ---
 
 ## [0.18.27] - 2026-01-07
