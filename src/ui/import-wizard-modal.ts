@@ -1647,8 +1647,10 @@ export class ImportWizardModal extends Modal {
 		}
 
 		toggle.addEventListener('click', () => {
-			toggle.toggleClass('crc-import-toggle--on', !value);
-			onChange(!value);
+			// Check current state from the DOM class, not the captured initial value
+			const isCurrentlyOn = toggle.hasClass('crc-import-toggle--on');
+			toggle.toggleClass('crc-import-toggle--on', !isCurrentlyOn);
+			onChange(!isCurrentlyOn);
 		});
 	}
 
