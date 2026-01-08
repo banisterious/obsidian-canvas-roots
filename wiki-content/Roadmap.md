@@ -10,7 +10,6 @@ This document outlines planned features for Canvas Roots. For completed features
 - [Planned Features](#planned-features)
   - [Plugin Rename: Charted Roots](#plugin-rename-charted-roots) 📋 Medium
   - [GPS Research Workflow Integration](#gps-research-workflow-integration) 📋 Medium
-  - [MyHeritage GEDCOM Import Compatibility](#myheritage-gedcom-import-compatibility) 📋 Medium
   - [Automatic Wikilink Resolution](#automatic-wikilink-resolution) 📋 Medium
   - [DNA Match Tracking](#dna-match-tracking) 💡 Low
   - [Per-Map Marker Assignment](#per-map-marker-assignment) 💡 Low
@@ -33,6 +32,7 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.18.28 | [MyHeritage GEDCOM Import Compatibility](Release-History#myheritage-gedcom-import-compatibility-v01828) | Auto-detect and fix MyHeritage GEDCOM exports (BOM, double-encoded entities, `<br>` tags) |
 | v0.18.27 | [Optional Person Names](Release-History#optional-person-names-v01827) | Create placeholder persons without names; fill in later as research progresses |
 | v0.18.27 | [DMS Coordinate Conversion](Release-History#dms-coordinate-conversion-v01827) | Opt-in DMS format parsing for coordinate inputs (e.g., `33°51'08"N`) |
 | v0.18.27 | [DNA Match Tracking - Phase 1](Release-History#dna-match-tracking---phase-1-v01827) | DNA match template snippet, "DNA Matches" Bases view, documented frontmatter properties |
@@ -152,54 +152,6 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 **Documentation:**
 - See [Research Workflow Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/research-workflow-integration.md) for detailed specifications
 - Community contributors: @ANYroots (IRN structure, GPS methodology, templates), @wilbry (lightweight approach, unified design)
-
----
-
-### MyHeritage GEDCOM Import Compatibility
-
-**Priority:** 📋 Medium — Improves import workflow for non-technical users
-
-**Status:** Ready for Implementation (open questions resolved 2026-01-07)
-
-**GitHub Issue:** [#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)
-
-**Summary:** Automatically detect and fix MyHeritage GEDCOM export issues during import, enabling non-technical users to import their family trees without manual file cleanup.
-
-**The Problem:** MyHeritage GEDCOM exports contain formatting issues that prevent import:
-- UTF-8 byte order mark (BOM) at file start
-- Double-encoded HTML entities (`&amp;lt;br&amp;gt;` instead of `<br>`)
-- Single-encoded entities mixed with double-encoded in same record
-- `<br>` tags that should be newlines
-
-Non-technical users cannot import these files without using hex editors or text processing tools.
-
-**The Solution:** Opt-in preprocessing with auto-detection:
-- **Auto mode** (default): Detect MyHeritage files and apply fixes automatically
-- **MyHeritage mode**: Always apply fixes
-- **None mode**: Disable preprocessing (current behavior)
-
-**Preprocessing Fixes:**
-1. **Strip UTF-8 BOM** — Remove byte order mark before parsing
-2. **Decode double-encoded entities** — `&amp;lt;` → `<`, `&amp;nbsp;` → space
-3. **Decode single-encoded entities** — `&lt;br&gt;` → `<br>` (mixed encoding)
-4. **Convert `<br>` to newlines** — Per user feedback, these represent line breaks
-5. **Strip decorative HTML** — Remove `<a>text</a>` tags without href
-6. **Transparent reporting** — Show what was fixed in import results modal
-
-**Key Features:**
-- **Auto-detection** — Checks for `1 SOUR MYHERITAGE` tag and double-encoded entities
-- **Preserves original** — Creates cleaned temp content; original file unchanged
-- **No regressions** — Only applies fixes when MyHeritage detected or explicitly enabled
-- **Performance target** — <1 second preprocessing for typical files
-
-**Sample Data Analysis** (from @wilbry):
-- CONC lines split at ~100-120 chars, mid-word but NOT mid-entity
-- No split-entity repair needed (simpler implementation)
-- Mixed encoding common: double-encoded in DATA/TEXT, single-encoded elsewhere
-
-**Documentation:**
-- See [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/myheritage-gedcom-compatibility.md) for detailed specifications
-- User report: @wilbry in [Discussion #142](https://github.com/banisterious/obsidian-canvas-roots/discussions/142#discussioncomment-15425345)
 
 ---
 

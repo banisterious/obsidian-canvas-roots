@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.18.x](#v018x)
+  - [MyHeritage GEDCOM Import Compatibility](#myheritage-gedcom-import-compatibility-v01828)
   - [Optional Person Names](#optional-person-names-v01827)
   - [DMS Coordinate Conversion](#dms-coordinate-conversion-v01827)
   - [DNA Match Tracking - Phase 1](#dna-match-tracking---phase-1-v01827)
@@ -89,6 +90,50 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.18.x
+
+### MyHeritage GEDCOM Import Compatibility (v0.18.28)
+
+Automatic detection and preprocessing of MyHeritage GEDCOM exports to fix vendor-specific formatting issues.
+
+**GitHub Issue:** [#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)
+
+**Features Implemented:**
+
+| Feature | Description |
+|---------|-------------|
+| Auto-detection | Detects MyHeritage GEDCOM files by `1 SOUR MYHERITAGE` tag and double-encoded entities |
+| UTF-8 BOM removal | Strips byte order mark that prevents parsing |
+| Double-encoded entity fix | Decodes `&amp;lt;` → `<`, `&amp;nbsp;` → space, etc. |
+| Single-encoded entity fix | Handles mixed encoding (single + double in same file) |
+| `<br>` tag conversion | Converts `<br>` and `<br/>` to newlines |
+| Decorative HTML stripping | Removes `<a>text</a>` tags without href attributes |
+| Compatibility mode setting | Settings → Data & detection with Auto/MyHeritage/None options |
+| Import results reporting | Shows preprocessing fixes applied in import results modal |
+
+**Compatibility Modes:**
+
+| Mode | Behavior |
+|------|----------|
+| Auto (default) | Detect MyHeritage files and apply fixes automatically |
+| MyHeritage | Always apply fixes (for manually edited files) |
+| None | Disable preprocessing (original behavior) |
+
+**Files Added:**
+
+- `src/gedcom/gedcom-preprocessor.ts` — Preprocessing logic with detection and fixes
+
+**Files Modified:**
+
+- `src/gedcom/gedcom-importer-v2.ts` — Integrated preprocessor into import pipeline
+- `src/gedcom/gedcom-types.ts` — Added `preprocessingApplied` and `preprocessingFixes` to result types
+- `src/settings.ts` — Added `gedcomCompatibilityMode` setting and UI control
+- `src/ui/gedcom-import-modal.ts` — Display preprocessing info in import results
+
+**Documentation:**
+
+- [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/myheritage-gedcom-compatibility.md)
+
+---
 
 ### Optional Person Names (v0.18.27)
 
