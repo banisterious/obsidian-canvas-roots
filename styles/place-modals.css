@@ -9,6 +9,11 @@
   min-width: 120px;
 }
 
+/* Constrain dropdown widths to prevent horizontal overflow */
+.crc-create-place-modal .setting-item-control select {
+  max-width: 220px;
+}
+
 /* Coordinate inputs section */
 .crc-coord-section {
   margin-top: 8px;

@@ -720,7 +720,7 @@ export class CreatePlaceModal extends Modal {
 		// Collection - dropdown with existing + text for custom
 		const collectionSetting = new Setting(form)
 			.setName('Collection')
-			.setDesc('User-defined grouping (e.g., "Smith Family" to group with related person notes)');
+			.setDesc('Group with related person notes');
 
 		if (this.existingCollections.length > 0) {
 			// Show dropdown with existing collections + "New collection..." option
