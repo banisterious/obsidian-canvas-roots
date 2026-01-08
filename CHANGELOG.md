@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.18.29] - 2026-01-07
+
 ### Fixed
 
 - **Import wizard toggles can't be re-enabled** ([#154](https://github.com/banisterious/obsidian-canvas-roots/issues/154)): Fixed bug where entity type toggles (People, Places, Sources, Events, etc.) in the import wizard couldn't be turned back on after being toggled off. The click handler captured the initial value in a closure instead of reading the current DOM state.
