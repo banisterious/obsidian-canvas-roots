@@ -24,6 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.18.31] - 2026-01-08
+
+### Documentation
+
+- **Web Clipper Integration wiki**: Added section documenting potential future place templates (Wikidata, GOV) and clarifying which place sources are better suited for Web Clipper templates vs native plugin integration. Related to [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128).
+- **Unified Place Lookup planning document**: Created comprehensive planning document (`docs/planning/unified-place-lookup.md`) for native multi-source place lookup feature with detailed TypeScript implementation examples for PlaceLookupService, PlaceLookupModal, and integration with Create Place modal. Covers FamilySearch Places API, Wikidata, GeoNames, GOV, and Nominatim with automatic parent place hierarchy creation.
+- **Place Data Sources research document**: Added reference document (`docs/research/place-data-sources.md`) comparing 5 genealogical place databases with API endpoints, authentication requirements, rate limits, use case recommendations for different research scenarios, and implementation priority guidance.
+
+---
+
 ## [0.18.30] - 2026-01-08
 
 ### Added
