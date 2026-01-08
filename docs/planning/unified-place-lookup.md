@@ -1141,6 +1141,7 @@ Create new wiki page: **Place Lookup**
 ## Next Steps
 
 1. ✅ Create planning document (this file)
-2. Get user feedback on native approach vs. Web Clipper
-3. Create GitHub issue for tracking
-4. Begin Phase 1 implementation
+2. ✅ Document place data source research in [docs/research/place-data-sources.md](../research/place-data-sources.md)
+3. Get user feedback on native approach vs. Web Clipper
+4. Create GitHub issue for tracking
+5. Begin Phase 1 implementation
