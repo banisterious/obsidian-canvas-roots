@@ -656,6 +656,7 @@ export class CreatePlaceModal extends Modal {
 						}
 						this.placeData.parentPlaceId = undefined;
 						this.placeData.parentPlace = undefined;
+						this.pendingParentPlace = undefined;
 					} else if (value) {
 						// Hide custom input and use selected place
 						if (customParentInput) {
@@ -665,6 +666,8 @@ export class CreatePlaceModal extends Modal {
 						const selectedPlace = this.findPlaceById(value);
 						this.placeData.parentPlaceId = value;
 						this.placeData.parentPlace = selectedPlace?.name;
+						// Clear pending parent since we selected an existing place
+						this.pendingParentPlace = undefined;
 					} else {
 						// No parent
 						if (customParentInput) {
@@ -673,6 +676,7 @@ export class CreatePlaceModal extends Modal {
 						}
 						this.placeData.parentPlaceId = undefined;
 						this.placeData.parentPlace = undefined;
+						this.pendingParentPlace = undefined;
 					}
 				});
 			});
@@ -1423,6 +1427,12 @@ export class CreatePlaceModal extends Modal {
 
 		// Suggest a type for the parent based on the child's type
 		const suggestedType = suggestParentType(this.placeData.placeType);
+
+		// Reload the place graph cache to include the newly created place
+		// This ensures the parent modal has up-to-date information
+		if (this.placeGraph) {
+			this.placeGraph.reloadCache();
+		}
 
 		// Small delay to let the current modal fully close
 		setTimeout(() => {
