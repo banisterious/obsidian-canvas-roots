@@ -810,6 +810,20 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		// GEDCOM compatibility mode
+		new Setting(dataContent)
+			.setName('GEDCOM compatibility mode')
+			.setDesc('Fix vendor-specific issues in GEDCOM imports (MyHeritage: BOM, double-encoded entities, <br> tags)')
+			.addDropdown(dropdown => dropdown
+				.addOption('auto', 'Auto (detect and fix)')
+				.addOption('myheritage', 'MyHeritage (always fix)')
+				.addOption('none', 'None (disabled)')
+				.setValue(this.plugin.settings.gedcomCompatibilityMode)
+				.onChange(async (value) => {
+					this.plugin.settings.gedcomCompatibilityMode = value as GedcomCompatibilityMode;
+					await this.plugin.saveSettings();
+				}));
+
 		// Bidirectional relationship sync
 		new Setting(dataContent)
 			.setName('Enable bidirectional relationship sync')
