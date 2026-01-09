@@ -220,6 +220,7 @@ Canvas Roots provides curated, tested templates in the `docs/clipper-templates/`
 - **FamilySearch - Person** (AI-powered, handles all record types)
 - **Wikipedia - Biography (LLM)** (AI-powered, structured biographical extraction)
 - **Wikipedia - Biography (Basic)** (CSS selectors, no AI required)
+- **Wikidata - Place (LLM)** (AI-powered, geographic place data extraction)
 
 **How to Use:**
 1. Download template `.json` files from [docs/clipper-templates/](https://github.com/banisterious/obsidian-canvas-roots/tree/main/docs/clipper-templates)
@@ -235,14 +236,17 @@ See the [template documentation](https://github.com/banisterious/obsidian-canvas
 
 Community template sharing is still encouraged! Share your custom templates in [GitHub Discussions](https://github.com/banisterious/obsidian-canvas-roots/discussions).
 
+### Place Templates
+
+Canvas Roots now includes a **Wikidata - Place (LLM)** template for extracting structured geographic place data. This template:
+- Auto-triggers on Wikidata Q-pages (`wikidata.org/wiki/Q*`)
+- Extracts coordinates, place type, administrative hierarchy, and alternate names
+- Works seamlessly with Canvas Roots' staging promotion workflow
+- Automatically assigns `cr_id` and routes to Places folder on promotion
+
+See the [template documentation](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/clipper-templates/CLIPPER-TEMPLATES.md#wikidata---place-llm) for setup instructions and extracted fields.
+
 ### Potential Future Place Templates
-
-Canvas Roots is exploring additional Web Clipper templates for place data sources. Based on research into available genealogical place databases, the following sources are good candidates for future templates:
-
-**Wikidata** — Structured place data with coordinates, administrative hierarchies, and multilingual names
-- **URL Pattern:** `wikidata.org/wiki/Q*`
-- **Best for:** Well-known international places, multilingual research
-- **Why it's a good candidate:** Browsable place pages with structured JSON-LD data and consistent formatting
 
 **GOV (Geschichtliches Ortsverzeichnis)** — Historical German/European place database with temporal boundary tracking
 - **URL Pattern:** `gov.genealogy.net/item/show/*`
@@ -251,7 +255,7 @@ Canvas Roots is exploring additional Web Clipper templates for place data source
 
 **Note on other sources:** For API-based place sources (FamilySearch Places API, GeoNames, OpenStreetMap Nominatim), Canvas Roots is planning native plugin integration via the **Unified Place Lookup** feature. This will provide a better user experience than Web Clipper templates for API-only sources. See [Place Data Sources Research](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/research/place-data-sources.md) for detailed comparison of all available sources.
 
-If you're interested in helping develop Wikidata or GOV templates, or have suggestions for other place sources, please contribute to [issue #128](https://github.com/banisterious/obsidian-canvas-roots/issues/128).
+If you're interested in helping develop a GOV template or have suggestions for other place sources, please contribute to [issue #128](https://github.com/banisterious/obsidian-canvas-roots/issues/128).
 
 ---
 
