@@ -8,6 +8,7 @@ Solutions to common issues with Charted Roots.
 
 - [Tree Generation](#tree-generation)
 - [Bidirectional Sync](#bidirectional-sync)
+- [Upgrade Issues](#upgrade-issues)
 - [Import/Export](#importexport)
 - [Map View](#map-view)
 - [Family Chart View](#family-chart-view)
@@ -90,6 +91,25 @@ Solutions to common issues with Charted Roots.
 2. Wait for Obsidian to detect file changes (usually automatic)
 3. Check that files have valid frontmatter with `cr_id`
 4. Try editing within Obsidian to verify sync works
+
+## Upgrade Issues
+
+### New "Charted Roots" folder created after v0.19.0 upgrade
+
+**Symptoms:** After upgrading from Canvas Roots to Charted Roots (v0.19.0), new people/places are created in a `Charted Roots/` folder while existing files remain in `Canvas Roots/`.
+
+**Cause:** The v0.19.0 migration updated canvas metadata and code blocks, but didn't change folder settings. If you were using the default folder paths, they reset to the new `Charted Roots/...` defaults while your existing files stayed in `Canvas Roots/...`.
+
+**Solution:**
+1. Go to Settings → Charted Roots
+2. Update each folder path to point to your existing folders:
+   - People folder: `Canvas Roots/People`
+   - Places folder: `Canvas Roots/Places`
+   - (and so on for other folder settings)
+3. If you already created files in the new `Charted Roots/` folder, move them to your existing folder structure first
+4. Delete the empty `Charted Roots` folder
+
+**Note:** The migration intentionally didn't rename folders to avoid surprising users with altered folder structures. However, the settings default change wasn't communicated clearly.
 
 ## Import/Export
 
