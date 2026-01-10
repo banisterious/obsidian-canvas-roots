@@ -115,6 +115,9 @@ export interface PersonData {
 	notesContent?: string;       // Markdown notes content to append to note body
 	// Privacy flag
 	private?: boolean;           // Mark note as private (e.g., for Gramps priv flag)
+	// External IDs (for import round-trip)
+	externalId?: string;         // Original ID from import source (e.g., GEDCOM xref, Gramps handle)
+	externalIdSource?: string;   // Source of the external ID (e.g., "gedcom", "gramps")
 }
 
 /**
@@ -263,6 +266,16 @@ export async function createPersonNote(
 	// Privacy flag (e.g., from Gramps priv attribute)
 	if (person.private === true) {
 		frontmatter[prop('private')] = 'true';
+	}
+
+	// External IDs (for import round-trip support)
+	if (person.externalId) {
+		frontmatter[prop('external_id')] = person.externalId;
+		logger.debug('externalId', `Added: ${person.externalId}`);
+	}
+	if (person.externalIdSource) {
+		frontmatter[prop('external_id_source')] = person.externalIdSource;
+		logger.debug('externalIdSource', `Added: ${person.externalIdSource}`);
 	}
 
 	// Handle relationships using dual storage: wikilinks for Obsidian + _id fields for reliability

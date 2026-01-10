@@ -690,7 +690,10 @@ export class GedcomImporterV2 {
 			birthPlace: birthPlaceValue,
 			deathPlace: deathPlaceValue,
 			occupation: individual.occupation,
-			sex: individual.sex === 'M' ? 'male' : individual.sex === 'F' ? 'female' : undefined
+			sex: individual.sex === 'M' ? 'male' : individual.sex === 'F' ? 'female' : undefined,
+			// Store original GEDCOM xref for round-trip support (#175)
+			externalId: individual.id,
+			externalIdSource: 'gedcom'
 		};
 
 		// Add extended attributes
