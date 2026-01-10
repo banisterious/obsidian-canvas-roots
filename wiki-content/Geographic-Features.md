@@ -20,6 +20,7 @@ Charted Roots provides comprehensive place-based features for tracking where peo
 - [Custom Place Types](#custom-place-types)
 - [Using Obsidian Maps Alongside Charted Roots](#using-obsidian-maps-alongside-canvas-roots)
 - [Settings](#settings)
+  - [Category-Based Organization](#category-based-organization)
 
 ---
 
@@ -402,6 +403,7 @@ Each issue type appears in its own collapsible section. Sections show a count ba
 | Circular hierarchy | Place A → B → A (invalid parent chain) | Edit button to fix |
 | Fictional with coords | Fictional/mythological places with real-world coordinates | Review button |
 | Real missing coords | Real places without coordinates defined | Edit button to add coords |
+| Places in wrong folder | Places not stored in their category-appropriate subfolder | Organize places button (see [Category-Based Organization](#category-based-organization)) |
 
 ### Inline Actions
 
@@ -690,3 +692,63 @@ Configure place features in Settings → Charted Roots:
 **Place Category Rules:**
 - Define automatic category assignment based on folder path or collection
 - Example: Places in "Places/Historical" default to `historical` category
+
+### Category-Based Organization
+
+*Added in v0.19.3*
+
+When enabled, places are automatically stored in category-specific subfolders based on their `place_category`:
+
+```
+Places/
+  Real/         (place_category: real)
+  Historical/   (place_category: historical)
+  Disputed/     (place_category: disputed)
+  Legendary/    (place_category: legendary)
+  Mythological/ (place_category: mythological)
+  Fictional/    (place_category: fictional)
+```
+
+**Enabling Category Subfolders:**
+
+1. Open Settings → Charted Roots → Preferences tab
+2. Scroll to the **Place organization** section
+3. Enable **Use category-based subfolders**
+
+**How It Works:**
+
+| Action | Behavior |
+|--------|----------|
+| **Create new place** | Automatically stored in category subfolder (e.g., `Places/Historical/`) |
+| **Edit existing place** | If category changes, you're prompted to move the file |
+| **Import (GEDCOM/Gramps)** | Places go to base folder; use Data Quality to organize afterward |
+
+**Custom Folder Rules:**
+
+Override automatic folder names for specific categories:
+
+1. In the Place organization section, click **Add override**
+2. Select a category (e.g., Historical)
+3. Enter a custom subfolder path (e.g., `Ancient/Historical` or `Fantasy/Legendary`)
+
+Custom rules take precedence over automatic naming.
+
+**Organizing Existing Places:**
+
+If you enable category subfolders after creating place notes:
+
+1. Open Control Center → Places tab
+2. In Data Quality, look for "N places in wrong folder"
+3. Click **Organize places** to open the bulk migration modal
+4. Select places to move and click **Move**
+
+The organize modal shows:
+- Place name and category
+- Current folder location
+- Target folder based on category
+
+**Default Behavior:**
+
+- **New vaults**: Category subfolders are enabled by default
+- **Existing vaults**: Disabled by default to avoid disrupting existing organization
+- Places with the default category (usually `real`) stay in the base folder unless a rule is defined
