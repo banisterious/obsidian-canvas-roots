@@ -131,10 +131,9 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **Summary:** Preserve date precision instead of normalizing partial dates to full ISO format. Currently `1850` becomes `1850-01-01`, adding false precision that misrepresents the source data.
 
-**The Problem:** Genealogists frequently have incomplete date information. A year-only birth date (`1850`) is different from a known January 1st birth (`1850-01-01`), but the plugin currently treats them identically. This affects:
-- GEDCOM import (converts partial dates to full ISO)
-- UI modals (re-normalizes dates on save)
-- Export round-trip (loses original precision)
+**The Problem:** Genealogists frequently have incomplete date information. A year-only birth date (`1850`) is different from a known January 1st birth (`1850-01-01`), but the plugin currently treats them identically. The normalization happens in `gedcomDateToISO()` during GEDCOM import.
+
+**Note:** Codebase exploration confirmed UI modals already store raw user input without normalization—the fix is isolated to the GEDCOM import function.
 
 **GEDCOM Date Formats to Support:**
 
@@ -146,23 +145,24 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | Before/After | `BEF 1950` | `1950-01-01` | `BEF 1950` |
 | Range | `BET 1882 AND 1885` | varies | `BET 1882 AND 1885` |
 
-**The Solution:** Store dates as entered/imported without fabricating precision:
-- Modify `gedcomDateToISO()` to preserve partial dates and qualifiers
-- Update UI modals to not normalize dates on save
-- DateService already handles partial dates downstream (age calculation, sorting)
+**The Solution:** Modify `gedcomDateToISO()` to preserve partial dates and qualifiers:
+- Year only → preserve as-is (`1850`)
+- Month + year → use ISO partial (`1855-03`)
+- Qualifiers → preserve prefix with normalized date (`ABT 1855-03`)
+- DateService already handles these formats downstream (age calculation, sorting)
 
 **Phased Approach:**
 
 | Phase | Feature | Status |
 |-------|---------|--------|
 | 1 | GEDCOM import preserves partial dates | Planning |
-| 2 | UI modals preserve partial dates on save | Planning |
-| 3 | Display formatting and export round-trip | Future |
+| 2 | Display formatting (optional polish) | Future |
+| 3 | Export round-trip verification | Future |
 
 **User Impact:** Non-breaking change
 - Existing dates remain as stored
-- New imports/edits preserve precision
-- Manual frontmatter editing already works (if you avoid UI re-edit)
+- New imports preserve precision
+- Mixed formats in same vault work fine
 
 See [Partial Date Support Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/partial-date-support.md) for detailed specifications.
 
