@@ -60,9 +60,26 @@ export class GedcomParserV2 {
 
 	/**
 	 * Parse GEDCOM content into structured data (v2)
+	 * Note: This is synchronous. For large files, use parseAsync instead.
 	 */
 	static parse(content: string): GedcomDataV2 {
 		const lines = this.parseLines(content);
+		return this.processLines(lines);
+	}
+
+	/**
+	 * Parse GEDCOM content asynchronously with periodic yielding.
+	 * Use this for large files to prevent UI freezing.
+	 */
+	static async parseAsync(content: string, onProgress?: (current: number, total: number) => void): Promise<GedcomDataV2> {
+		const lines = await this.parseLinesAsync(content, onProgress);
+		return this.processLinesAsync(lines, onProgress);
+	}
+
+	/**
+	 * Process parsed lines into structured data
+	 */
+	private static processLines(lines: GedcomLine[]): GedcomDataV2 {
 		const data: GedcomDataV2 = {
 			individuals: new Map(),
 			families: new Map(),
@@ -200,6 +217,196 @@ export class GedcomParserV2 {
 		}
 
 		return parsed;
+	}
+
+	/**
+	 * Yield to the event loop to prevent UI freezing.
+	 * Uses setTimeout with 0ms which defers to the next event loop iteration.
+	 */
+	private static async yieldToEventLoop(): Promise<void> {
+		return new Promise(resolve => setTimeout(resolve, 0));
+	}
+
+	/**
+	 * Parse raw GEDCOM lines asynchronously with periodic yielding.
+	 * Yields to the event loop periodically to keep UI responsive.
+	 */
+	private static async parseLinesAsync(
+		content: string,
+		onProgress?: (current: number, total: number) => void
+	): Promise<GedcomLine[]> {
+		// Yield before expensive split
+		await this.yieldToEventLoop();
+		const lines = content.split(/\r?\n/);
+		await this.yieldToEventLoop();
+
+		const parsed: GedcomLine[] = [];
+		const totalLines = lines.length;
+		const YIELD_INTERVAL = 5000; // Balance responsiveness with performance
+
+		for (let i = 0; i < lines.length; i++) {
+			const line = lines[i].trim();
+			if (!line) continue;
+
+			const match = line.match(/^(\d+)\s+(@[^@]+@\s+)?(\S+)(\s+(.*))?$/);
+			if (!match) {
+				throw new GedcomParseError(`Invalid GEDCOM line format`, i + 1);
+			}
+
+			parsed.push({
+				level: parseInt(match[1]),
+				xref: match[2]?.trim().replace(/@/g, ''),
+				tag: match[3],
+				value: match[5]?.trim() || '',
+				lineNumber: i + 1
+			});
+
+			// Yield periodically to prevent UI freezing
+			if (i > 0 && i % YIELD_INTERVAL === 0) {
+				if (onProgress) {
+					onProgress(i, totalLines);
+				}
+				await this.yieldToEventLoop();
+			}
+		}
+
+		return parsed;
+	}
+
+	/**
+	 * Process parsed lines into structured data asynchronously.
+	 * Yields to the event loop periodically to prevent UI freezing.
+	 */
+	private static async processLinesAsync(
+		lines: GedcomLine[],
+		onProgress?: (current: number, total: number) => void
+	): Promise<GedcomDataV2> {
+		const data: GedcomDataV2 = {
+			individuals: new Map(),
+			families: new Map(),
+			sources: new Map(),
+			header: {}
+		};
+
+		let currentRecord: 'INDI' | 'FAM' | 'SOUR' | 'HEAD' | null = null;
+		let currentIndividual: GedcomIndividualV2 | null = null;
+		let currentFamily: GedcomFamilyV2 | null = null;
+		let currentSource: GedcomSource | null = null;
+		let currentEvent: GedcomEvent | null = null;
+		let currentCitation: GedcomSourceCitation | null = null;
+		let currentFamcRef: FamilyAsChildRef | undefined = undefined;
+		let contextStack: string[] = [];
+
+		const totalLines = lines.length;
+		const YIELD_INTERVAL = 5000; // Balance responsiveness with performance
+
+		for (let i = 0; i < lines.length; i++) {
+			const line = lines[i];
+
+			// Level 0 records - start of new record
+			if (line.level === 0) {
+				// Save previous records
+				this.saveCurrentRecords(data, currentIndividual, currentFamily, currentSource, currentEvent);
+
+				// Reset state
+				currentIndividual = null;
+				currentFamily = null;
+				currentSource = null;
+				currentEvent = null;
+				currentCitation = null;
+				currentFamcRef = undefined;
+				contextStack = [];
+
+				if (line.tag === 'HEAD') {
+					currentRecord = 'HEAD';
+				} else if (line.xref && line.tag === 'INDI') {
+					currentRecord = 'INDI';
+					currentIndividual = this.createEmptyIndividual(line.xref);
+				} else if (line.xref && line.tag === 'FAM') {
+					currentRecord = 'FAM';
+					currentFamily = this.createEmptyFamily(line.xref);
+				} else if (line.xref && line.tag === 'SOUR') {
+					currentRecord = 'SOUR';
+					currentSource = this.createEmptySource(line.xref);
+				} else if (line.tag === 'TRLR') {
+					currentRecord = null;
+				}
+
+				// Yield periodically
+				if (i > 0 && i % YIELD_INTERVAL === 0) {
+					if (onProgress) {
+						onProgress(i, totalLines);
+					}
+					await this.yieldToEventLoop();
+				}
+				continue;
+			}
+
+			// Update context stack based on level
+			while (contextStack.length >= line.level) {
+				contextStack.pop();
+			}
+			contextStack.push(line.tag);
+
+			// Process based on current record type
+			switch (currentRecord) {
+				case 'HEAD':
+					this.parseHeaderLine(line, data.header);
+					break;
+
+				case 'INDI':
+					if (currentIndividual) {
+						const result = this.parseIndividualLine(
+							line,
+							currentIndividual,
+							currentEvent,
+							currentCitation,
+							contextStack,
+							currentFamcRef
+						);
+						currentEvent = result.currentEvent;
+						currentCitation = result.currentCitation;
+						currentFamcRef = result.currentFamcRef;
+					}
+					break;
+
+				case 'FAM':
+					if (currentFamily) {
+						const result = this.parseFamilyLine(
+							line,
+							currentFamily,
+							currentEvent,
+							currentCitation,
+							contextStack
+						);
+						currentEvent = result.currentEvent;
+						currentCitation = result.currentCitation;
+					}
+					break;
+
+				case 'SOUR':
+					if (currentSource) {
+						this.parseSourceLine(line, currentSource);
+					}
+					break;
+			}
+
+			// Yield periodically
+			if (i > 0 && i % YIELD_INTERVAL === 0) {
+				if (onProgress) {
+					onProgress(i, totalLines);
+				}
+				await this.yieldToEventLoop();
+			}
+		}
+
+		// Save final records
+		this.saveCurrentRecords(data, currentIndividual, currentFamily, currentSource, currentEvent);
+
+		// Link families to individuals
+		this.linkFamilies(data);
+
+		return data;
 	}
 
 	// ============================================================================

@@ -79,6 +79,7 @@ interface ImportWizardFormData {
 	parseErrors: string[];
 	parseWarnings: string[];
 	gpkgExtractionResult: GpkgExtractionResult | null;
+	previewParsed: boolean;  // Track if preview parsing has been attempted
 
 	// Step 5: Import (progress)
 	importedCount: number;
@@ -213,6 +214,7 @@ export class ImportWizardModal extends Modal {
 			parseErrors: [],
 			parseWarnings: [],
 			gpkgExtractionResult: null,
+			previewParsed: false,
 
 			// Step 5
 			importedCount: 0,
@@ -586,12 +588,19 @@ export class ImportWizardModal extends Modal {
 		fileHeader.createDiv({ cls: 'crc-import-preview-filename', text: this.formData.fileName });
 
 		// Check if file needs parsing (GEDCOM or Gramps format)
+		// Use previewParsed flag - once we've attempted parsing, don't re-parse
+		// This works for both GEDCOM (which sets parsedData) and Gramps (which doesn't)
 		const needsParsing = (this.formData.format === 'gedcom' || this.formData.format === 'gramps')
-			&& this.formData.previewCounts.people === 0
+			&& !this.formData.previewParsed  // Already parsed? Don't parse again
 			&& this.formData.file
 			&& !this.isParsing;  // Don't parse if already parsing
 
 		if (needsParsing) {
+			// Set parsing flag BEFORE showing loading state to prevent race conditions
+			this.isParsing = true;
+			// Mark that we've attempted parsing - this persists even if parsing fails
+			this.formData.previewParsed = true;
+
 			// Show loading state
 			const loadingEl = section.createDiv({ cls: 'crc-import-preview-loading' });
 			loadingEl.textContent = 'Parsing file...';
@@ -793,35 +802,74 @@ export class ImportWizardModal extends Modal {
 	private async parseFileForPreview(): Promise<void> {
 		if (!this.formData.file) return;
 
-		// Guard against concurrent parsing
-		if (this.isParsing) return;
-		this.isParsing = true;
+		// Note: isParsing is set by renderStep4Preview before calling this method
+		// to prevent race conditions. We don't need to set it here.
 
 		try {
+			// Small delay to ensure "Parsing file..." message is rendered before heavy processing
+			await new Promise(resolve => requestAnimationFrame(() =>
+				requestAnimationFrame(() => resolve(undefined))
+			));
+
 			// Parse based on format
 			if (this.formData.format === 'gedcom') {
 				// Read file content as text
 				const content = await this.formData.file.text();
 				this.formData.fileContent = content;
 
-				// Use the importer to analyze and parse
-				const analysis = this.importer.analyzeFile(content);
-
-				this.formData.previewCounts = {
-					people: analysis.individualCount,
-					places: analysis.uniquePlaces,
-					sources: analysis.sourceCount,
-					events: analysis.eventCount,
-					media: 0 // GEDCOM doesn't include media count in analysis
-				};
-
-				// Parse for validation
-				const parseResult = this.importer.parseContent(content);
+				// Use async parseContent which handles preprocessing and parsing in one pass
+				// This avoids processing the file twice (once for analyze, once for parse)
+				console.log('[ImportWizard] Starting parseContentAsync...');
+				const parseResult = await this.importer.parseContentAsync(content);
+				console.log('[ImportWizard] parseContentAsync result: valid=' + parseResult.valid +
+					', hasData=' + !!parseResult.data +
+					', dataSize=' + parseResult.data?.individuals?.size +
+					', errors=' + JSON.stringify(parseResult.errors) +
+					', warningCount=' + parseResult.warnings?.length);
 				this.formData.parseErrors = parseResult.errors;
 				this.formData.parseWarnings = parseResult.warnings;
 
 				if (parseResult.valid && parseResult.data) {
 					this.formData.parsedData = parseResult.data;
+					console.log('[ImportWizard] parsedData set with', parseResult.data.individuals.size, 'individuals');
+
+					// Compute preview counts from parsed data
+					const data = parseResult.data;
+					let eventCount = 0;
+					const places = new Set<string>();
+
+					for (const individual of data.individuals.values()) {
+						eventCount += individual.events.length;
+						if (individual.birthPlace) places.add(individual.birthPlace.toLowerCase());
+						if (individual.deathPlace) places.add(individual.deathPlace.toLowerCase());
+						for (const event of individual.events) {
+							if (event.place) places.add(event.place.toLowerCase());
+						}
+					}
+					for (const family of data.families.values()) {
+						eventCount += family.events.length;
+						if (family.marriagePlace) places.add(family.marriagePlace.toLowerCase());
+						for (const event of family.events) {
+							if (event.place) places.add(event.place.toLowerCase());
+						}
+					}
+
+					this.formData.previewCounts = {
+						people: data.individuals.size,
+						places: places.size,
+						sources: data.sources.size,
+						events: eventCount,
+						media: 0 // GEDCOM doesn't include media count
+					};
+				} else {
+					// Parsing failed, set zero counts
+					this.formData.previewCounts = {
+						people: 0,
+						places: 0,
+						sources: 0,
+						events: 0,
+						media: 0
+					};
 				}
 			} else if (this.formData.format === 'gramps') {
 				// Read file as ArrayBuffer for .gpkg extraction
@@ -952,6 +1000,12 @@ export class ImportWizardModal extends Modal {
 				};
 
 				// Run import
+				console.log('[ImportWizard] Starting import with:', {
+					hasFileContent: !!this.formData.fileContent,
+					fileContentLength: this.formData.fileContent?.length,
+					hasParsedData: !!this.formData.parsedData,
+					parsedDataSize: this.formData.parsedData?.individuals?.size
+				});
 				const result = await this.importer.importFile(
 					this.formData.fileContent,
 					options,

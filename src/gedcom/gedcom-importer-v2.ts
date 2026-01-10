@@ -16,7 +16,7 @@ import {
 	GedcomImportOptionsV2,
 	GedcomImportResultV2
 } from './gedcom-types';
-import { preprocessGedcom, type GedcomCompatibilityMode, type PreprocessResult } from './gedcom-preprocessor';
+import { preprocessGedcom, preprocessGedcomAsync, type GedcomCompatibilityMode, type PreprocessResult } from './gedcom-preprocessor';
 import { getLogger } from '../core/logging';
 import { createPersonNote, PersonData } from '../core/person-note-writer';
 import { generateCrId } from '../core/uuid';
@@ -74,6 +74,7 @@ export class GedcomImporterV2 {
 	/**
 	 * Analyze GEDCOM file before import (v2)
 	 * Returns statistics including event and source counts
+	 * Note: This is synchronous. For large files, use analyzeFileAsync instead.
 	 */
 	analyzeFile(content: string, compatibilityMode: GedcomCompatibilityMode = 'auto'): {
 		individualCount: number;
@@ -91,11 +92,65 @@ export class GedcomImporterV2 {
 		if (preprocessResult.wasPreprocessed) {
 			logger.info('analyzeFile', 'MyHeritage compatibility fixes applied', {
 				bomRemoved: preprocessResult.fixes.bomRemoved,
+				tabContinuationsFixed: preprocessResult.fixes.tabContinuationsFixed,
 				concFieldsFixed: preprocessResult.fixes.concFieldsNormalized
 			});
 		}
 
 		const gedcomData = GedcomParserV2.parse(preprocessResult.content);
+
+		return this.computeAnalysisStats(gedcomData, preprocessResult.wasPreprocessed);
+	}
+
+	/**
+	 * Analyze GEDCOM file asynchronously (v2)
+	 * Use this for large files to prevent UI freezing during preview.
+	 */
+	async analyzeFileAsync(
+		content: string,
+		compatibilityMode: GedcomCompatibilityMode = 'auto',
+		onProgress?: (current: number, total: number) => void
+	): Promise<{
+		individualCount: number;
+		familyCount: number;
+		sourceCount: number;
+		eventCount: number;
+		uniquePlaces: number;
+		componentCount: number;
+		preprocessingApplied?: boolean;
+	}> {
+		// Apply preprocessing if enabled (use async version to prevent UI freeze)
+		const preprocessResult = await preprocessGedcomAsync(content, compatibilityMode);
+		this.lastPreprocessResult = preprocessResult;
+
+		if (preprocessResult.wasPreprocessed) {
+			logger.info('analyzeFileAsync', 'MyHeritage compatibility fixes applied', {
+				bomRemoved: preprocessResult.fixes.bomRemoved,
+				tabContinuationsFixed: preprocessResult.fixes.tabContinuationsFixed,
+				concFieldsFixed: preprocessResult.fixes.concFieldsNormalized
+			});
+		}
+
+		const gedcomData = await GedcomParserV2.parseAsync(preprocessResult.content, onProgress);
+
+		return this.computeAnalysisStats(gedcomData, preprocessResult.wasPreprocessed);
+	}
+
+	/**
+	 * Compute analysis statistics from parsed GEDCOM data
+	 */
+	private computeAnalysisStats(
+		gedcomData: GedcomDataV2,
+		preprocessingApplied: boolean
+	): {
+		individualCount: number;
+		familyCount: number;
+		sourceCount: number;
+		eventCount: number;
+		uniquePlaces: number;
+		componentCount: number;
+		preprocessingApplied?: boolean;
+	} {
 
 		// Count individuals and families
 		const individualCount = gedcomData.individuals.size;
@@ -197,13 +252,14 @@ export class GedcomImporterV2 {
 			eventCount,
 			uniquePlaces: places.size,
 			componentCount,
-			preprocessingApplied: preprocessResult.wasPreprocessed
+			preprocessingApplied
 		};
 	}
 
 	/**
 	 * Parse and validate GEDCOM content without importing
 	 * Used for quality analysis before import
+	 * Note: This is synchronous. For large files, use parseContentAsync instead.
 	 */
 	parseContent(content: string, compatibilityMode: GedcomCompatibilityMode = 'auto'): {
 		valid: boolean;
@@ -220,6 +276,7 @@ export class GedcomImporterV2 {
 		if (preprocessResult.wasPreprocessed) {
 			logger.info('parseContent', 'MyHeritage compatibility fixes applied', {
 				bomRemoved: preprocessResult.fixes.bomRemoved,
+				tabContinuationsFixed: preprocessResult.fixes.tabContinuationsFixed,
 				concFieldsFixed: preprocessResult.fixes.concFieldsNormalized
 			});
 		}
@@ -238,6 +295,58 @@ export class GedcomImporterV2 {
 
 		// Parse the preprocessed content
 		const data = GedcomParserV2.parse(processedContent);
+
+		return {
+			valid: true,
+			data,
+			errors: [],
+			warnings: validation.warnings.map(w => w.message),
+			preprocessingApplied: preprocessResult.wasPreprocessed
+		};
+	}
+
+	/**
+	 * Parse and validate GEDCOM content asynchronously
+	 * Use this for large files to prevent UI freezing during preview.
+	 */
+	async parseContentAsync(
+		content: string,
+		compatibilityMode: GedcomCompatibilityMode = 'auto',
+		onProgress?: (current: number, total: number) => void
+	): Promise<{
+		valid: boolean;
+		data?: GedcomDataV2;
+		errors: string[];
+		warnings: string[];
+		preprocessingApplied?: boolean;
+	}> {
+		// Apply preprocessing asynchronously for large files
+		const preprocessResult = await preprocessGedcomAsync(content, compatibilityMode);
+		this.lastPreprocessResult = preprocessResult;
+		const processedContent = preprocessResult.content;
+
+		if (preprocessResult.wasPreprocessed) {
+			logger.info('parseContentAsync', 'MyHeritage compatibility fixes applied', {
+				bomRemoved: preprocessResult.fixes.bomRemoved,
+				tabContinuationsFixed: preprocessResult.fixes.tabContinuationsFixed,
+				concFieldsFixed: preprocessResult.fixes.concFieldsNormalized
+			});
+		}
+
+		// Validate first
+		const validation = GedcomParserV2.validate(processedContent);
+
+		if (!validation.valid) {
+			return {
+				valid: false,
+				errors: validation.errors.map(e => e.message),
+				warnings: validation.warnings.map(w => w.message),
+				preprocessingApplied: preprocessResult.wasPreprocessed
+			};
+		}
+
+		// Parse the preprocessed content asynchronously
+		const data = await GedcomParserV2.parseAsync(processedContent, onProgress);
 
 		return {
 			valid: true,
@@ -286,13 +395,14 @@ export class GedcomImporterV2 {
 				reportProgress({ phase: 'validating', current: 1, total: 1, message: 'Using pre-validated data' });
 				reportProgress({ phase: 'parsing', current: 1, total: 1, message: `Found ${gedcomData.individuals.size} individuals` });
 			} else {
-				// Apply preprocessing if enabled
-				preprocessResult = preprocessGedcom(content, compatibilityMode);
+				// Apply preprocessing asynchronously for large files
+				preprocessResult = await preprocessGedcomAsync(content, compatibilityMode);
 				const processedContent = preprocessResult.content;
 
 				if (preprocessResult.wasPreprocessed) {
 					logger.info('importFile', 'MyHeritage compatibility fixes applied', {
 						bomRemoved: preprocessResult.fixes.bomRemoved,
+						tabContinuationsFixed: preprocessResult.fixes.tabContinuationsFixed,
 						concFieldsFixed: preprocessResult.fixes.concFieldsNormalized
 					});
 				}
@@ -312,9 +422,13 @@ export class GedcomImporterV2 {
 					result.warnings.push(...validation.warnings.map(w => w.message));
 				}
 
-				// Parse GEDCOM with v2 parser
+				// Parse GEDCOM with v2 parser (async to prevent UI freeze)
 				reportProgress({ phase: 'parsing', current: 0, total: 1, message: 'Parsing GEDCOM file…' });
-				gedcomData = GedcomParserV2.parse(processedContent);
+				gedcomData = await GedcomParserV2.parseAsync(processedContent, (current, total) => {
+					// Update progress during parsing
+					const percent = Math.round((current / total) * 100);
+					reportProgress({ phase: 'parsing', current, total, message: `Parsing line ${current} of ${total} (${percent}%)…` });
+				});
 
 				reportProgress({ phase: 'parsing', current: 1, total: 1, message: `Found ${gedcomData.individuals.size} individuals` });
 			}

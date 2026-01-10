@@ -162,7 +162,9 @@ export class GedcomParser {
 
 		} catch (error: unknown) {
 			result.valid = false;
-			result.errors.push({ message: `Parse error: ${getErrorMessage(error)}` });
+			// Include line number if available from GedcomParseError
+			const lineInfo = error instanceof GedcomParseError && error.line ? ` at line ${error.line}` : '';
+			result.errors.push({ message: `Parse error: ${getErrorMessage(error)}${lineInfo}` });
 		}
 
 		return result;
