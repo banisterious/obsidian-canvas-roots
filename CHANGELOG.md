@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Category-based place organization** ([#163](https://github.com/banisterious/obsidian-charted-roots/issues/163)): Places can now be automatically organized into category-based subfolders (e.g., `Places/Historical/`, `Places/Fictional/`). Enable in Settings → Preferences → "Use category-based subfolders". Features include:
+  - **Automatic folder routing**: New places are stored in category-appropriate subfolders
+  - **Edit with move prompt**: When changing a place's category, you're prompted to move the file
+  - **Custom folder overrides**: Define custom subfolder paths for specific categories
+  - **Data Quality check**: Detects places in wrong folders with bulk "Organize places" action
+  - **Bulk migration modal**: Move multiple misplaced places at once
+
 - **External ID preservation for import round-trip** ([#175](https://github.com/banisterious/obsidian-charted-roots/issues/175)): GEDCOM and Gramps imports now store the original source ID (`external_id`) and source type (`external_id_source`) in frontmatter. When exporting back to GEDCOM, original xref IDs (e.g., `@I0001@`) are preserved, enabling cleaner round-trip workflows with other genealogy software.
 
 ---
