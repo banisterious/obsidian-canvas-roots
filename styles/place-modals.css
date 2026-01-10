@@ -937,3 +937,72 @@
 .crc-migration-flow:hover {
   stroke-opacity: 1 !important;
 }
+
+/* ==========================================================================
+   Organize Places Modal (#163)
+   ========================================================================== */
+
+.crc-organize-places-modal {
+  width: 700px;
+  max-width: 95vw;
+}
+
+.crc-organize-places-modal .crc-place-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: var(--cr-spacing-md, 12px);
+}
+
+.crc-organize-places-modal .crc-place-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.crc-organize-places-modal .crc-place-list-table th {
+  text-align: left;
+  padding: var(--cr-spacing-sm, 8px);
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.crc-organize-places-modal .crc-place-list-table td {
+  padding: var(--cr-spacing-sm, 8px);
+  border-bottom: 1px solid var(--background-modifier-border);
+  vertical-align: middle;
+}
+
+.crc-organize-places-modal .crc-place-list-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.crc-organize-places-modal .crc-place-list-row:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.crc-organize-places-modal .crc-place-list-th--checkbox,
+.crc-organize-places-modal .crc-place-list-td--checkbox {
+  width: 40px;
+  text-align: center;
+}
+
+.crc-organize-places-modal .crc-place-list-td--folder {
+  font-size: 0.85em;
+}
+
+.crc-organize-places-modal .crc-place-list-td--folder code {
+  background: var(--background-secondary);
+  padding: 2px 6px;
+  border-radius: var(--radius-s, 4px);
+  font-size: 0.9em;
+}
+
+.crc-organize-places-modal .crc-place-list-td--folder svg {
+  color: var(--text-muted);
+  vertical-align: middle;
+}

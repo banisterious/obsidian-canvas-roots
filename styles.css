@@ -8,7 +8,7 @@
  * GitHub: https://github.com/banisterious/obsidian-charted-roots
  *
  * BUILD INFORMATION:
- * - Generated: 2026-01-10 22:51:20 UTC
+ * - Generated: 2026-01-10 22:54:15 UTC
  * - Components: 41 files
  * - Build System: Node.js CSS Build Script v1.0.0
  *
@@ -7125,7 +7125,7 @@ settings:
    COMPONENT: PLACE-MODALS.CSS
    ========================================================================== */
 
-/* Component Size: 940 lines, 17.59 KB */
+/* Component Size: 1009 lines, 19.31 KB */
 
 /* ==========================================================================
    CREATE PLACE MODAL
@@ -8065,6 +8065,75 @@ settings:
 
 .crc-migration-flow:hover {
   stroke-opacity: 1 !important;
+}
+
+/* ==========================================================================
+   Organize Places Modal (#163)
+   ========================================================================== */
+
+.crc-organize-places-modal {
+  width: 700px;
+  max-width: 95vw;
+}
+
+.crc-organize-places-modal .crc-place-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: var(--cr-spacing-md, 12px);
+}
+
+.crc-organize-places-modal .crc-place-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.crc-organize-places-modal .crc-place-list-table th {
+  text-align: left;
+  padding: var(--cr-spacing-sm, 8px);
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.crc-organize-places-modal .crc-place-list-table td {
+  padding: var(--cr-spacing-sm, 8px);
+  border-bottom: 1px solid var(--background-modifier-border);
+  vertical-align: middle;
+}
+
+.crc-organize-places-modal .crc-place-list-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.crc-organize-places-modal .crc-place-list-row:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.crc-organize-places-modal .crc-place-list-th--checkbox,
+.crc-organize-places-modal .crc-place-list-td--checkbox {
+  width: 40px;
+  text-align: center;
+}
+
+.crc-organize-places-modal .crc-place-list-td--folder {
+  font-size: 0.85em;
+}
+
+.crc-organize-places-modal .crc-place-list-td--folder code {
+  background: var(--background-secondary);
+  padding: 2px 6px;
+  border-radius: var(--radius-s, 4px);
+  font-size: 0.9em;
+}
+
+.crc-organize-places-modal .crc-place-list-td--folder svg {
+  color: var(--text-muted);
+  vertical-align: middle;
 }
 
 
@@ -35515,11 +35584,11 @@ body:has(.cr-media-linker) .suggestion-container {
    ========================================================================== */
 
 /*
- * Build completed: 2026-01-10 22:51:20 UTC
+ * Build completed: 2026-01-10 22:54:15 UTC
  * Components processed: 41
- * Total lines: 35123
- * Total size: 697.28 KB
- * Build duration: 0.04 seconds
+ * Total lines: 35192
+ * Total size: 699.01 KB
+ * Build duration: 0.03 seconds
  *
  * Component breakdown:
  * - variables.css: 56 lines, 1.61 KB
@@ -35529,7 +35598,7 @@ body:has(.cr-media-linker) .suggestion-container {
  * - settings.css: 131 lines, 3.53 KB
  * - control-center.css: 5673 lines, 105.32 KB
  * - entity-create-modals.css: 790 lines, 15.74 KB
- * - place-modals.css: 940 lines, 17.59 KB
+ * - place-modals.css: 1009 lines, 19.31 KB
  * - media-modals.css: 1928 lines, 36.72 KB
  * - import-export-wizard.css: 2113 lines, 39.86 KB
  * - staging-manager.css: 555 lines, 11.21 KB

@@ -21,6 +21,7 @@ import { TemplateSnippetsModal } from './template-snippets-modal';
 import { renderPlaceTypeManagerCard } from '../places/ui/place-type-manager-card';
 import { BulkGeocodeModal } from '../maps/ui/bulk-geocode-modal';
 import { EnrichPlaceHierarchyModal } from '../maps/ui/enrich-place-hierarchy-modal';
+import { OrganizePlacesModal, findMisplacedPlaces } from './organize-places-modal';
 
 /**
  * Render the Places tab content
@@ -423,8 +424,15 @@ function loadDataQualityCard(
 			action: {
 				label: 'Organize places',
 				onClick: () => {
-					// Bulk migration command will be added in next step
-					new Notice('Bulk migration feature coming soon. Use Edit Place to move individual places.');
+					const misplacedPlaces = findMisplacedPlaces(placeService, plugin.settings);
+					if (misplacedPlaces.length === 0) {
+						new Notice('All places are in their correct folders!');
+						return;
+					}
+					new OrganizePlacesModal(plugin.app, misplacedPlaces, {
+						settings: plugin.settings,
+						onComplete: () => showTab('places')
+					}).open();
 				}
 			}
 		});
