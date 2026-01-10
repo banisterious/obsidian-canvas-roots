@@ -1,5 +1,5 @@
 /**
- * Dashboard Tab for Canvas Roots Control Center
+ * Dashboard Tab for Charted Roots Control Center
  *
  * Provides quick-action tiles for common operations and vault overview.
  */
@@ -102,7 +102,7 @@ function renderFirstRunNotice(container: HTMLElement, plugin: CanvasRootsPlugin)
 	});
 }
 
-const WIKI_BASE = 'https://github.com/banisterious/obsidian-canvas-roots/wiki';
+const WIKI_BASE = 'https://github.com/banisterious/obsidian-charted-roots/wiki';
 
 /**
  * Render the documentation links card
@@ -116,7 +116,7 @@ function renderDocumentationCard(container: HTMLElement): void {
 
 	// Content
 	const content = card.createDiv({ cls: 'crc-dashboard-docs-content' });
-	content.createSpan({ text: 'New to Canvas Roots? Start with ', cls: 'crc-text-muted' });
+	content.createSpan({ text: 'New to Charted Roots? Start with ', cls: 'crc-text-muted' });
 
 	const essentialLink = content.createEl('a', {
 		text: 'Essential Properties',
@@ -210,7 +210,7 @@ function renderQuickActionsSection(
 	const openCreatePlace = () => {
 		closeModal();
 		new CreatePlaceModal(app, {
-			directory: plugin.settings.placesFolder || 'Canvas Roots/Places',
+			directory: plugin.settings.placesFolder || 'Charted Roots/Places',
 			familyGraph: plugin.createFamilyGraphService(),
 			placeGraph: new PlaceGraphService(app),
 			settings: plugin.settings,

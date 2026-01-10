@@ -437,7 +437,7 @@ function addCoverPage(pdf: jsPDF, options: PdfCoverOptions): void {
   // Branding
   pdf.setFontSize(9);
   pdf.setTextColor(153, 153, 153); // #999999
-  pdf.text('Canvas Roots for Obsidian', pageWidth / 2, pageHeight * 0.9, { align: 'center' });
+  pdf.text('Charted Roots for Obsidian', pageWidth / 2, pageHeight * 0.9, { align: 'center' });
 
   // Add chart on next page
   pdf.addPage();
@@ -451,7 +451,7 @@ pdf.setDocumentProperties({
   subject: `Family tree with ${personCount} people`,
   author: options.author || '',
   keywords: 'family tree, genealogy, canvas roots',
-  creator: 'Canvas Roots for Obsidian'
+  creator: 'Charted Roots for Obsidian'
 });
 ```
 

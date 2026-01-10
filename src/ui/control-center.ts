@@ -102,7 +102,7 @@ interface RelationshipField {
 }
 
 /**
- * Canvas Roots Control Center Modal
+ * Charted Roots Control Center Modal
  * Centralized interface for all plugin operations
  */
 export class ControlCenterModal extends Modal {
@@ -257,7 +257,7 @@ export class ControlCenterModal extends Modal {
 		const titleSection = this.appBar.createDiv({ cls: 'crc-header-title' });
 		const titleIcon = createLucideIcon('git-branch', 20);
 		titleSection.appendChild(titleIcon);
-		titleSection.appendText('Canvas Roots Control Center');
+		titleSection.appendText('Charted Roots Control Center');
 
 		// Action buttons section
 		const actionsSection = this.appBar.createDiv({ cls: 'crc-header-actions' });
@@ -707,7 +707,7 @@ export class ControlCenterModal extends Modal {
 						showSourceIndicators: this.plugin.settings.showSourceIndicators,
 						showResearchCoverage: this.plugin.settings.trackFactSourcing,
 						canvasRootsMetadata: {
-							plugin: 'canvas-roots' as const,
+							plugin: 'charted-roots' as const,
 							generation: {
 								rootCrId: rep.crId,
 								rootPersonName: rep.name,
@@ -735,7 +735,7 @@ export class ControlCenterModal extends Modal {
 					const canvasContent = this.formatCanvasJson(canvasData);
 
 					// Use canvasesFolder setting
-					const folder = this.plugin.settings.canvasesFolder || 'Canvas Roots/Canvases';
+					const folder = this.plugin.settings.canvasesFolder || 'Charted Roots/Canvases';
 					await ensureFolderExists(this.app, folder);
 					const filePath = normalizePath(`${folder}/${fileName}`);
 
@@ -1479,19 +1479,19 @@ export class ControlCenterModal extends Modal {
 	 */
 	private showGuideTab(): void {
 		const container = this.contentContainer;
-		const WIKI_BASE = 'https://github.com/banisterious/obsidian-canvas-roots/wiki';
+		const WIKI_BASE = 'https://github.com/banisterious/obsidian-charted-roots/wiki';
 
 		// =========================================================================
 		// Card 1: Welcome & Quick Start
 		// =========================================================================
 		const welcomeCard = this.createCard({
-			title: 'Welcome to Canvas Roots',
+			title: 'Welcome to Charted Roots',
 			icon: 'book-open'
 		});
 		const welcomeContent = welcomeCard.querySelector('.crc-card__content') as HTMLElement;
 
 		welcomeContent.createEl('p', {
-			text: 'Canvas Roots generates family trees on the Obsidian canvas from your markdown notes. Get started in three steps:',
+			text: 'Charted Roots generates family trees on the Obsidian canvas from your markdown notes. Get started in three steps:',
 			cls: 'crc-mb-3'
 		});
 
@@ -4549,7 +4549,7 @@ export class ControlCenterModal extends Modal {
 				showSourceIndicators: this.plugin.settings.showSourceIndicators,
 				showResearchCoverage: this.plugin.settings.trackFactSourcing,
 				canvasRootsMetadata: {
-					plugin: 'canvas-roots',
+					plugin: 'charted-roots',
 					generation: {
 						rootCrId: rootPersonField.crId,
 						rootPersonName: rootPersonField.name,
@@ -4662,7 +4662,7 @@ export class ControlCenterModal extends Modal {
 			const canvasContent = this.formatCanvasJson(canvasData);
 
 			// Use canvasesFolder setting
-			const folder = this.plugin.settings.canvasesFolder || 'Canvas Roots/Canvases';
+			const folder = this.plugin.settings.canvasesFolder || 'Charted Roots/Canvases';
 			await ensureFolderExists(this.app, folder);
 			const filePath = normalizePath(`${folder}/${fileName}`);
 
@@ -4787,7 +4787,7 @@ export class ControlCenterModal extends Modal {
 			const canvasContent = this.formatCanvasJson(canvasData);
 
 			// Use canvasesFolder setting
-			const folder = this.plugin.settings.canvasesFolder || 'Canvas Roots/Canvases';
+			const folder = this.plugin.settings.canvasesFolder || 'Charted Roots/Canvases';
 			await ensureFolderExists(this.app, folder);
 			const filePath = normalizePath(`${folder}/${fileName}`);
 
@@ -5602,7 +5602,7 @@ export class ControlCenterModal extends Modal {
 		const learnMoreLink = footerContainer.createEl('a', {
 			cls: 'cr-ref-numbers-learn-more',
 			text: 'Learn more',
-			href: 'https://github.com/banisterious/obsidian-canvas-roots/wiki/Relationship-Tools#reference-numbering-systems'
+			href: 'https://github.com/banisterious/obsidian-charted-roots/wiki/Relationship-Tools#reference-numbering-systems'
 		});
 		learnMoreLink.setAttr('target', '_blank');
 		learnMoreLink.setAttr('rel', 'noopener noreferrer');
@@ -5755,7 +5755,7 @@ export class ControlCenterModal extends Modal {
 				includeCollectionCodes: options.includeCollectionCodes,
 				includeCustomRelationships: options.includeCustomRelationships,
 				fileName: options.fileName,
-				sourceApp: 'Canvas Roots',
+				sourceApp: 'Charted Roots',
 				sourceVersion: this.plugin.manifest.version,
 				privacySettings: {
 					enablePrivacyProtection: options.privacyOverride?.enablePrivacyProtection ?? this.plugin.settings.enablePrivacyProtection,
@@ -6355,7 +6355,7 @@ export class ControlCenterModal extends Modal {
 			// Link to wiki
 			const wikiLink = emptyState.createEl('a', {
 				text: 'Learn more about custom maps →',
-				href: 'https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features#custom-image-maps',
+				href: 'https://github.com/banisterious/obsidian-charted-roots/wiki/Geographic-Features#custom-image-maps',
 				cls: 'crc-link external-link crc-mt-2'
 			});
 			wikiLink.setAttr('target', '_blank');
@@ -6732,7 +6732,7 @@ export class ControlCenterModal extends Modal {
 			image: frontmatter.image || frontmatter.image_path || frontmatter.imagePath,
 			coordinate_system: frontmatter.coordinate_system || 'geographic',
 			exported_at: new Date().toISOString(),
-			exported_from: 'Canvas Roots'
+			exported_from: 'Charted Roots'
 		};
 
 		// Add coordinate system specific fields
@@ -9318,7 +9318,7 @@ export class ControlCenterModal extends Modal {
 		if (this.plugin.settings.noteTypeDetection?.primaryTypeProperty === 'cr_type') {
 			new Setting(batchContent)
 				.setName('Migrate legacy type property')
-				.setDesc('Convert type to cr_type for all Canvas Roots notes')
+				.setDesc('Convert type to cr_type for all Charted Roots notes')
 				.addButton(btn => btn
 					.setButtonText('Preview')
 					.onClick(() => void this.previewBatchOperation('legacy_type', selectedScope, selectedFolder))

@@ -205,7 +205,7 @@ export class CreateOrganizationModal extends Modal {
 				.setName('Folder')
 				.setDesc('Folder to create the note in')
 				.addText(text => text
-					.setPlaceholder('Canvas Roots/Organizations')
+					.setPlaceholder('Charted Roots/Organizations')
 					.setValue(this.folder)
 					.onChange(value => this.folder = value));
 		}

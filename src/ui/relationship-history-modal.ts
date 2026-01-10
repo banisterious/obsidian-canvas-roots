@@ -1,5 +1,5 @@
 /**
- * Relationship History Modal for Canvas Roots
+ * Relationship History Modal for Charted Roots
  *
  * Displays relationship change history with undo functionality.
  */

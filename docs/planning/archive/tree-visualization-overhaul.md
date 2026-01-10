@@ -1,6 +1,6 @@
 # Tree Visualization Overhaul
 
-Comprehensive planning document for modernizing tree visualization in Canvas Roots:
+Comprehensive planning document for modernizing tree visualization in Charted Roots:
 
 1. **Canvas Trees Tab Redesign** - Transform into a tree manager dashboard with wizard-based generation
 2. **Visual Tree Reports** - Add printable tree diagrams (Pedigree, Descendant, Hourglass, Fan) to Statistics and Reports
@@ -115,7 +115,7 @@ Genealogists regularly need printed family trees for:
 4. **Wall displays** — Home or genealogical society meeting decorations
 5. **Lineage documentation** — Applications for DAR, SAR, and other lineage societies
 
-Currently, Canvas Roots generates interactive Obsidian canvas files but lacks direct PDF export for visual tree diagrams. The Family Chart view has PDF/PNG export using jsPDF, but this is separate from the Report Generator.
+Currently, Charted Roots generates interactive Obsidian canvas files but lacks direct PDF export for visual tree diagrams. The Family Chart view has PDF/PNG export using jsPDF, but this is separate from the Report Generator.
 
 ---
 
@@ -1027,7 +1027,7 @@ async scanForCanvasRootsCanvases(): Promise<CanvasTreeRecord[]> {
       continue;
     }
 
-    // Full parse only for Canvas Roots canvases
+    // Full parse only for Charted Roots canvases
     try {
       const data = JSON.parse(content);
       if (data.metadata?.frontmatter?.plugin === 'canvas-roots') {

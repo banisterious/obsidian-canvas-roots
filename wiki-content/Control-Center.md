@@ -1,6 +1,6 @@
 # Control Center
 
-The Control Center is Canvas Roots' central hub for all plugin operations. Access it via the command palette (`Ctrl/Cmd+P` → "Canvas Roots: Open Control Center") or the ribbon icon.
+The Control Center is Charted Roots' central hub for all plugin operations. Access it via the command palette (`Ctrl/Cmd+P` → "Charted Roots: Open Control Center") or the ribbon icon.
 
 ---
 
@@ -27,9 +27,9 @@ The Control Center is Canvas Roots' central hub for all plugin operations. Acces
 
 | Method | How |
 |--------|-----|
-| **Command Palette** | `Ctrl/Cmd+P` → "Canvas Roots: Open Control Center" |
-| **Ribbon Icon** | Click the Canvas Roots icon in the left ribbon |
-| **Context Menu** | Right-click a person note → Canvas Roots submenu |
+| **Command Palette** | `Ctrl/Cmd+P` → "Charted Roots: Open Control Center" |
+| **Ribbon Icon** | Click the Charted Roots icon in the left ribbon |
+| **Context Menu** | Right-click a person note → Charted Roots submenu |
 
 ---
 
@@ -70,7 +70,7 @@ Click the section header to expand or collapse. The state is remembered between 
 
 ### Recent Files
 
-Shows the last 5 genealogical files you accessed through Canvas Roots features:
+Shows the last 5 genealogical files you accessed through Charted Roots features:
 
 - **Click** to open the note
 - **Right-click** for context menu:
@@ -163,7 +163,7 @@ To open the navigation drawer on mobile, tap the menu icon in the header.
 
 ## See Also
 
-- [Getting Started](Getting-Started) - First steps with Canvas Roots
+- [Getting Started](Getting-Started) - First steps with Charted Roots
 - [Statistics & Reports](Statistics-And-Reports) - Detailed analytics and report generation
 - [Data Quality](Data-Quality) - Finding and fixing data issues
 - [Settings & Configuration](Settings-And-Configuration) - Plugin configuration options

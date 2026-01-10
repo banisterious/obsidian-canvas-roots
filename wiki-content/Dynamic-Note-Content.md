@@ -1,6 +1,6 @@
 # Dynamic Note Content
 
-Canvas Roots can render live, computed content directly within person notes using special code blocks. These blocks automatically display data from your vault and update when you view the note.
+Charted Roots can render live, computed content directly within person notes using special code blocks. These blocks automatically display data from your vault and update when you view the note.
 
 ---
 
@@ -252,7 +252,7 @@ Right-click on a folder containing person notes:
 
 Use the command palette (`Ctrl/Cmd + P`):
 
-- **Canvas Roots: Insert dynamic blocks** - Adds blocks to the current note
+- **Charted Roots: Insert dynamic blocks** - Adds blocks to the current note
 
 ### Manual Entry
 

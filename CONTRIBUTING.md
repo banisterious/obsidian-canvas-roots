@@ -1,6 +1,6 @@
-# Contributing to Canvas Roots
+# Contributing to Charted Roots
 
-Thank you for your interest in contributing to Canvas Roots! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Charted Roots! This document provides guidelines and information for contributors.
 
 ## Table of Contents
 
@@ -48,8 +48,8 @@ Before contributing, familiarize yourself with:
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/obsidian-canvas-roots.git
-   cd obsidian-canvas-roots
+   git clone https://github.com/YOUR_USERNAME/obsidian-charted-roots.git
+   cd obsidian-charted-roots
    ```
 
 2. **Install Dependencies**
@@ -70,7 +70,7 @@ Before contributing, familiarize yourself with:
 5. **Enable in Obsidian**
    - Open Obsidian
    - Go to Settings → Community plugins
-   - Enable "Canvas Roots"
+   - Enable "Charted Roots"
 
 ## Project Structure
 
@@ -380,15 +380,15 @@ This plugin handles sensitive PII (personally identifiable information):
 
 ## Questions?
 
-- **General questions**: Open a [GitHub Discussion](https://github.com/banisterious/obsidian-canvas-roots/discussions)
-- **Bug reports**: Open a [GitHub Issue](https://github.com/banisterious/obsidian-canvas-roots/issues)
-- **Feature requests**: Open a [GitHub Issue](https://github.com/banisterious/obsidian-canvas-roots/issues) with "enhancement" label
+- **General questions**: Open a [GitHub Discussion](https://github.com/banisterious/obsidian-charted-roots/discussions)
+- **Bug reports**: Open a [GitHub Issue](https://github.com/banisterious/obsidian-charted-roots/issues)
+- **Feature requests**: Open a [GitHub Issue](https://github.com/banisterious/obsidian-charted-roots/issues) with "enhancement" label
 - **Security issues**: See [SECURITY.md](SECURITY.md)
 
 ## License
 
-By contributing to Canvas Roots, you agree that your contributions will be licensed under the MIT License.
+By contributing to Charted Roots, you agree that your contributions will be licensed under the MIT License.
 
 ## Acknowledgments
 
-Thank you for contributing to Canvas Roots and helping make family tree visualization in Obsidian better for everyone!
+Thank you for contributing to Charted Roots and helping make family tree visualization in Obsidian better for everyone!

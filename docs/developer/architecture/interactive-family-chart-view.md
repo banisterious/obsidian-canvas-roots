@@ -9,7 +9,7 @@
 
 ## Context and Problem Statement
 
-Canvas Roots currently generates static canvas files for family tree visualization. While these work well for documentation and export, users need an **interactive exploration experience** for:
+Charted Roots currently generates static canvas files for family tree visualization. While these work well for documentation and export, users need an **interactive exploration experience** for:
 
 1. **Navigation**: Pan, zoom, click-to-focus on large trees (50+ people)
 2. **Quick edits**: Add/remove relationships without leaving the visualization
@@ -114,7 +114,7 @@ src/
 │   └── views/
 │       ├── family-chart-view.ts      # ItemView implementation
 │       ├── family-chart-toolbar.ts   # Toolbar UI component
-│       └── family-chart-adapter.ts   # family-chart ↔ Canvas Roots adapter
+│       └── family-chart-adapter.ts   # family-chart ↔ Charted Roots adapter
 ├── core/
 │   └── family-chart-sync.ts          # Bidirectional sync service
 ```
@@ -283,7 +283,7 @@ export class FamilyChartView extends ItemView {
 
 ### Data Transformation
 
-Canvas Roots person notes → family-chart format:
+Charted Roots person notes → family-chart format:
 
 ```typescript
 interface FamilyChartPerson {

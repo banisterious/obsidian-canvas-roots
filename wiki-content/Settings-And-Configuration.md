@@ -1,8 +1,8 @@
 # Settings & Configuration
 
-This page documents all Canvas Roots settings and configuration options. Settings can be accessed in two places:
+This page documents all Charted Roots settings and configuration options. Settings can be accessed in two places:
 
-- **Obsidian Settings → Canvas Roots** - The traditional plugin settings panel
+- **Obsidian Settings → Charted Roots** - The traditional plugin settings panel
 - **Control Center → Preferences** - Quick access to common settings
 
 ---
@@ -19,7 +19,7 @@ This page documents all Canvas Roots settings and configuration options. Setting
 
 ## Control Center Overview
 
-The Control Center (`Cmd/Ctrl+Shift+F`) is the main hub for Canvas Roots features. It has a tabbed interface:
+The Control Center (`Cmd/Ctrl+Shift+F`) is the main hub for Charted Roots features. It has a tabbed interface:
 
 | Tab | Description |
 |-----|-------------|
@@ -40,19 +40,19 @@ The Control Center (`Cmd/Ctrl+Shift+F`) is the main hub for Canvas Roots feature
 
 ## Folder Locations
 
-Configure where Canvas Roots stores and looks for different note types.
+Configure where Charted Roots stores and looks for different note types.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| **People folder** | `Canvas Roots/People` | Default folder for person notes |
-| **Places folder** | `Canvas Roots/Places` | Default folder for place notes |
-| **Map notes folder** | `Canvas Roots/Places/Maps` | Default folder for map notes |
-| **Organizations folder** | `Canvas Roots/Organizations` | Default folder for organization notes |
-| **Sources folder** | `Canvas Roots/Sources` | Default folder for source notes |
-| **Events folder** | `Canvas Roots/Events` | Default folder for event notes |
-| **Schemas folder** | `Canvas Roots/Schemas` | Default folder for validation schemas |
-| **Canvases folder** | `Canvas Roots/Canvases` | Default folder for generated canvas files |
-| **Bases folder** | `Canvas Roots/Bases` | Folder for Obsidian Bases templates |
+| **People folder** | `Charted Roots/People` | Default folder for person notes |
+| **Places folder** | `Charted Roots/Places` | Default folder for place notes |
+| **Map notes folder** | `Charted Roots/Places/Maps` | Default folder for map notes |
+| **Organizations folder** | `Charted Roots/Organizations` | Default folder for organization notes |
+| **Sources folder** | `Charted Roots/Sources` | Default folder for source notes |
+| **Events folder** | `Charted Roots/Events` | Default folder for event notes |
+| **Schemas folder** | `Charted Roots/Schemas` | Default folder for validation schemas |
+| **Canvases folder** | `Charted Roots/Canvases` | Default folder for generated canvas files |
+| **Bases folder** | `Charted Roots/Bases` | Folder for Obsidian Bases templates |
 | **Staging folder** | *(empty)* | Folder for import staging (isolated from main operations) |
 
 ### Staging Folder
@@ -67,7 +67,7 @@ Set **Enable staging isolation** to automatically exclude the staging folder fro
 
 ### Media Folders
 
-Control which folders Canvas Roots scans when discovering media files.
+Control which folders Charted Roots scans when discovering media files.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
@@ -90,7 +90,7 @@ See [Media Management](Media-Management#media-folder-settings) for more details.
 
 ## Property Aliases
 
-If your vault uses different property names than Canvas Roots defaults, you can create **property aliases** to map your custom names to the canonical Canvas Roots fields.
+If your vault uses different property names than Charted Roots defaults, you can create **property aliases** to map your custom names to the canonical Charted Roots fields.
 
 ### Configuring Aliases
 
@@ -100,7 +100,7 @@ Go to **Control Center → Preferences → Property Aliases** to add, edit, or r
 
 | Scenario | Behavior |
 |----------|----------|
-| **Reading notes** | Canvas Roots checks for the canonical property first, then falls back to your alias |
+| **Reading notes** | Charted Roots checks for the canonical property first, then falls back to your alias |
 | **Creating/importing notes** | New notes use your aliased property name instead of the canonical name |
 | **Both properties exist** | The canonical property takes precedence |
 
@@ -109,7 +109,7 @@ Go to **Control Center → Preferences → Property Aliases** to add, edit, or r
 If your vault uses `birthdate` instead of `born`:
 
 1. Add an alias: `birthdate` → `born`
-2. Canvas Roots will now read `birthdate` as the birth date
+2. Charted Roots will now read `birthdate` as the birth date
 3. When importing GEDCOM files, notes will be created with `birthdate` instead of `born`
 4. Bases templates will use `note.birthdate` in views and formulas
 
@@ -137,7 +137,7 @@ When you create a new People base template (Control Center → Advanced → Crea
 
 ## Value Aliases
 
-In addition to property names, you can also create **value aliases** to map custom property values to Canvas Roots' canonical values. This is useful when your vault uses different terminology for enumerated fields.
+In addition to property names, you can also create **value aliases** to map custom property values to Charted Roots' canonical values. This is useful when your vault uses different terminology for enumerated fields.
 
 ### Configuring Value Aliases
 
@@ -147,7 +147,7 @@ Go to **Control Center → Preferences → Aliases → Property values** to add,
 
 | Scenario | Behavior |
 |----------|----------|
-| **Reading notes** | Canvas Roots checks if the value is canonical first, then checks for an alias |
+| **Reading notes** | Charted Roots checks if the value is canonical first, then checks for an alias |
 | **Unknown event types** | Unrecognized event types are treated as `custom` |
 | **Unknown gender/place category** | Unrecognized values are passed through unchanged |
 
@@ -184,7 +184,7 @@ Map custom gender values to canonical values:
 | `nonbinary` | Non-binary | `nb`, `enby`, `other` |
 | `unknown` | Unknown | `?`, `unspecified` |
 
-> **Note:** Canvas Roots also recognizes legacy values `M` and `F` for compatibility with existing vaults.
+> **Note:** Charted Roots also recognizes legacy values `M` and `F` for compatibility with existing vaults.
 
 #### Place Categories
 
@@ -204,7 +204,7 @@ Map custom place category values to canonical categories:
 If your vault uses `nameday` instead of `birth` for event types:
 
 1. Add a value alias: `nameday` → `birth` (Field: Event type)
-2. Canvas Roots will now treat `event_type: nameday` as a birth event
+2. Charted Roots will now treat `event_type: nameday` as a birth event
 3. Birth markers will appear on maps for events with `nameday` type
 
 ---
@@ -425,13 +425,13 @@ Settings for the Events & Timelines feature.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| **Events folder** | `Canvas Roots/Events` | Default folder for new event notes |
+| **Events folder** | `Charted Roots/Events` | Default folder for new event notes |
 | **Show built-in event types** | On | Include 22 built-in event types |
 | **Custom event types** | *(empty)* | User-defined event types |
 
 ### Event Types
 
-Canvas Roots includes 22 built-in event types across four categories:
+Charted Roots includes 22 built-in event types across four categories:
 
 - **Core** (4): birth, death, marriage, divorce
 - **Extended** (9): burial, residence, occupation, education, military, immigration, baptism, confirmation, ordination
@@ -478,7 +478,7 @@ If the [Calendarium](https://github.com/javalent/calendarium) plugin is installe
 
 | Setting | Options | Description |
 |---------|---------|-------------|
-| **Integration mode** | `off`, `read` | Controls how Canvas Roots interacts with Calendarium |
+| **Integration mode** | `off`, `read` | Controls how Charted Roots interacts with Calendarium |
 
 - **Off**: No integration (default)
 - **Read-only (import calendars)**: Import calendar definitions from Calendarium

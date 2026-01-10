@@ -1,7 +1,7 @@
 /**
  * Gramps XML Module
  *
- * Gramps genealogy software XML format support for Canvas Roots.
+ * Gramps genealogy software XML format support for Charted Roots.
  */
 
 export * from './gramps-types';

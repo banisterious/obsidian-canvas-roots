@@ -1,9 +1,9 @@
 # Per-Map Marker Assignment
 
-Planning document for per-map marker filtering in Canvas Roots.
+Planning document for per-map marker filtering in Charted Roots.
 
 - **Status:** Planning
-- **GitHub Issue:** [#153](https://github.com/banisterious/obsidian-canvas-roots/issues/153)
+- **GitHub Issue:** [#153](https://github.com/banisterious/obsidian-charted-roots/issues/153)
 - **Created:** 2026-01-07
 
 ---
@@ -287,7 +287,7 @@ if (!startVisible || !endVisible) continue;
 
 ## References
 
-- [Issue #153](https://github.com/banisterious/obsidian-canvas-roots/issues/153)
+- [Issue #153](https://github.com/banisterious/obsidian-charted-roots/issues/153)
 - [Custom Map Authoring](../../wiki-content/Custom-Map-Authoring.md)
 - [Map Data Service](../developer/implementation/map-data-service.md) (if exists)
 

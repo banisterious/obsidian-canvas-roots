@@ -1,6 +1,6 @@
 # Styling and CSS
 
-This document covers the Canvas Roots CSS architecture, build system, and customization options.
+This document covers the Charted Roots CSS architecture, build system, and customization options.
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ This document covers the Canvas Roots CSS architecture, build system, and custom
 
 ## Architecture Overview
 
-Canvas Roots uses a modular CSS architecture with component files that are concatenated into a single `styles.css` for Obsidian.
+Charted Roots uses a modular CSS architecture with component files that are concatenated into a single `styles.css` for Obsidian.
 
 ```
 canvas-roots/
@@ -183,14 +183,14 @@ Colors reference Obsidian's CSS variables for automatic theme compatibility:
 
 ## Style Settings Integration
 
-Canvas Roots integrates with the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin for user customization.
+Charted Roots integrates with the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin for user customization.
 
 Configuration is defined in `styles/style-settings.css`:
 
 ```css
 /* @settings
 
-name: Canvas Roots
+name: Charted Roots
 id: canvas-roots
 settings:
   -
@@ -216,7 +216,7 @@ settings:
 | Family Chart View | Female/male/unknown card colors, background colors, text colors |
 | Evidence Visualization | Primary/secondary/derivative source colors, coverage level colors |
 
-Users with Style Settings installed can customize these values in Settings → Style Settings → Canvas Roots.
+Users with Style Settings installed can customize these values in Settings → Style Settings → Charted Roots.
 
 ---
 
@@ -268,7 +268,7 @@ Users with Style Settings installed can customize these values in Settings → S
 
 ## Theme Compatibility
 
-Canvas Roots maintains compatibility with Obsidian themes by:
+Charted Roots maintains compatibility with Obsidian themes by:
 
 1. **Using Obsidian CSS variables:**
    ```css
@@ -311,7 +311,7 @@ Canvas Roots maintains compatibility with Obsidian themes by:
 
 ## Mobile Styling
 
-Canvas Roots provides basic mobile support for Obsidian on tablets and phones. The mobile styling approach uses two complementary strategies.
+Charted Roots provides basic mobile support for Obsidian on tablets and phones. The mobile styling approach uses two complementary strategies.
 
 ### JavaScript-Applied Classes
 
@@ -438,7 +438,7 @@ npm run build:css
 ### CSS Conventions
 
 **Class naming:**
-- Prefix all classes with `cr-` (Canvas Roots)
+- Prefix all classes with `cr-` (Charted Roots)
 - Use BEM-like naming: `.cr-component__element--modifier`
 
 **Selector specificity:**

@@ -1,5 +1,5 @@
 /**
- * Gramps XML Importer for Canvas Roots
+ * Gramps XML Importer for Charted Roots
  *
  * Imports Gramps XML data into the Obsidian vault as person notes.
  */
@@ -87,7 +87,7 @@ export interface GrampsImportOptions {
 	importNotes?: boolean;
 	/** Whether to create separate note files instead of embedding (default: false) */
 	createSeparateNoteFiles?: boolean;
-	/** Folder for separate note files (default: Canvas Roots/Notes) */
+	/** Folder for separate note files (default: Charted Roots/Notes) */
 	notesFolder?: string;
 }
 
@@ -120,7 +120,7 @@ export interface GrampsImportResult {
 }
 
 /**
- * Import Gramps XML files into Canvas Roots
+ * Import Gramps XML files into Charted Roots
  */
 export class GrampsImporter {
 	private app: App;
@@ -285,7 +285,7 @@ export class GrampsImporter {
 
 			// Extract media files from .gpkg package if provided
 			if (options.extractMedia !== false && options.mediaFiles && options.mediaFiles.size > 0) {
-				const mediaFolder = options.mediaFolder || 'Canvas Roots/Media';
+				const mediaFolder = options.mediaFolder || 'Charted Roots/Media';
 				await this.ensureFolderExists(mediaFolder);
 
 				const mediaTotal = options.mediaFiles.size;
@@ -402,7 +402,7 @@ export class GrampsImporter {
 			if (shouldCreateSources && grampsData.sources.size > 0) {
 				const sourcesTotal = grampsData.sources.size;
 				reportProgress('sources', 0, sourcesTotal, `Creating ${sourcesTotal} source notes...`);
-				const sourcesFolder = options.sourcesFolder || 'Canvas Roots/Sources';
+				const sourcesFolder = options.sourcesFolder || 'Charted Roots/Sources';
 				await this.ensureFolderExists(sourcesFolder);
 
 				let sourceIndex = 0;
@@ -442,7 +442,7 @@ export class GrampsImporter {
 			// Create separate note files if requested (Phase 4)
 			const noteHandleToWikilink = new Map<string, string>();
 			if (options.createSeparateNoteFiles && grampsData.database.notes.size > 0) {
-				const notesFolder = options.notesFolder || 'Canvas Roots/Notes';
+				const notesFolder = options.notesFolder || 'Charted Roots/Notes';
 				await this.ensureFolderExists(notesFolder);
 
 				// Build note-to-entity reference map for meaningful names
@@ -570,7 +570,7 @@ export class GrampsImporter {
 			if (options.createEventNotes && grampsData.events.size > 0) {
 				const eventsTotal = grampsData.events.size;
 				reportProgress('events', 0, eventsTotal, `Creating ${eventsTotal} event notes...`);
-				const eventsFolder = options.eventsFolder || 'Canvas Roots/Events';
+				const eventsFolder = options.eventsFolder || 'Charted Roots/Events';
 				await this.ensureFolderExists(eventsFolder);
 
 				// Track seen events to detect duplicates (same type + same persons + same date + same place)
@@ -1458,7 +1458,7 @@ export class GrampsImporter {
 		const placeData: PlaceData = {
 			name: placeName,
 			crId: crId,
-			// Map Gramps place type to Canvas Roots place type if possible
+			// Map Gramps place type to Charted Roots place type if possible
 			placeType: this.mapGrampsPlaceType(place.type),
 			media: resolvedMedia.length > 0 ? resolvedMedia : undefined,
 			notesContent,
@@ -1475,12 +1475,12 @@ export class GrampsImporter {
 	}
 
 	/**
-	 * Map Gramps place type to Canvas Roots place type
+	 * Map Gramps place type to Charted Roots place type
 	 */
 	private mapGrampsPlaceType(grampsType?: string): string | undefined {
 		if (!grampsType) return undefined;
 
-		// Common Gramps place types mapped to Canvas Roots equivalents
+		// Common Gramps place types mapped to Charted Roots equivalents
 		const typeMap: Record<string, string> = {
 			'country': 'country',
 			'state': 'state',
@@ -1698,7 +1698,7 @@ export class GrampsImporter {
 	): Promise<string> {
 		const crId = generateCrId();
 
-		// Map Gramps event type to Canvas Roots event type
+		// Map Gramps event type to Charted Roots event type
 		const eventType = this.mapGrampsEventType(event.type);
 
 		// Resolve media references to wikilinks
@@ -1879,7 +1879,7 @@ export class GrampsImporter {
 	}
 
 	/**
-	 * Map Gramps event type to Canvas Roots event type
+	 * Map Gramps event type to Charted Roots event type
 	 */
 	private mapGrampsEventType(grampsType?: string): string {
 		if (!grampsType) return 'custom';

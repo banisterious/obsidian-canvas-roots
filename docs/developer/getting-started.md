@@ -1,6 +1,6 @@
 # Getting Started with Development
 
-This guide covers setting up your development environment, building, and testing the Canvas Roots plugin.
+This guide covers setting up your development environment, building, and testing the Charted Roots plugin.
 
 ## Table of Contents
 
@@ -68,12 +68,12 @@ To deploy the plugin to your Obsidian vault for testing:
 2. Copy built files to your vault's plugin directory (see Manual Deployment section above)
 3. Open Obsidian
 4. Go to Settings → Community plugins
-5. Enable "Canvas Roots"
+5. Enable "Charted Roots"
 6. The plugin commands will be available in the Command Palette (Ctrl/Cmd+P):
-   - "Canvas Roots: Open Control Center"
-   - "Canvas Roots: Generate Tree for Current Note"
-   - "Canvas Roots: Re-Layout Current Canvas"
-   - "Canvas Roots: Create Person Note"
+   - "Charted Roots: Open Control Center"
+   - "Charted Roots: Generate Tree for Current Note"
+   - "Charted Roots: Re-Layout Current Canvas"
+   - "Charted Roots: Create Person Note"
 
 ### Reloading After Changes
 
@@ -108,7 +108,7 @@ The plugin includes a structured logging system with persistent configuration:
 - `off`: Disable logging
 
 **Configuration:**
-1. Open Settings → Canvas Roots
+1. Open Settings → Charted Roots
 2. Navigate to "Logging" section
 3. Select desired log level from dropdown
 4. Changes apply immediately and persist across Obsidian restarts
@@ -125,7 +125,7 @@ Open the Developer Console in Obsidian:
 - Mac: Cmd+Option+I
 
 Look for:
-- "Loading Canvas Roots plugin" when the plugin loads
+- "Loading Charted Roots plugin" when the plugin loads
 - Structured log entries with component names and operation contexts
 - Any error messages or stack traces
 

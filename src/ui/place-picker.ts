@@ -411,7 +411,7 @@ export class PlacePickerModal extends Modal {
 	 */
 	private openCreatePlaceModal(): void {
 		// Use placesFolder from settings, not the person directory
-		const placesFolder = this.settings?.placesFolder || 'Canvas Roots/Places';
+		const placesFolder = this.settings?.placesFolder || 'Charted Roots/Places';
 		new CreatePlaceModal(this.app, {
 			directory: placesFolder,
 			placeGraph: this.placeGraph,

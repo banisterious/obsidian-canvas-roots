@@ -285,7 +285,7 @@ export class StagingService {
 	 */
 	private async ensureCrIdAndCleanup(file: TFile): Promise<void> {
 		await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-			// Add cr_id if missing and note is a Canvas Roots entity
+			// Add cr_id if missing and note is a Charted Roots entity
 			if ((frontmatter.cr_type || frontmatter.note_type) && !frontmatter.cr_id) {
 				frontmatter.cr_id = generateCrId();
 			}

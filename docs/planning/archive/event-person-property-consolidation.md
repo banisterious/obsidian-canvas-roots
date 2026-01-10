@@ -153,7 +153,7 @@ Add a cleanup wizard step or standalone migration command:
 
 **Implementation options:**
 - Add to Cleanup Wizard Phase 4
-- Standalone command: "Canvas Roots: Migrate event person properties"
+- Standalone command: "Charted Roots: Migrate event person properties"
 - Run automatically on plugin load with user confirmation
 
 ### Phase 5: Update Documentation

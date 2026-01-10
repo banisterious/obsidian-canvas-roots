@@ -1,4 +1,4 @@
-import { Plugin, Notice, TFile, TFolder, Menu, Platform, Modal, EventRef, WorkspaceLeaf } from 'obsidian';
+import { Plugin, Notice, TFile, TFolder, Menu, Platform, Modal, EventRef, WorkspaceLeaf, ObsidianProtocolData } from 'obsidian';
 import { CanvasRootsSettings, DEFAULT_SETTINGS, CanvasRootsSettingTab } from './src/settings';
 import { ControlCenterModal } from './src/ui/control-center';
 import { RegenerateOptionsModal } from './src/ui/regenerate-options-modal';
@@ -266,7 +266,7 @@ export default class CanvasRootsPlugin extends Plugin {
 	}
 
 	async onload() {
-		console.debug('Loading Canvas Roots plugin');
+		console.debug('Loading Charted Roots plugin');
 
 		// Register custom icons for visual tree reports
 		registerCustomIcons();
@@ -303,7 +303,7 @@ export default class CanvasRootsPlugin extends Plugin {
 		// Run migration for property rename (collection_name -> group_name)
 		await this.migrateCollectionNameToGroupName();
 
-		// Run migration for plugin rename (Canvas Roots -> Charted Roots)
+		// Run migration for plugin rename (Charted Roots -> Charted Roots)
 		// This updates canvas metadata and code block types in vault files
 		await this.migrateCanvasRootsToChartedRoots();
 
@@ -346,8 +346,9 @@ export default class CanvasRootsPlugin extends Plugin {
 		);
 
 		// Register URI protocol handler for opening map at specific coordinates
-		// Usage: obsidian://canvas-roots-map?lat=51.5074&lng=-0.1278&zoom=12
-		this.registerObsidianProtocolHandler('canvas-roots-map', async (params) => {
+		// Usage: obsidian://charted-roots-map?lat=51.5074&lng=-0.1278&zoom=12
+		// Also register legacy canvas-roots-map for backward compatibility
+		const mapProtocolHandler = async (params: ObsidianProtocolData) => {
 			const lat = parseFloat(params.lat);
 			const lng = parseFloat(params.lng);
 			const zoom = params.zoom ? parseInt(params.zoom, 10) : 12;
@@ -355,29 +356,44 @@ export default class CanvasRootsPlugin extends Plugin {
 			if (!isNaN(lat) && !isNaN(lng)) {
 				await this.activateMapView(undefined, false, undefined, { lat, lng, zoom });
 			}
-		});
+		};
+		this.registerObsidianProtocolHandler('charted-roots-map', mapProtocolHandler);
+		this.registerObsidianProtocolHandler('canvas-roots-map', mapProtocolHandler); // Legacy compatibility
 
 		// Register dynamic content code block processors
+		// Register both new (charted-roots-*) and legacy (canvas-roots-*) for backward compatibility
 		const timelineProcessor = new TimelineProcessor(this);
 		this.registerMarkdownCodeBlockProcessor(
-			'canvas-roots-timeline',
+			'charted-roots-timeline',
+			(source, el, ctx) => timelineProcessor.process(source, el, ctx)
+		);
+		this.registerMarkdownCodeBlockProcessor(
+			'canvas-roots-timeline', // Legacy compatibility
 			(source, el, ctx) => timelineProcessor.process(source, el, ctx)
 		);
 
 		const relationshipsProcessor = new RelationshipsProcessor(this);
 		this.registerMarkdownCodeBlockProcessor(
-			'canvas-roots-relationships',
+			'charted-roots-relationships',
+			(source, el, ctx) => relationshipsProcessor.process(source, el, ctx)
+		);
+		this.registerMarkdownCodeBlockProcessor(
+			'canvas-roots-relationships', // Legacy compatibility
 			(source, el, ctx) => relationshipsProcessor.process(source, el, ctx)
 		);
 
 		const mediaProcessor = new MediaProcessor(this);
 		this.registerMarkdownCodeBlockProcessor(
-			'canvas-roots-media',
+			'charted-roots-media',
+			(source, el, ctx) => mediaProcessor.process(source, el, ctx)
+		);
+		this.registerMarkdownCodeBlockProcessor(
+			'canvas-roots-media', // Legacy compatibility
 			(source, el, ctx) => mediaProcessor.process(source, el, ctx)
 		);
 
 		// Add ribbon icon for control center
-		this.addRibbonIcon('users', 'Open Canvas Roots control center', () => {
+		this.addRibbonIcon('users', 'Open Charted Roots control center', () => {
 			new ControlCenterModal(this.app, this).open();
 		});
 
@@ -420,18 +436,27 @@ export default class CanvasRootsPlugin extends Plugin {
 
 		// Register workspace event to open Control Center to a specific tab
 		// Used by Plugin Settings to link to Preferences tab
+		// Register both new and legacy event names for backward compatibility
+		const openControlCenter = (initialTab?: string) => {
+			new ControlCenterModal(this.app, this, initialTab).open();
+		};
 		this.registerEvent(
-			this.app.workspace.on('canvas-roots:open-control-center' as 'layout-change', (initialTab?: string) => {
-				new ControlCenterModal(this.app, this, initialTab).open();
-			})
+			this.app.workspace.on('charted-roots:open-control-center' as 'layout-change', openControlCenter)
+		);
+		this.registerEvent(
+			this.app.workspace.on('canvas-roots:open-control-center' as 'layout-change', openControlCenter) // Legacy
 		);
 
 		// Register workspace event to open Cleanup Wizard
 		// Used by Migration Notice view
+		const openCleanupWizard = () => {
+			new CleanupWizardModal(this.app, this).open();
+		};
 		this.registerEvent(
-			this.app.workspace.on('canvas-roots:open-cleanup-wizard' as 'layout-change', () => {
-				new CleanupWizardModal(this.app, this).open();
-			})
+			this.app.workspace.on('charted-roots:open-cleanup-wizard' as 'layout-change', openCleanupWizard)
+		);
+		this.registerEvent(
+			this.app.workspace.on('canvas-roots:open-cleanup-wizard' as 'layout-change', openCleanupWizard) // Legacy
 		);
 
 		// Check for version upgrade and show migration notice if needed
@@ -999,7 +1024,7 @@ export default class CanvasRootsPlugin extends Plugin {
 					if (useSubmenu) {
 						menu.addItem((item) => {
 							const submenu: Menu = item
-								.setTitle('Canvas Roots')
+								.setTitle('Charted Roots')
 								.setIcon('git-fork')
 								.setSubmenu();
 
@@ -1133,7 +1158,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						// Mobile: flat menu with prefix
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Regenerate canvas')
+								.setTitle('Charted Roots: Regenerate canvas')
 								.setIcon('refresh-cw')
 								.onClick(async () => {
 									// Check if timeline or tree canvas
@@ -1151,7 +1176,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Show tree statistics')
+								.setTitle('Charted Roots: Show tree statistics')
 								.setIcon('bar-chart')
 								.onClick(() => {
 									new TreeStatisticsModal(this.app, file).open();
@@ -1160,7 +1185,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Customize canvas styles')
+								.setTitle('Charted Roots: Customize canvas styles')
 								.setIcon('layout')
 								.onClick(async () => {
 									// Check if timeline or tree canvas
@@ -1177,7 +1202,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Open in family chart')
+								.setTitle('Charted Roots: Open in family chart')
 								.setIcon('git-fork')
 								.onClick(async () => {
 									await this.openCanvasInFamilyChart(file);
@@ -1186,7 +1211,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Export to Excalidraw')
+								.setTitle('Charted Roots: Export to Excalidraw')
 								.setIcon('pencil')
 								.onClick(async () => {
 									await this.exportCanvasToExcalidraw(file);
@@ -1195,7 +1220,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Export as PNG')
+								.setTitle('Charted Roots: Export as PNG')
 								.setIcon('image')
 								.onClick(async () => {
 									await this.exportCanvasAsImage(file, 'png');
@@ -1204,7 +1229,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Export as SVG')
+								.setTitle('Charted Roots: Export as SVG')
 								.setIcon('file-code')
 								.onClick(async () => {
 									await this.exportCanvasAsImage(file, 'svg');
@@ -1213,7 +1238,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Export as PDF')
+								.setTitle('Charted Roots: Export as PDF')
 								.setIcon('file-text')
 								.onClick(async () => {
 									await this.exportCanvasAsImage(file, 'pdf');
@@ -1222,7 +1247,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Split canvas wizard')
+								.setTitle('Charted Roots: Split canvas wizard')
 								.setIcon('layers')
 								.onClick(() => {
 									new SplitWizardModal(this.app, this.settings, this.folderFilter ?? undefined).open();
@@ -1259,7 +1284,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (useSubmenu) {
 							menu.addItem((item) => {
 								const submenu: Menu = item
-									.setTitle('Canvas Roots')
+									.setTitle('Charted Roots')
 									.setIcon('clipboard-check')
 									.setSubmenu();
 
@@ -1316,7 +1341,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu for schema notes
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Open schemas tab')
+									.setTitle('Charted Roots: Open schemas tab')
 									.setIcon('clipboard-check')
 									.onClick(() => {
 										const modal = new ControlCenterModal(this.app, this);
@@ -1336,7 +1361,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (useSubmenu) {
 							menu.addItem((item) => {
 								const submenu: Menu = item
-									.setTitle('Canvas Roots')
+									.setTitle('Charted Roots')
 									.setIcon('map')
 									.setSubmenu();
 
@@ -1388,7 +1413,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu for map notes
 							menu.addItem((item) => {
 								item
-									.setTitle(`Canvas Roots: Open "${mapName}" in map view`)
+									.setTitle(`Charted Roots: Open "${mapName}" in map view`)
 									.setIcon('map')
 									.onClick(async () => {
 										await this.activateMapView(mapId);
@@ -1397,7 +1422,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Edit map')
+									.setTitle('Charted Roots: Edit map')
 									.setIcon('edit')
 									.onClick(async () => {
 										const { CreateMapModal } = await import('./src/ui/create-map-modal');
@@ -1411,7 +1436,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential map properties')
+									.setTitle('Charted Roots: Add essential map properties')
 									.setIcon('globe')
 									.onClick(async () => {
 										await this.addEssentialMapProperties([file]);
@@ -1420,7 +1445,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add cr_id')
+									.setTitle('Charted Roots: Add cr_id')
 									.setIcon('key')
 									.onClick(async () => {
 										await this.addCrId([file]);
@@ -1435,7 +1460,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (useSubmenu) {
 							menu.addItem((item) => {
 								const submenu: Menu = item
-									.setTitle('Canvas Roots')
+									.setTitle('Charted Roots')
 									.setIcon('map-pin')
 									.setSubmenu();
 
@@ -1585,7 +1610,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu for place notes
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set collection')
+									.setTitle('Charted Roots: Set collection')
 									.setIcon('folder')
 									.onClick(async () => {
 										await this.promptSetCollection(file);
@@ -1594,7 +1619,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Open in map view')
+									.setTitle('Charted Roots: Open in map view')
 									.setIcon('map')
 									.onClick(async () => {
 										// Extract coordinates from frontmatter if available
@@ -1621,7 +1646,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Edit place')
+									.setTitle('Charted Roots: Edit place')
 									.setIcon('edit')
 									.onClick(() => {
 										this.openEditPlaceModal(file);
@@ -1630,7 +1655,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Geocode place')
+									.setTitle('Charted Roots: Geocode place')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.geocodeSinglePlace(file);
@@ -1639,7 +1664,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Link media...')
+									.setTitle('Charted Roots: Link media...')
 									.setIcon('image-plus')
 									.onClick(() => {
 										const placeName = fm?.name || file.basename;
@@ -1649,7 +1674,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Manage media...')
+									.setTitle('Charted Roots: Manage media...')
 									.setIcon('settings')
 									.onClick(() => {
 										const placeName = fm?.name || file.basename;
@@ -1659,7 +1684,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential person properties')
+									.setTitle('Charted Roots: Add essential person properties')
 									.setIcon('user')
 									.onClick(async () => {
 										await this.addEssentialPersonProperties([file]);
@@ -1668,7 +1693,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential place properties')
+									.setTitle('Charted Roots: Add essential place properties')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.addEssentialPlaceProperties([file]);
@@ -1677,7 +1702,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential source properties')
+									.setTitle('Charted Roots: Add essential source properties')
 									.setIcon('archive')
 									.onClick(async () => {
 										await this.addEssentialSourceProperties([file]);
@@ -1686,7 +1711,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add cr_id')
+									.setTitle('Charted Roots: Add cr_id')
 									.setIcon('key')
 									.onClick(async () => {
 										await this.addCrId([file]);
@@ -1701,7 +1726,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (useSubmenu) {
 							menu.addItem((item) => {
 								const submenu: Menu = item
-									.setTitle('Canvas Roots')
+									.setTitle('Charted Roots')
 									.setIcon('archive')
 									.setSubmenu();
 
@@ -1796,7 +1821,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu for source notes
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Edit source')
+									.setTitle('Charted Roots: Edit source')
 									.setIcon('edit')
 									.onClick(() => {
 										this.openEditSourceModal(file);
@@ -1805,7 +1830,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Generate citation')
+									.setTitle('Charted Roots: Generate citation')
 									.setIcon('quote')
 									.onClick(() => {
 										this.openCitationGenerator(file);
@@ -1814,7 +1839,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Open sources tab')
+									.setTitle('Charted Roots: Open sources tab')
 									.setIcon('archive')
 									.onClick(() => {
 										const modal = new ControlCenterModal(this.app, this);
@@ -1824,7 +1849,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential person properties')
+									.setTitle('Charted Roots: Add essential person properties')
 									.setIcon('user')
 									.onClick(async () => {
 										await this.addEssentialPersonProperties([file]);
@@ -1833,7 +1858,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential place properties')
+									.setTitle('Charted Roots: Add essential place properties')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.addEssentialPlaceProperties([file]);
@@ -1842,7 +1867,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential source properties')
+									.setTitle('Charted Roots: Add essential source properties')
 									.setIcon('archive')
 									.onClick(async () => {
 										await this.addEssentialSourceProperties([file]);
@@ -1851,7 +1876,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add cr_id')
+									.setTitle('Charted Roots: Add cr_id')
 									.setIcon('key')
 									.onClick(async () => {
 										await this.addCrId([file]);
@@ -1866,7 +1891,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (useSubmenu) {
 							menu.addItem((item) => {
 								const submenu: Menu = item
-									.setTitle('Canvas Roots')
+									.setTitle('Charted Roots')
 									.setIcon('git-fork')
 									.setSubmenu();
 
@@ -2483,7 +2508,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu with prefix
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Generate visual tree')
+									.setTitle('Charted Roots: Generate visual tree')
 									.setIcon('git-fork')
 									.onClick(() => {
 										const modal = new ControlCenterModal(this.app, this);
@@ -2493,7 +2518,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Edit person')
+									.setTitle('Charted Roots: Edit person')
 									.setIcon('edit')
 									.onClick(() => {
 										this.openEditPersonModal(file);
@@ -2502,7 +2527,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add parent')
+									.setTitle('Charted Roots: Add parent')
 									.setIcon('user')
 									.onClick(() => {
 										const picker = new PersonPickerModal(this.app, (selectedPerson) => {
@@ -2525,7 +2550,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add spouse')
+									.setTitle('Charted Roots: Add spouse')
 									.setIcon('heart')
 									.onClick(() => {
 										const picker = new PersonPickerModal(this.app, (selectedPerson) => {
@@ -2540,7 +2565,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add child')
+									.setTitle('Charted Roots: Add child')
 									.setIcon('baby')
 									.onClick(() => {
 										const picker = new PersonPickerModal(this.app, (selectedPerson) => {
@@ -2555,7 +2580,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Validate relationships')
+									.setTitle('Charted Roots: Validate relationships')
 									.setIcon('shield-check')
 									.onClick(async () => {
 										const validator = new RelationshipValidator(this.app);
@@ -2572,7 +2597,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Find on canvas')
+									.setTitle('Charted Roots: Find on canvas')
 									.setIcon('search')
 									.onClick(() => {
 										const cache = this.app.metadataCache.getFileCache(file);
@@ -2586,7 +2611,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Open in map view')
+									.setTitle('Charted Roots: Open in map view')
 									.setIcon('map')
 									.onClick(async () => {
 										await this.activateMapView();
@@ -2595,7 +2620,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Open in family chart')
+									.setTitle('Charted Roots: Open in family chart')
 									.setIcon('git-fork')
 									.onClick(async () => {
 										const cache = this.app.metadataCache.getFileCache(file);
@@ -2610,7 +2635,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Calculate relationship...')
+									.setTitle('Charted Roots: Calculate relationship...')
 									.setIcon('git-compare')
 									.onClick(() => {
 										const cache = this.app.metadataCache.getFileCache(file);
@@ -2632,7 +2657,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set group name')
+									.setTitle('Charted Roots: Set group name')
 									.setIcon('tag')
 									.onClick(async () => {
 										await this.promptSetCollectionName(file);
@@ -2641,7 +2666,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set collection')
+									.setTitle('Charted Roots: Set collection')
 									.setIcon('folder')
 									.onClick(async () => {
 										await this.promptSetCollection(file);
@@ -2650,7 +2675,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add source...')
+									.setTitle('Charted Roots: Add source...')
 									.setIcon('archive')
 									.onClick(() => {
 										this.addSourceToPersonNote(file);
@@ -2659,7 +2684,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Link media...')
+									.setTitle('Charted Roots: Link media...')
 									.setIcon('image-plus')
 									.onClick(() => {
 										const personName = cache?.frontmatter?.name || file.basename;
@@ -2669,7 +2694,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Manage media...')
+									.setTitle('Charted Roots: Manage media...')
 									.setIcon('settings')
 									.onClick(() => {
 										const personName = cache?.frontmatter?.name || file.basename;
@@ -2679,7 +2704,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Insert dynamic blocks')
+									.setTitle('Charted Roots: Insert dynamic blocks')
 									.setIcon('layout-template')
 									.onClick(async () => {
 										await this.insertDynamicBlocks([file]);
@@ -2689,7 +2714,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Events actions (mobile - flat menu)
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Create event')
+									.setTitle('Charted Roots: Create event')
 									.setIcon('calendar-plus')
 									.onClick(async () => {
 										const eventService = this.getEventService();
@@ -2712,7 +2737,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Export timeline to Canvas')
+									.setTitle('Charted Roots: Export timeline to Canvas')
 									.setIcon('layout')
 									.onClick(async () => {
 										await this.exportPersonTimelineFromFile(file, 'canvas');
@@ -2721,7 +2746,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Export timeline to Excalidraw')
+									.setTitle('Charted Roots: Export timeline to Excalidraw')
 									.setIcon('pencil')
 									.onClick(async () => {
 										await this.exportPersonTimelineFromFile(file, 'excalidraw');
@@ -2732,7 +2757,7 @@ export default class CanvasRootsPlugin extends Plugin {
 								const cache = this.app.metadataCache.getFileCache(file);
 								const isRootPerson = cache?.frontmatter?.root_person === true;
 								item
-									.setTitle(isRootPerson ? 'Canvas Roots: Unmark as root person' : 'Canvas Roots: Mark as root person')
+									.setTitle(isRootPerson ? 'Charted Roots: Unmark as root person' : 'Charted Roots: Mark as root person')
 									.setIcon('crown')
 									.onClick(async () => {
 										await this.toggleRootPerson(file);
@@ -2742,7 +2767,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Reference numbering (mobile - flat menu)
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Assign Ahnentafel numbers')
+									.setTitle('Charted Roots: Assign Ahnentafel numbers')
 									.setIcon('hash')
 									.onClick(async () => {
 										await this.assignReferenceNumbersFromPerson(file, 'ahnentafel');
@@ -2751,7 +2776,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle("Canvas Roots: Assign d'Aboville numbers")
+									.setTitle("Charted Roots: Assign d'Aboville numbers")
 									.setIcon('hash')
 									.onClick(async () => {
 										await this.assignReferenceNumbersFromPerson(file, 'daboville');
@@ -2760,7 +2785,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Assign Henry numbers')
+									.setTitle('Charted Roots: Assign Henry numbers')
 									.setIcon('hash')
 									.onClick(async () => {
 										await this.assignReferenceNumbersFromPerson(file, 'henry');
@@ -2769,7 +2794,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Assign generation numbers')
+									.setTitle('Charted Roots: Assign generation numbers')
 									.setIcon('hash')
 									.onClick(async () => {
 										await this.assignReferenceNumbersFromPerson(file, 'generation');
@@ -2779,7 +2804,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Lineage tracking (mobile - flat menu)
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Assign lineage (all)')
+									.setTitle('Charted Roots: Assign lineage (all)')
 									.setIcon('git-branch')
 									.onClick(async () => {
 										await this.assignLineageFromPerson(file, 'all');
@@ -2788,7 +2813,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Assign lineage (patrilineal)')
+									.setTitle('Charted Roots: Assign lineage (patrilineal)')
 									.setIcon('git-branch')
 									.onClick(async () => {
 										await this.assignLineageFromPerson(file, 'patrilineal');
@@ -2797,7 +2822,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Assign lineage (matrilineal)')
+									.setTitle('Charted Roots: Assign lineage (matrilineal)')
 									.setIcon('git-branch')
 									.onClick(async () => {
 										await this.assignLineageFromPerson(file, 'matrilineal');
@@ -2806,7 +2831,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Create place notes...')
+									.setTitle('Charted Roots: Create place notes...')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.showCreatePlaceNotesForPerson(file);
@@ -2815,7 +2840,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential person properties')
+									.setTitle('Charted Roots: Add essential person properties')
 									.setIcon('user')
 									.onClick(async () => {
 										await this.addEssentialPersonProperties([file]);
@@ -2824,7 +2849,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential place properties')
+									.setTitle('Charted Roots: Add essential place properties')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.addEssentialPlaceProperties([file]);
@@ -2833,7 +2858,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential source properties')
+									.setTitle('Charted Roots: Add essential source properties')
 									.setIcon('archive')
 									.onClick(async () => {
 										await this.addEssentialSourceProperties([file]);
@@ -2842,7 +2867,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add cr_id')
+									.setTitle('Charted Roots: Add cr_id')
 									.setIcon('key')
 									.onClick(async () => {
 										await this.addCrId([file]);
@@ -2857,7 +2882,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (useSubmenu) {
 							menu.addItem((item) => {
 								const submenu: Menu = item
-									.setTitle('Canvas Roots')
+									.setTitle('Charted Roots')
 									.setIcon('calendar')
 									.setSubmenu();
 
@@ -2962,7 +2987,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Open event')
+									.setTitle('Charted Roots: Open event')
 									.setIcon('file')
 									.onClick(() => {
 										void this.app.workspace.getLeaf(false).openFile(file);
@@ -2971,7 +2996,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Open in new tab')
+									.setTitle('Charted Roots: Open in new tab')
 									.setIcon('file-plus')
 									.onClick(() => {
 										void this.app.workspace.getLeaf('tab').openFile(file);
@@ -2980,7 +3005,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Edit event')
+									.setTitle('Charted Roots: Edit event')
 									.setIcon('edit')
 									.onClick(() => {
 										this.openEditEventModal(file);
@@ -2989,7 +3014,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Link media...')
+									.setTitle('Charted Roots: Link media...')
 									.setIcon('image-plus')
 									.onClick(() => {
 										const eventTitle = cache?.frontmatter?.title || file.basename;
@@ -2999,7 +3024,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Manage media...')
+									.setTitle('Charted Roots: Manage media...')
 									.setIcon('settings')
 									.onClick(() => {
 										const eventTitle = cache?.frontmatter?.title || file.basename;
@@ -3009,7 +3034,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential event properties')
+									.setTitle('Charted Roots: Add essential event properties')
 									.setIcon('file-plus')
 									.onClick(async () => {
 										await this.addEssentialEventProperties([file]);
@@ -3018,7 +3043,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add cr_id')
+									.setTitle('Charted Roots: Add cr_id')
 									.setIcon('key')
 									.onClick(async () => {
 										await this.addCrId([file]);
@@ -3027,7 +3052,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Delete event')
+									.setTitle('Charted Roots: Delete event')
 									.setIcon('trash')
 									.onClick(async () => {
 										const eventTitle = cache?.frontmatter?.title || file.basename;
@@ -3047,7 +3072,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (useSubmenu) {
 							menu.addItem((item) => {
 								const submenu: Menu = item
-									.setTitle('Canvas Roots')
+									.setTitle('Charted Roots')
 									.setIcon('git-fork')
 									.setSubmenu();
 
@@ -3118,7 +3143,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential person properties')
+									.setTitle('Charted Roots: Add essential person properties')
 									.setIcon('user')
 									.onClick(async () => {
 										await this.addEssentialPersonProperties([file]);
@@ -3127,7 +3152,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential place properties')
+									.setTitle('Charted Roots: Add essential place properties')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.addEssentialPlaceProperties([file]);
@@ -3136,7 +3161,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential source properties')
+									.setTitle('Charted Roots: Add essential source properties')
 									.setIcon('archive')
 									.onClick(async () => {
 										await this.addEssentialSourceProperties([file]);
@@ -3145,7 +3170,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential event properties')
+									.setTitle('Charted Roots: Add essential event properties')
 									.setIcon('calendar')
 									.onClick(async () => {
 										await this.addEssentialEventProperties([file]);
@@ -3154,7 +3179,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential universe properties')
+									.setTitle('Charted Roots: Add essential universe properties')
 									.setIcon('globe')
 									.onClick(async () => {
 										await this.addEssentialUniverseProperties([file]);
@@ -3163,7 +3188,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add cr_id')
+									.setTitle('Charted Roots: Add cr_id')
 									.setIcon('key')
 									.onClick(async () => {
 										await this.addCrId([file]);
@@ -3178,7 +3203,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (useSubmenu) {
 							menu.addItem((item) => {
 								const submenu: Menu = item
-									.setTitle('Canvas Roots')
+									.setTitle('Charted Roots')
 									.setIcon('globe')
 									.setSubmenu();
 
@@ -3279,7 +3304,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							// Mobile: flat menu for universe notes
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Open universes tab')
+									.setTitle('Charted Roots: Open universes tab')
 									.setIcon('globe')
 									.onClick(() => {
 										const modal = new ControlCenterModal(this.app, this);
@@ -3289,7 +3314,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Edit universe')
+									.setTitle('Charted Roots: Edit universe')
 									.setIcon('edit')
 									.onClick(() => {
 										this.openEditUniverseModal(file);
@@ -3298,7 +3323,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Delete universe')
+									.setTitle('Charted Roots: Delete universe')
 									.setIcon('trash')
 									.onClick(async () => {
 										const universeName = cache?.frontmatter?.name || file.basename;
@@ -3312,7 +3337,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential universe properties')
+									.setTitle('Charted Roots: Add essential universe properties')
 									.setIcon('globe')
 									.onClick(async () => {
 										await this.addEssentialUniverseProperties([file]);
@@ -3321,7 +3346,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential person properties')
+									.setTitle('Charted Roots: Add essential person properties')
 									.setIcon('user')
 									.onClick(async () => {
 										await this.addEssentialPersonProperties([file]);
@@ -3330,7 +3355,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential place properties')
+									.setTitle('Charted Roots: Add essential place properties')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.addEssentialPlaceProperties([file]);
@@ -3339,7 +3364,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add cr_id')
+									.setTitle('Charted Roots: Add cr_id')
 									.setIcon('key')
 									.onClick(async () => {
 										await this.addCrId([file]);
@@ -3356,7 +3381,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 					menu.addItem((item) => {
 						item
-							.setTitle('Canvas Roots: Use as custom map')
+							.setTitle('Charted Roots: Use as custom map')
 							.setIcon('map')
 							.onClick(() => {
 								new CreateMapWizardModal(this.app, this, {
@@ -3397,7 +3422,7 @@ export default class CanvasRootsPlugin extends Plugin {
 					if (useSubmenu) {
 						menu.addItem((item) => {
 							const submenu: Menu = item
-								.setTitle('Canvas Roots')
+								.setTitle('Charted Roots')
 								.setIcon('git-fork')
 								.setSubmenu();
 
@@ -3778,7 +3803,7 @@ export default class CanvasRootsPlugin extends Plugin {
 							else if (isNotesFolder) {
 								submenu.addItem((subItem) => {
 									subItem
-										.setTitle('New Canvas Roots note')
+										.setTitle('New Charted Roots note')
 										.setIcon('file-plus')
 										.onClick(async () => {
 											const { CreateNoteModal } = await import('./src/ui/create-note-modal');
@@ -4039,7 +4064,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (isPeopleFolder) {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Create person')
+									.setTitle('Charted Roots: Create person')
 									.setIcon('user-plus')
 									.onClick(() => {
 										const modal = new CreatePersonModal(this.app, {
@@ -4056,7 +4081,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Create family')
+									.setTitle('Charted Roots: Create family')
 									.setIcon('users')
 									.onClick(() => {
 										void import('./src/ui/family-creation-wizard').then(({ FamilyCreationWizardModal }) => {
@@ -4067,7 +4092,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Import GEDCOM')
+									.setTitle('Charted Roots: Import GEDCOM')
 									.setIcon('upload')
 									.onClick(() => {
 										const modal = new ControlCenterModal(this.app, this);
@@ -4077,7 +4102,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Export GEDCOM')
+									.setTitle('Charted Roots: Export GEDCOM')
 									.setIcon('download')
 									.onClick(() => {
 										const modal = new ControlCenterModal(this.app, this);
@@ -4087,7 +4112,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Scan for relationship issues')
+									.setTitle('Charted Roots: Scan for relationship issues')
 									.setIcon('shield-alert')
 									.onClick(() => {
 										new FolderScanModal(this.app, file, this.personIndex ?? undefined).open();
@@ -4096,7 +4121,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential person properties')
+									.setTitle('Charted Roots: Add essential person properties')
 									.setIcon('user')
 									.onClick(async () => {
 										await this.addEssentialPersonProperties(getFilesInFolder());
@@ -4105,7 +4130,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Insert dynamic blocks')
+									.setTitle('Charted Roots: Insert dynamic blocks')
 									.setIcon('layout-template')
 									.onClick(async () => {
 										await this.insertDynamicBlocks(getFilesInFolder());
@@ -4114,7 +4139,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Generate all trees')
+									.setTitle('Charted Roots: Generate all trees')
 									.setIcon('git-fork')
 									.onClick(async () => {
 										await this.generateAllTrees();
@@ -4127,7 +4152,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						else if (isPeopleSubfolder) {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Create person')
+									.setTitle('Charted Roots: Create person')
 									.setIcon('user-plus')
 									.onClick(() => {
 										const modal = new CreatePersonModal(this.app, {
@@ -4147,7 +4172,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						else if (isPlacesFolder) {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential place properties')
+									.setTitle('Charted Roots: Add essential place properties')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.addEssentialPlaceProperties(getFilesInFolder());
@@ -4156,7 +4181,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: New places base')
+									.setTitle('Charted Roots: New places base')
 									.setIcon('table')
 									.onClick(async () => {
 										await this.createPlacesBaseTemplate(file);
@@ -4168,7 +4193,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						else if (isUniversesFolder) {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential universe properties')
+									.setTitle('Charted Roots: Add essential universe properties')
 									.setIcon('globe')
 									.onClick(async () => {
 										await this.addEssentialUniverseProperties(getFilesInFolder());
@@ -4177,7 +4202,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: New universes base')
+									.setTitle('Charted Roots: New universes base')
 									.setIcon('table')
 									.onClick(async () => {
 										await this.createUniversesBaseTemplate(file);
@@ -4189,7 +4214,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						else if (isSourcesFolder) {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential source properties')
+									.setTitle('Charted Roots: Add essential source properties')
 									.setIcon('archive')
 									.onClick(async () => {
 										await this.addEssentialSourceProperties(getFilesInFolder());
@@ -4198,7 +4223,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: New sources base')
+									.setTitle('Charted Roots: New sources base')
 									.setIcon('table')
 									.onClick(async () => {
 										await this.createSourcesBaseTemplate(file);
@@ -4210,7 +4235,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						else if (isEventsFolder) {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Add essential event properties')
+									.setTitle('Charted Roots: Add essential event properties')
 									.setIcon('calendar')
 									.onClick(async () => {
 										await this.addEssentialEventProperties(getFilesInFolder());
@@ -4219,7 +4244,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: New events base')
+									.setTitle('Charted Roots: New events base')
 									.setIcon('table')
 									.onClick(async () => {
 										await this.createEventsBaseTemplate(file);
@@ -4231,7 +4256,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						else if (isOrganizationsFolder) {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: New organizations base')
+									.setTitle('Charted Roots: New organizations base')
 									.setIcon('table')
 									.onClick(async () => {
 										await this.createOrganizationsBaseTemplate(file);
@@ -4243,7 +4268,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						else if (isNotesFolder) {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: New note')
+									.setTitle('Charted Roots: New note')
 									.setIcon('file-plus')
 									.onClick(async () => {
 										const { CreateNoteModal } = await import('./src/ui/create-note-modal');
@@ -4253,7 +4278,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: New notes base')
+									.setTitle('Charted Roots: New notes base')
 									.setIcon('table')
 									.onClick(async () => {
 										await this.createNotesBaseTemplate(file);
@@ -4265,7 +4290,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						else {
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set as people folder')
+									.setTitle('Charted Roots: Set as people folder')
 									.setIcon('users')
 									.onClick(async () => {
 										this.settings.peopleFolder = file.path;
@@ -4276,7 +4301,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set as places folder')
+									.setTitle('Charted Roots: Set as places folder')
 									.setIcon('map-pin')
 									.onClick(async () => {
 										this.settings.placesFolder = file.path;
@@ -4287,7 +4312,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set as universes folder')
+									.setTitle('Charted Roots: Set as universes folder')
 									.setIcon('globe')
 									.onClick(async () => {
 										this.settings.universesFolder = file.path;
@@ -4298,7 +4323,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set as sources folder')
+									.setTitle('Charted Roots: Set as sources folder')
 									.setIcon('archive')
 									.onClick(async () => {
 										this.settings.sourcesFolder = file.path;
@@ -4309,7 +4334,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set as events folder')
+									.setTitle('Charted Roots: Set as events folder')
 									.setIcon('calendar')
 									.onClick(async () => {
 										this.settings.eventsFolder = file.path;
@@ -4320,7 +4345,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 							menu.addItem((item) => {
 								item
-									.setTitle('Canvas Roots: Set as organizations folder')
+									.setTitle('Charted Roots: Set as organizations folder')
 									.setIcon('building')
 									.onClick(async () => {
 										this.settings.organizationsFolder = file.path;
@@ -4333,7 +4358,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						// Common actions for all folders (mobile)
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Add cr_id')
+								.setTitle('Charted Roots: Add cr_id')
 								.setIcon('key')
 								.onClick(async () => {
 									await this.addCrId(getFilesInFolder());
@@ -4342,7 +4367,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 						menu.addItem((item) => {
 							item
-								.setTitle('Canvas Roots: Show folder statistics')
+								.setTitle('Charted Roots: Show folder statistics')
 								.setIcon('bar-chart-2')
 								.onClick(() => {
 									this.showFolderStatistics(file);
@@ -4414,7 +4439,7 @@ export default class CanvasRootsPlugin extends Plugin {
 					if (useSubmenu) {
 						menu.addItem((item) => {
 							const propsSubmenu: Menu = item
-								.setTitle(`Canvas Roots: Add essential properties (${markdownFiles.length} files)`)
+								.setTitle(`Charted Roots: Add essential properties (${markdownFiles.length} files)`)
 								.setIcon('file-plus')
 								.setSubmenu();
 
@@ -4466,7 +4491,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (hasMissingPersonProperties) {
 							menu.addItem((item) => {
 								item
-									.setTitle(`Canvas Roots: Add essential person properties (${markdownFiles.length} files)`)
+									.setTitle(`Charted Roots: Add essential person properties (${markdownFiles.length} files)`)
 									.setIcon('user')
 									.onClick(async () => {
 										await this.addEssentialPersonProperties(markdownFiles);
@@ -4477,7 +4502,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (hasMissingPlaceProperties) {
 							menu.addItem((item) => {
 								item
-									.setTitle(`Canvas Roots: Add essential place properties (${markdownFiles.length} files)`)
+									.setTitle(`Charted Roots: Add essential place properties (${markdownFiles.length} files)`)
 									.setIcon('map-pin')
 									.onClick(async () => {
 										await this.addEssentialPlaceProperties(markdownFiles);
@@ -4488,7 +4513,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						if (hasMissingSourceProperties) {
 							menu.addItem((item) => {
 								item
-								.setTitle(`Canvas Roots: Add essential source properties (${markdownFiles.length} files)`)
+								.setTitle(`Charted Roots: Add essential source properties (${markdownFiles.length} files)`)
 								.setIcon('archive')
 								.onClick(async () => {
 									await this.addEssentialSourceProperties(markdownFiles);
@@ -4499,7 +4524,7 @@ export default class CanvasRootsPlugin extends Plugin {
 						// Add cr_id option (mobile)
 						menu.addItem((item) => {
 							item
-								.setTitle(`Canvas Roots: Add cr_id (${markdownFiles.length} files)`)
+								.setTitle(`Charted Roots: Add cr_id (${markdownFiles.length} files)`)
 								.setIcon('key')
 								.onClick(async () => {
 									await this.addCrId(markdownFiles);
@@ -4677,7 +4702,7 @@ export default class CanvasRootsPlugin extends Plugin {
 	}
 
 	onunload() {
-		console.debug('Unloading Canvas Roots plugin');
+		console.debug('Unloading Charted Roots plugin');
 
 		// Clean up event handlers
 		if (this.fileModifyEventRef) {
@@ -5960,7 +5985,7 @@ export default class CanvasRootsPlugin extends Plugin {
 
 			// 2. Try to read original generation metadata from canvas
 			const storedMetadata = canvasData.metadata?.frontmatter;
-			const isCanvasRootsTree = storedMetadata?.plugin === 'canvas-roots';
+			const isCanvasRootsTree = storedMetadata?.plugin === 'charted-roots' || storedMetadata?.plugin === 'canvas-roots';
 
 			// 3. Extract person note nodes (file nodes only)
 			const personNodes = canvasData.nodes.filter(
@@ -6070,7 +6095,7 @@ export default class CanvasRootsPlugin extends Plugin {
 				showSourceIndicators: this.settings.showSourceIndicators,
 				showResearchCoverage: this.settings.trackFactSourcing,
 				canvasRootsMetadata: {
-					plugin: 'canvas-roots',
+					plugin: 'charted-roots',
 					generation: {
 						rootCrId: rootCrId,
 						rootPersonName: rootPersonName,
@@ -6274,8 +6299,8 @@ export default class CanvasRootsPlugin extends Plugin {
 			const canvasData = JSON.parse(canvasContent);
 			const metadata = canvasData.metadata?.frontmatter;
 
-			if (metadata?.plugin !== 'canvas-roots' || !metadata.generation?.rootCrId) {
-				new Notice('This canvas does not contain Canvas Roots tree data');
+			if ((metadata?.plugin !== 'charted-roots' && metadata?.plugin !== 'canvas-roots') || !metadata.generation?.rootCrId) {
+				new Notice('This canvas does not contain Charted Roots tree data');
 				return;
 			}
 
@@ -7078,11 +7103,11 @@ export default class CanvasRootsPlugin extends Plugin {
 						continue;
 					}
 
-					// Check if it already has dynamic blocks
+					// Check if it already has dynamic blocks (check both old and new format)
 					const content = await this.app.vault.read(file);
-					const hasRelationships = content.includes('```canvas-roots-relationships');
-					const hasTimeline = content.includes('```canvas-roots-timeline');
-					const hasMedia = content.includes('```canvas-roots-media');
+					const hasRelationships = content.includes('```charted-roots-relationships') || content.includes('```canvas-roots-relationships');
+					const hasTimeline = content.includes('```charted-roots-timeline') || content.includes('```canvas-roots-timeline');
+					const hasMedia = content.includes('```charted-roots-media') || content.includes('```canvas-roots-media');
 
 					if (hasRelationships && hasTimeline && hasMedia) {
 						skippedCount++;
@@ -7090,25 +7115,25 @@ export default class CanvasRootsPlugin extends Plugin {
 						continue;
 					}
 
-					// Build the blocks to add
+					// Build the blocks to add (use new charted-roots format)
 					const blocksToAdd: string[] = [];
 
 					if (!hasRelationships) {
-						blocksToAdd.push('```canvas-roots-relationships');
+						blocksToAdd.push('```charted-roots-relationships');
 						blocksToAdd.push('type: immediate');
 						blocksToAdd.push('```');
 						blocksToAdd.push('');
 					}
 
 					if (!hasTimeline) {
-						blocksToAdd.push('```canvas-roots-timeline');
+						blocksToAdd.push('```charted-roots-timeline');
 						blocksToAdd.push('sort: chronological');
 						blocksToAdd.push('```');
 						blocksToAdd.push('');
 					}
 
 					if (!hasMedia) {
-						blocksToAdd.push('```canvas-roots-media');
+						blocksToAdd.push('```charted-roots-media');
 						blocksToAdd.push('columns: 3');
 						blocksToAdd.push('size: medium');
 						blocksToAdd.push('editable: true');
@@ -7956,7 +7981,7 @@ export default class CanvasRootsPlugin extends Plugin {
 	}
 
 	/**
-	 * Migrate vault data from Canvas Roots to Charted Roots format
+	 * Migrate vault data from Charted Roots to Charted Roots format
 	 * Updates canvas metadata and code block types
 	 * Only runs once (tracked by settings.migratedToChartedRoots flag)
 	 */
@@ -7979,7 +8004,7 @@ export default class CanvasRootsPlugin extends Plugin {
 			}
 
 			// Run migration
-			logger.info('migration', 'Starting Canvas Roots to Charted Roots migration');
+			logger.info('migration', 'Starting Charted Roots to Charted Roots migration');
 			const result = await migrationService.runMigration();
 
 			// Show notice to user
@@ -7989,9 +8014,9 @@ export default class CanvasRootsPlugin extends Plugin {
 			this.settings.migratedToChartedRoots = true;
 			await this.saveSettings();
 
-			logger.info('migration', 'Canvas Roots to Charted Roots migration complete', result);
+			logger.info('migration', 'Charted Roots to Charted Roots migration complete', result);
 		} catch (error: unknown) {
-			logger.error('migration', 'Error during Canvas Roots to Charted Roots migration', error);
+			logger.error('migration', 'Error during Charted Roots to Charted Roots migration', error);
 			// Don't set flag on error so migration can be retried
 		}
 	}
@@ -8013,8 +8038,8 @@ export default class CanvasRootsPlugin extends Plugin {
 			const canvasData = JSON.parse(canvasContent);
 			const metadata = canvasData.metadata?.frontmatter;
 
-			if (metadata?.plugin !== 'canvas-roots' || !metadata.generation?.rootCrId) {
-				new Notice('This canvas does not contain Canvas Roots tree data');
+			if ((metadata?.plugin !== 'charted-roots' && metadata?.plugin !== 'canvas-roots') || !metadata.generation?.rootCrId) {
+				new Notice('This canvas does not contain Charted Roots tree data');
 				return;
 			}
 

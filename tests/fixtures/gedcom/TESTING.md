@@ -3,7 +3,7 @@
 > **⚠️ IMPORTANT: All individuals in these test files are entirely fictional.**
 > Names, dates, locations, and relationships are programmatically generated or manually invented for testing purposes only. Any resemblance to real persons, living or deceased, is purely coincidental.
 
-This directory contains progressively larger GEDCOM test files for stress-testing the Canvas Roots layout engine at various scales.
+This directory contains progressively larger GEDCOM test files for stress-testing the Charted Roots layout engine at various scales.
 
 ## Test Files Overview
 
@@ -22,7 +22,7 @@ This directory contains progressively larger GEDCOM test files for stress-testin
 
 ### Full Files (All Note Types: People, Events, Sources, Places)
 
-These enhanced files include source records, detailed place hierarchies (with US counties), and source citations on vital events. **Use these for demonstrating all note types imported by Canvas Roots.**
+These enhanced files include source records, detailed place hierarchies (with US counties), and source citations on vital events. **Use these for demonstrating all note types imported by Charted Roots.**
 
 | File | People | Sources | Place Levels | File Size | Purpose |
 |------|--------|---------|--------------|-----------|---------|
@@ -163,7 +163,7 @@ These enhanced files include source records, detailed place hierarchies (with US
 ## Testing Methodology
 
 ### Import Process
-1. Open Obsidian with Canvas Roots plugin enabled
+1. Open Obsidian with Charted Roots plugin enabled
 2. Use Control Center → Data Entry tab (or GEDCOM import command if available)
 3. Select GEDCOM file
 4. Import to a test collection (e.g., "test-tiny", "test-small", etc.)
@@ -509,5 +509,5 @@ If needed based on initial results, consider creating:
 - All GEDCOM files follow GEDCOM 5.5.1 standard
 - All files use UTF-8 encoding
 - Dates follow standard GEDCOM date format (DD MMM YYYY)
-- Files were generated 2025-11-20 for Canvas Roots plugin testing
+- Files were generated 2025-11-20 for Charted Roots plugin testing
 - Focus is on realistic family structures, not random graph generation

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Value Aliases extend the existing Property Aliases feature to allow users to map custom **property values** to Canvas Roots' canonical values. This enables users with existing vaults to use custom terminology without editing existing notes.
+Value Aliases extend the existing Property Aliases feature to allow users to map custom **property values** to Charted Roots' canonical values. This enables users with existing vaults to use custom terminology without editing existing notes.
 
 ## Motivation
 
@@ -198,7 +198,7 @@ Consolidate property and value aliases into one card with sections:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ # Aliases                                              [?]  │
-│ Map your custom names and values to Canvas Roots fields     │
+│ Map your custom names and values to Charted Roots fields     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │ ## Property names                                           │

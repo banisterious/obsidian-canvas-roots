@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the integration between Canvas Roots and the [Calendarium](https://github.com/javalent/calendarium) plugin, enabling shared calendar definitions, bidirectional event sync, and cross-calendar date translation.
+This document outlines the integration between Charted Roots and the [Calendarium](https://github.com/javalent/calendarium) plugin, enabling shared calendar definitions, bidirectional event sync, and cross-calendar date translation.
 
 ---
 
@@ -27,10 +27,10 @@ Feedback gathered from Calendarium users on what they'd want from this integrati
 3. **Eras should be part of date structure** - Users want `Era-Year-Month-Day` format; struggle with math to determine what year a note should be in for the right era
 4. **Per-calendar frontmatter fields** - Would prefer custom frontmatter per calendar (e.g., `mycalendar-date`, `mycalendar-end`) rather than `fc-calendar` + `fc-date` pattern, allowing one note to have dates across multiple calendars
 
-### Implications for Canvas Roots
+### Implications for Charted Roots
 - **Phase 1 validated** - Reading calendar definitions eliminates the main pain point (duplicate config)
-- **Era handling opportunity** - Canvas Roots' fictional date systems could offer better era UX than Calendarium
-- **Multi-calendar per note** - Feature request worth tracking; goes beyond current scope but could differentiate Canvas Roots
+- **Era handling opportunity** - Charted Roots' fictional date systems could offer better era UX than Calendarium
+- **Multi-calendar per note** - Feature request worth tracking; goes beyond current scope but could differentiate Charted Roots
 
 ---
 
@@ -52,14 +52,14 @@ Events are tracked via frontmatter fields (`fc-date`, `fc-calendar`, `fc-categor
 
 ## Why Integrate?
 
-**The problem:** Worldbuilders using Canvas Roots for fictional genealogies often also use Calendarium for their world's calendar. Currently, they must configure their calendar system in both plugins separately.
+**The problem:** Worldbuilders using Charted Roots for fictional genealogies often also use Calendarium for their world's calendar. Currently, they must configure their calendar system in both plugins separately.
 
-**The solution:** Let Canvas Roots read Calendarium's calendar definitions, eliminating duplicate configuration.
+**The solution:** Let Charted Roots read Calendarium's calendar definitions, eliminating duplicate configuration.
 
 **Practical example:** A Middle-earth genealogist using both plugins could:
 - Define the Shire Reckoning calendar once in Calendarium
-- Have Canvas Roots automatically recognize that calendar for date entry
-- Optionally see Calendarium events on Canvas Roots timelines
+- Have Charted Roots automatically recognize that calendar for date entry
+- Optionally see Calendarium events on Charted Roots timelines
 - Get proper date sorting even with complex fictional calendars
 
 **Target Users:** Worldbuilders using fictional date systems who want a unified timeline experience across both plugins. This integration adds little value for standard Gregorian genealogy users.
@@ -68,8 +68,8 @@ Events are tracked via frontmatter fields (`fc-date`, `fc-calendar`, `fc-categor
 
 **Dependencies:**
 - Calendarium plugin (optional - graceful fallback when not installed)
-- Canvas Roots Fictional Date Systems (v0.7.0+)
-- Canvas Roots Event Notes (v0.10.0+)
+- Charted Roots Fictional Date Systems (v0.7.0+)
+- Charted Roots Event Notes (v0.10.0+)
 
 ---
 
@@ -77,8 +77,8 @@ Events are tracked via frontmatter fields (`fc-date`, `fc-calendar`, `fc-categor
 
 | Mode | Behavior | Use Case |
 |------|----------|----------|
-| **Standalone** | Canvas Roots manages its own calendars using built-in fictional date systems | Users without Calendarium installed |
-| **Calendarium Primary** | Read calendars from Calendarium; Canvas Roots events sync to Calendarium | Existing Calendarium users who want Canvas Roots timeline features |
+| **Standalone** | Charted Roots manages its own calendars using built-in fictional date systems | Users without Calendarium installed |
+| **Calendarium Primary** | Read calendars from Calendarium; Charted Roots events sync to Calendarium | Existing Calendarium users who want Charted Roots timeline features |
 | **Bidirectional** | Events visible in both systems; changes sync both ways | Power users wanting unified experience across both plugins |
 
 ---
@@ -149,7 +149,7 @@ interface CalDate {
 }
 ```
 
-**Important:** Calendarium uses 0-indexed months. Canvas Roots' date parsing should align with this convention when syncing.
+**Important:** Calendarium uses 0-indexed months. Charted Roots' date parsing should align with this convention when syncing.
 
 ---
 
@@ -157,7 +157,7 @@ interface CalDate {
 
 ### Event Notes ↔ Calendarium Events
 
-| Canvas Roots Field | Calendarium Field | Notes |
+| Charted Roots Field | Calendarium Field | Notes |
 |--------------------|-------------------|-------|
 | `date` | `fc-date` or `fc-start` | Start date of event |
 | `date_end` | `fc-end` | End date for ranges |
@@ -169,7 +169,7 @@ interface CalDate {
 
 ### Fictional Date Systems ↔ Calendarium Calendars
 
-| Canvas Roots Field | Calendarium Equivalent |
+| Charted Roots Field | Calendarium Equivalent |
 |--------------------|------------------------|
 | `date_system` name | Calendar name |
 | Era definitions | Calendar eras |
@@ -182,7 +182,7 @@ interface CalDate {
 
 ### Export to Calendarium
 
-When a Canvas Roots event note is created or updated:
+When a Charted Roots event note is created or updated:
 
 1. Check if `calendariumIntegration` is `'sync'`
 2. Add/update `fc-*` frontmatter fields in the event note
@@ -212,7 +212,7 @@ When loading events, check for `fc-*` fields:
 
 1. Parse `fc-date` or `fc-start` as the event date
 2. Use `fc-calendar` to determine which date system applies
-3. Map `fc-category` to Canvas Roots `event_type`
+3. Map `fc-category` to Charted Roots `event_type`
 4. Respect `fc-end` for date ranges
 
 ### Calendar Translation
@@ -233,7 +233,7 @@ const gregorianDate = api.translate(middleEarthDate, 'Middle-earth', 'Gregorian'
 |---------|------|---------|-------------|
 | `calendariumIntegration` | `'off' \| 'read' \| 'sync'` | `'off'` | Integration mode |
 | `calendariumDefaultCalendar` | `string` | `''` | Default Calendarium calendar for new events |
-| `syncCalendariumEvents` | `boolean` | `false` | Show Calendarium events in Canvas Roots timelines |
+| `syncCalendariumEvents` | `boolean` | `false` | Show Calendarium events in Charted Roots timelines |
 
 ### Settings UI
 
@@ -247,7 +247,7 @@ Add to Settings → Integrations section:
 │ ┌─────────────────────────────────────────────────────────┐ │
 │ │ Off ▼                                                   │ │
 │ └─────────────────────────────────────────────────────────┘ │
-│ Controls how Canvas Roots interacts with Calendarium.        │
+│ Controls how Charted Roots interacts with Calendarium.        │
 │ • Off: No integration                                        │
 │ • Read-only: Import calendars, don't write fc-* fields      │
 │ • Bidirectional: Full sync between both plugins             │
@@ -259,7 +259,7 @@ Add to Settings → Integrations section:
 │ Calendar to use when creating new events.                    │
 │                                                              │
 │ ☐ Show Calendarium events on timelines                      │
-│   Display events created in Calendarium on Canvas Roots     │
+│   Display events created in Calendarium on Charted Roots     │
 │   person and place timelines.                               │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -270,7 +270,7 @@ Add to Settings → Integrations section:
 
 ### Phase 1 delivers 80% of the value
 
-**Phase 1 (Read-only calendar import)** eliminates the main pain point: duplicate calendar configuration. Users define their calendar once in Calendarium and Canvas Roots reads it. This is low-medium effort and should be implemented first.
+**Phase 1 (Read-only calendar import)** eliminates the main pain point: duplicate calendar configuration. Users define their calendar once in Calendarium and Charted Roots reads it. This is low-medium effort and should be implemented first.
 
 Phases 2-4 add incremental value but with increasing complexity. Consider shipping Phase 1, gathering user feedback, then deciding if deeper integration is warranted.
 
@@ -294,9 +294,9 @@ Calendarium is actively developed by a third party (javalent). While the plugin 
 
 ## Calendarium Date Model Complexity
 
-Calendarium's date model is significantly richer than Canvas Roots needs:
+Calendarium's date model is significantly richer than Charted Roots needs:
 
-| Calendarium Feature | Example | Canvas Roots Need? |
+| Calendarium Feature | Example | Charted Roots Need? |
 |---------------------|---------|-------------------|
 | One-time dates | `TA 3001-3-15` | **Yes** - core use case |
 | Named months | `144-Ches-15` | **Yes** - for fictional calendars |
@@ -340,7 +340,7 @@ Calendarium's date model is significantly richer than Canvas Roots needs:
 
 ### Phase 2: Event Display (Read-only) — ✅ Complete
 
-**Scope:** Read `fc-*` fields from Canvas Roots event notes (notes with `cr_type: event`) to display them on timelines. This phase does not import pure Calendarium events (notes without `cr_type`).
+**Scope:** Read `fc-*` fields from Charted Roots event notes (notes with `cr_type: event`) to display them on timelines. This phase does not import pure Calendarium events (notes without `cr_type`).
 
 **Settings:**
 - [x] Add `syncCalendariumEvents: boolean` setting (default: false)
@@ -373,7 +373,7 @@ Calendarium's date model is significantly richer than Canvas Roots needs:
 ### Phase 3: Bidirectional Sync
 
 - [ ] Write `fc-*` fields when creating/updating events
-- [ ] Map Canvas Roots event types to Calendarium categories
+- [ ] Map Charted Roots event types to Calendarium categories
 - [ ] Handle conflicts (both plugins modify same event)
 - [ ] Sync status indicator in event notes
 
@@ -429,17 +429,17 @@ class CalendariumBridge {
 Calendarium uses 0-indexed months. When converting:
 
 ```typescript
-// Canvas Roots (1-indexed) → Calendarium (0-indexed)
+// Charted Roots (1-indexed) → Calendarium (0-indexed)
 const calMonth = crMonth - 1;
 
-// Calendarium (0-indexed) → Canvas Roots (1-indexed)
+// Calendarium (0-indexed) → Charted Roots (1-indexed)
 const crMonth = calMonth + 1;
 ```
 
 ### Error Handling
 
 - If Calendarium is uninstalled mid-session, handle gracefully
-- If calendar is deleted in Calendarium, preserve Canvas Roots events
+- If calendar is deleted in Calendarium, preserve Charted Roots events
 - Log sync failures without blocking user operations
 
 ### Performance
@@ -455,8 +455,8 @@ const crMonth = calMonth + 1;
 1. **Calendarium not installed:** Verify graceful fallback, no errors
 2. **Calendarium installed but disabled:** Should behave like not installed
 3. **Read-only mode:** Import calendars, verify no `fc-*` writes
-4. **Bidirectional mode:** Create event in Canvas Roots, verify appears in Calendarium
-5. **Calendar deletion:** Delete calendar in Calendarium, verify Canvas Roots events preserved
+4. **Bidirectional mode:** Create event in Charted Roots, verify appears in Calendarium
+5. **Calendar deletion:** Delete calendar in Calendarium, verify Charted Roots events preserved
 6. **Date translation:** Verify cross-calendar conversions are accurate
 
 ---
@@ -465,5 +465,5 @@ const crMonth = calMonth + 1;
 
 - [Calendarium Plugin](https://github.com/javalent/calendarium)
 - [Calendarium Documentation](https://plugins.javalent.com/calendarium)
-- [Canvas Roots Fictional Date Systems](../wiki-content/Fictional-Date-Systems.md)
+- [Charted Roots Fictional Date Systems](../wiki-content/Fictional-Date-Systems.md)
 - [Chronological Story Mapping Plan](chronological-story-mapping.md#calendarium-plugin-integration)

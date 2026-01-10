@@ -3,7 +3,7 @@
 Unified planning document for GPS-aligned research workflow features combining entity management (#125) and workflow tracking (#124).
 
 - **Status:** Planning
-- **GitHub Issues:** [#124](https://github.com/banisterious/obsidian-canvas-roots/issues/124), [#125](https://github.com/banisterious/obsidian-canvas-roots/issues/125)
+- **GitHub Issues:** [#124](https://github.com/banisterious/obsidian-charted-roots/issues/124), [#125](https://github.com/banisterious/obsidian-charted-roots/issues/125)
 - **Created:** 2026-01-05
 - **Contributors:** @ANYroots, @wilbry, @banisterious
 
@@ -11,7 +11,7 @@ Unified planning document for GPS-aligned research workflow features combining e
 
 ## Overview
 
-Enable genealogists to manage research workflow using GPS (Genealogical Proof Standard) methodology within Canvas Roots. This integration provides entity types, hierarchical organization, and workflow tracking without forcing users into rigid structures.
+Enable genealogists to manage research workflow using GPS (Genealogical Proof Standard) methodology within Charted Roots. This integration provides entity types, hierarchical organization, and workflow tracking without forcing users into rigid structures.
 
 ### Goals
 
@@ -332,7 +332,7 @@ Research Notebook/
 - `related`: Lateral relationships (related projects, related reports)
 
 **Navigation:**
-- Canvas Roots recognizes hierarchy for breadcrumb navigation
+- Charted Roots recognizes hierarchy for breadcrumb navigation
 - No enforcement: users can organize files however they prefer
 - Queries can surface cross-project relationships
 

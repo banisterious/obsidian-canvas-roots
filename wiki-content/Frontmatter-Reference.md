@@ -1,6 +1,6 @@
 # Frontmatter Reference
 
-This document defines all frontmatter properties recognized by Canvas Roots for person notes, place notes, source notes, organization notes, and map notes.
+This document defines all frontmatter properties recognized by Charted Roots for person notes, place notes, source notes, organization notes, and map notes.
 
 ---
 
@@ -21,7 +21,7 @@ This document defines all frontmatter properties recognized by Canvas Roots for 
 
 ## Note Type Detection
 
-Canvas Roots uses multiple methods to identify note types, checked in this order:
+Charted Roots uses multiple methods to identify note types, checked in this order:
 
 1. **`cr_type` property** (default for new installations) - Namespaced to avoid conflicts with other plugins
 2. **`type` property** (legacy) - Supported for backwards compatibility
@@ -42,7 +42,7 @@ See [Flexible Note Type Detection](Release-History#flexible-note-type-detection-
 
 **⚠️ Nested Properties and Obsidian Compatibility**
 
-Canvas Roots uses nested YAML structures for certain advanced features (like the Evidence Service). Obsidian's property panel doesn't support nested properties and will show "Type mismatch" warnings for them.
+Charted Roots uses nested YAML structures for certain advanced features (like the Evidence Service). Obsidian's property panel doesn't support nested properties and will show "Type mismatch" warnings for them.
 
 **Important:** Do not click "update" on any property showing a type mismatch warning, as this will corrupt the data by converting it to `"[object Object]"` strings.
 
@@ -196,7 +196,7 @@ Tracks research progress toward GPS-compliant documentation, based on Yvette Hoi
 
 ### Parent Relationships
 
-Canvas Roots supports dual storage: wikilinks for Obsidian graph visibility, plus `_id` fields for reliable programmatic resolution.
+Charted Roots supports dual storage: wikilinks for Obsidian graph visibility, plus `_id` fields for reliable programmatic resolution.
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
@@ -207,7 +207,7 @@ Canvas Roots supports dual storage: wikilinks for Obsidian graph visibility, plu
 
 #### Wikilink Format for Duplicate Names
 
-When multiple people have the same name, Obsidian creates files like "John Doe 1.md", "John Doe 2.md". Canvas Roots handles this automatically using Obsidian's alias format:
+When multiple people have the same name, Obsidian creates files like "John Doe 1.md", "John Doe 2.md". Charted Roots handles this automatically using Obsidian's alias format:
 
 ```yaml
 father: "[[John Doe 1|John Doe]]"  # Links to "John Doe 1.md", displays as "John Doe"
@@ -264,9 +264,9 @@ spouses:
 | `children` | `string \| string[]` | Wikilink(s) to children's notes | `["[[John Jr]]", "[[Mary]]"]` |
 | `children_id` | `string \| string[]` | Children's `cr_id`(s) | `["c1234567-...", "c7654321-..."]` |
 
-> **Deprecation Note:** The `child` property (singular) is deprecated as of v0.18.11. Use `children` (plural) for consistency with `children_id`. Canvas Roots still reads both properties for backward compatibility, but new notes should use `children`. Use the Cleanup Wizard (Step 14) to migrate existing notes.
+> **Deprecation Note:** The `child` property (singular) is deprecated as of v0.18.11. Use `children` (plural) for consistency with `children_id`. Charted Roots still reads both properties for backward compatibility, but new notes should use `children`. Use the Cleanup Wizard (Step 14) to migrate existing notes.
 
-### Canvas Roots Metadata
+### Charted Roots Metadata
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
@@ -415,7 +415,7 @@ sourced_facts:
 
 ### Reference Numbering Systems
 
-Canvas Roots can generate genealogical reference numbers:
+Charted Roots can generate genealogical reference numbers:
 
 | Property | Type | Description | Example |
 |----------|------|-------------|---------|
@@ -552,7 +552,7 @@ Source notes document evidence and citations for genealogical research. Each sou
 
 ### Source Types
 
-Canvas Roots includes built-in source types organized by category. Custom types can also be created in the Control Center.
+Charted Roots includes built-in source types organized by category. Custom types can also be created in the Control Center.
 
 | Category | Source Types |
 |----------|--------------|
@@ -608,7 +608,7 @@ For users following the Genealogical Proof Standard, sources can be classified b
 
 **Default Quality by Source Type:**
 
-If `source_quality` is not explicitly set, Canvas Roots infers quality from the source type:
+If `source_quality` is not explicitly set, Charted Roots infers quality from the source type:
 
 | Source Type | Default Quality |
 |-------------|-----------------|
@@ -918,7 +918,7 @@ When validating `sourced_facts`, the schema system checks that:
 
 ## Property Naming Conventions
 
-Canvas Roots follows these conventions:
+Charted Roots follows these conventions:
 
 | Convention | Examples |
 |------------|----------|
@@ -932,7 +932,7 @@ Canvas Roots follows these conventions:
 
 ## Property Aliases
 
-If your vault uses different property names than Canvas Roots defaults, you can create **property aliases** to map your custom names to the canonical Canvas Roots fields. This allows Canvas Roots to work with existing vaults without requiring you to rename your frontmatter properties.
+If your vault uses different property names than Charted Roots defaults, you can create **property aliases** to map your custom names to the canonical Charted Roots fields. This allows Charted Roots to work with existing vaults without requiring you to rename your frontmatter properties.
 
 ### Configuring Aliases
 
@@ -942,7 +942,7 @@ Go to **Control Center → Preferences → Property Aliases** to add, edit, or r
 
 | Scenario | Behavior |
 |----------|----------|
-| **Reading notes** | Canvas Roots checks for the canonical property first, then falls back to your alias |
+| **Reading notes** | Charted Roots checks for the canonical property first, then falls back to your alias |
 | **Creating/importing notes** | New notes use your aliased property name instead of the canonical name |
 | **Both properties exist** | The canonical property takes precedence |
 
@@ -951,7 +951,7 @@ Go to **Control Center → Preferences → Property Aliases** to add, edit, or r
 If your vault uses `birthdate` instead of `born`:
 
 1. Add an alias: `birthdate` → `born`
-2. Canvas Roots will now read `birthdate` as the birth date
+2. Charted Roots will now read `birthdate` as the birth date
 3. When importing GEDCOM files, notes will be created with `birthdate` instead of `born`
 
 ### Supported Properties
@@ -977,12 +977,12 @@ All person note properties can be aliased:
 
 ## Value Aliases
 
-In addition to property name aliases, you can create **value aliases** to map custom property **values** to Canvas Roots' canonical values. This is useful when your vault uses different terminology for enumerated fields like event types, sex values, place categories, or note types.
+In addition to property name aliases, you can create **value aliases** to map custom property **values** to Charted Roots' canonical values. This is useful when your vault uses different terminology for enumerated fields like event types, sex values, place categories, or note types.
 
 ### Configuring Value Aliases
 
 Go to **Control Center → Preferences → Aliases** to add, edit, or remove value aliases. The Aliases card has two sections:
-- **Property names**: Maps your property names to Canvas Roots fields (e.g., `birthdate` → `born`)
+- **Property names**: Maps your property names to Charted Roots fields (e.g., `birthdate` → `born`)
 - **Property values**: Maps your values to canonical values (e.g., `nameday` → `birth`)
 
 ### Supported Fields
@@ -997,7 +997,7 @@ Go to **Control Center → Preferences → Aliases** to add, edit, or remove val
 
 | Scenario | Behavior |
 |----------|----------|
-| **Reading notes** | Canvas Roots checks for canonical values first, then resolves aliases |
+| **Reading notes** | Charted Roots checks for canonical values first, then resolves aliases |
 | **Unknown event types** | Resolve to `custom` (graceful degradation) |
 | **Unknown sex/place category/note type** | Pass through unchanged (may trigger validation warning) |
 | **Creating/importing notes** | Uses your aliased values when writing |
@@ -1007,7 +1007,7 @@ Go to **Control Center → Preferences → Aliases** to add, edit, or remove val
 If your worldbuilding vault uses `nameday` instead of `birth` for event types:
 
 1. Add a value alias: `nameday` → `birth` (Event type)
-2. Canvas Roots will recognize `event_type: nameday` as a birth event
+2. Charted Roots will recognize `event_type: nameday` as a birth event
 3. Events with `nameday` will appear with the birth icon on maps and timelines
 4. When importing GEDCOM files, birth events will be written as `nameday`
 
@@ -1295,7 +1295,7 @@ Event notes document life events, story events, and timeline entries as standalo
 
 ### Event Types
 
-Canvas Roots includes built-in event types organized by category. Custom types can also be created in the Control Center.
+Charted Roots includes built-in event types organized by category. Custom types can also be created in the Control Center.
 
 | Category | Event Types |
 |----------|-------------|

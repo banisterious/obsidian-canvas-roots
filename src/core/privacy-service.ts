@@ -1,5 +1,5 @@
 /**
- * Privacy Service for Canvas Roots
+ * Privacy Service for Charted Roots
  *
  * Provides privacy protection for living persons in genealogical data.
  * Determines if a person is likely living and applies obfuscation rules.

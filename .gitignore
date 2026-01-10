@@ -103,3 +103,4 @@ docs/developer/pr-reviews/
 
 # Sample/demo files (for local testing only)
 docs/samples/
+.claude/

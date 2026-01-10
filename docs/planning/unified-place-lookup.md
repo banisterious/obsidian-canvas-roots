@@ -1,33 +1,33 @@
 # Unified Place Lookup System
 
 - **Status:** Planning
-- **Related Issues:** [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128) (Web Clipper Integration)
+- **Related Issues:** [#128](https://github.com/banisterious/obsidian-charted-roots/issues/128) (Web Clipper Integration)
 - **Created:** 2026-01-08
 
 ## Problem Statement
 
-Currently, Canvas Roots requires users to manually create place notes with geographic data. For genealogical research, users need to:
+Currently, Charted Roots requires users to manually create place notes with geographic data. For genealogical research, users need to:
 - Standardize place names
 - Obtain accurate coordinates
 - Understand historical jurisdiction changes
 - Link places to parent administrative units
 - Track place name variations over time
 
-Multiple excellent place data sources exist (FamilySearch Places, Wikidata, GeoNames, GOV, etc.), but there's no unified way to query them and create Canvas Roots place notes.
+Multiple excellent place data sources exist (FamilySearch Places, Wikidata, GeoNames, GOV, etc.), but there's no unified way to query them and create Charted Roots place notes.
 
 ## Proposed Solution
 
 Create a **Unified Place Lookup** system that:
 1. Provides a single interface for querying multiple place databases
 2. Allows users to choose the best source for their research needs
-3. Automatically creates properly-formatted Canvas Roots place notes
+3. Automatically creates properly-formatted Charted Roots place notes
 4. Supports both Web Clipper templates and native plugin integration
 
 ## Architecture
 
 ### Native Plugin Integration (Primary Approach)
 
-Add place lookup directly to Canvas Roots plugin for seamless integration:
+Add place lookup directly to Charted Roots plugin for seamless integration:
 
 **Features:**
 1. **"Lookup Place" button in Create Place modal**
@@ -55,7 +55,7 @@ Add place lookup directly to Canvas Roots plugin for seamless integration:
    - Preview changes before applying
 
 5. **Command palette integration**
-   - "Canvas Roots: Look up place" command
+   - "Charted Roots: Look up place" command
    - Creates new place note from lookup
    - Accessible outside Create Place modal
 
@@ -64,7 +64,7 @@ Add place lookup directly to Canvas Roots plugin for seamless integration:
 - ✅ No external HTML files needed
 - ✅ API key management in plugin settings
 - ✅ Direct integration with place creation workflow
-- ✅ Can leverage existing Canvas Roots services
+- ✅ Can leverage existing Charted Roots services
 - ✅ Better error handling and user feedback
 
 ### Web Clipper Templates (Optional Supplement)
@@ -806,7 +806,7 @@ private async createPlaceFromLookup(result: PlaceLookupResult): Promise<void> {
 }
 ```
 
-### 6. Canvas Roots Property Mapping
+### 6. Charted Roots Property Mapping
 
 When creating place notes from lookup results, the following properties should be set:
 
@@ -880,7 +880,7 @@ Springfield, Sangamon County, Illinois, USA
 8. Add any additional details and create place
 
 **From Command Palette:**
-1. Run "Canvas Roots: Look up place" command
+1. Run "Charted Roots: Look up place" command
 2. Enter place name and search
 3. Select result
 4. Place note created automatically and opened
@@ -1066,7 +1066,7 @@ Create new wiki page: **Place Lookup**
 
 1. **API key distribution**: How to handle sources requiring authentication?
    - Option A: User provides their own keys
-   - Option B: Canvas Roots provides keys (requires backend service)
+   - Option B: Charted Roots provides keys (requires backend service)
    - **Recommendation**: Option A for Phase 1
 
 2. **Caching strategy**: Should we cache API responses?

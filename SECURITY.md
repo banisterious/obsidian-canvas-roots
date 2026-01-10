@@ -13,7 +13,7 @@ Currently, security updates are provided for the latest release version only.
 
 ### Nature of Data Stored
 
-Canvas Roots handles **highly sensitive personally identifiable information (PII)** by design, including:
+Charted Roots handles **highly sensitive personally identifiable information (PII)** by design, including:
 
 - **Full names** of individuals and family members
 - **Birth and death dates**
@@ -156,7 +156,7 @@ Canvas Roots handles **highly sensitive personally identifiable information (PII
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Canvas Roots, please report it by:
+If you discover a security vulnerability in Charted Roots, please report it by:
 
 1. **DO NOT** open a public GitHub issue for security vulnerabilities
 2. Email the maintainer directly at: [Check GitHub profile or package.json]
@@ -213,7 +213,7 @@ If you suspect your vault containing family data has been compromised:
 
 ## Privacy and Obfuscation Features
 
-Canvas Roots includes privacy protection capabilities designed to protect PII:
+Charted Roots includes privacy protection capabilities designed to protect PII:
 
 ### Living Person Protection
 
@@ -302,7 +302,7 @@ private_fields:
 
 ### Privacy Feature Discoverability
 
-Canvas Roots helps users discover privacy features:
+Charted Roots helps users discover privacy features:
 
 - **Import notification**: After importing data with potential living persons, a notice offers to configure privacy settings
 - **Export warning**: When privacy protection is disabled, the export preview shows how many living persons will be exported with full details
@@ -321,7 +321,7 @@ Additional planned improvements:
 
 ## Acknowledgments
 
-We take the security and privacy of genealogical data seriously and appreciate security researchers and privacy advocates who help keep Canvas Roots secure.
+We take the security and privacy of genealogical data seriously and appreciate security researchers and privacy advocates who help keep Charted Roots secure.
 
 ---
 

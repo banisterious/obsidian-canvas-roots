@@ -39,12 +39,12 @@ export class MigrationNoticeView extends ItemView {
 		const version = this.plugin.manifest.version;
 		// Check for 0.18.9+ first (nested properties migration)
 		if (this.migrationType === 'nested-properties') {
-			return 'Canvas Roots v0.18.9';
+			return 'Charted Roots v0.18.9';
 		}
 		if (version.startsWith('0.18')) {
-			return 'Canvas Roots v0.18.0';
+			return 'Charted Roots v0.18.0';
 		}
-		return 'Canvas Roots v0.17.0';
+		return 'Charted Roots v0.17.0';
 	}
 
 	getIcon(): string {

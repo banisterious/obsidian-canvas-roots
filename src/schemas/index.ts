@@ -1,5 +1,5 @@
 /**
- * Schema validation module for Canvas Roots
+ * Schema validation module for Charted Roots
  */
 
 export * from './types/schema-types';

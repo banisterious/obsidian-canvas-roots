@@ -133,7 +133,7 @@ export class SourceImageWizardModal extends Modal {
 		super(app);
 		this.plugin = plugin;
 		this.sourceService = new SourceService(app, plugin.settings);
-		this.sourceNotesFolder = plugin.settings.sourcesFolder || 'Canvas Roots/Sources';
+		this.sourceNotesFolder = plugin.settings.sourcesFolder || 'Charted Roots/Sources';
 	}
 
 	onOpen(): void {
@@ -228,7 +228,7 @@ export class SourceImageWizardModal extends Modal {
 			.setName('Folder')
 			.setDesc('Select the vault folder containing your source images')
 			.addText((text) => {
-				text.setPlaceholder('Canvas Roots/Sources/Media').setValue(this.selectedFolder);
+				text.setPlaceholder('Charted Roots/Sources/Media').setValue(this.selectedFolder);
 
 				// Add folder autocomplete with callback
 				new FolderSuggest(this.app, text, (value) => {
@@ -739,7 +739,7 @@ export class SourceImageWizardModal extends Modal {
 			.setName('Source notes folder')
 			.setDesc('Where to create source notes')
 			.addText((text) => {
-				text.setPlaceholder('Canvas Roots/Sources').setValue(this.sourceNotesFolder);
+				text.setPlaceholder('Charted Roots/Sources').setValue(this.sourceNotesFolder);
 				new FolderSuggest(this.app, text);
 				text.onChange((value) => {
 					this.sourceNotesFolder = value;

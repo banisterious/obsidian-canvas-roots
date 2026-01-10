@@ -1,7 +1,7 @@
 # Plan: Romantic Relationship Label Preference (Issue #167)
 
 - **Status:** Planned
-- **GitHub Issue:** [#167](https://github.com/banisterious/obsidian-canvas-roots/issues/167)
+- **GitHub Issue:** [#167](https://github.com/banisterious/obsidian-charted-roots/issues/167)
 
 ---
 

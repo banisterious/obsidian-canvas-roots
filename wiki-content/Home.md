@@ -1,8 +1,8 @@
-# Welcome to Canvas Roots
+# Welcome to Charted Roots
 
 **Research, document, and visualize lineages in Obsidian—whether historical or fictional.**
 
-Canvas Roots transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees. Whether you're a genealogist tracing real ancestors, a novelist mapping fictional dynasties, or a researcher documenting historical figures—store your research in plain text, generate visual trees on demand, and explore your ancestry through interactive charts and maps.
+Charted Roots transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees. Whether you're a genealogist tracing real ancestors, a novelist mapping fictional dynasties, or a researcher documenting historical figures—store your research in plain text, generate visual trees on demand, and explore your ancestry through interactive charts and maps.
 
 ---
 
@@ -125,9 +125,9 @@ Tools for novelists and world-builders working with fictional genealogies.
 [Explore world-building features](World-Building)
 
 ### Customization
-Adapt Canvas Roots to your existing data structure and terminology.
+Adapt Charted Roots to your existing data structure and terminology.
 
-- **Property aliases** - Map your custom frontmatter property names to Canvas Roots fields
+- **Property aliases** - Map your custom frontmatter property names to Charted Roots fields
 - **Value aliases** - Map custom values (gender, event types, place categories)
 - **Type managers** - Customize event types, source types, organization types, and more
 - **Style Settings** - Customize colors via the Style Settings plugin
@@ -169,8 +169,8 @@ Adapt Canvas Roots to your existing data structure and terminology.
 
 ## Community & Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/banisterious/obsidian-canvas-roots/issues)
-- **Releases**: [Version history and downloads](https://github.com/banisterious/obsidian-canvas-roots/releases)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/banisterious/obsidian-charted-roots/issues)
+- **Releases**: [Version history and downloads](https://github.com/banisterious/obsidian-charted-roots/releases)
 - **Roadmap**: [Planned features](Roadmap)
 
 ---

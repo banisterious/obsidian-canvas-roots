@@ -110,7 +110,7 @@ export const DEFAULT_PLACE_GENERATOR_OPTIONS: PlaceGeneratorOptions = {
 	scanEventNotes: true,
 	updateReferences: true,
 	parseHierarchy: true,
-	placesFolder: 'Canvas Roots/Places',
+	placesFolder: 'Charted Roots/Places',
 	dryRun: true
 };
 

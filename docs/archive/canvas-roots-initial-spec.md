@@ -1,13 +1,13 @@
-# Canvas Roots Plugin Specification
+# Charted Roots Plugin Specification
 
 1. Plugin Overview
 
-- Plugin Name: Canvas Roots
+- Plugin Name: Charted Roots
 - Goal: To automate the creation and layout of complex family trees within an Obsidian Canvas, using structured note data as the source, driven by a powerful D3.js-based layout algorithm.
 - Key Differentiator: It uses the D3 layout engine for positioning, but renders the output as native, linked Obsidian Canvas nodes and edges, allowing for full user customization and contextual linking.
 - Core Workflow: User inputs data into person notes → User runs a command on a blank or existing Canvas → Plugin calculates D3 coordinates → Plugin writes the structured data to the Canvas JSON file.
 
-2. Data Model: The Canvas Roots Schema
+2. Data Model: The Charted Roots Schema
 
 The plugin must primarily source data from the Obsidian note's YAML frontmatter or inline fields (preferred for DataView compatibility).
 
@@ -37,7 +37,7 @@ The plugin will use a command to generate the family tree structure directly int
 
 3.1 Command and Input
 
-- Command: Canvas Roots: Generate Tree for Current Note
+- Command: Charted Roots: Generate Tree for Current Note
 - Action: The command is triggered while viewing a Person's note (the "Root Person").
 
 3.2 The Rendering Process
@@ -48,7 +48,7 @@ The plugin will use a command to generate the family tree structure directly int
   - The plugin reads the existing Canvas file contents (JSON).
   - For every person, it generates a new Canvas Node ("type": "file") at the calculated D3 position, linking the node to the person's Markdown file.
   - It generates Canvas Edges to represent all parent-child and spouse relationships.
-- Relayout Command: A secondary command (Canvas Roots: Re-Layout Current Canvas) must exist to re-run the layout calculation on existing Canvas nodes. This allows the user to click the button to snap nodes back into the D3-calculated structure after manual rearrangement.
+- Relayout Command: A secondary command (Charted Roots: Re-Layout Current Canvas) must exist to re-run the layout calculation on existing Canvas nodes. This allows the user to click the button to snap nodes back into the D3-calculated structure after manual rearrangement.
 
 4. Technical Dependencies & Canvas Implementation
 

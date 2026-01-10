@@ -1,5 +1,5 @@
 /**
- * Compression utilities for Canvas Roots
+ * Compression utilities for Charted Roots
  *
  * Handles gzip decompression for .gramps files and other compressed formats.
  */

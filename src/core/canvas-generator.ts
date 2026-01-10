@@ -75,11 +75,11 @@ interface CanvasEdge {
 }
 
 /**
- * Canvas Roots generation metadata stored in canvas frontmatter
+ * Charted Roots generation metadata stored in canvas frontmatter
  */
 export interface CanvasRootsMetadata {
-	/** Plugin identifier */
-	plugin: 'canvas-roots';
+	/** Plugin identifier (charted-roots or legacy canvas-roots) */
+	plugin: 'charted-roots' | 'canvas-roots';
 
 	/** Tree generation parameters */
 	generation: {

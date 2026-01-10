@@ -1,5 +1,5 @@
 /**
- * GEDCOM Importer v2 for Canvas Roots
+ * GEDCOM Importer v2 for Charted Roots
  *
  * Enhanced importer that creates event notes, source notes, and place notes
  * in addition to person notes.

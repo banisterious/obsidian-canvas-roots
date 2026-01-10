@@ -378,7 +378,7 @@ Add a category selector to the Report Generator modal:
 
 Same as existing reports:
 - Statistics Dashboard → Reports section → Generate
-- Command palette: "Canvas Roots: Generate Report"
+- Command palette: "Charted Roots: Generate Report"
 
 ---
 
@@ -512,7 +512,7 @@ From the PDF Report Export styling guide:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Source Summary Report                              Canvas Roots │
+│  Source Summary Report                              Charted Roots │
 │  ─────────────────────────────────────────────────────────────  │
 │                                                                  │
 │                      SOURCE SUMMARY                              │
@@ -576,7 +576,7 @@ From the PDF Report Export styling guide:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Timeline Report                                    Canvas Roots │
+│  Timeline Report                                    Charted Roots │
 │  ─────────────────────────────────────────────────────────────  │
 │                                                                  │
 │                      FAMILY TIMELINE                             │
@@ -661,7 +661,7 @@ function buildTimelineEntry(event: TimelineEvent): Content {
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Place Summary Report                               Canvas Roots │
+│  Place Summary Report                               Charted Roots │
 │  ─────────────────────────────────────────────────────────────  │
 │                                                                  │
 │                      PLACE SUMMARY                               │

@@ -3,15 +3,15 @@
 Planning document for comprehensive privacy protection of sensitive genealogical data during exports and display.
 
 - **Status:** Planning
-- **GitHub Issue:** [#95](https://github.com/banisterious/obsidian-canvas-roots/issues/95)
+- **GitHub Issue:** [#95](https://github.com/banisterious/obsidian-charted-roots/issues/95)
 - **Sub-issues:**
-  - [#96](https://github.com/banisterious/obsidian-canvas-roots/issues/96) Phase 1: Sensitive field redaction
-  - [#97](https://github.com/banisterious/obsidian-canvas-roots/issues/97) Phase 2: Manual living status override (`cr_living`)
-  - [#98](https://github.com/banisterious/obsidian-canvas-roots/issues/98) Phase 3: Underscore-prefix privacy convention
-  - [#99](https://github.com/banisterious/obsidian-canvas-roots/issues/99) Phases 4-5: Deadname protection & export warnings
-  - [#100](https://github.com/banisterious/obsidian-canvas-roots/issues/100) Phase 6: Privacy feature discoverability
-  - [#101](https://github.com/banisterious/obsidian-canvas-roots/issues/101) Phase 7: Pronouns field support
-  - [#102](https://github.com/banisterious/obsidian-canvas-roots/issues/102) Phase 8: Privacy-aware canvas generation
+  - [#96](https://github.com/banisterious/obsidian-charted-roots/issues/96) Phase 1: Sensitive field redaction
+  - [#97](https://github.com/banisterious/obsidian-charted-roots/issues/97) Phase 2: Manual living status override (`cr_living`)
+  - [#98](https://github.com/banisterious/obsidian-charted-roots/issues/98) Phase 3: Underscore-prefix privacy convention
+  - [#99](https://github.com/banisterious/obsidian-charted-roots/issues/99) Phases 4-5: Deadname protection & export warnings
+  - [#100](https://github.com/banisterious/obsidian-charted-roots/issues/100) Phase 6: Privacy feature discoverability
+  - [#101](https://github.com/banisterious/obsidian-charted-roots/issues/101) Phase 7: Pronouns field support
+  - [#102](https://github.com/banisterious/obsidian-charted-roots/issues/102) Phase 8: Privacy-aware canvas generation
 - **Priority:** Medium
 - **Created:** 2026-01-02
 - **Updated:** 2026-01-02
@@ -20,7 +20,7 @@ Planning document for comprehensive privacy protection of sensitive genealogical
 
 ## Overview
 
-Genealogical data frequently contains sensitive personal information — government ID numbers, medical notes, previous names, and details about living persons. While Canvas Roots has solid foundational privacy features for living person protection in exports, several gaps exist between the documented roadmap and current implementation.
+Genealogical data frequently contains sensitive personal information — government ID numbers, medical notes, previous names, and details about living persons. While Charted Roots has solid foundational privacy features for living person protection in exports, several gaps exist between the documented roadmap and current implementation.
 
 This document covers:
 1. Wiring up existing but unused sensitive field infrastructure
@@ -90,7 +90,7 @@ export const SENSITIVE_FIELDS = new Set([
 
 ## Proposed Implementation
 
-### Phase 1: Sensitive Field Redaction (P1) — [#96](https://github.com/banisterious/obsidian-canvas-roots/issues/96)
+### Phase 1: Sensitive Field Redaction (P1) — [#96](https://github.com/banisterious/obsidian-charted-roots/issues/96)
 
 Wire up the existing `SENSITIVE_FIELDS` constant to all exporters.
 
@@ -143,7 +143,7 @@ Wire up the existing `SENSITIVE_FIELDS` constant to all exporters.
 
 ---
 
-### Phase 2: Manual Living Status Override (P2) — [#97](https://github.com/banisterious/obsidian-canvas-roots/issues/97) ✅ COMPLETE
+### Phase 2: Manual Living Status Override (P2) — [#97](https://github.com/banisterious/obsidian-charted-roots/issues/97) ✅ COMPLETE
 
 Add `cr_living` frontmatter property to manually override automatic detection.
 
@@ -186,7 +186,7 @@ Add `cr_living` frontmatter property to manually override automatic detection.
 
 ---
 
-### Phase 3: Explicit Private Fields List (P2) — [#98](https://github.com/banisterious/obsidian-canvas-roots/issues/98)
+### Phase 3: Explicit Private Fields List (P2) — [#98](https://github.com/banisterious/obsidian-charted-roots/issues/98)
 
 Use an explicit `private_fields` frontmatter property to mark fields as private.
 
@@ -269,7 +269,7 @@ private_fields:
 
 ---
 
-### Phase 4: Deadname Protection (P2) — [#99](https://github.com/banisterious/obsidian-canvas-roots/issues/99)
+### Phase 4: Deadname Protection (P2) — [#99](https://github.com/banisterious/obsidian-charted-roots/issues/99)
 
 Protection for `previous_names` field when marked as private.
 
@@ -303,7 +303,7 @@ private_fields:
 
 ---
 
-### Phase 5: Export Warnings for Private Fields (P2) — [#99](https://github.com/banisterious/obsidian-canvas-roots/issues/99)
+### Phase 5: Export Warnings for Private Fields (P2) — [#99](https://github.com/banisterious/obsidian-charted-roots/issues/99)
 
 Show confirmation dialog when export would include fields marked as private.
 
@@ -374,7 +374,7 @@ Show confirmation dialog when export would include fields marked as private.
 
 ---
 
-### Phase 6: Privacy Feature Discoverability (P2) — [#100](https://github.com/banisterious/obsidian-canvas-roots/issues/100)
+### Phase 6: Privacy Feature Discoverability (P2) — [#100](https://github.com/banisterious/obsidian-charted-roots/issues/100)
 
 Help users discover privacy features before accidentally sharing sensitive data.
 
@@ -384,7 +384,7 @@ Help users discover privacy features before accidentally sharing sensitive data.
    ```
    📋 Privacy Protection Available
 
-   Canvas Roots detected X people who may be living.
+   Charted Roots detected X people who may be living.
    Privacy protection can hide or anonymize living persons in exports.
 
    [Configure Privacy Settings] [Remind Me Later] [Don't Show Again]
@@ -409,7 +409,7 @@ Help users discover privacy features before accidentally sharing sensitive data.
 
 ---
 
-### Phase 7: Pronouns Field (P3) — [#101](https://github.com/banisterious/obsidian-canvas-roots/issues/101) ✅ COMPLETE
+### Phase 7: Pronouns Field (P3) — [#101](https://github.com/banisterious/obsidian-charted-roots/issues/101) ✅ COMPLETE
 
 Add `pronouns` property support for respectful communication.
 
@@ -436,7 +436,7 @@ Add `pronouns` property support for respectful communication.
 
 ---
 
-### Phase 8: Privacy-Aware Canvas Generation (P3) — [#102](https://github.com/banisterious/obsidian-canvas-roots/issues/102) ✅ COMPLETE
+### Phase 8: Privacy-Aware Canvas Generation (P3) — [#102](https://github.com/banisterious/obsidian-charted-roots/issues/102) ✅ COMPLETE
 
 Add privacy options to canvas tree generation.
 

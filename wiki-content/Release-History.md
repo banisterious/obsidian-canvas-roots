@@ -1,8 +1,8 @@
 # Release History
 
-This document contains detailed implementation documentation for completed Canvas Roots features. For the current roadmap of planned features, see [Roadmap](Roadmap).
+This document contains detailed implementation documentation for completed Charted Roots features. For the current roadmap of planned features, see [Roadmap](Roadmap).
 
-For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub Releases](https://github.com/banisterious/obsidian-canvas-roots/releases).
+For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub Releases](https://github.com/banisterious/obsidian-charted-roots/releases).
 
 ---
 
@@ -96,7 +96,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 
 Automatically resolve `[[Person Name]]` wikilinks in relationship fields to `cr_id` values, creating family graph relationships without requiring manual `_id` field population.
 
-**GitHub Issue:** [#104](https://github.com/banisterious/obsidian-canvas-roots/issues/104)
+**GitHub Issue:** [#104](https://github.com/banisterious/obsidian-charted-roots/issues/104)
 
 **Features Implemented:**
 
@@ -142,7 +142,7 @@ father: "[[John Smith]]"
 
 **Documentation:**
 
-- [Wikilink Resolution Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/wikilink-to-crid-resolution.md)
+- [Wikilink Resolution Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/wikilink-to-crid-resolution.md)
 
 ---
 
@@ -150,7 +150,7 @@ father: "[[John Smith]]"
 
 Automatic detection and preprocessing of MyHeritage GEDCOM exports to fix vendor-specific formatting issues.
 
-**GitHub Issue:** [#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)
+**GitHub Issue:** [#144](https://github.com/banisterious/obsidian-charted-roots/issues/144)
 
 **Features Implemented:**
 
@@ -186,7 +186,7 @@ Automatic detection and preprocessing of MyHeritage GEDCOM exports to fix vendor
 
 **Documentation:**
 
-- [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/myheritage-gedcom-compatibility.md)
+- [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/myheritage-gedcom-compatibility.md)
 
 ---
 
@@ -194,7 +194,7 @@ Automatic detection and preprocessing of MyHeritage GEDCOM exports to fix vendor
 
 Create placeholder person notes without names, filling in details later as research progresses.
 
-**GitHub Issue:** [#140](https://github.com/banisterious/obsidian-canvas-roots/issues/140)
+**GitHub Issue:** [#140](https://github.com/banisterious/obsidian-charted-roots/issues/140)
 
 **Features Implemented:**
 
@@ -218,7 +218,7 @@ Genealogists often know relationships before identities. For example, "John's fa
 
 **Documentation:**
 
-- [Optional Person Names Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/optional-person-names.md)
+- [Optional Person Names Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/optional-person-names.md)
 
 ---
 
@@ -226,7 +226,7 @@ Genealogists often know relationships before identities. For example, "John's fa
 
 Opt-in DMS (degrees, minutes, seconds) parsing for coordinate input in place creation.
 
-**GitHub Issue:** [#121](https://github.com/banisterious/obsidian-canvas-roots/issues/121)
+**GitHub Issue:** [#121](https://github.com/banisterious/obsidian-charted-roots/issues/121)
 
 **Features Implemented:**
 
@@ -253,7 +253,7 @@ Opt-in DMS (degrees, minutes, seconds) parsing for coordinate input in place cre
 
 **Documentation:**
 
-- [DMS Coordinate Conversion Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/dms-coordinate-conversion.md)
+- [DMS Coordinate Conversion Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/dms-coordinate-conversion.md)
 
 ---
 
@@ -261,7 +261,7 @@ Opt-in DMS (degrees, minutes, seconds) parsing for coordinate input in place cre
 
 Lightweight DNA match tracking for genetic genealogy workflows.
 
-**GitHub Issue:** [#126](https://github.com/banisterious/obsidian-canvas-roots/issues/126)
+**GitHub Issue:** [#126](https://github.com/banisterious/obsidian-charted-roots/issues/126)
 
 **Features Implemented:**
 
@@ -297,7 +297,7 @@ Lightweight DNA match tracking for genetic genealogy workflows.
 
 **Future Phases:**
 
-Phase 2-4 (planned) will add UI support for DNA Match person subtype, DNA relationship type, and visualization/reports. See [DNA Match Tracking Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/dna-match-tracking.md) for details.
+Phase 2-4 (planned) will add UI support for DNA Match person subtype, DNA relationship type, and visualization/reports. See [DNA Match Tracking Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/dna-match-tracking.md) for details.
 
 ---
 
@@ -361,7 +361,7 @@ The toggle buttons filter at three levels:
 
 - [Web Clipper Integration](Web-Clipper-Integration) — User guide with setup and workflow
 - [Data Entry](Data-Entry#clipping-from-web-sources) — Comparison with other data entry methods
-- [Web Clipper Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/web-clipper-integration.md) — Implementation details
+- [Web Clipper Integration Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/web-clipper-integration.md) — Implementation details
 
 **Future Phases:**
 
@@ -376,7 +376,7 @@ Phase 2 and beyond (planned):
 
 Dedicated UI for managing staged imports with batch organization, duplicate detection, and promotion workflow.
 
-**GitHub Issue:** [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137)
+**GitHub Issue:** [#137](https://github.com/banisterious/obsidian-charted-roots/issues/137)
 
 **Features Implemented:**
 
@@ -435,7 +435,7 @@ Default thresholds: minConfidence=60, minNameSimilarity=70, maxYearDifference=5
 
 Comprehensive privacy protection for sensitive genealogical data during exports and canvas generation.
 
-**GitHub Issue:** [#95](https://github.com/banisterious/obsidian-canvas-roots/issues/95)
+**GitHub Issue:** [#95](https://github.com/banisterious/obsidian-charted-roots/issues/95)
 
 **Features Implemented:**
 
@@ -472,7 +472,7 @@ Comprehensive privacy protection for sensitive genealogical data during exports 
 
 **Documentation:**
 - [Privacy & Security](Privacy-And-Security) — User guide
-- [SECURITY.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/SECURITY.md) — Security policy
+- [SECURITY.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/SECURITY.md) — Security policy
 - [Export Privacy Planning](../docs/planning/archive/export-privacy-sensitive-data.md) — Implementation details
 
 ---
@@ -552,16 +552,16 @@ Import notes attached to Gramps entities during Gramps XML/.gpkg import.
 | Note naming | Generated from type + first referencing entity (e.g., "Research on John Smith") |
 | Entity linking | Entity notes sections use wikilinks instead of embedded content |
 | Create Note modal | Manual note creation with note type, title, privacy toggle, linked entities |
-| Context menu | "New Canvas Roots note" in Notes folder right-click menu |
-| Command palette | "Canvas Roots: Create note" command |
+| Context menu | "New Charted Roots note" in Notes folder right-click menu |
+| Command palette | "Charted Roots: Create note" command |
 | Bases template | Notes base template with 11 views |
 
 **Deferred Phases:**
 
-Phases 3 (Family Entity) and 5 (Export & Sync) are deferred indefinitely pending user demand. See [planning doc](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/gramps-notes-family-integration.md) for rationale.
+Phases 3 (Family Entity) and 5 (Export & Sync) are deferred indefinitely pending user demand. See [planning doc](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/gramps-notes-family-integration.md) for rationale.
 
 **Documentation:**
-- See [Gramps Notes & Family Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/gramps-notes-family-integration.md) for detailed specifications
+- See [Gramps Notes & Family Integration Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/gramps-notes-family-integration.md) for detailed specifications
 
 ---
 
@@ -601,7 +601,7 @@ Add events and sources sections to the Edit Person modal, allowing users to mana
 | Children display | Fixed children displaying as cr_ids instead of names (#86) |
 
 **Documentation:**
-- See [Edit Person Events & Sources Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/edit-person-events-sources.md) for detailed specifications
+- See [Edit Person Events & Sources Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/edit-person-events-sources.md) for detailed specifications
 
 ---
 
@@ -641,7 +641,7 @@ User experience refinements for the Post-Import Cleanup Wizard, improving access
 | Schema Integration | Deferred | Depends on schema validation feature |
 
 **Documentation:**
-- See [Cleanup Wizard Phase 4 Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/cleanup-wizard-phase4.md) for detailed specifications
+- See [Cleanup Wizard Phase 4 Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/cleanup-wizard-phase4.md) for detailed specifications
 
 ---
 
@@ -676,7 +676,7 @@ This caused duplicate properties to appear in YAML when both systems wrote to th
 - Future breaking change to remove `child` read support planned
 
 **Documentation:**
-- See [Deprecate Child Property Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/deprecate-child-property.md) for detailed specifications
+- See [Deprecate Child Property Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/deprecate-child-property.md) for detailed specifications
 
 ---
 
@@ -702,7 +702,7 @@ Streamlined custom map creation and place positioning, eliminating manual coordi
 
 **Entry Points:**
 - Control Center → Maps → "Create map wizard"
-- Command palette: "Canvas Roots: Create custom map"
+- Command palette: "Charted Roots: Create custom map"
 - Context menu on image files: "Use as custom map"
 
 **Technical Notes:**
@@ -711,7 +711,7 @@ Streamlined custom map creation and place positioning, eliminating manual coordi
 - Coordinates properly convert between DOM (y=0 at top) and Leaflet Simple CRS (y=0 at bottom)
 
 **Documentation:**
-- See [Custom Map Authoring Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/custom-map-authoring.md) for detailed specifications
+- See [Custom Map Authoring Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/custom-map-authoring.md) for detailed specifications
 
 ---
 
@@ -725,7 +725,7 @@ Two plugin features used nested YAML structures incompatible with Obsidian's pro
 - `sourced_facts` (Evidence Tracking) - nested objects with source arrays
 - `events` (Life Events) - inline array of event objects
 
-This caused "Type mismatch" warnings and risked data corruption if users clicked "update" in the property panel. ([GitHub Issue #52](https://github.com/banisterious/obsidian-canvas-roots/issues/52))
+This caused "Type mismatch" warnings and risked data corruption if users clicked "update" in the property panel. ([GitHub Issue #52](https://github.com/banisterious/obsidian-charted-roots/issues/52))
 
 **Solution:**
 
@@ -829,7 +829,7 @@ Opt-in gender-neutral parent relationship support allowing users to represent di
 
 Users with nonbinary parents or those who prefer gender-neutral terminology had no way to represent these relationships. The plugin only supported gendered parent fields (father/mother), which doesn't accommodate all family structures.
 
-**User Request:** "What if one or both parents are nonbinary? Could you add a 'Parent' option to father/mother?" ([GitHub Issue #63](https://github.com/banisterious/obsidian-canvas-roots/issues/63))
+**User Request:** "What if one or both parents are nonbinary? Could you add a 'Parent' option to father/mother?" ([GitHub Issue #63](https://github.com/banisterious/obsidian-charted-roots/issues/63))
 
 **Solution:**
 
@@ -844,7 +844,7 @@ A complete opt-in gender-neutral parent system that coexists with traditional re
 
 **2. Schema Changes**
 - New `parents` property (wikilinks, can be array for multiple parents)
-- New `parents_id` property (Canvas Roots IDs, dual storage pattern)
+- New `parents_id` property (Charted Roots IDs, dual storage pattern)
 - Independent of `father`/`mother` — users can use either or both
 - Supports mixed usage for blended families or migration scenarios
 
@@ -942,19 +942,19 @@ parents_id: ["I0045"]         # For reliable graph traversal
 - Deletion detection for relationship cleanup
 
 **Planning Documentation:**
-- See [planning document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/inclusive-parent-relationships.md) for detailed specifications and design decisions
+- See [planning document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/inclusive-parent-relationships.md) for detailed specifications and design decisions
 
 ---
 
 ### Media Upload and Management Enhancement (v0.18.6)
 
-Comprehensive media upload and management system allowing users to upload files directly from Canvas Roots and link them to entities without manual file management.
+Comprehensive media upload and management system allowing users to upload files directly from Charted Roots and link them to entities without manual file management.
 
 **Problem Solved:**
 
 Users could link existing vault files to entities (people, places, events, etc.), but had no way to upload new files directly from the plugin. This required breaking the workflow to manually add files to the vault before linking them, creating friction when attaching scanned documents, photos, or certificates to research.
 
-**User Request:** "Can't link the Birth Certificate or picture" ([GitHub Issue #60](https://github.com/banisterious/obsidian-canvas-roots/issues/60))
+**User Request:** "Can't link the Birth Certificate or picture" ([GitHub Issue #60](https://github.com/banisterious/obsidian-charted-roots/issues/60))
 
 **Solution:**
 
@@ -1058,7 +1058,7 @@ Auto-rename collision handling:
 - Allows quick bulk uploads without manual renaming
 
 **Planning Documentation:**
-- See [archived planning document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archived/media-upload-enhancement.md) for detailed specifications
+- See [archived planning document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archived/media-upload-enhancement.md) for detailed specifications
 
 ---
 
@@ -1111,7 +1111,7 @@ All timeline export capabilities are now unified in **Statistics & Reports → R
 The Events tab Export card now displays a notice directing users to the Reports wizard. The Export card will be removed in a future release.
 
 **Documentation:**
-- See [Timeline Export Consolidation Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/timeline-export-consolidation.md) for detailed specifications
+- See [Timeline Export Consolidation Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/timeline-export-consolidation.md) for detailed specifications
 
 ---
 
@@ -1193,14 +1193,14 @@ Added `nickname` as a first-class frontmatter property:
 
 | Entry Point | Action |
 |-------------|--------|
-| Command: `Canvas Roots: Create family wizard` | Opens Family Creation Wizard |
+| Command: `Charted Roots: Create family wizard` | Opens Family Creation Wizard |
 | Dashboard → Create Family tile | Opens Family Creation Wizard |
 | People tab → Actions → Create family | Opens Family Creation Wizard |
 | People folder context menu → Create family | Opens wizard with folder pre-selected |
 | People folder context menu → Create person | Opens CreatePersonModal with folder pre-selected |
 
 **Documentation:**
-- [Create Person Enhancements Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/create-person-enhancements.md) - Detailed specifications
+- [Create Person Enhancements Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/create-person-enhancements.md) - Detailed specifications
 - [Data Entry](Data-Entry) - User documentation
 
 ---
@@ -1307,7 +1307,7 @@ The research level selector appears in the Edit Person modal when `trackFactSour
 | `src/gramps/gramps-parser.ts` | Import parsing |
 | `src/constants/base-template.ts` | Bases views |
 
-See [Research Level Property Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/research-level-property.md) for implementation details.
+See [Research Level Property Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/research-level-property.md) for implementation details.
 
 ---
 
@@ -1409,7 +1409,7 @@ A 10-step guided wizard that consolidates post-import data quality operations in
 **Entry Points:**
 - Import Wizard results: "Run Cleanup Wizard" button
 - Control Center > Data Quality > Quick Start card
-- Command palette: "Canvas Roots: Post-Import Cleanup Wizard"
+- Command palette: "Charted Roots: Post-Import Cleanup Wizard"
 
 **Technical Notes:**
 - `CleanupWizardModal` orchestrates the 10-step flow
@@ -1423,7 +1423,7 @@ A 10-step guided wizard that consolidates post-import data quality operations in
 | `src/ui/modals/cleanup-wizard-modal.ts` | Main wizard modal with step navigation |
 | `styles/cleanup-wizard.css` | Wizard-specific styling |
 
-See [Post-Import Cleanup Wizard Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/post-import-cleanup-wizard.md) for implementation details.
+See [Post-Import Cleanup Wizard Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/post-import-cleanup-wizard.md) for implementation details.
 
 ---
 
@@ -1486,7 +1486,7 @@ sources:
 
 **Breaking Change:** The indexed format (`source`, `source_2`, etc.) is no longer parsed. Users with legacy notes should run the Cleanup Wizard Step 6 to migrate.
 
-See [Source Array Migration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/source-array-migration.md) for implementation details.
+See [Source Array Migration Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/source-array-migration.md) for implementation details.
 
 ---
 
@@ -1570,7 +1570,7 @@ The previous import/export experience was fragmented:
 | `src/ui/import-wizard-modal.ts` | 7-step import wizard |
 | `src/ui/export-wizard-modal.ts` | 6-step export wizard |
 
-See [Import/Export Hub Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/import-export-hub-plan.md) for implementation details.
+See [Import/Export Hub Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/import-export-hub-plan.md) for implementation details.
 
 ---
 
@@ -1609,7 +1609,7 @@ The fix increases the source canvas resolution (4× instead of 2×) to compensat
 | `src/trees/services/visual-tree-svg-renderer.ts` | Changed scale from 2 to 4 |
 | `src/reports/services/pdf-report-renderer.ts` | Removed height from image content |
 
-See [Visual Tree PDF Enhancements Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/visual-tree-pdf-enhancements.md) for technical analysis.
+See [Visual Tree PDF Enhancements Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/visual-tree-pdf-enhancements.md) for technical analysis.
 
 ---
 
@@ -1650,7 +1650,7 @@ Multi-step wizard interface for the Report Generator with improved UX, step-by-s
 | `src/reports/services/pdf-report-renderer.ts` | ODT generation support |
 | `styles/report-wizard.css` | Wizard styling with compact cards |
 
-See [Report Wizard Enhancements Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/report-wizard-enhancements.md) for implementation details.
+See [Report Wizard Enhancements Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/report-wizard-enhancements.md) for implementation details.
 
 ---
 
@@ -1702,16 +1702,16 @@ The unified tree wizard also supports ODT output:
 | `src/reports/services/pdf-report-renderer.ts` | ODT generation for reports |
 | `src/trees/ui/unified-tree-wizard-modal.ts` | ODT support in tree wizard |
 
-See [Report Generator ODT Export Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/report-generator-odt-export.md) for implementation details.
+See [Report Generator ODT Export Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/report-generator-odt-export.md) for implementation details.
 
 ---
 
 ### Calendarium Integration Phase 2 (v0.15.2)
 
-Display events with Calendarium `fc-*` date fields on Canvas Roots timelines, with calendar filtering support.
+Display events with Calendarium `fc-*` date fields on Charted Roots timelines, with calendar filtering support.
 
 **Problem Solved:**
-- Events using Calendarium's `fc-date` format weren't visible on Canvas Roots timelines
+- Events using Calendarium's `fc-date` format weren't visible on Charted Roots timelines
 - No way to filter timeline views by calendar system when mixing real and fictional dates
 - Timeline badges in People tab didn't show event counts
 
@@ -1986,7 +1986,7 @@ When importing a `.gpkg` file:
 | `src/dynamic-content/dynamic-content-service.ts` | Media gallery rendering and freeze logic |
 | `styles/dynamic-content.css` | Gallery grid, editable mode, frozen callout styles |
 
-See [Dynamic Note Content: Media Block](Dynamic-Note-Content#media-block) for usage documentation and [Universal Media Linking Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/universal-media-linking.md) for implementation details.
+See [Dynamic Note Content: Media Block](Dynamic-Note-Content#media-block) for usage documentation and [Universal Media Linking Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/universal-media-linking.md) for implementation details.
 
 ---
 
@@ -2058,7 +2058,7 @@ The Family Chart view produces superior visual output (orthogonal connectors, pr
 - `src/trees/ui/tree-generation-wizard.ts` (1500+ lines, replaced by unified wizard)
 - `src/trees/ui/visual-tree-wizard-modal.ts` (570+ lines, replaced by unified wizard)
 
-See [Canvas Trees](Visual-Trees) for user documentation and [Tree Visualization Overhaul Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/tree-visualization-overhaul.md) for implementation details.
+See [Canvas Trees](Visual-Trees) for user documentation and [Tree Visualization Overhaul Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/tree-visualization-overhaul.md) for implementation details.
 
 ---
 
@@ -2123,7 +2123,7 @@ Transform the Control Center's Status tab into a Dashboard with quick-action til
 - Dashboard styles in `styles/dashboard.css`
 - Vault Health section collapse state persisted in settings
 
-See [Control Center Dashboard Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/control-center-dashboard.md) for implementation details.
+See [Control Center Dashboard Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/control-center-dashboard.md) for implementation details.
 
 ---
 
@@ -2236,7 +2236,7 @@ The Report Generator modal now includes a category selector that groups all 13 r
 
 **Access Points:**
 - Statistics Dashboard → Reports section → Generate
-- Command palette: "Canvas Roots: Generate Report"
+- Command palette: "Charted Roots: Generate Report"
 
 **Technical Details:**
 - Each report type has a dedicated generator class in `src/reports/services/`
@@ -2244,7 +2244,7 @@ The Report Generator modal now includes a category selector that groups all 13 r
 - Report options stored in modal state and passed to generators
 - Same output options: Save to vault, Download as MD, Download as PDF
 
-See [Extended Report Types Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/extended-report-types.md) for implementation details.
+See [Extended Report Types Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/extended-report-types.md) for implementation details.
 
 ---
 
@@ -2263,7 +2263,7 @@ Export genealogical reports as professionally styled PDF documents, generated en
 |---------|-------------|
 | **All 7 report types** | Ahnentafel, Pedigree Chart, Descendant Chart, Register Report, Family Group Sheet, Individual Summary, Gaps Report |
 | **Page size options** | A4 or Letter |
-| **Optional cover page** | Title page with report name, subject, generation date, and Canvas Roots branding |
+| **Optional cover page** | Title page with report name, subject, generation date, and Charted Roots branding |
 | **Logo/crest support** | Add custom image to cover page (automatically resized for optimal file size) |
 | **100% local generation** | PDFs created entirely on device using bundled pdfmake library |
 | **Privacy-first design** | No data sent to any server; no internet connection required |
@@ -2281,7 +2281,7 @@ Export genealogical reports as professionally styled PDF documents, generated en
 - Subject name (e.g., "Ancestors of John Smith")
 - Decorative separator line
 - Generation date
-- "Canvas Roots for Obsidian" branding
+- "Charted Roots for Obsidian" branding
 - Optional logo/crest centered at top
 
 **Privacy & Security:**
@@ -2295,7 +2295,7 @@ Genealogical data is highly personal. PDF generation is designed with privacy as
 
 **Access Points:**
 - Statistics Dashboard → Reports section → Generate → Select "Download as PDF"
-- Command palette: "Canvas Roots: Open Statistics Dashboard"
+- Command palette: "Charted Roots: Open Statistics Dashboard"
 
 **Technical Details:**
 - Uses pdfmake library (~400KB) for document generation, lazy-loaded on first use
@@ -2401,7 +2401,7 @@ Right-click on a universe note to access:
 - Orphan detection shows entities referencing non-existent universe notes
 - New entities can link to universe notes via wikilink or use string values
 
-See [Universe Management Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/universe-management.md) for implementation details.
+See [Universe Management Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/universe-management.md) for implementation details.
 
 ---
 
@@ -2463,7 +2463,7 @@ With **Schema-aware** mode enabled, person notes in the "Sci-Fi Universe" with s
 - Builds on [Schema Validation](Release-History#schema-validation-v063) for custom enum detection
 - Uses existing Data Quality tab batch operation infrastructure
 
-See [Sex/Gender Identity Expansion Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/sex-gender-expansion.md) for Phase 4 implementation details.
+See [Sex/Gender Identity Expansion Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/sex-gender-expansion.md) for Phase 4 implementation details.
 
 ---
 
@@ -2511,7 +2511,7 @@ adoptive_mother_id: efg-123-hij-456
 
 **GEDCOM 5.5.1 Pedigree Types:**
 
-| PEDI Value | Meaning | Canvas Roots Field |
+| PEDI Value | Meaning | Charted Roots Field |
 |------------|---------|-------------------|
 | `birth` | Biological | `father_id`, `mother_id` |
 | `adop` | Adopted | `adoptive_father_id`, `adoptive_mother_id` |
@@ -2521,7 +2521,7 @@ adoptive_mother_id: efg-123-hij-456
 
 **Gramps XML Pedigree Types:**
 
-| mrel/frel Value | Meaning | Canvas Roots Field |
+| mrel/frel Value | Meaning | Charted Roots Field |
 |-----------------|---------|-------------------|
 | `Birth` | Biological | `father_id`, `mother_id` |
 | `Adopted` | Adopted | `adoptive_father_id`, `adoptive_mother_id` |
@@ -2531,7 +2531,7 @@ adoptive_mother_id: efg-123-hij-456
 
 **GEDCOM X Lineage Types:**
 
-| Lineage Type | Meaning | Canvas Roots Field |
+| Lineage Type | Meaning | Charted Roots Field |
 |--------------|---------|-------------------|
 | `BiologicalParent` | Biological | `father_id`, `mother_id` |
 | `AdoptiveParent` | Adopted | `adoptive_father_id`, `adoptive_mother_id` |
@@ -2561,7 +2561,7 @@ adoptive_mother_id: efg-123-hij-456
 - Full trees: Step/adoptive parents included by default, follow their connections
 - Both respect the include toggles in tree generation UI
 
-See [Step & Adoptive Parent Support Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/step-adoptive-parent-support.md) for implementation details.
+See [Step & Adoptive Parent Support Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/step-adoptive-parent-support.md) for implementation details.
 
 ---
 
@@ -2630,7 +2630,7 @@ Click any issue to expand and see affected records. Click a person chip to open 
 
 **Access Points:**
 - Control Center → Statistics tab → "Open Statistics Dashboard"
-- Command palette: "Canvas Roots: Open Statistics Dashboard"
+- Command palette: "Charted Roots: Open Statistics Dashboard"
 - Reports section in Statistics Dashboard
 
 See [Statistics & Reports](Statistics-And-Reports) for detailed usage documentation.
@@ -2692,7 +2692,7 @@ type: immediate
 | **Create Person modal** | "Include dynamic blocks" toggle |
 | **Import wizards** | "Include dynamic blocks" toggle in GEDCOM/Gramps/CSV import |
 | **Context menu** | Right-click person note → "Insert dynamic blocks" |
-| **Command palette** | "Canvas Roots: Insert dynamic blocks" |
+| **Command palette** | "Charted Roots: Insert dynamic blocks" |
 | **Bulk insert** | Right-click folder → "Insert dynamic blocks in folder" |
 
 **Technical Details:**
@@ -2710,7 +2710,7 @@ type: immediate
 
 ### Gramps Source Import (v0.12.6)
 
-Import source and citation records from Gramps XML files, creating Canvas Roots source notes with full metadata and linking citations to person/event notes.
+Import source and citation records from Gramps XML files, creating Charted Roots source notes with full metadata and linking citations to person/event notes.
 
 **Problem Solved:**
 - Gramps XML import supported people, places, and events, but source/citation records were not imported
@@ -2731,7 +2731,7 @@ Import source and citation records from Gramps XML files, creating Canvas Roots 
 
 **Field Mapping:**
 
-| Gramps Field | Canvas Roots Property |
+| Gramps Field | Charted Roots Property |
 |--------------|----------------------|
 | `<stitle>` | `title` |
 | `<sauthor>` | `author` |
@@ -2744,7 +2744,7 @@ Import source and citation records from Gramps XML files, creating Canvas Roots 
 
 **Confidence Scale Mapping:**
 
-| Gramps (0-4) | Meaning | Canvas Roots |
+| Gramps (0-4) | Meaning | Charted Roots |
 |--------------|---------|--------------|
 | 0 | Very Low | low |
 | 1 | Low | low |
@@ -2790,7 +2790,7 @@ Each toggle shows the count of records found in the file.
 - Builds citation-to-source mapping for linking to person/event notes
 - Source type inferred from title keywords (census, vital_record, church_record, etc.)
 
-See [Gramps Source Import Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/gramps-source-import.md) for full implementation details.
+See [Gramps Source Import Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/gramps-source-import.md) for full implementation details.
 
 ---
 
@@ -2859,14 +2859,14 @@ Extracts metadata from common genealogy image naming patterns:
 Integration with the [Calendarium](https://github.com/javalent/calendarium) plugin to import calendar definitions for fictional dates.
 
 **Problem Solved:**
-- Worldbuilders using Calendarium for fantasy calendar management had to manually recreate calendar definitions in Canvas Roots
+- Worldbuilders using Calendarium for fantasy calendar management had to manually recreate calendar definitions in Charted Roots
 - No way to leverage existing Calendarium calendar structure (eras, year directions)
 
 **Features:**
 
 | Feature | Description |
 |---------|-------------|
-| **Calendar import** | Automatically import Calendarium calendars as Canvas Roots date systems |
+| **Calendar import** | Automatically import Calendarium calendars as Charted Roots date systems |
 | **Era preservation** | Era names, abbreviations, and year directions are preserved |
 | **Zero configuration** | Calendars appear automatically when integration is enabled |
 | **Invisible when not needed** | Integrations card only appears if Calendarium is installed |
@@ -2882,7 +2882,7 @@ Integration with the [Calendarium](https://github.com/javalent/calendarium) plug
 
 - Uses `window.Calendarium` global API
 - Waits for Calendarium settings to load before importing
-- Converts Calendarium eras to Canvas Roots `FictionalEra` format
+- Converts Calendarium eras to Charted Roots `FictionalEra` format
 - Handles starting eras (epoch 0) and regular eras with dates
 - Extracts era abbreviations from Calendarium format strings
 
@@ -2907,7 +2907,7 @@ See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#ca
 
 Complete overhaul of export functionality with full entity support and round-trip fidelity with GEDCOM Import v2.
 
-See [export-v2.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/export-v2.md) for implementation plan.
+See [export-v2.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/export-v2.md) for implementation plan.
 
 **Problem Solved:**
 - Previous exports only included people (person notes)
@@ -3016,7 +3016,7 @@ Export GEDCOM → 500 people, 350 events, 200 sources, 150 places (full fidelity
 
 Separate `gender_identity` field for inclusive handling of sex and gender, with full export support across all formats.
 
-See [sex-gender-expansion.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/sex-gender-expansion.md) for implementation plan (Phases 1-3).
+See [sex-gender-expansion.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/sex-gender-expansion.md) for implementation plan (Phases 1-3).
 
 **Problem Solved:**
 - The `sex` field follows GEDCOM standards (M/F) for historical record compatibility, but doesn't capture gender identity
@@ -3064,7 +3064,7 @@ When documenting trans individuals:
 
 Consolidated property and value alias management in a single interface with comprehensive coverage of all canonical properties.
 
-See [unified-property-config.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/unified-property-config.md) for implementation plan.
+See [unified-property-config.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/unified-property-config.md) for implementation plan.
 
 **Problem Solved:**
 - Property aliases were managed through modal-based workflows with limited discoverability
@@ -3116,9 +3116,9 @@ See [unified-property-config.md](https://github.com/banisterious/obsidian-canvas
 
 ### Data Enhancement Pass (v0.10.17)
 
-Commands and UI tools to upgrade existing vaults by creating missing linked entities from existing person note data. Designed for users who imported GEDCOM before Canvas Roots supported event, place, or source note types.
+Commands and UI tools to upgrade existing vaults by creating missing linked entities from existing person note data. Designed for users who imported GEDCOM before Charted Roots supported event, place, or source note types.
 
-See [data-enhancement-pass.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/data-enhancement-pass.md) for implementation plan.
+See [data-enhancement-pass.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/data-enhancement-pass.md) for implementation plan.
 
 **Use Cases:**
 - Imported GEDCOM before v0.10.0: No event notes were created; birth/death dates are flat properties
@@ -3202,7 +3202,7 @@ hiddenCategories: string[];
 
 ### Flexible Note Type Detection (v0.10.2)
 
-Support multiple methods for identifying Canvas Roots note types, avoiding conflicts with other plugins that use the `type` property.
+Support multiple methods for identifying Charted Roots note types, avoiding conflicts with other plugins that use the `type` property.
 
 **Problem Solved:**
 - The generic `type` property conflicts with other plugins (Templater, Dataview, etc.)
@@ -3300,7 +3300,7 @@ Enhanced GEDCOM import that creates source notes, event notes, and place notes i
 **Integration Points:**
 - Staging folder support (import to staging, review, then merge)
 - Property aliases (use configured property names)
-- Value aliases (map GEDCOM event types to Canvas Roots types)
+- Value aliases (map GEDCOM event types to Charted Roots types)
 
 ---
 
@@ -3357,10 +3357,10 @@ groups:
 
 Extend Property Aliases to support custom property *values*. Allows users with existing vaults to use custom terminology (e.g., `nameday` instead of `birth` for event types) without editing existing notes.
 
-See [value-aliases.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/value-aliases.md) for implementation plan.
+See [value-aliases.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/value-aliases.md) for implementation plan.
 
 **Features:**
-- Map custom values to Canvas Roots canonical values
+- Map custom values to Charted Roots canonical values
 - Support for three field types:
   - **Event type**: `birth`, `death`, `marriage`, `burial`, `residence`, `occupation`, `education`, `military`, `immigration`, `baptism`, `confirmation`, `ordination`, `custom`
   - **Sex**: `male`, `female`, `nonbinary`, `unknown`
@@ -3372,7 +3372,7 @@ See [value-aliases.md](https://github.com/banisterious/obsidian-canvas-roots/blo
 
 ### Property Aliases (v0.9.3)
 
-Map custom frontmatter property names to Canvas Roots fields, enabling compatibility with existing vaults and other plugins without requiring property renaming.
+Map custom frontmatter property names to Charted Roots fields, enabling compatibility with existing vaults and other plugins without requiring property renaming.
 
 See [Settings & Configuration](Settings-And-Configuration) wiki page for configuration documentation.
 
@@ -3397,7 +3397,7 @@ See [Settings & Configuration](Settings-And-Configuration) wiki page for configu
 
 Dedicated Events tab in the Control Center improves discoverability of Fictional Date Systems and provides foundation for Chronological Story Mapping features.
 
-See [events-tab.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/events-tab.md) for implementation details.
+See [events-tab.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/events-tab.md) for implementation details.
 
 **Features:**
 - **Date systems card**: Moved from Canvas Settings with all existing functionality
@@ -3408,7 +3408,7 @@ See [events-tab.md](https://github.com/banisterious/obsidian-canvas-roots/blob/m
 
 ### Style Settings Integration (v0.9.1)
 
-Canvas Roots styling options exposed via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin.
+Charted Roots styling options exposed via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin.
 
 See [Styling & Theming](Styling-And-Theming) wiki page for full documentation.
 
@@ -3431,7 +3431,7 @@ See [Styling & Theming](Styling-And-Theming) wiki page for full documentation.
 
 Visual research methodology tools aligned with the Genealogical Proof Standard (GPS).
 
-See [evidence-visualization-plan.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/evidence-visualization-plan.md) for implementation details.
+See [evidence-visualization-plan.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/evidence-visualization-plan.md) for implementation details.
 
 **Genealogical Standards Support:**
 
@@ -3487,7 +3487,7 @@ See [Evidence & Sources](Evidence-And-Sources) wiki page for full documentation.
 - Source counting using Obsidian's `resolvedLinks` metadata cache
 - **Source indicators on generated trees**: Small badges (e.g., "📎 3") on person nodes showing linked source count
   - Color-coded: green for 3+ sources (well-documented), yellow for 1-2 sources
-  - Toggle in Settings → Canvas Roots → Canvas styling → "Show source indicators"
+  - Toggle in Settings → Charted Roots → Canvas styling → "Show source indicators"
 - **Media Gallery in Sources Tab**: Thumbnail grid with search and filtering
   - Filter by media type (images, documents)
   - Filter by source type
@@ -3636,7 +3636,7 @@ See [Schema Validation](Schema-Validation) wiki page for full documentation.
 
 Dedicated Maps tab in Control Center for geographic features management.
 
-See [maps-tab.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/maps-tab.md) for implementation details.
+See [maps-tab.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/maps-tab.md) for implementation details.
 
 **Features:**
 - Dedicated Maps tab in Control Center with 4 cards
@@ -3662,7 +3662,7 @@ See [maps-tab.md](https://github.com/banisterious/obsidian-canvas-roots/blob/mai
 
 Interactive Map View with Leaflet.js for visualizing family history geographically.
 
-See [leaflet-maps-plan.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/leaflet-maps-plan.md) for implementation details.
+See [leaflet-maps-plan.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/leaflet-maps-plan.md) for implementation details.
 
 **Features:**
 - Interactive Map View with Leaflet.js and OpenStreetMap tiles

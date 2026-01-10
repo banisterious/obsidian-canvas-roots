@@ -6,7 +6,7 @@
 
 ## Overview
 
-Chronological Story Mapping introduces event-based timeline visualization to Canvas Roots, enabling users to document and visualize life events in chronological order. The feature supports both genealogists (who derive events from sources) and worldbuilders (who create canonical events directly).
+Chronological Story Mapping introduces event-based timeline visualization to Charted Roots, enabling users to document and visualize life events in chronological order. The feature supports both genealogists (who derive events from sources) and worldbuilders (who create canonical events directly).
 
 ## User Research Insights
 
@@ -113,7 +113,7 @@ description: "Born at 23 Grafton Street, Dublin"
 
 ### Fictional Date System Integration
 
-Events integrate with Canvas Roots' existing [Fictional Date Systems](../../wiki-content/Fictional-Date-Systems.md) feature. When `date_system` is specified, the `date` field is parsed using that system's era definitions.
+Events integrate with Charted Roots' existing [Fictional Date Systems](../../wiki-content/Fictional-Date-Systems.md) feature. When `date_system` is specified, the `date` field is parsed using that system's era definitions.
 
 **Example with Middle-earth Calendar:**
 ```yaml
@@ -381,7 +381,7 @@ The `before`/`after` relationships create a directed graph that can be:
 
 ### Calendarium Plugin Integration
 
-[Calendarium](https://github.com/javalent/calendarium) is a popular community plugin for custom fantasy/sci-fi calendars. Canvas Roots can optionally integrate with it for users who prefer Calendarium's richer calendar features.
+[Calendarium](https://github.com/javalent/calendarium) is a popular community plugin for custom fantasy/sci-fi calendars. Charted Roots can optionally integrate with it for users who prefer Calendarium's richer calendar features.
 
 **Calendarium API Access:**
 ```typescript
@@ -404,13 +404,13 @@ if (window.Calendarium) {
 
 | Mode | Behavior |
 |------|----------|
-| **Standalone** | Use Canvas Roots' built-in fictional date systems (default) |
-| **Calendarium Primary** | Read calendars from Calendarium; Canvas Roots events sync to Calendarium |
+| **Standalone** | Use Charted Roots' built-in fictional date systems (default) |
+| **Calendarium Primary** | Read calendars from Calendarium; Charted Roots events sync to Calendarium |
 | **Bidirectional** | Events visible in both systems; changes sync both ways |
 
 **Data Mapping:**
 
-| Canvas Roots Field | Calendarium Field |
+| Charted Roots Field | Calendarium Field |
 |--------------------|-------------------|
 | `date` | `fc-date` or `fc-start` |
 | `date_end` (for ranges) | `fc-end` |
@@ -428,11 +428,11 @@ if (window.Calendarium) {
 |---------|------|---------|-------------|
 | `calendariumIntegration` | `'none' \| 'read' \| 'sync'` | `'none'` | Integration mode |
 | `calendariumDefaultCalendar` | string | `''` | Default Calendarium calendar for new events |
-| `syncCalendariumEvents` | boolean | `false` | Show Calendarium events in Canvas Roots timelines |
+| `syncCalendariumEvents` | boolean | `false` | Show Calendarium events in Charted Roots timelines |
 
 **Implementation Notes:**
 - Check `app.plugins.enabledPlugins.has('calendarium')` before accessing API
-- Calendarium uses 0-indexed months; align with Canvas Roots' date parsing
+- Calendarium uses 0-indexed months; align with Charted Roots' date parsing
 - Calendarium's `CalDate` type: `{year: number, month: number, day: number}`
 - Use `api.onSettingsLoaded(callback)` to defer initialization until Calendarium is ready
 
@@ -500,7 +500,7 @@ if (window.Calendarium) {
 
 ## Settings
 
-New settings under "Canvas Roots → Events":
+New settings under "Charted Roots → Events":
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|

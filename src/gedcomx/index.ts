@@ -1,7 +1,7 @@
 /**
  * GEDCOM X Module
  *
- * FamilySearch GEDCOM X format support for Canvas Roots.
+ * FamilySearch GEDCOM X format support for Charted Roots.
  */
 
 export * from './gedcomx-types';

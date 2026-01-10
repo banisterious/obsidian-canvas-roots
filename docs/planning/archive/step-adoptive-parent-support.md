@@ -12,7 +12,7 @@
 
 ## Problem Statement
 
-Canvas Roots currently assumes all parent relationships are biological. The data model uses `father_id` and `mother_id` fields without relationship type qualifiers. This causes issues when:
+Charted Roots currently assumes all parent relationships are biological. The data model uses `father_id` and `mother_id` fields without relationship type qualifiers. This causes issues when:
 
 - **GEDCOM imports include step-parents:** Step-parent relationships (via `FAMC` with `PEDI STEP`) are imported as primary parent claims, triggering false conflicts
 - **GEDCOM imports include adoptive parents:** Adoptive relationships (`PEDI ADOP`) similarly create false conflicts
@@ -183,7 +183,7 @@ stepfather_id_2: abc-111-def-222
 
 Reference for GEDCOM `PEDI` (pedigree linkage type) values:
 
-| Value | Meaning | Canvas Roots Field |
+| Value | Meaning | Charted Roots Field |
 |-------|---------|-------------------|
 | `birth` | Biological child | `father_id`, `mother_id` |
 | `adop` | Legally adopted | `adoptive_father_id`, `adoptive_mother_id` |

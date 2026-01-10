@@ -498,7 +498,7 @@ export class EventService {
 
 		// Create file
 		const fileName = this.slugify(data.title) + '.md';
-		const folder = this.settings.eventsFolder || 'Canvas Roots/Events';
+		const folder = this.settings.eventsFolder || 'Charted Roots/Events';
 		const filePath = normalizePath(`${folder}/${fileName}`);
 
 		// Ensure folder exists

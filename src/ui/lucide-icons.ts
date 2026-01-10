@@ -1,5 +1,5 @@
 /**
- * Lucide icon helper utilities for Canvas Roots Control Center
+ * Lucide icon helper utilities for Charted Roots Control Center
  * Obsidian provides Lucide icons via setIcon API
  */
 

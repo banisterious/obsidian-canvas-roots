@@ -1,6 +1,6 @@
 # MyHeritage GEDCOM Import Compatibility
 
-**GitHub Issue:** [#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)
+**GitHub Issue:** [#144](https://github.com/banisterious/obsidian-charted-roots/issues/144)
 **Status:** Ready for Implementation
 **Priority:** Medium
 **Labels:** `accepted`, `enhancement`, `gedcom`
@@ -27,7 +27,7 @@ Notice the HTML entity split across lines: `&am` (end of line 1) + `;lt;br` (sta
 
 ### User Impact
 
-From @wilbry in [Discussion #142](https://github.com/banisterious/obsidian-canvas-roots/discussions/142#discussioncomment-15425345):
+From @wilbry in [Discussion #142](https://github.com/banisterious/obsidian-charted-roots/discussions/142#discussioncomment-15425345):
 > "The gedcom [MyHeritage] exported had some issue with multiline CONC fields... I had to do some cleanup to get it into canvas roots. It wasn't an issue for me because I am pretty handy with modifying files easily, but it would be a big issue for someone less technical."
 
 ---
@@ -589,14 +589,14 @@ describe('MyHeritage GEDCOM Preprocessor', () => {
 
 **Add to FAQ.md:**
 
-#### Does Canvas Roots support MyHeritage GEDCOM exports?
+#### Does Charted Roots support MyHeritage GEDCOM exports?
 
-Yes! Canvas Roots automatically detects and fixes common issues with MyHeritage GEDCOM exports, including:
+Yes! Charted Roots automatically detects and fixes common issues with MyHeritage GEDCOM exports, including:
 - UTF-8 byte order marks (BOM)
 - Malformed CONC continuation fields with double-encoded HTML entities
 - Embedded newlines in source citations
 
-You can control this behavior in Settings → Canvas Roots → GEDCOM Import → Compatibility Mode:
+You can control this behavior in Settings → Charted Roots → GEDCOM Import → Compatibility Mode:
 - **Auto** (default): Automatically detect and fix MyHeritage files
 - **MyHeritage**: Always apply MyHeritage fixes
 - **None**: Disable preprocessing (advanced users only)
@@ -645,7 +645,7 @@ Section on adding new vendor-specific preprocessors to `gedcom-preprocessor.ts`.
 
 **Question:** Need real MyHeritage GEDCOM samples.
 
-**Decision:** ✅ Resolved. @wilbry provided a sanitized sample in [issue #144](https://github.com/banisterious/obsidian-canvas-roots/issues/144). Key findings from the sample:
+**Decision:** ✅ Resolved. @wilbry provided a sanitized sample in [issue #144](https://github.com/banisterious/obsidian-charted-roots/issues/144). Key findings from the sample:
 
 **Observed patterns:**
 - `1 SOUR MYHERITAGE` (uppercase) — use for detection
@@ -679,7 +679,7 @@ Section on adding new vendor-specific preprocessors to `gedcom-preprocessor.ts`.
 
 ## References
 
-- **GitHub Issue:** [#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)
+- **GitHub Issue:** [#144](https://github.com/banisterious/obsidian-charted-roots/issues/144)
 - **User Report:** @wilbry in [Discussion #142](https://github.com/banisterious/obsidian-plugins/discussions/142#discussioncomment-15425345)
 - **GEDCOM Spec:** [GEDCOM 5.5.1 Specification](https://www.gedcom.org/gedcom.html) - Section on CONC and CONT tags
 - **Related Issues:** None (first vendor-specific import fix)

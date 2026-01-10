@@ -3,7 +3,7 @@
 > **Status:** Phase 1 ✓, Phase 2 ✓, Phase 2.5 ✓, Phase 3 ✓ (Phase 4: Planned)
 > **Version:** 0.5.2
 
-This document outlines the design for geographic/place-based features in Canvas Roots.
+This document outlines the design for geographic/place-based features in Charted Roots.
 
 ---
 
@@ -325,7 +325,7 @@ When creating a new place note, the plugin automatically suggests a parent place
 1. **Folder Matching**: Scans the destination folder path for names matching existing place notes
 2. **Deepest Match First**: Prefers more specific (deeper) folder matches over generic ones
 3. **Case Insensitive**: Folder name "california" matches place note "California"
-4. **Skip Generic Names**: Ignores common folder names like "Places", "Locations", "Canvas Roots"
+4. **Skip Generic Names**: Ignores common folder names like "Places", "Locations", "Charted Roots"
 
 **Example**:
 - Creating a place in `Places/USA/California/` with existing place notes for "USA" and "California"
@@ -395,13 +395,13 @@ Updates to Control Center tabs and organization for geographic features.
 Added dedicated places folder setting in plugin settings:
 - ✓ Separate from `peopleFolder` setting
 - ✓ Used as default destination for new place notes
-- ✓ Configurable via Settings > Canvas Roots > Places folder
+- ✓ Configurable via Settings > Charted Roots > Places folder
 
 ---
 
 ## Integration Improvements
 
-Cross-feature integration with existing Canvas Roots functionality.
+Cross-feature integration with existing Charted Roots functionality.
 
 ### Filter Trees by Place ✓
 

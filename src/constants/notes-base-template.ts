@@ -1,5 +1,5 @@
 /**
- * Obsidian Bases template for managing Canvas Roots note entities
+ * Obsidian Bases template for managing Charted Roots note entities
  * Part of Phase 4 Gramps Notes integration
  */
 export const NOTES_BASE_TEMPLATE = `visibleProperties:

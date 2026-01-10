@@ -1,6 +1,6 @@
 # Geographic Features
 
-Canvas Roots provides comprehensive place-based features for tracking where people were born, died, married, and lived. These features support both real-world genealogy and world-building with fictional places.
+Charted Roots provides comprehensive place-based features for tracking where people were born, died, married, and lived. These features support both real-world genealogy and world-building with fictional places.
 
 ---
 
@@ -18,7 +18,7 @@ Canvas Roots provides comprehensive place-based features for tracking where peop
 - [Place-Based Tree Filtering](#place-based-tree-filtering)
 - [Geocoding Lookup](#geocoding-lookup)
 - [Custom Place Types](#custom-place-types)
-- [Using Obsidian Maps Alongside Canvas Roots](#using-obsidian-maps-alongside-canvas-roots)
+- [Using Obsidian Maps Alongside Charted Roots](#using-obsidian-maps-alongside-canvas-roots)
 - [Settings](#settings)
 
 ---
@@ -35,7 +35,7 @@ The Map View provides a Leaflet.js-powered interactive map for visualizing where
 
 **Option 2: Command Palette**
 1. Open Command Palette (Ctrl/Cmd + P)
-2. Search for "Canvas Roots: Open Map View"
+2. Search for "Charted Roots: Open Map View"
 
 **Option 3: Custom Maps Gallery**
 - In the Maps tab, click any custom map thumbnail to open it directly in Map View
@@ -156,7 +156,7 @@ The Maps tab in Control Center provides a central location for managing custom m
 
 ### Opening the Maps Tab
 
-1. Open Control Center (click the Canvas Roots icon in the ribbon or use Command Palette)
+1. Open Control Center (click the Charted Roots icon in the ribbon or use Command Palette)
 2. Click the **Maps** tab in the sidebar
 
 ### Tab Contents
@@ -436,7 +436,7 @@ Below the issue sections, an "Other tools" section provides access to actions th
 
 ## Place Visualizations
 
-Canvas Roots provides D3-based visualizations for place data:
+Charted Roots provides D3-based visualizations for place data:
 
 **Network/Schematic View:**
 - Places shown as nodes sized by associated person count
@@ -600,7 +600,7 @@ For real, historical, or disputed places, look up coordinates automatically:
 
 1. Create or edit a place note
 2. Click **Look up coordinates** button
-3. Canvas Roots queries Nominatim (OpenStreetMap geocoding)
+3. Charted Roots queries Nominatim (OpenStreetMap geocoding)
 4. Review and accept the suggested coordinates
 5. Parent place is included in the query for better accuracy
 
@@ -615,20 +615,20 @@ Beyond the built-in types (city, state, country, etc.), you can use custom types
 3. Custom types are normalized to lowercase with hyphens
 4. They appear in statistics alongside standard types
 
-## Using Obsidian Maps Alongside Canvas Roots
+## Using Obsidian Maps Alongside Charted Roots
 
-[Obsidian Maps](https://github.com/obsidianmd/obsidian-maps) is an official community plugin that adds a Map view to Obsidian Bases. While Canvas Roots provides genealogy-focused map visualization, Obsidian Maps offers complementary features for general place browsing.
+[Obsidian Maps](https://github.com/obsidianmd/obsidian-maps) is an official community plugin that adds a Map view to Obsidian Bases. While Charted Roots provides genealogy-focused map visualization, Obsidian Maps offers complementary features for general place browsing.
 
 ### When to Use Each
 
 | Use Case | Recommended Tool |
 |----------|------------------|
-| Visualizing migration paths (birth → death) | Canvas Roots Map View |
-| Journey paths through all life events | Canvas Roots Map View |
-| Heat map of family concentrations | Canvas Roots Map View |
-| Time slider ("who was alive when?") | Canvas Roots Map View |
-| Marker clustering for large datasets | Canvas Roots Map View |
-| Custom fictional/historical image maps | Canvas Roots Map View |
+| Visualizing migration paths (birth → death) | Charted Roots Map View |
+| Journey paths through all life events | Charted Roots Map View |
+| Heat map of family concentrations | Charted Roots Map View |
+| Time slider ("who was alive when?") | Charted Roots Map View |
+| Marker clustering for large datasets | Charted Roots Map View |
+| Custom fictional/historical image maps | Charted Roots Map View |
 | Simple "show places on a map" from a Base query | Obsidian Maps |
 | Embedded map view within a markdown note | Obsidian Maps |
 | Custom marker icons per place (Lucide icons) | Obsidian Maps |
@@ -636,20 +636,20 @@ Beyond the built-in types (city, state, country, etc.), you can use custom types
 
 ### Using Both Plugins Together
 
-Canvas Roots and Obsidian Maps work well together. Your place notes already include `coordinates` properties that Obsidian Maps can use:
+Charted Roots and Obsidian Maps work well together. Your place notes already include `coordinates` properties that Obsidian Maps can use:
 
 1. **Install Obsidian Maps** from Community Plugins (requires Obsidian 1.10+)
-2. **Create a Places Base** using the Canvas Roots template (Guide tab → Base templates → Places)
+2. **Create a Places Base** using the Charted Roots template (Guide tab → Base templates → Places)
 3. **Add a Map view** to your Base:
    - In the Base, click the view dropdown → Map
    - Set "Marker coordinates" to `coordinates`
    - Optionally set "Marker icon" to `icon` and "Marker color" to `color` if you've added those properties
 
-This gives you a simple map view of your places within Bases, while Canvas Roots' Map View remains available for genealogy-specific analysis like migration paths and time-based filtering.
+This gives you a simple map view of your places within Bases, while Charted Roots' Map View remains available for genealogy-specific analysis like migration paths and time-based filtering.
 
 ### Feature Comparison
 
-| Feature | Canvas Roots | Obsidian Maps |
+| Feature | Charted Roots | Obsidian Maps |
 |---------|--------------|---------------|
 | Map library | Leaflet 1.9.4 | MapLibre GL 5.8 |
 | Tile format | Raster (XYZ) | Vector + Raster |
@@ -668,16 +668,16 @@ This gives you a simple map view of your places within Bases, while Canvas Roots
 **Scenario: Researching a specific branch**
 1. Create a Base filtered to a collection (e.g., "Smith Family")
 2. Use Obsidian Maps' Map view for quick place browsing
-3. Switch to Canvas Roots Map View for migration path analysis
+3. Switch to Charted Roots Map View for migration path analysis
 
 **Scenario: Place note research**
 1. Browse places in an Obsidian Maps view
 2. Click a marker to open the place note
-3. Use Canvas Roots' "Open in Map View" context menu for full analysis
+3. Use Charted Roots' "Open in Map View" context menu for full analysis
 
 ## Settings
 
-Configure place features in Settings → Canvas Roots:
+Configure place features in Settings → Charted Roots:
 
 **Places Folder:**
 - Default destination for new place notes

@@ -303,7 +303,7 @@ nestedPropertiesMigration?: {
   - "Dismiss" button (enabled only when both complete)
   - "Skip for now" button (always enabled)
 - [x] Update `determineMigrationType()` to detect v0.18.9+
-- [x] Update `getDisplayText()` to return "Canvas Roots v0.18.9"
+- [x] Update `getDisplayText()` to return "Charted Roots v0.18.9"
 - [x] Update Cleanup Wizard steps to mark migrations complete on finish
 - [ ] Add `checkMigrationNeeded()` method to scan vault for legacy data (auto-complete if no data)
 - [ ] Update `shouldShowMigrationNotice()` in main.ts to check migration completion status

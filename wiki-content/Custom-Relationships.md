@@ -27,7 +27,7 @@ Custom relationships are:
 
 ### Terminology
 
-To avoid confusion, Canvas Roots uses distinct terms:
+To avoid confusion, Charted Roots uses distinct terms:
 
 | Term | Description |
 |------|-------------|
@@ -38,7 +38,7 @@ To avoid confusion, Canvas Roots uses distinct terms:
 
 ## Built-in Relationship Types
 
-Canvas Roots includes 12 pre-defined relationship types across 4 categories:
+Charted Roots includes 12 pre-defined relationship types across 4 categories:
 
 ### Legal/Guardianship
 
@@ -80,7 +80,7 @@ Canvas Roots includes 12 pre-defined relationship types across 4 categories:
 ### Via Context Menu
 
 1. Right-click on a person note
-2. Navigate to **Canvas Roots** → **Relationships** → **Add custom relationship...**
+2. Navigate to **Charted Roots** → **Relationships** → **Add custom relationship...**
 3. In the modal:
    - Select the relationship type from the dropdown (grouped by category)
    - Click "Select person" to choose the target person
@@ -91,7 +91,7 @@ Canvas Roots includes 12 pre-defined relationship types across 4 categories:
 
 1. Open a person note
 2. Open the command palette (`Ctrl/Cmd + P`)
-3. Run **Canvas Roots: Add custom relationship to current person**
+3. Run **Charted Roots: Add custom relationship to current person**
 4. Follow the same modal workflow as above
 
 ### Manual Frontmatter
@@ -196,7 +196,7 @@ Custom relationships can be rendered as colored edges on canvas trees:
 ### Context Menu
 
 Right-click on a person note:
-- **Canvas Roots** → **Relationships** → **Add custom relationship...** - Opens the Add Relationship modal
+- **Charted Roots** → **Relationships** → **Add custom relationship...** - Opens the Add Relationship modal
 
 ---
 

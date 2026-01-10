@@ -1,5 +1,5 @@
 /**
- * Place note writer utilities for Canvas Roots
+ * Place note writer utilities for Charted Roots
  * Creates place notes with proper YAML frontmatter
  */
 

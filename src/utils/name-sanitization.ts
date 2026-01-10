@@ -1,5 +1,5 @@
 /**
- * Shared name sanitization utilities for Canvas Roots.
+ * Shared name sanitization utilities for Charted Roots.
  *
  * These utilities ensure consistent handling of special characters in names
  * across all importers (Gramps, GEDCOM, GedcomX, CSV) and note writers.
@@ -14,7 +14,7 @@
  * targets, using alias format when the display name differs from the sanitized
  * filename.
  *
- * @see https://github.com/banisterious/obsidian-canvas-roots/issues/139
+ * @see https://github.com/banisterious/obsidian-charted-roots/issues/139
  */
 
 /**

@@ -1,5 +1,5 @@
 /**
- * Modal for flattening nested YAML properties in Canvas Roots notes
+ * Modal for flattening nested YAML properties in Charted Roots notes
  * Converts nested structures like coordinates: { lat, long } to flat properties
  * like coordinates_lat, coordinates_long
  */
@@ -104,7 +104,7 @@ export class FlattenNestedPropertiesModal extends Modal {
 		// Description
 		const description = contentEl.createDiv({ cls: 'crc-modal-description' });
 		description.createEl('p', {
-			text: 'Scans Canvas Roots notes for nested YAML properties and converts them to flat properties. ' +
+			text: 'Scans Charted Roots notes for nested YAML properties and converts them to flat properties. ' +
 				'This ensures compatibility with Obsidian\'s metadata system and Dataview queries.'
 		});
 
@@ -178,7 +178,7 @@ export class FlattenNestedPropertiesModal extends Modal {
 	}
 
 	/**
-	 * Scan all Canvas Roots notes for nested properties
+	 * Scan all Charted Roots notes for nested properties
 	 */
 	private runScan(): void {
 		if (this.isScanning || this.selectedProperties.size === 0) {
@@ -231,7 +231,7 @@ export class FlattenNestedPropertiesModal extends Modal {
 			const cache = this.app.metadataCache.getFileCache(file);
 			const frontmatter = cache?.frontmatter;
 
-			// Check if it's a Canvas Roots note
+			// Check if it's a Charted Roots note
 			const noteType = detectNoteType(frontmatter, cache);
 			if (!noteType) {
 				continue;
@@ -295,7 +295,7 @@ export class FlattenNestedPropertiesModal extends Modal {
 		// Summary header
 		const summaryHeader = this.resultsContainer.createDiv({ cls: 'cr-flatten-summary-header' });
 		summaryHeader.createEl('p', {
-			text: `Scanned ${totalScanned} Canvas Roots notes.`
+			text: `Scanned ${totalScanned} Charted Roots notes.`
 		});
 
 		// Count total files needing flattening

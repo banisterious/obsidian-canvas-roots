@@ -890,13 +890,13 @@ export class DataQualityService {
 
 		const fm = cache.frontmatter as Record<string, unknown>;
 
-		// Check if note has 'type' property with a valid Canvas Roots type value
+		// Check if note has 'type' property with a valid Charted Roots type value
 		const typeValue = fm['type'];
 		if (typeof typeValue !== 'string') {
 			return issues;
 		}
 
-		// Check if the type value is a recognized Canvas Roots note type
+		// Check if the type value is a recognized Charted Roots note type
 		const isCanvasRootsType = ALL_NOTE_TYPES.includes(typeValue as NoteType);
 		if (!isCanvasRootsType) {
 			return issues;
@@ -2012,7 +2012,7 @@ export class DataQualityService {
 
 	/**
 	 * Migrate legacy 'type' property to 'cr_type'
-	 * Only migrates notes with valid Canvas Roots type values that don't already have cr_type
+	 * Only migrates notes with valid Charted Roots type values that don't already have cr_type
 	 * Returns the number of files modified
 	 */
 	async migrateLegacyTypeProperty(options: DataQualityOptions = {}): Promise<BatchOperationResult> {
@@ -2033,14 +2033,14 @@ export class DataQualityService {
 
 			const fm = cache.frontmatter as Record<string, unknown>;
 
-			// Check if note has 'type' property with a valid Canvas Roots type value
+			// Check if note has 'type' property with a valid Charted Roots type value
 			const typeValue = fm['type'];
 			if (typeof typeValue !== 'string') {
 				results.processed++;
 				continue;
 			}
 
-			// Check if the type value is a recognized Canvas Roots note type
+			// Check if the type value is a recognized Charted Roots note type
 			const isCanvasRootsType = ALL_NOTE_TYPES.includes(typeValue as NoteType);
 			if (!isCanvasRootsType) {
 				results.processed++;

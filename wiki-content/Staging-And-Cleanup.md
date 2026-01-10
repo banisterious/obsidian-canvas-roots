@@ -48,7 +48,7 @@ Each potential duplicate receives a confidence level:
 
 **Via Command Palette:**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Find duplicate people"
+2. Type "Charted Roots: Find duplicate people"
 3. The detection modal opens with results
 
 **What You'll See:**
@@ -73,7 +73,7 @@ For each potential duplicate pair:
 
 ### Configuring Detection
 
-Adjust detection sensitivity in Settings → Canvas Roots → Data:
+Adjust detection sensitivity in Settings → Charted Roots → Data:
 
 **Name Similarity Threshold:**
 - Higher values = stricter matching (fewer false positives)
@@ -111,18 +111,18 @@ The staging workflow provides a safe way to process imported data before incorpo
 ### Setting Up Staging
 
 **From Plugin Settings:**
-1. Go to **Settings → Canvas Roots → Data**
+1. Go to **Settings → Charted Roots → Data**
 2. Set a **Staging folder** path (e.g., `People-Staging`)
 
 **From Preferences:**
-1. Go to **Settings → Canvas Roots → Preferences**
+1. Go to **Settings → Charted Roots → Preferences**
 2. Enable **Staging isolation** to exclude staging from normal operations
 
 When staging is configured, imported data is kept separate from your main tree until you're ready to promote it.
 
 ### Importing to Staging
 
-1. Open the Import Wizard (Command palette: `Canvas Roots: Import wizard`)
+1. Open the Import Wizard (Command palette: `Charted Roots: Import wizard`)
 2. Select your format (GEDCOM, Gramps, CSV)
 3. Select **Import destination**: choose "Staging" instead of "Main tree"
 4. Optionally specify a **Subfolder name** for this import batch (e.g., `smith-gedcom-2024`)
@@ -139,7 +139,7 @@ The Staging Manager is a dedicated modal for managing staged imports. It provide
 | Method | Description |
 |--------|-------------|
 | Dashboard | Click **Staging Manager** button (appears when staging has data) |
-| Command palette | `Canvas Roots: Manage staging area` |
+| Command palette | `Charted Roots: Manage staging area` |
 | Import Wizard | Click **Manage Staging** on the success screen after importing to staging |
 
 **Stats Summary:**
@@ -264,7 +264,7 @@ Fields that are identical show a checkmark instead of a dropdown.
 
 ### Relationship Reconciliation
 
-When merging, Canvas Roots automatically updates relationship references:
+When merging, Charted Roots automatically updates relationship references:
 
 - If the staging person was listed as someone's father, that reference updates to the main person
 - Spouse and child relationships are similarly updated

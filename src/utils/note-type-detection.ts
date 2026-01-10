@@ -17,7 +17,7 @@ import type { NoteTypeDetectionSettings } from '../settings';
 export type { NoteTypeDetectionSettings } from '../settings';
 
 /**
- * Supported note types in Canvas Roots
+ * Supported note types in Charted Roots
  */
 export type NoteType =
 	| 'person'

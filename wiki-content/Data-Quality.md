@@ -1,6 +1,6 @@
 # Data Quality
 
-Canvas Roots includes comprehensive data quality tools to help you maintain accurate, consistent genealogical data. These tools detect issues, preview changes, and apply fixes across your vault.
+Charted Roots includes comprehensive data quality tools to help you maintain accurate, consistent genealogical data. These tools detect issues, preview changes, and apply fixes across your vault.
 
 ---
 
@@ -113,7 +113,7 @@ Removes `father_id` and `mother_id` values that point to non-existent people. Th
 #### Step 6: Migrate Source Arrays
 **Location:** Control Center → Data Quality tab → "Migrate source arrays"
 
-Converts indexed source properties (`source`, `source_2`, `source_3`) to a single `sources` YAML array. This aligns with the modern array-based property format used throughout Canvas Roots.
+Converts indexed source properties (`source`, `source_2`, `source_3`) to a single `sources` YAML array. This aligns with the modern array-based property format used throughout Charted Roots.
 
 #### Step 7: Standardize Place Names
 **Location:** Control Center → Places tab → "Standardize variants"
@@ -315,7 +315,7 @@ Converts generic place types to specific settlement types. This tool flags place
 
 ## GEDCOM Import Quality Preview
 
-When importing a GEDCOM file, Canvas Roots analyzes the data before creating any files.
+When importing a GEDCOM file, Charted Roots analyzes the data before creating any files.
 
 ### What's Detected
 

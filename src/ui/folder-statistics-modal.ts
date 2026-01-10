@@ -1,5 +1,5 @@
 /**
- * Folder Statistics Modal for Canvas Roots
+ * Folder Statistics Modal for Charted Roots
  *
  * Displays comprehensive statistics about person notes in a folder,
  * including data completeness, relationship health, and family structure.

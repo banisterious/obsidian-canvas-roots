@@ -1,6 +1,6 @@
 # Statistics & Reports
 
-Canvas Roots provides a comprehensive statistics dashboard and report generation system to help you understand your data and generate formatted genealogical reports.
+Charted Roots provides a comprehensive statistics dashboard and report generation system to help you understand your data and generate formatted genealogical reports.
 
 ---
 
@@ -44,7 +44,7 @@ The Statistics Dashboard is a full-featured workspace view that provides detaile
 There are several ways to open the Statistics Dashboard:
 
 1. **From Control Center**: Statistics tab → "Open Statistics Dashboard" button
-2. **Command Palette**: "Canvas Roots: Open Statistics Dashboard"
+2. **Command Palette**: "Charted Roots: Open Statistics Dashboard"
 3. **Ribbon icon**: Click the statistics icon in the left ribbon (if enabled)
 
 The dashboard can be pinned alongside notes in split view and auto-refreshes when vault data changes.
@@ -294,7 +294,7 @@ The optional cover page includes:
 - Subject name (e.g., "Ancestors of John Smith")
 - Decorative separator line
 - Generation date
-- "Canvas Roots for Obsidian" branding
+- "Charted Roots for Obsidian" branding
 
 If a logo is provided, it appears centered at the top of the cover page. Images are automatically resized to reduce PDF file size.
 

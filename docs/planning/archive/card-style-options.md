@@ -2,7 +2,7 @@
 
 **Status:** ✅ Complete
 **Priority:** Medium
-**Issue:** [#87](https://github.com/banisterious/obsidian-canvas-roots/issues/87), [#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88)
+**Issue:** [#87](https://github.com/banisterious/obsidian-charted-roots/issues/87), [#88](https://github.com/banisterious/obsidian-charted-roots/issues/88)
 
 ---
 

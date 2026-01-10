@@ -174,7 +174,7 @@ The data quality system detects issues in genealogical data and provides batch o
 - Supported: Text, Number, List (of simple values), Checkbox, Date, Date & time, Tags
 - **Not supported:** Nested objects, arrays of objects, deeply nested structures
 
-Canvas Roots uses nested properties for advanced features like the Evidence Service (`sourced_facts`, `events`). These properties are valid YAML but incompatible with Obsidian's property UI, resulting in:
+Charted Roots uses nested properties for advanced features like the Evidence Service (`sourced_facts`, `events`). These properties are valid YAML but incompatible with Obsidian's property UI, resulting in:
 
 1. **Type mismatch warnings** in the property panel ("expected text")
 2. **Data corruption risk** if users click "update" (converts to `"[object Object]"` strings)
@@ -562,7 +562,7 @@ Collections and family groups provide organizational structures for people in th
 
 ### Two Organization Systems
 
-Canvas Roots provides complementary organization systems (defined in `src/core/family-graph.ts`):
+Charted Roots provides complementary organization systems (defined in `src/core/family-graph.ts`):
 
 **Detected Families (Automatic)**
 - Auto-discovered through relationship graph traversal (BFS)

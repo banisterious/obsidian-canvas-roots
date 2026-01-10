@@ -5,7 +5,7 @@
 Add events and sources fields to the Edit Person modal, allowing users to manage all person-related data from a single interface instead of editing multiple notes separately.
 
 **Status:** ✅ Complete (All Phases)
-**Issue:** [#33](https://github.com/banisterious/obsidian-canvas-roots/issues/33)
+**Issue:** [#33](https://github.com/banisterious/obsidian-charted-roots/issues/33)
 **Released:** v0.18.14
 
 ## Problem Statement

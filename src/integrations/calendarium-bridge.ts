@@ -2,7 +2,7 @@
  * Calendarium Bridge Service
  *
  * Provides integration with the Calendarium plugin for shared calendar definitions.
- * This bridge enables Canvas Roots to read calendar systems defined in Calendarium,
+ * This bridge enables Charted Roots to read calendar systems defined in Calendarium,
  * eliminating the need for duplicate configuration.
  *
  * @see https://github.com/javalent/calendarium
@@ -94,7 +94,7 @@ interface CalendariumCalendarAPI {
  * Provides methods to:
  * - Detect if Calendarium is installed and enabled
  * - Import calendar definitions as FictionalDateSystem objects
- * - Convert between Calendarium and Canvas Roots date formats
+ * - Convert between Calendarium and Charted Roots date formats
  */
 export class CalendariumBridge {
 	private app: App;
@@ -186,7 +186,7 @@ export class CalendariumBridge {
 
 	/**
 	 * Import all Calendarium calendars as FictionalDateSystem objects
-	 * These can be used alongside Canvas Roots' built-in and custom date systems
+	 * These can be used alongside Charted Roots' built-in and custom date systems
 	 */
 	importCalendars(): FictionalDateSystem[] {
 		if (!this.api) {
@@ -222,7 +222,7 @@ export class CalendariumBridge {
 	}
 
 	/**
-	 * Convert a Calendarium calendar to a Canvas Roots FictionalDateSystem
+	 * Convert a Calendarium calendar to a Charted Roots FictionalDateSystem
 	 */
 	private convertToDateSystem(calendar: CalendariumCalendar): FictionalDateSystem | null {
 		const eras = calendar.static?.eras;
@@ -243,7 +243,7 @@ export class CalendariumBridge {
 			};
 		}
 
-		// Convert Calendarium eras to Canvas Roots format
+		// Convert Calendarium eras to Charted Roots format
 		const convertedEras: FictionalEra[] = eras.map((era) => {
 			// Starting eras have no date property and represent epoch 0
 			// Regular eras have a date property with year/month/day
@@ -335,7 +335,7 @@ export class CalendariumBridge {
 	}
 
 	/**
-	 * Convert a CalendariumDate to an ISO-like date string for Canvas Roots
+	 * Convert a CalendariumDate to an ISO-like date string for Charted Roots
 	 * Handles 0-indexed months (Calendarium) to 1-indexed months (ISO)
 	 *
 	 * @param date CalendariumDate object with 0-indexed month

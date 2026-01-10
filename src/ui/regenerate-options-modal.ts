@@ -35,7 +35,7 @@ export class RegenerateOptionsModal extends Modal {
 			const canvasData = JSON.parse(canvasContent);
 			const metadata = canvasData.metadata?.frontmatter;
 
-			if (metadata?.plugin === 'canvas-roots' && metadata.generation) {
+			if ((metadata?.plugin === 'charted-roots' || metadata?.plugin === 'canvas-roots') && metadata.generation) {
 				const gen = metadata.generation;
 				originalSettings = `Originally generated as "${gen.treeType}" tree from ${gen.rootPersonName} ` +
 					`with direction: ${gen.direction}`;

@@ -1,5 +1,5 @@
 /**
- * CSV Parser for Canvas Roots
+ * CSV Parser for Charted Roots
  *
  * Parses CSV files with support for quoted fields, custom delimiters,
  * and flexible column mapping.

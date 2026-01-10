@@ -29,7 +29,7 @@ This document covers the core entity system including note types, dual storage, 
 
 ## Note Types and Entity System
 
-Canvas Roots uses a structured entity system with typed notes identified by frontmatter properties.
+Charted Roots uses a structured entity system with typed notes identified by frontmatter properties.
 
 ### Core Entity Types
 
@@ -333,7 +333,7 @@ children_id:
 
 ### Wikilink Alias Format for Duplicate Names
 
-When Obsidian has multiple files with the same name, it appends a number to the filename (e.g., "John Doe 1.md", "John Doe 2.md"). Canvas Roots handles this by using Obsidian's alias format:
+When Obsidian has multiple files with the same name, it appends a number to the filename (e.g., "John Doe 1.md", "John Doe 2.md"). Charted Roots handles this by using Obsidian's alias format:
 
 ```yaml
 father: "[[John Doe 1|John Doe]]"  # Points to "John Doe 1.md", displays as "John Doe"

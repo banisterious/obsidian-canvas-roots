@@ -1,5 +1,5 @@
 /**
- * Relationship types for Canvas Roots
+ * Relationship types for Charted Roots
  *
  * Custom relationship types allow users to define non-familial relationships
  * (mentor, guardian, godparent, liege, etc.) between person notes.

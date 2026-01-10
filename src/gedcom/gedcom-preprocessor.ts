@@ -8,7 +8,7 @@
  * - <br> tag conversion to newlines
  * - Decorative HTML tag stripping
  *
- * @see https://github.com/banisterious/obsidian-canvas-roots/issues/144
+ * @see https://github.com/banisterious/obsidian-charted-roots/issues/144
  */
 
 import { getLogger } from '../core/logging';

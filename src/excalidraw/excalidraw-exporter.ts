@@ -1,5 +1,5 @@
 /**
- * Excalidraw Exporter for Canvas Roots
+ * Excalidraw Exporter for Charted Roots
  *
  * Converts Obsidian Canvas family trees to Excalidraw format for manual annotation and customization.
  * Supports both ExcalidrawAutomate API (when available) and fallback JSON generation.
@@ -869,7 +869,7 @@ export class ExcalidrawExporter {
 		return {
 			type: 'excalidraw',
 			version: 2,
-			source: 'https://github.com/banisterious/obsidian-canvas-roots',
+			source: 'https://github.com/banisterious/obsidian-charted-roots',
 			elements,
 			appState: {
 				gridSize: null,
@@ -1056,7 +1056,7 @@ export class ExcalidrawExporter {
 		return {
 			type: 'excalidraw',
 			version: 2,
-			source: 'https://github.com/banisterious/obsidian-canvas-roots',
+			source: 'https://github.com/banisterious/obsidian-charted-roots',
 			elements,
 			appState: {
 				gridSize: null,

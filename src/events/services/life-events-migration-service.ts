@@ -29,7 +29,7 @@ function logLegacyFormatWarning(count: number): void {
 	legacyWarningShown = true;
 
 	console.warn(
-		`[Canvas Roots] Found ${count} person note(s) using inline 'events' arrays. ` +
+		`[Charted Roots] Found ${count} person note(s) using inline 'events' arrays. ` +
 		`This format is deprecated in favor of separate event note files. ` +
 		`Use the Cleanup Wizard to migrate to event notes.`
 	);
@@ -241,7 +241,7 @@ export class LifeEventsMigrationService {
 			createdEventPaths: []
 		};
 
-		const eventsFolder = this.settings.eventsFolder || 'Canvas Roots/Events';
+		const eventsFolder = this.settings.eventsFolder || 'Charted Roots/Events';
 
 		// Ensure events folder exists
 		await this.ensureFolderExists(eventsFolder);

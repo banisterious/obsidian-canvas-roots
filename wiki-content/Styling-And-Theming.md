@@ -17,7 +17,7 @@ This page covers how to customize the appearance of your family trees and charts
 
 ## Canvas Tree Styling
 
-Canvas Roots provides styling options for generated canvas trees within the JSON Canvas standard.
+Charted Roots provides styling options for generated canvas trees within the JSON Canvas standard.
 
 ### Access Settings
 
@@ -116,12 +116,12 @@ For styling beyond the JSON Canvas spec, use the [Advanced Canvas](https://githu
 
 1. Install Advanced Canvas from Community Plugins
 2. Both plugins work independently
-3. Canvas Roots handles layout, Advanced Canvas handles advanced styling
+3. Charted Roots handles layout, Advanced Canvas handles advanced styling
 
 ### Workflow
 
-1. Generate tree with Canvas Roots (handles positioning)
-2. Apply standard styling via Canvas Roots settings
+1. Generate tree with Charted Roots (handles positioning)
+2. Apply standard styling via Charted Roots settings
 3. Optionally apply advanced styling with Advanced Canvas
 4. Use "Regenerate canvas" to update tree structure while preserving Advanced Canvas styling
 
@@ -129,16 +129,16 @@ For styling beyond the JSON Canvas spec, use the [Advanced Canvas](https://githu
 
 ## Style Settings Plugin
 
-Canvas Roots integrates with the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin to provide a user-friendly way to customize visual options without editing CSS.
+Charted Roots integrates with the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin to provide a user-friendly way to customize visual options without editing CSS.
 
 ### Setup
 
 1. Install the Style Settings plugin from Community Plugins
 2. Open Settings → Style Settings
-3. Find the "Canvas Roots" section
+3. Find the "Charted Roots" section
 4. Adjust colors with visual color pickers
 
-This is an optional enhancement - Canvas Roots works without Style Settings installed.
+This is an optional enhancement - Charted Roots works without Style Settings installed.
 
 ### Family Chart View
 
@@ -223,11 +223,11 @@ The Style Settings panel includes an informational note pointing to this locatio
 
 ## CSS Customization
 
-For advanced customization beyond Style Settings, Canvas Roots uses CSS classes that can be customized in your vault's CSS snippets.
+For advanced customization beyond Style Settings, Charted Roots uses CSS classes that can be customized in your vault's CSS snippets.
 
 ### Canvas Node Classes
 
-Canvas Roots applies classes to generated nodes that can be targeted with CSS:
+Charted Roots applies classes to generated nodes that can be targeted with CSS:
 
 ```css
 /* Example: Style male person nodes */
@@ -265,7 +265,7 @@ The interactive chart view can be styled via CSS:
 
 ## Theme Compatibility
 
-Canvas Roots is designed to work with Obsidian's theme system:
+Charted Roots is designed to work with Obsidian's theme system:
 
 - Colors adapt to light/dark mode automatically
 - Uses CSS custom properties for consistency
@@ -273,10 +273,10 @@ Canvas Roots is designed to work with Obsidian's theme system:
 
 ### Tested Themes
 
-Canvas Roots is tested with:
+Charted Roots is tested with:
 - Default Obsidian theme
 - Minimal
 - Things
 - California Coast
 
-If you encounter styling issues with a specific theme, please [report it](https://github.com/banisterious/obsidian-canvas-roots/issues).
+If you encounter styling issues with a specific theme, please [report it](https://github.com/banisterious/obsidian-charted-roots/issues).

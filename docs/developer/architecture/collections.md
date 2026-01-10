@@ -10,7 +10,7 @@
 
 ## Context and Problem Statement
 
-Canvas Roots needs a way to organize and manage multiple family trees or character groups within a single Obsidian vault. Users fall into several categories:
+Charted Roots needs a way to organize and manage multiple family trees or character groups within a single Obsidian vault. Users fall into several categories:
 
 1. **Genealogists** with multiple disconnected family trees
 2. **World-builders** tracking fictional dynasties, factions, or organizations

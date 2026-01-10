@@ -264,8 +264,8 @@ The v0.10.x and v0.11.x releases focused on data quality, GEDCOM import reliabil
 
 4. **Context Menu Integration:**
    - Consolidated Export submenu (Excalidraw + image formats)
-   - Canvas Roots submenu for place notes
-   - Canvas Roots submenu for blank notes (Add essential properties)
+   - Charted Roots submenu for place notes
+   - Charted Roots submenu for blank notes (Add essential properties)
 
 **Technical Details:**
 - Reuses existing type definitions from gedcomx-types.ts and gramps-types.ts

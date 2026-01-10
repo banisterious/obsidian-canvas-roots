@@ -1,5 +1,5 @@
 /**
- * GEDCOM X Exporter for Canvas Roots
+ * GEDCOM X Exporter for Charted Roots
  *
  * Exports person notes from Obsidian vault to GEDCOM X JSON format.
  * Based on the FamilySearch GEDCOM X specification.
@@ -331,14 +331,14 @@ export class GedcomXExporter {
 		const sourceDescriptions: GedcomXSourceDescription[] = [{
 			id: 'SD1',
 			titles: [{
-				value: `Export from ${options.sourceApp || 'Canvas Roots'}`
+				value: `Export from ${options.sourceApp || 'Charted Roots'}`
 			}],
 			citations: [{
 				value: `Exported on ${new Date().toISOString()}`
 			}]
 		}];
 
-		// Add source records from Canvas Roots
+		// Add source records from Charted Roots
 		for (const source of sources) {
 			const sourceId = sourceIdMap.get(source.crId);
 			if (sourceId) {
@@ -359,7 +359,7 @@ export class GedcomXExporter {
 		const agents: GedcomXAgent[] = [{
 			id: 'A1',
 			names: [{
-				value: options.sourceApp || 'Canvas Roots'
+				value: options.sourceApp || 'Charted Roots'
 			}]
 		}];
 
@@ -909,7 +909,7 @@ export class GedcomXExporter {
 	}
 
 	/**
-	 * Map Canvas Roots event type to GEDCOM X fact type URI
+	 * Map Charted Roots event type to GEDCOM X fact type URI
 	 */
 	private eventTypeToGedcomXType(eventType: string): string | null {
 		const mapping: Record<string, string> = {

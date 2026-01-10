@@ -1,5 +1,5 @@
 /**
- * Merge Service for Canvas Roots
+ * Merge Service for Charted Roots
  *
  * Provides functionality to merge two person records, handling field-level
  * conflict resolution and relationship reconciliation.

@@ -28,7 +28,7 @@
 
 ## 1. Overview
 
-This document defines coding standards for Canvas Roots to ensure consistency and maintainability. These standards are enforced by ESLint (TypeScript) and Stylelint (CSS).
+This document defines coding standards for Charted Roots to ensure consistency and maintainability. These standards are enforced by ESLint (TypeScript) and Stylelint (CSS).
 
 **Key Principles:**
 - Write code that passes linting before committing
@@ -287,8 +287,8 @@ All CSS classes MUST follow BEM (Block__Element--Modifier) with project prefix:
 ```
 
 **Allowed Prefixes:**
-- `cr-` (Canvas Roots) - Short prefix
-- `crc-` (Canvas Roots Component) - Alternate short prefix
+- `cr-` (Charted Roots) - Short prefix
+- `crc-` (Charted Roots Component) - Alternate short prefix
 - `canvas-roots-` - Long form (use sparingly)
 
 #### Class Naming Examples
@@ -313,7 +313,7 @@ Custom properties (CSS variables) MUST use kebab-case with prefix:
 --md-primary-color: #3498db;
 --md-surface-elevation: 2;
 
-/* ✅ CORRECT - Canvas Roots variables */
+/* ✅ CORRECT - Charted Roots variables */
 --cr-node-width: 200px;
 --cr-spacing-horizontal: 50px;
 
@@ -1006,7 +1006,7 @@ The following proper nouns should **remain capitalized** even in sentence case c
 
 | Category | Examples |
 |----------|----------|
-| **Plugin name** | Canvas Roots |
+| **Plugin name** | Charted Roots |
 | **Feature names** | Family Chart, Control Center |
 | **Third-party products** | Excalidraw, Obsidian Canvas, Obsidian Bases |
 | **Industry standards** | GEDCOM, GEDCOM X |
@@ -1017,7 +1017,7 @@ The following proper nouns should **remain capitalized** even in sentence case c
 
 ```typescript
 // ✅ CORRECT - Proper nouns stay capitalized
-.setTitle('Canvas Roots: Regenerate canvas')  // Plugin name capitalized
+.setTitle('Charted Roots: Regenerate canvas')  // Plugin name capitalized
 .setName('Export to Excalidraw')              // Third-party product
 .setName('GEDCOM import options')             // Industry standard acronym
 .setName('Assign Ahnentafel numbers')         // Genealogical system name

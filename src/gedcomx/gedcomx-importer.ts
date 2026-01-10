@@ -1,5 +1,5 @@
 /**
- * GEDCOM X Importer for Canvas Roots
+ * GEDCOM X Importer for Charted Roots
  *
  * Imports GEDCOM X JSON data into the Obsidian vault as person notes.
  * Based on the FamilySearch GEDCOM X specification.
@@ -75,7 +75,7 @@ export interface GedcomXImportResult {
 }
 
 /**
- * Import GEDCOM X files into Canvas Roots
+ * Import GEDCOM X files into Charted Roots
  */
 export class GedcomXImporter {
 	private app: App;

@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Solutions to common issues with Canvas Roots.
+Solutions to common issues with Charted Roots.
 
 ---
 
@@ -26,7 +26,7 @@ Solutions to common issues with Canvas Roots.
 **Solutions:**
 1. Check that the root person has a `cr_id` value
 2. Verify relationships use valid `cr_id` references
-3. Enable debug logging: Settings → Canvas Roots → Logging → Enable debug mode
+3. Enable debug logging: Settings → Charted Roots → Logging → Enable debug mode
 4. Check the developer console (Ctrl/Cmd + Shift + I) for errors
 
 ### Missing people in tree
@@ -66,7 +66,7 @@ Solutions to common issues with Canvas Roots.
 **Symptoms:** Adding a father to one note doesn't add the child to the other.
 
 **Solutions:**
-1. Verify bidirectional sync is enabled: Settings → Canvas Roots → Data
+1. Verify bidirectional sync is enabled: Settings → Charted Roots → Data
 2. Check that "Sync on file modify" is also enabled
 3. Ensure both person notes have valid `cr_id` fields
 4. Check console for sync errors
@@ -108,7 +108,7 @@ Solutions to common issues with Canvas Roots.
 
 If you need to share your GEDCOM file to help debug import issues, use the anonymization tool to protect your privacy:
 
-1. Download the anonymization script: [tools/anonymize_gedcom.py](https://github.com/banisterious/obsidian-canvas-roots/blob/main/tools/anonymize_gedcom.py)
+1. Download the anonymization script: [tools/anonymize_gedcom.py](https://github.com/banisterious/obsidian-charted-roots/blob/main/tools/anonymize_gedcom.py)
 2. Run it on your GEDCOM file:
    ```
    python anonymize_gedcom.py your_file.ged anonymized_file.ged
@@ -211,7 +211,7 @@ If you need to share your GEDCOM file to help debug import issues, use the anony
 
 **Solutions:**
 1. Ensure Excalidraw plugin is installed and up-to-date
-2. Check Canvas Roots version (export fixes in v0.2.1+)
+2. Check Charted Roots version (export fixes in v0.2.1+)
 3. Try re-exporting the Canvas
 4. Verify the Canvas has valid nodes
 
@@ -220,7 +220,7 @@ If you need to share your GEDCOM file to help debug import issues, use the anony
 **Symptoms:** Nodes are off-screen or overlapping strangely.
 
 **Solutions:**
-1. Canvas Roots normalizes negative coordinates automatically
+1. Charted Roots normalizes negative coordinates automatically
 2. Try regenerating the Canvas first, then re-export
 3. In Excalidraw, use "Fit to content" to find nodes
 
@@ -238,7 +238,7 @@ If you need to share your GEDCOM file to help debug import issues, use the anony
 
 ### Obsidian lag after installing plugin
 
-**Symptoms:** Obsidian becomes slow with Canvas Roots enabled.
+**Symptoms:** Obsidian becomes slow with Charted Roots enabled.
 
 **Solutions:**
 1. Disable debug logging if enabled
@@ -250,11 +250,11 @@ If you need to share your GEDCOM file to help debug import issues, use the anony
 
 If these solutions don't resolve your issue:
 
-1. **Check existing issues**: [GitHub Issues](https://github.com/banisterious/obsidian-canvas-roots/issues)
-2. **Enable debug logging**: Settings → Canvas Roots → Logging
+1. **Check existing issues**: [GitHub Issues](https://github.com/banisterious/obsidian-charted-roots/issues)
+2. **Enable debug logging**: Settings → Charted Roots → Logging
 3. **Collect information**:
    - Obsidian version
-   - Canvas Roots version
+   - Charted Roots version
    - Error messages from console
    - Steps to reproduce
-4. **Open a new issue**: [Report a bug](https://github.com/banisterious/obsidian-canvas-roots/issues/new)
+4. **Open a new issue**: [Report a bug](https://github.com/banisterious/obsidian-charted-roots/issues/new)

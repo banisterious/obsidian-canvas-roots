@@ -53,7 +53,7 @@ export class TreeStatisticsModal extends Modal {
 
 			// Extract metadata
 			const metadata = canvasData.metadata?.frontmatter;
-			const isCanvasRootsTree = metadata?.plugin === 'canvas-roots';
+			const isCanvasRootsTree = metadata?.plugin === 'charted-roots' || metadata?.plugin === 'canvas-roots';
 
 			// Count person nodes (file nodes with .md extension)
 			const personNodes = canvasData.nodes.filter(

@@ -1,6 +1,6 @@
 # GEDCOM Blended Family Test File
 
-This test file (`gedcom-sample-blended-family.ged`) contains step-parent and adoptive parent relationships to verify PEDI tag parsing in Canvas Roots GEDCOM import.
+This test file (`gedcom-sample-blended-family.ged`) contains step-parent and adoptive parent relationships to verify PEDI tag parsing in Charted Roots GEDCOM import.
 
 ## Test Scenarios
 

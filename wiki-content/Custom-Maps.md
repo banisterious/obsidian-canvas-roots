@@ -1,6 +1,6 @@
 # Custom Maps
 
-Canvas Roots allows you to create custom map images for fictional worlds, historical maps, or any other specialized geographic visualization. This page covers the complete workflow from creation to alignment.
+Charted Roots allows you to create custom map images for fictional worlds, historical maps, or any other specialized geographic visualization. This page covers the complete workflow from creation to alignment.
 
 ---
 
@@ -290,7 +290,7 @@ Right-click a map thumbnail (or click the three-dot menu button) to access:
 
 ## Coordinate Systems
 
-Canvas Roots supports two coordinate systems for custom maps:
+Charted Roots supports two coordinate systems for custom maps:
 
 ### Geographic (Default)
 

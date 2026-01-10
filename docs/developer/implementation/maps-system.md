@@ -278,7 +278,7 @@ marker.on('contextmenu', (e: L.LeafletMouseEvent) => {
 **Implementation:**
 ```typescript
 // User-Agent required by Nominatim
-headers: { 'User-Agent': 'Canvas Roots Obsidian Plugin' }
+headers: { 'User-Agent': 'Charted Roots Obsidian Plugin' }
 
 // Updates place notes with flat property format
 coordinates_lat: 48.8566

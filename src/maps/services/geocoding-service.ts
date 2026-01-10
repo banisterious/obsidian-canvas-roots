@@ -61,7 +61,7 @@ export interface BulkGeocodingResult {
  * User-Agent header for Nominatim API
  * Required by Nominatim usage policy
  */
-const USER_AGENT = 'Canvas Roots Obsidian plugin (https://github.com/banisterious/obsidian-canvas-roots)';
+const USER_AGENT = 'Charted Roots Obsidian plugin (https://github.com/banisterious/obsidian-charted-roots)';
 
 /**
  * Rate limit delay in milliseconds (Nominatim requires 1 request/second)

@@ -2,7 +2,7 @@
  * Type definitions for person note frontmatter
  *
  * These interfaces define the expected structure of frontmatter
- * in person notes managed by Canvas Roots.
+ * in person notes managed by Charted Roots.
  */
 
 import type { SourcedFacts } from '../sources/types/source-types';

@@ -29,7 +29,7 @@ export interface RecentImportInfo {
 
 /**
  * Recent file entry for Dashboard
- * Tracks files accessed via Canvas Roots features
+ * Tracks files accessed via Charted Roots features
  */
 export interface RecentFileEntry {
 	/** File path */
@@ -416,9 +416,9 @@ export interface CanvasRootsSettings {
 	enableInclusiveParents: boolean;
 	/** Label for gender-neutral parent field (e.g., "Parents", "Guardians", "Progenitors") */
 	parentFieldLabel: string;
-	// Plugin rename migration (Canvas Roots → Charted Roots)
+	// Plugin rename migration (Charted Roots → Charted Roots)
 	/**
-	 * True when migration from Canvas Roots to Charted Roots is complete.
+	 * True when migration from Charted Roots to Charted Roots is complete.
 	 * Migration updates canvas metadata and code block types in vault files.
 	 */
 	migratedToChartedRoots?: boolean;
@@ -552,11 +552,11 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	horizontalSpacing: 400,  // Base horizontal spacing (multiplied by 1.5x in layout engine)
 	verticalSpacing: 250,    // Vertical spacing between generations (used directly)
 	autoGenerateCrId: true,
-	peopleFolder: 'Canvas Roots/People',
-	placesFolder: 'Canvas Roots/Places',
-	mapsFolder: 'Canvas Roots/Places/Maps',
-	schemasFolder: 'Canvas Roots/Schemas',
-	canvasesFolder: 'Canvas Roots/Canvases',
+	peopleFolder: 'Charted Roots/People',
+	placesFolder: 'Charted Roots/Places',
+	mapsFolder: 'Charted Roots/Places/Maps',
+	schemasFolder: 'Charted Roots/Schemas',
+	canvasesFolder: 'Charted Roots/Canvases',
 	logExportPath: '.canvas-roots/logs',
 	logLevel: 'debug',
 	obfuscateLogExports: true,  // Secure by default - protect PII in log exports
@@ -630,9 +630,9 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	fictionalDateSystems: [],      // User-defined date systems (built-ins are always available)
 	showBuiltInDateSystems: true,  // Whether to show built-in date systems (Middle-earth, Westeros, etc.)
 	// Universe settings
-	universesFolder: 'Canvas Roots/Universes',  // Default folder for universe notes
+	universesFolder: 'Charted Roots/Universes',  // Default folder for universe notes
 	// Organization settings
-	organizationsFolder: 'Canvas Roots/Organizations',  // Default folder for organization notes
+	organizationsFolder: 'Charted Roots/Organizations',  // Default folder for organization notes
 	customOrganizationTypes: [],   // User-defined organization types (built-ins are always available)
 	showBuiltInOrganizationTypes: true,  // Whether to show built-in organization types in UI
 	organizationTypeCustomizations: {},  // Overrides for built-in organization types
@@ -641,11 +641,11 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	organizationCategoryCustomizations: {}, // Overrides for built-in organization category names
 	hiddenOrganizationCategories: [],    // Hidden/deleted built-in organization categories
 	// Source management settings
-	sourcesFolder: 'Canvas Roots/Sources',  // Default folder for source notes
+	sourcesFolder: 'Charted Roots/Sources',  // Default folder for source notes
 	// Notes folder (for separate note files - Phase 4 Gramps integration)
-	notesFolder: 'Canvas Roots/Notes',      // Default folder for note entity files
+	notesFolder: 'Charted Roots/Notes',      // Default folder for note entity files
 	// Bases folder
-	basesFolder: 'Canvas Roots/Bases',      // Default folder for base files
+	basesFolder: 'Charted Roots/Bases',      // Default folder for base files
 	defaultCitationFormat: 'evidence_explained',  // Evidence Explained is the genealogy standard
 	showSourceThumbnails: true,   // Show media previews in gallery
 	thumbnailSize: 'medium',      // Thumbnail size (small/medium/large)
@@ -663,7 +663,7 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	factCoverageThreshold: 6,      // Number of facts for 100% coverage calculation
 	showResearchGapsInStatus: true, // Show research gap summary when tracking is enabled
 	// Property aliases for custom frontmatter names
-	propertyAliases: {},           // Maps user property name → Canvas Roots canonical name
+	propertyAliases: {},           // Maps user property name → Charted Roots canonical name
 	// Value aliases for custom property values
 	valueAliases: {
 		eventType: {},             // Maps user event type → canonical event type
@@ -673,8 +673,8 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 		noteType: {}               // Maps user note type (cr_type/type) → canonical note type
 	},
 	// Event management settings
-	eventsFolder: 'Canvas Roots/Events',      // Default folder for event notes
-	timelinesFolder: 'Canvas Roots/Timelines', // Default folder for timeline notes
+	eventsFolder: 'Charted Roots/Events',      // Default folder for event notes
+	timelinesFolder: 'Charted Roots/Timelines', // Default folder for timeline notes
 	customEventTypes: [],                      // User-defined event types (built-ins are always available)
 	showBuiltInEventTypes: true,               // Whether to show built-in event types in UI
 	eventTypeCustomizations: {},               // Overrides for built-in event types
@@ -697,7 +697,7 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	calendariumIntegration: 'off',             // Default: no integration (invisible to users without Calendarium)
 	syncCalendariumEvents: false,              // Default: don't show fc-* dates on timelines
 	// Reports settings
-	reportsFolder: 'Canvas Roots/Reports',     // Default folder for generated reports
+	reportsFolder: 'Charted Roots/Reports',     // Default folder for generated reports
 	// Sex value normalization
 	sexNormalizationMode: 'standard',          // Default: normalize to GEDCOM M/F
 	// Dashboard settings
@@ -756,7 +756,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 			// Access Obsidian's internal settings API (not exported in types)
 			const appWithSettings = this.app as App & { setting?: { close: () => void } };
 			appWithSettings.setting?.close();
-			this.app.workspace.trigger('canvas-roots:open-control-center', 'preferences');
+			this.app.workspace.trigger('charted-roots:open-control-center', 'preferences');
 		});
 		preferencesCallout.appendText(' for easier access alongside other configuration options.');
 
@@ -767,7 +767,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 		dataDetails.setAttribute('open', ''); // Open by default
 		const dataSummary = dataDetails.createEl('summary');
 		dataSummary.createSpan({ text: 'Data & detection' });
-		dataSummary.createSpan({ cls: 'cr-section-desc', text: 'How Canvas Roots identifies and syncs notes' });
+		dataSummary.createSpan({ cls: 'cr-section-desc', text: 'How Charted Roots identifies and syncs notes' });
 		const dataContent = dataDetails.createDiv({ cls: 'cr-section-content' });
 
 		// Auto-generate cr_id

@@ -1,7 +1,7 @@
 # Plan: Timeline Event Description Display (Issue #157)
 
 - **Status:** Planned
-- **GitHub Issue:** [#157](https://github.com/banisterious/obsidian-canvas-roots/issues/157)
+- **GitHub Issue:** [#157](https://github.com/banisterious/obsidian-charted-roots/issues/157)
 
 ---
 

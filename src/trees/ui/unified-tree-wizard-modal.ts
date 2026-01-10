@@ -1796,7 +1796,7 @@ export class UnifiedTreeWizardModal extends Modal {
 				applyCanvasPrivacy: this.formData.applyCanvasPrivacy,
 				canvasPrivacyFormat: this.formData.canvasPrivacyFormat,
 				canvasRootsMetadata: {
-					plugin: 'canvas-roots',
+					plugin: 'charted-roots',
 					generation: {
 						rootCrId: this.formData.rootPerson.crId,
 						rootPersonName: this.formData.rootPerson.name,
@@ -1843,7 +1843,7 @@ export class UnifiedTreeWizardModal extends Modal {
 
 			const folder = this.formData.saveFolder.trim() ||
 				this.plugin.settings.canvasesFolder ||
-				'Canvas Roots/Canvases';
+				'Charted Roots/Canvases';
 
 			await ensureFolderExists(this.app, folder);
 			const filePath = normalizePath(`${folder}/${fileName}`);
@@ -1968,7 +1968,7 @@ export class UnifiedTreeWizardModal extends Modal {
 
 			const folder = this.formData.saveFolder.trim() ||
 				this.plugin.settings.canvasesFolder ||
-				'Canvas Roots/Canvases';
+				'Charted Roots/Canvases';
 
 			await ensureFolderExists(this.app, folder);
 			const canvasPath = normalizePath(`${folder}/${fileName}`);

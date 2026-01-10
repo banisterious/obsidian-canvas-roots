@@ -48,7 +48,7 @@ this.registerEvent(
         if (useSubmenu) {
           menu.addItem((item) => {
             const submenu: Menu = item
-              .setTitle('Canvas Roots')
+              .setTitle('Charted Roots')
               .setIcon('git-fork')
               .setSubmenu();
 
@@ -67,7 +67,7 @@ this.registerEvent(
           // Mobile: flat menu with prefix
           menu.addItem((item) => {
             item
-              .setTitle('Canvas Roots: Generate family tree')
+              .setTitle('Charted Roots: Generate family tree')
               .setIcon('git-fork')
               .onClick(() => {
                 const modal = new ControlCenterModal(this.app, this);
@@ -121,8 +121,8 @@ public openWithPerson(file: TFile): void {
 On mobile devices, the plugin adapts its UI patterns for touch interaction:
 
 **Context Menus:**
-- Desktop: Nested submenus under a "Canvas Roots" parent item
-- Mobile: Flat menu with prefixed items (e.g., "Canvas Roots: Generate family tree")
+- Desktop: Nested submenus under a "Charted Roots" parent item
+- Mobile: Flat menu with prefixed items (e.g., "Charted Roots: Generate family tree")
 
 **Control Center Modal:**
 - Desktop: Fixed sidebar with navigation drawer always visible
@@ -154,13 +154,13 @@ See [Mobile Styling](../styling.md#mobile-styling) for CSS implementation detail
 
 ## Control Center Architecture
 
-The Control Center (`src/ui/control-center.ts`) is the primary user interface for Canvas Roots, providing a centralized modal with 17 tabs covering all plugin functionality. At 17,000+ lines, it's the largest file in the codebase.
+The Control Center (`src/ui/control-center.ts`) is the primary user interface for Charted Roots, providing a centralized modal with 17 tabs covering all plugin functionality. At 17,000+ lines, it's the largest file in the codebase.
 
 ### Modal Structure
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  [≡]  Canvas Roots Control Center            [Tab Title]   │  ← Sticky Header
+│  [≡]  Charted Roots Control Center            [Tab Title]   │  ← Sticky Header
 ├─────────────────────────────────────────────────────────────┤
 │  ┌──────────┐  ┌─────────────────────────────────────────┐  │
 │  │ Status   │  │                                         │  │
@@ -190,7 +190,7 @@ class ControlCenterModal extends Modal {
 }
 ```
 
-**CSS class convention:** All Control Center classes use the `crc-` prefix (Canvas Roots Control center).
+**CSS class convention:** All Control Center classes use the `crc-` prefix (Charted Roots Control center).
 
 ### Tab System
 
@@ -405,7 +405,7 @@ if (Platform.isMobile) {
 
 ## Wizard Modals
 
-Canvas Roots uses multi-step wizard modals for complex workflows that benefit from guided step-by-step completion.
+Charted Roots uses multi-step wizard modals for complex workflows that benefit from guided step-by-step completion.
 
 ### Map Creation Wizard
 
@@ -721,10 +721,10 @@ interface LastExportInfo {
 
 ### Settings Tab vs Preferences Tab
 
-Canvas Roots has two places for configuration:
+Charted Roots has two places for configuration:
 
 **Obsidian Settings Tab** (`CanvasRootsSettingTab`):
-- Accessed via Settings → Community Plugins → Canvas Roots
+- Accessed via Settings → Community Plugins → Charted Roots
 - Contains: Logging level, log export path, log obfuscation toggle
 - Minimal surface area—most settings moved to Preferences tab
 
@@ -734,7 +734,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'Canvas Roots Settings' });
+    containerEl.createEl('h2', { text: 'Charted Roots Settings' });
 
     // Logging settings only
     new Setting(containerEl)
@@ -787,10 +787,10 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
   universesFolder: 'Universes',
   mapsFolder: 'Maps',
   schemasFolder: 'Schemas',
-  canvasesFolder: 'Canvas Roots',
+  canvasesFolder: 'Charted Roots',
   reportsFolder: 'Reports',
   timelinesFolder: 'Timelines',
-  basesFolder: 'Canvas Roots/Bases',
+  basesFolder: 'Charted Roots/Bases',
   stagingFolder: 'Staging',
 
   // Styling

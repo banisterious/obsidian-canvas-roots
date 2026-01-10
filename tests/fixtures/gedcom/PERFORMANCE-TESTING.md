@@ -1,6 +1,6 @@
 # Performance Testing Guide
 
-This guide documents how to conduct performance testing for Canvas Roots, particularly for the Family Chart feature with large datasets.
+This guide documents how to conduct performance testing for Charted Roots, particularly for the Family Chart feature with large datasets.
 
 ## Quick Start
 
@@ -33,7 +33,7 @@ When testing, capture these metrics from the browser console:
 The Family Chart logs detailed timing information:
 
 ```
-[Canvas Roots] Chart init timing: {
+[Charted Roots] Chart init timing: {
   dataLoad: "12.5ms",      // Time to load person data
   chartCreate: "45.2ms",   // Time to create chart instance
   initialRender: "311.5ms", // Time for initial render
@@ -57,7 +57,7 @@ The Family Chart logs detailed timing information:
 1. Create a fresh test vault
 2. Import a GEDCOM test file using the plugin's import wizard
 3. Open browser developer tools (F12 → Console)
-4. Filter console by "Canvas Roots" to focus on relevant logs
+4. Filter console by "Charted Roots" to focus on relevant logs
 
 ### 2. Test Family Chart Performance
 
@@ -145,7 +145,7 @@ Use this template to record benchmark results:
 
 1. **Chart Rendering** (~300-500ms for 600 people)
    - The family-chart library's initial render is the main bottleneck
-   - This is in the third-party library, not Canvas Roots code
+   - This is in the third-party library, not Charted Roots code
    - Data loading itself is very fast (~10-15ms)
 
 2. **Fit Operation** (~300-500ms for 600 people)

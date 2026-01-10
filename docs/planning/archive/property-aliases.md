@@ -2,7 +2,7 @@
 
 ## Overview
 
-Property Aliases allow users to map custom frontmatter property names to Canvas Roots' expected fields. This enables compatibility with existing vaults, other plugins, and personal naming preferences without requiring users to rename their existing properties.
+Property Aliases allow users to map custom frontmatter property names to Charted Roots' expected fields. This enables compatibility with existing vaults, other plugins, and personal naming preferences without requiring users to rename their existing properties.
 
 ## Motivation
 
@@ -10,10 +10,10 @@ A community member requested the ability to use custom property names:
 
 > "Can I use 'birthdate' instead of 'born'? My vault already has hundreds of notes with 'birthdate'."
 
-Currently, Canvas Roots requires specific property names (`born`, `died`, `father`, `mother`, etc.). Users with established vaults or those using other plugins with different conventions face a difficult choice:
+Currently, Charted Roots requires specific property names (`born`, `died`, `father`, `mother`, etc.). Users with established vaults or those using other plugins with different conventions face a difficult choice:
 1. Rename all existing properties (potentially breaking other workflows)
 2. Maintain duplicate properties (error-prone and tedious)
-3. Not use Canvas Roots
+3. Not use Charted Roots
 
 Property Aliases solves this by allowing users to define mappings like `birthdate → born` without changing their actual frontmatter.
 
@@ -38,7 +38,7 @@ Aliases are configured in plugin settings, stored as a mapping object:
 
 ```typescript
 interface PropertyAliases {
-  // Maps user's property name → Canvas Roots internal name
+  // Maps user's property name → Charted Roots internal name
   [userProperty: string]: string;
 }
 
@@ -60,7 +60,7 @@ interface PropertyAliases {
 Full support for all person note properties:
 
 #### Core Identity
-| Canvas Roots Property | Common Alternatives |
+| Charted Roots Property | Common Alternatives |
 |-----------------------|---------------------|
 | `name` | full_name, display_name |
 | `cr_id` | id, person_id, uuid |
@@ -69,19 +69,19 @@ Full support for all person note properties:
 | `maiden_name` | birth_name, née |
 
 #### Dates
-| Canvas Roots Property | Common Alternatives |
+| Charted Roots Property | Common Alternatives |
 |-----------------------|---------------------|
 | `born` | birthdate, birth_date, dob, date_of_birth |
 | `died` | deathdate, death_date, dod, date_of_death |
 
 #### Places
-| Canvas Roots Property | Common Alternatives |
+| Charted Roots Property | Common Alternatives |
 |-----------------------|---------------------|
 | `birth_place` | birthplace, place_of_birth, born_in |
 | `death_place` | deathplace, place_of_death, died_in |
 
 #### Relationships
-| Canvas Roots Property | Common Alternatives |
+| Charted Roots Property | Common Alternatives |
 |-----------------------|---------------------|
 | `father` | father_name, dad, père |
 | `father_id` | father_cr_id |
@@ -93,7 +93,7 @@ Full support for all person note properties:
 | `children_id` | child_cr_id |
 
 #### Other
-| Canvas Roots Property | Common Alternatives |
+| Charted Roots Property | Common Alternatives |
 |-----------------------|---------------------|
 | `occupation` | job, profession, career |
 | `universe` | world, setting |
@@ -107,7 +107,7 @@ Full support for all person note properties:
 
 When reading a person note:
 
-1. Check for Canvas Roots' canonical property name first
+1. Check for Charted Roots' canonical property name first
 2. If not found, check configured aliases
 3. First matching alias wins (order not guaranteed)
 4. If both canonical and alias exist, canonical takes precedence
@@ -174,8 +174,8 @@ Add "Property aliases" card to Preferences tab in Control Center.
 │ Property aliases                                           [?]  │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│ Map your custom property names to Canvas Roots fields.         │
-│ Your frontmatter stays unchanged - Canvas Roots reads your     │
+│ Map your custom property names to Charted Roots fields.         │
+│ Your frontmatter stays unchanged - Charted Roots reads your     │
 │ property names and treats them as the mapped field.            │
 │                                                                 │
 │ ┌─────────────────────────────────────────────────────────────┐ │
@@ -189,8 +189,8 @@ Add "Property aliases" card to Preferences tab in Control Center.
 │ [+ Add alias]                                                   │
 │                                                                 │
 │ ┌─────────────────────────────────────────────────────────────┐ │
-│ │ ℹ️ Tip: If both your alias and the Canvas Roots property    │ │
-│ │ exist in a note, the Canvas Roots property takes precedence │ │
+│ │ ℹ️ Tip: If both your alias and the Charted Roots property    │ │
+│ │ exist in a note, the Charted Roots property takes precedence │ │
 │ └─────────────────────────────────────────────────────────────┘ │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -208,7 +208,7 @@ Add "Property aliases" card to Preferences tab in Control Center.
 │ │ birthdate                                   │ │
 │ └─────────────────────────────────────────────┘ │
 │                                                 │
-│ Maps to Canvas Roots property                   │
+│ Maps to Charted Roots property                   │
 │ ┌─────────────────────────────────────────────┐ │
 │ │ born                                    [▼] │ │
 │ └─────────────────────────────────────────────┘ │
@@ -268,12 +268,12 @@ If a note has both the canonical property AND an aliased property:
 
 ### Migration
 
-Users with existing aliased vaults don't need to change anything - just configure aliases once and Canvas Roots works with their existing data.
+Users with existing aliased vaults don't need to change anything - just configure aliases once and Charted Roots works with their existing data.
 
 ## Related Documentation
 
-- [Frontmatter Reference](https://github.com/banisterious/obsidian-canvas-roots/wiki/Frontmatter-Reference) - Canonical property names
-- [Getting Started](https://github.com/banisterious/obsidian-canvas-roots/wiki/Getting-Started) - Initial setup
+- [Frontmatter Reference](https://github.com/banisterious/obsidian-charted-roots/wiki/Frontmatter-Reference) - Canonical property names
+- [Getting Started](https://github.com/banisterious/obsidian-charted-roots/wiki/Getting-Started) - Initial setup
 
 ## Status
 
@@ -282,7 +282,7 @@ Users with existing aliased vaults don't need to change anything - just configur
 ## Success Criteria
 
 - [x] Users can define custom property aliases in settings
-- [x] All Canvas Roots features work correctly with aliased properties
+- [x] All Charted Roots features work correctly with aliased properties
 - [x] Canonical properties take precedence over aliases
 - [x] No changes required to user's existing frontmatter
 - [x] Import writes to aliased property names

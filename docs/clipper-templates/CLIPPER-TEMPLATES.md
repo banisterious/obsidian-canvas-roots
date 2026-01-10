@@ -1,11 +1,11 @@
-# Web Clipper Templates for Canvas Roots
+# Web Clipper Templates for Charted Roots
 
-This directory contains official Web Clipper templates optimized for genealogical research with Canvas Roots.
+This directory contains official Web Clipper templates optimized for genealogical research with Charted Roots.
 
 ## Prerequisites
 
 1. **Install Obsidian Web Clipper** - Install the official [Obsidian Web Clipper](https://obsidian.md/clipper) browser extension
-2. **Configure output path** - After importing a template, edit the `path` field to match your Canvas Roots staging folder
+2. **Configure output path** - After importing a template, edit the `path` field to match your Charted Roots staging folder
    - Example: If your staging folder is `Family Tree/Staging`, set `"path": "Family Tree/Staging"`
    - Or configure the default output folder in Web Clipper settings
 3. **Enable Interpreter (optional)** - Some templates use AI extraction. Configure in Web Clipper settings → Interpreter
@@ -42,7 +42,7 @@ Simple, fast template that extracts structured data from Find a Grave memorial p
 - No Interpreter needed
 - Works immediately after import
 
-**Canvas Roots Properties:**
+**Charted Roots Properties:**
 - `clip_source_type`: "findagrave"
 - `clipped_from`: Memorial URL
 - `clipped_date`: Date clipped
@@ -74,7 +74,7 @@ Enhanced template that uses AI to extract person's name and parse biography/fami
 - Interpreter must be enabled for name and biography extraction
 - Recommended model: Claude Sonnet 4.5 or equivalent
 
-**Canvas Roots Properties:**
+**Charted Roots Properties:**
 - `clip_source_type`: "findagrave"
 - `clipped_from`: Memorial URL
 - `clipped_date`: Date clipped
@@ -107,7 +107,7 @@ AI-powered template that extracts biographical information from obituaries acros
 - Interpreter must be enabled
 - Recommended model: Claude Sonnet 4.5 or equivalent
 
-**Canvas Roots Properties:**
+**Charted Roots Properties:**
 - `clip_source_type`: "obituary"
 - `clipped_from`: Obituary URL
 - `clipped_date`: Date clipped
@@ -139,7 +139,7 @@ AI-powered template that extracts biographical information from any FamilySearch
 - Interpreter must be enabled
 - Recommended model: Claude Sonnet 4.5 or equivalent
 
-**Canvas Roots Properties:**
+**Charted Roots Properties:**
 - `clip_source_type`: "familysearch"
 - `clipped_from`: FamilySearch record URL
 - `clipped_date`: Date clipped
@@ -171,7 +171,7 @@ AI-powered template that extracts structured biographical information from Wikip
 - Interpreter must be enabled
 - Recommended model: Claude Sonnet 4.5 or equivalent
 
-**Canvas Roots Properties:**
+**Charted Roots Properties:**
 - `clip_source_type`: "wikipedia"
 - `clipped_from`: Wikipedia URL
 - `clipped_date`: Date clipped
@@ -201,14 +201,14 @@ Simple template that captures Wikipedia article content without AI processing. F
 - No Interpreter needed
 - Works immediately after import
 
-**Canvas Roots Properties:**
+**Charted Roots Properties:**
 - `clip_source_type`: "wikipedia"
 - `clipped_from`: Wikipedia URL
 - `clipped_date`: Date clipped
 - `note_type`: "person"
 - `name`: Page title
 
-**Note:** This template is ideal for quick reference capture when you want the full article text preserved. For structured extraction into Canvas Roots properties, use the LLM version.
+**Note:** This template is ideal for quick reference capture when you want the full article text preserved. For structured extraction into Charted Roots properties, use the LLM version.
 
 ---
 
@@ -234,7 +234,7 @@ AI-powered template that extracts structured geographic place data from Wikidata
 - Interpreter must be enabled
 - Recommended model: Claude Sonnet 4.5 or equivalent
 
-**Canvas Roots Properties:**
+**Charted Roots Properties:**
 - `clip_source_type`: "wikidata"
 - `clipped_from`: Wikidata URL
 - `clipped_date`: Date clipped
@@ -246,15 +246,15 @@ AI-powered template that extracts structured geographic place data from Wikidata
 - `parent_place`
 - `wikidata_id`
 
-**Note:** This template works seamlessly with Canvas Roots' enhanced staging promotion workflow. Promoted Wikidata places are automatically assigned a `cr_id`, routed to the Places folder, and have clipper metadata removed, making them fully functional Canvas Roots entities.
+**Note:** This template works seamlessly with Charted Roots' enhanced staging promotion workflow. Promoted Wikidata places are automatically assigned a `cr_id`, routed to the Places folder, and have clipper metadata removed, making them fully functional Charted Roots entities.
 
 ---
 
-## Using Templates with Canvas Roots
+## Using Templates with Charted Roots
 
 Once you've imported a template and clipped content:
 
-1. **Web Clipper auto-detects clipped notes** - Canvas Roots monitors your staging folder for notes with clipper metadata
+1. **Web Clipper auto-detects clipped notes** - Charted Roots monitors your staging folder for notes with clipper metadata
 2. **Dashboard shows clip count** - See "X clips (Y new)" in the Staging card
 3. **Review in Staging Manager** - Click "Review" to open Staging Manager
 4. **Filter clipped notes** - Use toggle buttons: [All] [Clipped] [Other]
@@ -265,7 +265,7 @@ See the [Web Clipper Integration](../wiki-content/Web-Clipper-Integration.md) wi
 ## Template Compatibility
 
 - **Schema Version:** 0.1.0
-- **Canvas Roots Version:** v0.18.25+
+- **Charted Roots Version:** v0.18.25+
 - **Web Clipper Version:** Latest recommended
 
 ## Contributing Templates
@@ -273,7 +273,7 @@ See the [Web Clipper Integration](../wiki-content/Web-Clipper-Integration.md) wi
 Have a genealogical Web Clipper template you'd like to share? Please:
 
 1. Test thoroughly on multiple example pages
-2. Include Canvas Roots clipper metadata properties:
+2. Include Charted Roots clipper metadata properties:
    - `clip_source_type` (e.g., "ancestry", "familysearch", etc.)
    - `clipped_from` (URL: `{{url}}`)
    - `clipped_date` (Date: `{{date}}`)
@@ -292,12 +292,12 @@ Have a genealogical Web Clipper template you'd like to share? Please:
 - CSS selectors may have changed - inspect page HTML and update selectors
 - For AI-extracted fields, ensure Interpreter is enabled and running
 
-**Clips not detected by Canvas Roots:**
-- Verify Web Clipper output folder matches Canvas Roots staging folder
+**Clips not detected by Charted Roots:**
+- Verify Web Clipper output folder matches Charted Roots staging folder
 - Ensure template includes `clip_source_type` or `clipped_from` property
 
 ## Resources
 
 - [Web Clipper Integration Wiki](../wiki-content/Web-Clipper-Integration.md)
 - [Obsidian Web Clipper Documentation](https://help.obsidian.md/Clipper)
-- [Canvas Roots GitHub Issues](https://github.com/banisterious/obsidian-canvas-roots/issues)
+- [Charted Roots GitHub Issues](https://github.com/banisterious/obsidian-charted-roots/issues)

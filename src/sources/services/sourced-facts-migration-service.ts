@@ -32,7 +32,7 @@ function logLegacyFormatWarning(count: number): void {
 	legacyWarningShown = true;
 
 	console.warn(
-		`[Canvas Roots] Found ${count} person note(s) using the legacy 'sourced_facts' property. ` +
+		`[Charted Roots] Found ${count} person note(s) using the legacy 'sourced_facts' property. ` +
 		`This nested format is deprecated in favor of flat 'sourced_*' properties. ` +
 		`Use the Cleanup Wizard to migrate to the flat format.`
 	);

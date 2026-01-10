@@ -1,5 +1,5 @@
 /**
- * Default built-in place types for Canvas Roots
+ * Default built-in place types for Charted Roots
  *
  * These types cover common geographic and political divisions,
  * from global (planet) to local (buildings).

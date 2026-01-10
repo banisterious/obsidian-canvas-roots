@@ -1,5 +1,5 @@
 /**
- * Person note writer utilities for Canvas Roots
+ * Person note writer utilities for Charted Roots
  * Creates person notes with proper YAML frontmatter
  */
 

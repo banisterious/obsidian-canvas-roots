@@ -4,7 +4,7 @@ Planning document for extending media attachment support to all entity types.
 
 - **Status:** Complete (Phases 1, 2, 3, 3.5, 4 & 5)
 - **Priority:** High
-- **GitHub Issue:** [#20](https://github.com/banisterious/obsidian-canvas-roots/issues/20)
+- **GitHub Issue:** [#20](https://github.com/banisterious/obsidian-charted-roots/issues/20)
 - **Branch:** `feature/universal-media-linking`
 - **Created:** 2025-12-20
 - **Updated:** 2025-12-22
@@ -55,7 +55,7 @@ Currently, media attachment is only available for Source notes. This limits user
 3. **Illustrate places** — Location photos, historical maps, property records
 4. **Brand organizations** — Logos, heraldry, group photos
 
-Additionally, Gramps exports as `.gpkg` packages bundle media files with XML data, but Canvas Roots cannot import these because other entity types don't support media.
+Additionally, Gramps exports as `.gpkg` packages bundle media files with XML data, but Charted Roots cannot import these because other entity types don't support media.
 
 ---
 
@@ -351,8 +351,8 @@ export class MediaService {
 #### Scope
 
 1. **Context menu actions**
-   - Add "Link Media" and "Manage media..." to **Canvas Roots** submenu
-   - All Canvas Roots actions grouped under single submenu
+   - Add "Link Media" and "Manage media..." to **Charted Roots** submenu
+   - All Charted Roots actions grouped under single submenu
    - Opens file picker modal with search and filters
    - Adds wikilink to entity's `media` array
 
@@ -396,13 +396,13 @@ export class MediaService {
 
 #### Implementation Notes
 
-**Context Menu (Canvas Roots Submenu):**
+**Context Menu (Charted Roots Submenu):**
 
 ```typescript
-// All Canvas Roots actions under submenu
+// All Charted Roots actions under submenu
 menu.addItem((item) => {
   item
-    .setTitle('Canvas Roots')
+    .setTitle('Charted Roots')
     .setIcon('trees')
     .setSubmenu()
     .addItem((sub) => {
@@ -676,7 +676,7 @@ async updateMediaOrder(file: TFile, mediaRefs: string[]): Promise<void> {
    - Show initials when no media present
    - Optional: show placeholder icon
 
-3. **Plugin Settings** (in Canvas Roots settings tab)
+3. **Plugin Settings** (in Charted Roots settings tab)
    - Enable/disable thumbnails globally
    - Thumbnail size setting
    - Thumbnail position setting
@@ -743,7 +743,7 @@ Users with large vaults often have many unrelated media files (screenshots, app 
 
 #### Solution
 
-Add a "Media folders" setting that limits where Canvas Roots looks for media files. This affects discovery operations (finding unlinked files, counting vault media) but not operations on already-linked media.
+Add a "Media folders" setting that limits where Charted Roots looks for media files. This affects discovery operations (finding unlinked files, counting vault media) but not operations on already-linked media.
 
 #### Scope
 
@@ -1088,7 +1088,7 @@ When enabled:
 
 ### Supported Media Types
 
-Canvas Roots supports all file types that Obsidian can embed natively, plus document formats.
+Charted Roots supports all file types that Obsidian can embed natively, plus document formats.
 
 **File Type Categories:**
 
@@ -1176,7 +1176,7 @@ These are deferred to keep initial implementation simple.
 
 ### Media File Organization
 
-Media files can live anywhere in the vault. Canvas Roots links to files but doesn't manage their location—users organize files according to their own preferences.
+Media files can live anywhere in the vault. Charted Roots links to files but doesn't manage their location—users organize files according to their own preferences.
 
 **Linking Scenarios:**
 
@@ -1255,9 +1255,9 @@ attachments/
 
 **Non-Goals:**
 
-- Canvas Roots does not move or copy files on linking (links to existing files)
-- Canvas Roots does not enforce folder structure
-- Canvas Roots does not rename files on linking (except during import with prefix option)
+- Charted Roots does not move or copy files on linking (links to existing files)
+- Charted Roots does not enforce folder structure
+- Charted Roots does not rename files on linking (except during import with prefix option)
 
 ---
 

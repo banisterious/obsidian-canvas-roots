@@ -1,6 +1,6 @@
 # Third-Party Libraries
 
-Canvas Roots depends on several external libraries for specialized functionality. This section documents how each is used.
+Charted Roots depends on several external libraries for specialized functionality. This section documents how each is used.
 
 ## Table of Contents
 
@@ -124,7 +124,7 @@ chart.updateTree({ initial: true });
 | SVG | `setCardSvg()` | Default, Rectangle/Compact/Mini styles |
 | HTML | `setCardHtml()` | Circle style with custom DOM structure |
 
-**Card styles (Canvas Roots):**
+**Card styles (Charted Roots):**
 
 | Style | Renderer | Card Dimensions |
 |-------|----------|-----------------|

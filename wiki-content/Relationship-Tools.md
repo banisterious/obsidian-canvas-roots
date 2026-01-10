@@ -25,7 +25,7 @@ The Relationship Calculator uses BFS (breadth-first search) pathfinding to find 
 
 **Method 1: Command Palette**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Calculate relationship between people"
+2. Type "Charted Roots: Calculate relationship between people"
 3. Select the first person
 4. Select the second person
 5. View the result
@@ -69,7 +69,7 @@ Click **Copy result** to copy the relationship description for use in notes or d
 
 ## Reference Numbering Systems
 
-Canvas Roots supports standard genealogical numbering systems for organizing and referencing individuals in your family tree.
+Charted Roots supports standard genealogical numbering systems for organizing and referencing individuals in your family tree.
 
 ### Why Use Reference Numbers?
 
@@ -163,7 +163,7 @@ When you import GEDCOM, Gramps, or CSV data, you'll be prompted to assign refere
 
 **Via Command Palette:**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Assign [system] numbers"
+2. Type "Charted Roots: Assign [system] numbers"
 3. Select the reference/root person
 4. Numbers are assigned to all related individuals
 
@@ -187,7 +187,7 @@ You can have multiple numbering systems assigned simultaneously — they don't c
 
 **Via Command Palette:**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Clear reference numbers"
+2. Type "Charted Roots: Clear reference numbers"
 3. Select which numbering type to clear
 4. Numbers are removed from all person notes
 
@@ -232,7 +232,7 @@ Tracks all descendants regardless of gender (includes everyone descended from th
 
 **Via Command Palette:**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Assign lineage from root person"
+2. Type "Charted Roots: Assign lineage from root person"
 3. Select the root person
 4. Choose lineage type and enter name
 
@@ -256,7 +256,7 @@ This occurs when:
 
 **Via Command Palette:**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Remove lineage tags"
+2. Type "Charted Roots: Remove lineage tags"
 3. Select which lineage to remove (or all lineages)
 4. Tags are removed from all person notes
 
@@ -269,11 +269,11 @@ The `lineage` property appears in Bases views:
 
 ## Relationship History & Undo
 
-Canvas Roots tracks all relationship changes, allowing you to review history and undo mistakes.
+Charted Roots tracks all relationship changes, allowing you to review history and undo mistakes.
 
 ### Enabling History Tracking
 
-History tracking is enabled by default. Configure in Settings → Canvas Roots → Data:
+History tracking is enabled by default. Configure in Settings → Charted Roots → Data:
 - **Enable relationship history**: Master toggle
 - **History retention days**: How long to keep history (default: 30 days)
 
@@ -281,7 +281,7 @@ History tracking is enabled by default. Configure in Settings → Canvas Roots �
 
 **Via Command Palette:**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: View relationship history"
+2. Type "Charted Roots: View relationship history"
 3. Review recent changes
 
 **History Modal Shows:**
@@ -295,7 +295,7 @@ History tracking is enabled by default. Configure in Settings → Canvas Roots �
 
 **Undo Most Recent Change:**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Undo last relationship change"
+2. Type "Charted Roots: Undo last relationship change"
 3. Confirm the undo
 
 **Undo Specific Change:**
@@ -315,5 +315,5 @@ History tracking is enabled by default. Configure in Settings → Canvas Roots �
 
 Old history entries are automatically removed based on your retention setting:
 - Default: 30 days
-- Configure in Settings → Canvas Roots → Data
+- Configure in Settings → Charted Roots → Data
 - Set to 0 for unlimited retention (not recommended for large trees)

@@ -8,7 +8,7 @@ assignees: ''
 
 ## Privacy Notice
 
-Canvas Roots handles sensitive genealogical data. Before submitting:
+Charted Roots handles sensitive genealogical data. Before submitting:
 
 - **Do not** include real names, dates, or family information in screenshots
 - Use sample/fictional data when demonstrating the issue
@@ -16,7 +16,7 @@ Canvas Roots handles sensitive genealogical data. Before submitting:
 - If you must share a GEDCOM file, anonymize it first
 - **Log exports are automatically obfuscated** - exported logs do not contain PII and are safe to share
 
-For security vulnerabilities (data exposure, etc.), **do not** open a public issue. See [SECURITY.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/SECURITY.md) for private reporting.
+For security vulnerabilities (data exposure, etc.), **do not** open a public issue. See [SECURITY.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/SECURITY.md) for private reporting.
 
 ---
 

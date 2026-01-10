@@ -31,7 +31,7 @@ export class CanvasFinder {
 
 				// Check if any nodes reference this person
 				const hasPersonNode = canvasData.nodes?.some((node: CanvasNode) => {
-					// Canvas Roots person nodes are file nodes pointing to .md files
+					// Charted Roots person nodes are file nodes pointing to .md files
 					if (node.type === 'file' && node.file?.endsWith('.md')) {
 						// Check if the file matches the cr_id
 						// We need to read the file to get its cr_id

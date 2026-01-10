@@ -3,7 +3,7 @@
 Planning document for automatic wikilink resolution in relationship fields.
 
 - **Status:** Implemented
-- **GitHub Issue:** [#104](https://github.com/banisterious/obsidian-canvas-roots/issues/104)
+- **GitHub Issue:** [#104](https://github.com/banisterious/obsidian-charted-roots/issues/104)
 - **Created:** 2026-01-07
 - **Implemented:** 2026-01-09
 
@@ -705,7 +705,7 @@ children_id:
 - A) Person notes only (`cr_type: person`)
 - B) Any note with `cr_id`
 
-**Decision:** Option B — index any note with `cr_id`. More flexible for future cross-type linking (e.g., linking to sources, places). `cr_id` is already the universal identifier pattern in Canvas Roots.
+**Decision:** Option B — index any note with `cr_id`. More flexible for future cross-type linking (e.g., linking to sources, places). `cr_id` is already the universal identifier pattern in Charted Roots.
 
 ### 4. Should resolved wikilinks auto-populate _id fields?
 
@@ -735,8 +735,8 @@ children_id:
 
 ## References
 
-- [Issue #104](https://github.com/banisterious/obsidian-canvas-roots/issues/104)
-- [Issue #103](https://github.com/banisterious/obsidian-canvas-roots/issues/103) (Sibling ordering, related)
+- [Issue #104](https://github.com/banisterious/obsidian-charted-roots/issues/104)
+- [Issue #103](https://github.com/banisterious/obsidian-charted-roots/issues/103) (Sibling ordering, related)
 - [ProofSummaryService](../../src/sources/services/proof-summary-service.ts) (existing resolution code)
 
 ---

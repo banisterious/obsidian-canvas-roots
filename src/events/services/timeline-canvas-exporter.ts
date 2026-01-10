@@ -432,7 +432,7 @@ export class TimelineCanvasExporter {
 			};
 
 			// Determine file path
-			const folder = this.settings.canvasesFolder || 'Canvas Roots';
+			const folder = this.settings.canvasesFolder || 'Charted Roots';
 			const filename = `${toSafeFilename(title)}.canvas`;
 			const path = `${folder}/${filename}`;
 

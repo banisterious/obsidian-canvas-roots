@@ -1,7 +1,7 @@
 /**
  * CSV Import/Export Module
  *
- * Provides CSV import and export functionality for Canvas Roots.
+ * Provides CSV import and export functionality for Charted Roots.
  */
 
 export {

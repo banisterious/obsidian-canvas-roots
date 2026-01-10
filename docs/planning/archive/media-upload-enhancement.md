@@ -5,19 +5,19 @@
 **Target Version:** 0.18.6
 **Created:** 2025-12-29
 **Completed:** 2025-12-29
-**GitHub Issue:** [#60](https://github.com/banisterious/obsidian-canvas-roots/issues/60)
+**GitHub Issue:** [#60](https://github.com/banisterious/obsidian-charted-roots/issues/60)
 
 ---
 
 ## Overview
 
-Add file upload capability to Canvas Roots media management system, allowing users to upload media files directly to their vault and link them to entities without manual file management.
+Add file upload capability to Charted Roots media management system, allowing users to upload media files directly to their vault and link them to entities without manual file management.
 
 ## User Request
 
-User reported inability to link media files (birth certificates, pictures) to person notes. Investigation revealed that while Canvas Roots has robust media *linking* capabilities, it lacks file *upload* functionality. Users must manually add files to their vault before linking them.
+User reported inability to link media files (birth certificates, pictures) to person notes. Investigation revealed that while Charted Roots has robust media *linking* capabilities, it lacks file *upload* functionality. Users must manually add files to their vault before linking them.
 
-**GitHub Issue:** [#60 - [Feature] Enable direct media file upload in media picker](https://github.com/banisterious/obsidian-canvas-roots/issues/60)
+**GitHub Issue:** [#60 - [Feature] Enable direct media file upload in media picker](https://github.com/banisterious/obsidian-charted-roots/issues/60)
 
 ---
 
@@ -192,7 +192,7 @@ Files always upload to `mediaFolders[0]` (first folder in array), while MediaPic
 │ └─────────────────────────────┘ │
 │                                 │
 │ Files will be uploaded to:      │
-│ Canvas Roots/Media              │
+│ Charted Roots/Media              │
 │ (You can move files later)      │
 │                                 │
 │ Files to upload:                │

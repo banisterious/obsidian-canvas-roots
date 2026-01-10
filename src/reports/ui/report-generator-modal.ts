@@ -356,7 +356,7 @@ export class ReportGeneratorModal extends Modal {
 			.setName('Output folder')
 			.setDesc('Folder to save report (configured in Preferences → Folder locations)')
 			.addText(text => {
-				text.setPlaceholder('Canvas Roots/Reports')
+				text.setPlaceholder('Charted Roots/Reports')
 					.setValue(this.outputFolder)
 					.onChange(value => {
 						this.outputFolder = value;

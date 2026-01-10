@@ -1,12 +1,12 @@
 # Web Clipper Integration
 
-Planning document for integrating Obsidian Web Clipper with Canvas Roots for genealogical research.
+Planning document for integrating Obsidian Web Clipper with Charted Roots for genealogical research.
 
 - **Status:** Ready for implementation
-- **GitHub Issue:** [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128)
+- **GitHub Issue:** [#128](https://github.com/banisterious/obsidian-charted-roots/issues/128)
 - **Created:** 2025-01-04
 - **Updated:** 2026-01-05 (Phase 1 decisions finalized based on community feedback)
-- **Enabled By:** [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137) (Staging Management UI, completed v0.18.24)
+- **Enabled By:** [#137](https://github.com/banisterious/obsidian-charted-roots/issues/137) (Staging Management UI, completed v0.18.24)
 
 ---
 
@@ -44,7 +44,7 @@ To detect clipped notes, users should include one or more of these properties in
 - `clipped_from` - Original URL (`{{url}}` in Web Clipper)
 - `clipped_date` - Clip timestamp (`{{date}}` in Web Clipper)
 
-Canvas Roots will monitor staging folder for files containing these properties.
+Charted Roots will monitor staging folder for files containing these properties.
 
 ### User Workflow
 
@@ -52,7 +52,7 @@ Canvas Roots will monitor staging folder for files containing these properties.
 2. Configure Web Clipper to output to staging folder (e.g., `Family/Staging/clips`)
 3. Include `clip_source_type` or `clipped_from` in template frontmatter
 4. Clip genealogical content from web
-5. Canvas Roots detects new clips and shows Dashboard "Staging" card with breakdown: "3 clips (1 new), 1 other"
+5. Charted Roots detects new clips and shows Dashboard "Staging" card with breakdown: "3 clips (1 new), 1 other"
 6. Click "Review" to open Staging Manager
 7. Use toggle buttons (All/Clipped/Other) to filter staging content
 8. Review and promote to main tree
@@ -147,7 +147,7 @@ Initial templates created and tested:
 ### Template Standards (Implemented)
 
 All official templates follow these standards:
-- ✅ Use canonical Canvas Roots property names
+- ✅ Use canonical Charted Roots property names
 - ✅ Include all clipper metadata properties (`clip_source_type`, `clipped_from`, `clipped_date`)
 - ✅ Include URL triggers for auto-selection
 - ✅ Tested against real pages before release
@@ -236,7 +236,7 @@ More sophisticated extraction capabilities.
 
 2. **Setup**
    - Install Obsidian Web Clipper extension
-   - Configure output folder to match Canvas Roots staging folder
+   - Configure output folder to match Charted Roots staging folder
    - Warning: clips outside staging folder won't be detected
 
 3. **Creating Templates**
@@ -288,7 +288,7 @@ Brief overview with:
 
 ## Notes
 
-This plan was created based on GitHub issue [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128) discussion. Key community input:
+This plan was created based on GitHub issue [#128](https://github.com/banisterious/obsidian-charted-roots/issues/128) discussion. Key community input:
 
 **Initial testing (@wilbry):**
 - Web Clipper requires double quotes in prompts (not single quotes)

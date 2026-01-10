@@ -3,13 +3,13 @@
 Planning document for Gramps notes import/export and potentially introducing a Family entity type.
 
 - **Status:** In Progress (Phases 1, 2 & 4 complete)
-- **GitHub Issue:** [#36](https://github.com/banisterious/obsidian-canvas-roots/issues/36)
+- **GitHub Issue:** [#36](https://github.com/banisterious/obsidian-charted-roots/issues/36)
 - **Sub-issues:**
-  - [#76](https://github.com/banisterious/obsidian-canvas-roots/issues/76) Phase 1: Embedded Notes ✅
-  - [#77](https://github.com/banisterious/obsidian-canvas-roots/issues/77) Phase 2: Other Entity Notes ✅
-  - [#79](https://github.com/banisterious/obsidian-canvas-roots/issues/79) Phase 3: Family Entity (Optional)
-  - [#80](https://github.com/banisterious/obsidian-canvas-roots/issues/80) Phase 4: Separate Note Files (Optional) ✅
-  - [#81](https://github.com/banisterious/obsidian-canvas-roots/issues/81) Phase 5: Gramps Export & Sync Support
+  - [#76](https://github.com/banisterious/obsidian-charted-roots/issues/76) Phase 1: Embedded Notes ✅
+  - [#77](https://github.com/banisterious/obsidian-charted-roots/issues/77) Phase 2: Other Entity Notes ✅
+  - [#79](https://github.com/banisterious/obsidian-charted-roots/issues/79) Phase 3: Family Entity (Optional)
+  - [#80](https://github.com/banisterious/obsidian-charted-roots/issues/80) Phase 4: Separate Note Files (Optional) ✅
+  - [#81](https://github.com/banisterious/obsidian-charted-roots/issues/81) Phase 5: Gramps Export & Sync Support
 - **Priority:** Medium
 - **Created:** 2025-12-26
 - **Updated:** 2026-01-01
@@ -20,13 +20,13 @@ Planning document for Gramps notes import/export and potentially introducing a F
 
 Gramps allows attaching notes to various entities (people, families, events, places, sources, etc.). These notes are free-form text that can contain research notes, biographical information, source transcriptions, and more. Users importing from Gramps expect their notes to be preserved.
 
-Additionally, Gramps treats families as first-class entities with their own notes and metadata. This raises the question of whether Canvas Roots should introduce a Family entity type to properly support this data.
+Additionally, Gramps treats families as first-class entities with their own notes and metadata. This raises the question of whether Charted Roots should introduce a Family entity type to properly support this data.
 
 ---
 
 ## Design Principles
 
-Canvas Roots serves a diverse user base. Many users come from GEDCOM files or start fresh in Obsidian — they may never touch Gramps and have no need for advanced sync or note-sharing features.
+Charted Roots serves a diverse user base. Many users come from GEDCOM files or start fresh in Obsidian — they may never touch Gramps and have no need for advanced sync or note-sharing features.
 
 **Guiding principles for this feature:**
 
@@ -64,7 +64,7 @@ A Gramps user provided detailed feedback suggesting:
 
 **Takeaway:** This is a power user. Simpler users may still benefit from Phase 1's embedded approach, but the phased plan is validated — each phase serves real needs.
 
-**User feedback received (2025-12-27):** [GitHub issue #36 comment](https://github.com/banisterious/obsidian-canvas-roots/issues/36#issuecomment-3694263634)
+**User feedback received (2025-12-27):** [GitHub issue #36 comment](https://github.com/banisterious/obsidian-charted-roots/issues/36#issuecomment-3694263634)
 
 | Question | Answer | Implication |
 |----------|--------|-------------|
@@ -160,7 +160,7 @@ Common note types in Gramps:
 - Source notes are already resolved and used (line 359-370)
 - `GrampsPerson` type does not currently include `noteRefs`
 - `GrampsFamily` is parsed but only used to derive person relationships
-- Canvas Roots has no Family entity — relationships are properties on Person notes
+- Charted Roots has no Family entity — relationships are properties on Person notes
 
 ---
 
@@ -230,7 +230,7 @@ Extend the embedded approach to other entities.
 
 ### Phase 3: Family Entity (Deferred Indefinitely)
 
-Introduce Family as a new entity type in Canvas Roots.
+Introduce Family as a new entity type in Charted Roots.
 
 **Status:** Deferred indefinitely pending user demand.
 
@@ -276,7 +276,7 @@ For users who need notes as independent, linkable entities.
 
 **1. New entity type: `cr_type: note`**
 
-Notes become first-class Canvas Roots entities with their own frontmatter schema:
+Notes become first-class Charted Roots entities with their own frontmatter schema:
 
 ```yaml
 ---
@@ -297,10 +297,10 @@ Further research needed to confirm birth location.
 
 **2. Folder structure**
 
-Notes are created in the configured notes folder (default: `Canvas Roots/Notes`):
+Notes are created in the configured notes folder (default: `Charted Roots/Notes`):
 ```
 vault/
-├── Canvas Roots/
+├── Charted Roots/
 │   ├── People/
 │   │   └── John Smith.md       # Contains [[Research on John Smith]]
 │   ├── Events/
@@ -313,7 +313,7 @@ vault/
 
 **Settings integration:**
 - Add `notesFolder: string` to `CanvasRootsSettings`
-- Default: `'Canvas Roots/Notes'`
+- Default: `'Charted Roots/Notes'`
 - Follows existing pattern for `peopleFolder`, `eventsFolder`, `sourcesFolder`, etc.
 
 **3. Note naming convention**
@@ -347,7 +347,7 @@ Add checkbox to Gramps import options:
 
 | File | Changes |
 |------|---------|
-| `src/settings.ts` | Add `notesFolder: string` with default `'Canvas Roots/Notes'` |
+| `src/settings.ts` | Add `notesFolder: string` with default `'Charted Roots/Notes'` |
 | `src/gramps/gramps-types.ts` | No changes (GrampsNote already complete) |
 | `src/gramps/gramps-importer.ts` | Add `createSeparateNoteFiles` option; create note files; link instead of embed |
 | `src/core/note-writer.ts` | **New file**: Write note entity files |
@@ -357,7 +357,7 @@ Add checkbox to Gramps import options:
 | `src/core/vault-stats.ts` | Add notes stats (count, by type) |
 | `src/ui/create-note-modal.ts` | **New file**: Modal for creating notes manually |
 | `src/ui/template-snippets-modal.ts` | Add 'note' to `TemplateType`, add Notes tile, add `getNoteTemplates()` |
-| `Canvas Roots/Bases/Note.md` | **New file**: Base template for note creation |
+| `Charted Roots/Bases/Note.md` | **New file**: Base template for note creation |
 
 **11. Control Center integration**
 
@@ -395,8 +395,8 @@ Users need a good experience for creating notes manually (not just via import).
 - Creates note in `notesFolder` with proper frontmatter
 
 **Entry points:**
-- Command palette: "Canvas Roots: Create note"
-- File menu: Right-click in Notes folder → "New Canvas Roots note"
+- Command palette: "Charted Roots: Create note"
+- File menu: Right-click in Notes folder → "New Charted Roots note"
 - Control Center: Notes card "Create note" button (if notes exist)
 - Context menu on entities: "Create linked note" (pre-fills entity link)
 
@@ -409,7 +409,7 @@ this.registerEvent(
         // Only show in Notes folder
         if (file.path.startsWith(this.settings.notesFolder)) {
             menu.addItem((item) => {
-                item.setTitle('New Canvas Roots note')
+                item.setTitle('New Charted Roots note')
                     .setIcon('file-plus')
                     .onClick(() => this.openCreateNoteModal());
             });
@@ -418,7 +418,7 @@ this.registerEvent(
 );
 ```
 
-**Note Base Template** (`Canvas Roots/Bases/Note.md`):
+**Note Base Template** (`Charted Roots/Bases/Note.md`):
 ```markdown
 ---
 cr_type: note
@@ -719,7 +719,7 @@ The `priv` attribute on Gramps notes indicates private/sensitive content.
 **Implementation Steps (All Complete):**
 
 *Core infrastructure:*
-1. [x] Add `notesFolder: string` setting with default `'Canvas Roots/Notes'`
+1. [x] Add `notesFolder: string` setting with default `'Charted Roots/Notes'`
 2. [x] Add `createSeparateNoteFiles: boolean` to `GrampsImportOptions`
 3. [x] Create `note-writer.ts` with `writeNoteFile()` function
 
@@ -735,7 +735,7 @@ The `priv` attribute on Gramps notes indicates private/sensitive content.
 10. [x] Create `create-note-modal.ts` with type dropdown, title, privacy, typed entity pickers (dropdown → picker modals)
 11. [x] Add Note base template (`notes-base-template.ts`) for Obsidian Bases
 12. [x] Register "Create note" command in command palette
-13. [x] Register file-menu context action for Notes folder ("New Canvas Roots note")
+13. [x] Register file-menu context action for Notes folder ("New Charted Roots note")
 14. [x] Add Notes tile and templates to Templater templates modal
 
 *Control Center (deferred to future iteration):*

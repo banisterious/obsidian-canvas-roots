@@ -102,12 +102,12 @@ export function renderPreferencesTab(
 	setIcon(settingsIcon, 'settings');
 	settingsCallout.appendText('For privacy, research tools, logging, and advanced options, see ');
 	const settingsLink = settingsCallout.createEl('a', {
-		text: 'Settings → Canvas Roots',
+		text: 'Settings → Charted Roots',
 		href: '#'
 	});
 	settingsLink.addEventListener('click', (e) => {
 		e.preventDefault();
-		// Close Control Center first, then open Obsidian settings to Canvas Roots plugin
+		// Close Control Center first, then open Obsidian settings to Charted Roots plugin
 		closeModal?.();
 		// Access Obsidian's internal settings API (not exported in types)
 		const appWithSettings = plugin.app as App & { setting?: { open: () => void; openTabById: (id: string) => void } };
@@ -447,7 +447,7 @@ function renderAliasesCard(
 	// Description
 	content.createEl('p', {
 		cls: 'crc-text-muted',
-		text: 'Use your own property names and values - Canvas Roots will recognize them without rewriting your files.'
+		text: 'Use your own property names and values - Charted Roots will recognize them without rewriting your files.'
 	});
 
 	// Base files note (prominent position)
@@ -577,7 +577,7 @@ function renderAliasesCard(
 
 	content.createEl('p', {
 		cls: 'crc-text-muted',
-		text: 'Map your custom values to Canvas Roots canonical values. For example, map "nameday" to "birth" event type.'
+		text: 'Map your custom values to Charted Roots canonical values. For example, map "nameday" to "birth" event type.'
 	});
 
 	// Value sections container
@@ -654,7 +654,7 @@ function renderFolderLocationsCard(
 	const card = createCard({
 		title: 'Folder locations',
 		icon: 'folder',
-		subtitle: 'Configure where Canvas Roots stores and finds notes'
+		subtitle: 'Configure where Charted Roots stores and finds notes'
 	});
 	card.id = 'cr-folder-locations-card';
 	const content = card.querySelector('.crc-card__content') as HTMLElement;
@@ -662,7 +662,7 @@ function renderFolderLocationsCard(
 	// Folder explanation
 	content.createEl('p', {
 		cls: 'crc-text-muted',
-		text: 'These folders determine where new notes are created during imports and when using "Create new" actions. Canvas Roots identifies notes by their properties (cr_type), not their location—your notes can live anywhere in your vault.'
+		text: 'These folders determine where new notes are created during imports and when using "Create new" actions. Charted Roots identifies notes by their properties (cr_type), not their location—your notes can live anywhere in your vault.'
 	});
 
 	// Helper to create folder setting with autocomplete
@@ -699,7 +699,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'People folder',
 		'Default folder for person notes',
-		'Canvas Roots/People',
+		'Charted Roots/People',
 		() => plugin.settings.peopleFolder,
 		(v) => { plugin.settings.peopleFolder = v; }
 	);
@@ -708,7 +708,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Places folder',
 		'Default folder for place notes',
-		'Canvas Roots/Places',
+		'Charted Roots/Places',
 		() => plugin.settings.placesFolder,
 		(v) => { plugin.settings.placesFolder = v; }
 	);
@@ -717,7 +717,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Map notes folder',
 		'Default folder for map notes',
-		'Canvas Roots/Places/Maps',
+		'Charted Roots/Places/Maps',
 		() => plugin.settings.mapsFolder,
 		(v) => { plugin.settings.mapsFolder = v; }
 	);
@@ -726,7 +726,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Organizations folder',
 		'Default folder for organization notes',
-		'Canvas Roots/Organizations',
+		'Charted Roots/Organizations',
 		() => plugin.settings.organizationsFolder,
 		(v) => { plugin.settings.organizationsFolder = v; }
 	);
@@ -735,7 +735,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Sources folder',
 		'Default folder for source notes',
-		'Canvas Roots/Sources',
+		'Charted Roots/Sources',
 		() => plugin.settings.sourcesFolder,
 		(v) => { plugin.settings.sourcesFolder = v; }
 	);
@@ -744,7 +744,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Events folder',
 		'Default folder for event notes',
-		'Canvas Roots/Events',
+		'Charted Roots/Events',
 		() => plugin.settings.eventsFolder,
 		(v) => { plugin.settings.eventsFolder = v; }
 	);
@@ -753,7 +753,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Timelines folder',
 		'Default folder for timeline notes (grouping events)',
-		'Canvas Roots/Timelines',
+		'Charted Roots/Timelines',
 		() => plugin.settings.timelinesFolder,
 		(v) => { plugin.settings.timelinesFolder = v; }
 	);
@@ -762,7 +762,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Bases folder',
 		'Default folder for Obsidian Bases files',
-		'Canvas Roots/Bases',
+		'Charted Roots/Bases',
 		() => plugin.settings.basesFolder,
 		(v) => { plugin.settings.basesFolder = v; }
 	);
@@ -771,7 +771,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Schemas folder',
 		'Default folder for validation schemas',
-		'Canvas Roots/Schemas',
+		'Charted Roots/Schemas',
 		() => plugin.settings.schemasFolder,
 		(v) => { plugin.settings.schemasFolder = v; }
 	);
@@ -780,7 +780,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Universes folder',
 		'Default folder for universe notes (fictional worlds)',
-		'Canvas Roots/Universes',
+		'Charted Roots/Universes',
 		() => plugin.settings.universesFolder,
 		(v) => { plugin.settings.universesFolder = v; }
 	);
@@ -789,7 +789,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Canvases folder',
 		'Default folder for generated canvas files',
-		'Canvas Roots/Canvases',
+		'Charted Roots/Canvases',
 		() => plugin.settings.canvasesFolder,
 		(v) => { plugin.settings.canvasesFolder = v; }
 	);
@@ -798,7 +798,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Reports folder',
 		'Default folder for generated reports (Individual Summary, Family Group Sheet, etc.)',
-		'Canvas Roots/Reports',
+		'Charted Roots/Reports',
 		() => plugin.settings.reportsFolder,
 		(v) => { plugin.settings.reportsFolder = v; }
 	);
@@ -807,7 +807,7 @@ function renderFolderLocationsCard(
 	createFolderSetting(
 		'Import staging folder',
 		'Folder for import staging (isolated from main vault during processing)',
-		'Canvas Roots/Staging',
+		'Charted Roots/Staging',
 		() => plugin.settings.stagingFolder,
 		(v) => { plugin.settings.stagingFolder = v; }
 	);
@@ -856,7 +856,7 @@ function renderFolderLocationsCard(
 	const advancedIcon = advancedNote.createSpan({ cls: 'cr-info-box-icon' });
 	setIcon(advancedIcon, 'settings');
 	advancedNote.createSpan({
-		text: 'For folder filtering options (include/exclude folders from discovery), see Settings → Canvas Roots → Advanced.'
+		text: 'For folder filtering options (include/exclude folders from discovery), see Settings → Charted Roots → Advanced.'
 	});
 
 	container.appendChild(card);

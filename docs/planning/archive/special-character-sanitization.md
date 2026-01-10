@@ -3,7 +3,7 @@
 Planning document for consistent special character handling in name fields during import.
 
 - **Status:** Implemented
-- **GitHub Issue:** [#139](https://github.com/banisterious/obsidian-canvas-roots/issues/139)
+- **GitHub Issue:** [#139](https://github.com/banisterious/obsidian-charted-roots/issues/139)
 - **Created:** 2026-01-07
 
 ---
@@ -331,8 +331,8 @@ Audit CSV and GedcomX importers for the same issue:
 
 ## References
 
-- [Issue #139](https://github.com/banisterious/obsidian-canvas-roots/issues/139)
-- [Issue #94](https://github.com/banisterious/obsidian-canvas-roots/issues/94) (related, mentioned by ANYroots)
+- [Issue #139](https://github.com/banisterious/obsidian-charted-roots/issues/139)
+- [Issue #94](https://github.com/banisterious/obsidian-charted-roots/issues/94) (related, mentioned by ANYroots)
 - GEDCOM importer fix: `gedcom-importer-v2.ts:1233-1238` (`sanitizeName()`)
 - PersonNoteWriter sanitization: `person-note-writer.ts:1086-1091`
 

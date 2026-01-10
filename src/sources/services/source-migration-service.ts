@@ -28,7 +28,7 @@ function logLegacyFormatWarning(count: number): void {
 	legacyWarningShown = true;
 
 	console.warn(
-		`[Canvas Roots] Found ${count} note(s) using legacy indexed source properties ` +
+		`[Charted Roots] Found ${count} note(s) using legacy indexed source properties ` +
 		`(source, source_2, source_3...). This format is no longer supported. ` +
 		`Use the Cleanup Wizard (Step 6) to migrate to the array format (sources: [...]).`
 	);

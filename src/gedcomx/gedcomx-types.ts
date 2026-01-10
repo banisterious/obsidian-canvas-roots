@@ -271,7 +271,7 @@ export function extractTypeName(typeUri: string): string {
 }
 
 /**
- * Helper to convert GEDCOM X gender to Canvas Roots format
+ * Helper to convert GEDCOM X gender to Charted Roots format
  */
 export function convertGender(gender?: GedcomXGender): 'M' | 'F' | undefined {
 	if (!gender?.type) return undefined;

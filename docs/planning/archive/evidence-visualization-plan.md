@@ -2,7 +2,7 @@
 
 ## Overview
 
-Evidence Visualization transforms Canvas Roots from a tree builder into a serious research platform aligned with the **Genealogical Proof Standard (GPS)** and professional genealogical practices. This feature enables users to:
+Evidence Visualization transforms Charted Roots from a tree builder into a serious research platform aligned with the **Genealogical Proof Standard (GPS)** and professional genealogical practices. This feature enables users to:
 
 1. Track **fact-level source coverage** (which specific facts have evidence)
 2. Classify **source quality** (primary, secondary, derivative)
@@ -115,7 +115,7 @@ source_quality: primary  # NEW: primary | secondary | derivative
 
 ## Casual User Safeguards
 
-Evidence Visualization targets serious researchers, but Canvas Roots serves a broad audience. These safeguards ensure the feature enhances the plugin for power users without overwhelming casual users.
+Evidence Visualization targets serious researchers, but Charted Roots serves a broad audience. These safeguards ensure the feature enhances the plugin for power users without overwhelming casual users.
 
 ### Opt-In by Default
 

@@ -9,7 +9,7 @@
 
 ## Overview
 
-Implement folder filtering to control which folders Canvas Roots scans for person notes. This is the foundation for the staging/import cleanup workflow and supports mixed-use vaults.
+Implement folder filtering to control which folders Charted Roots scans for person notes. This is the foundation for the staging/import cleanup workflow and supports mixed-use vaults.
 
 **Goals:**
 - Exclusion list: Ignore specific folders (templates, archive, non-genealogy)

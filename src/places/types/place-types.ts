@@ -1,5 +1,5 @@
 /**
- * Place type definitions for Canvas Roots
+ * Place type definitions for Charted Roots
  *
  * Place types are hierarchical, representing geographic/political divisions
  * from planet down to specific buildings. Each type has a hierarchy level

@@ -1,4 +1,4 @@
-## Canvas Roots Wiki
+## Charted Roots Wiki
 
 **[Home](Home)**
 
@@ -55,11 +55,11 @@
 - [Community Use Cases](Community-Use-Cases)
 
 ### For Developers
-- [Developer Guide](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/development.md)
-- [Implementation Details](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/developer/implementation-details.md)
-- [Contributing](https://github.com/banisterious/obsidian-canvas-roots/blob/main/CONTRIBUTING.md)
+- [Developer Guide](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/development.md)
+- [Implementation Details](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/developer/implementation-details.md)
+- [Contributing](https://github.com/banisterious/obsidian-charted-roots/blob/main/CONTRIBUTING.md)
 
 ### Resources
-- [GitHub Repository](https://github.com/banisterious/obsidian-canvas-roots)
-- [Report Issues](https://github.com/banisterious/obsidian-canvas-roots/issues)
-- [Release Notes](https://github.com/banisterious/obsidian-canvas-roots/releases)
+- [GitHub Repository](https://github.com/banisterious/obsidian-charted-roots)
+- [Report Issues](https://github.com/banisterious/obsidian-charted-roots/issues)
+- [Release Notes](https://github.com/banisterious/obsidian-charted-roots/releases)

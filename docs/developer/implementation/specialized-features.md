@@ -525,7 +525,7 @@ The wizard preview (Step 5) shows count of privacy-protected persons when privac
 
 ## Obsidian Bases Integration
 
-Canvas Roots generates `.base` files for Obsidian's database-like Bases feature (Obsidian 1.9.0+), providing pre-configured table views for genealogical data.
+Charted Roots generates `.base` files for Obsidian's database-like Bases feature (Obsidian 1.9.0+), providing pre-configured table views for genealogical data.
 
 ### Base Templates
 
@@ -620,7 +620,7 @@ function generatePeopleBaseTemplate(options?: {
 **Creation logic:**
 1. **Check availability** (`isBasesAvailable()`): Looks for existing `.base` files or enabled Bases plugin
 2. **User confirmation**: If Bases not detected, prompts user (file will work once enabled)
-3. **Folder creation**: Creates `basesFolder` (default: `Canvas Roots/Bases`)
+3. **Folder creation**: Creates `basesFolder` (default: `Charted Roots/Bases`)
 4. **File creation**: Creates `.base` file with generated template, opens in editor
 5. **Template generation**: Applies property aliases and settings
 

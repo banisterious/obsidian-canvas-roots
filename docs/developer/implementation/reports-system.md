@@ -16,7 +16,7 @@ This document covers the report generation system, including report types, rende
 
 ## Overview
 
-Canvas Roots provides a comprehensive report generation system with 14 genealogical report types across 6 categories. Reports can be output in multiple formats:
+Charted Roots provides a comprehensive report generation system with 14 genealogical report types across 6 categories. Reports can be output in multiple formats:
 
 | Format | Description | Use Case |
 |--------|-------------|----------|

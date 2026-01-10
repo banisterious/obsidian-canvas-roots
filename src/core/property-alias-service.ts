@@ -1,7 +1,7 @@
 /**
  * Property Alias Service
  *
- * Allows users to map custom frontmatter property names to Canvas Roots
+ * Allows users to map custom frontmatter property names to Charted Roots
  * canonical names. This enables compatibility with existing vaults that
  * use different naming conventions (e.g., "birthdate" instead of "born").
  */
@@ -976,7 +976,7 @@ export class PropertyAliasService {
 	 * Checks canonical property first, then falls back to aliases.
 	 *
 	 * @param frontmatter - The note's frontmatter object
-	 * @param canonicalProperty - The Canvas Roots canonical property name
+	 * @param canonicalProperty - The Charted Roots canonical property name
 	 * @returns The property value, or undefined if not found
 	 */
 	resolve(frontmatter: Record<string, unknown>, canonicalProperty: string): unknown {
@@ -999,7 +999,7 @@ export class PropertyAliasService {
 	 * Get the property name to use when writing to frontmatter.
 	 * Returns the aliased name if configured, otherwise the canonical name.
 	 *
-	 * @param canonicalProperty - The Canvas Roots canonical property name
+	 * @param canonicalProperty - The Charted Roots canonical property name
 	 * @returns The property name to write to
 	 */
 	getWriteProperty(canonicalProperty: string): string {
@@ -1017,7 +1017,7 @@ export class PropertyAliasService {
 	 * Returns the aliased name if configured, otherwise the canonical name.
 	 * Same as getWriteProperty - users should see their preferred names.
 	 *
-	 * @param canonicalProperty - The Canvas Roots canonical property name
+	 * @param canonicalProperty - The Charted Roots canonical property name
 	 * @returns The property name to display
 	 */
 	getDisplayProperty(canonicalProperty: string): string {
@@ -1027,7 +1027,7 @@ export class PropertyAliasService {
 	/**
 	 * Check if a property has an alias configured
 	 *
-	 * @param canonicalProperty - The Canvas Roots canonical property name
+	 * @param canonicalProperty - The Charted Roots canonical property name
 	 * @returns True if an alias is configured for this property
 	 */
 	hasAlias(canonicalProperty: string): boolean {
@@ -1037,7 +1037,7 @@ export class PropertyAliasService {
 	/**
 	 * Get the alias for a canonical property, if configured
 	 *
-	 * @param canonicalProperty - The Canvas Roots canonical property name
+	 * @param canonicalProperty - The Charted Roots canonical property name
 	 * @returns The alias, or undefined if not configured
 	 */
 	getAlias(canonicalProperty: string): string | undefined {
@@ -1053,7 +1053,7 @@ export class PropertyAliasService {
 	 * Add or update an alias
 	 *
 	 * @param userProperty - The user's property name
-	 * @param canonicalProperty - The Canvas Roots canonical property name
+	 * @param canonicalProperty - The Charted Roots canonical property name
 	 */
 	async setAlias(userProperty: string, canonicalProperty: string): Promise<void> {
 		// Remove any existing alias for this canonical property

@@ -14,7 +14,7 @@ This page covers how to manage and organize your family data, including bidirect
 
 ## Bidirectional Relationship Sync
 
-Canvas Roots automatically maintains **reciprocal relationships** across your family tree to ensure data consistency. When you create or delete a relationship in one person's note, the inverse relationship is automatically updated in the related person's note.
+Charted Roots automatically maintains **reciprocal relationships** across your family tree to ensure data consistency. When you create or delete a relationship in one person's note, the inverse relationship is automatically updated in the related person's note.
 
 ### How It Works
 
@@ -22,14 +22,14 @@ When bidirectional sync is **enabled** (default), relationship changes automatic
 
 **Example - Adding a parent:**
 1. You edit Alice's note and set `father: [[John Smith]]`
-2. Canvas Roots automatically adds `children: [[Alice]]` to John's note
+2. Charted Roots automatically adds `children: [[Alice]]` to John's note
 3. Both notes now reflect the bidirectional relationship
 4. Changes appear immediately in Bases (if both people are visible in the table)
 5. Canvas trees automatically reflect the relationship
 
 **Example - Deleting a parent:**
 1. You clear Alice's `father` field (remove `[[John Smith]]`)
-2. Canvas Roots automatically removes Alice from John's `children` array
+2. Charted Roots automatically removes Alice from John's `children` array
 3. The reciprocal link is cleaned up automatically
 
 ### What Gets Synced
@@ -51,7 +51,7 @@ Bidirectional sync activates in these situations:
 
 ### Enable or Disable
 
-Go to **Settings → Canvas Roots → Data** section:
+Go to **Settings → Charted Roots → Data** section:
 
 - **Enable bidirectional relationship sync**: Master toggle (default: **ON**)
 - **Sync on file modify**: Auto-sync when editing notes or Bases (default: **ON**)
@@ -79,11 +79,11 @@ When sync is enabled, relationship changes made anywhere (Bases, frontmatter edi
 
 ## Collections & Groups
 
-Canvas Roots provides two complementary ways to organize people in your vault.
+Charted Roots provides two complementary ways to organize people in your vault.
 
 ### Group Names (Auto-Detected Families)
 
-Canvas Roots automatically detects disconnected family groups by analyzing relationship connections. These are the people who share biological/marital relationships.
+Charted Roots automatically detects disconnected family groups by analyzing relationship connections. These are the people who share biological/marital relationships.
 
 **How It Works:**
 - Runs automatically in the background
@@ -146,7 +146,7 @@ Open Control Center → **Collections** tab to browse and organize:
 
 **Cross-Collection Connections:**
 
-When you have 2+ collections, Canvas Roots automatically detects "bridge people" who connect different collections through their relationships.
+When you have 2+ collections, Charted Roots automatically detects "bridge people" who connect different collections through their relationships.
 
 ### Using Collections in Tree Generation
 
@@ -188,7 +188,7 @@ After editing relationship data in person notes, refresh your canvas to see the 
 **Method 2: Command Palette**
 1. Open the canvas you want to regenerate
 2. Press `Ctrl/Cmd + P`
-3. Type "Canvas Roots: Regenerate canvas"
+3. Type "Charted Roots: Regenerate canvas"
 4. Press Enter
 
 **Method 3: Keyboard Shortcut**

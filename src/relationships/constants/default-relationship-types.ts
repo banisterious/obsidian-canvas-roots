@@ -1,5 +1,5 @@
 /**
- * Default built-in relationship types for Canvas Roots
+ * Default built-in relationship types for Charted Roots
  *
  * These types cover common real-world genealogical relationships
  * as well as world-building scenarios for fiction writers.

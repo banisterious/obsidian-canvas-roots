@@ -1,6 +1,6 @@
 # Community Use Cases
 
-Real-world examples of how people use Canvas Roots for genealogy, worldbuilding, and research.
+Real-world examples of how people use Charted Roots for genealogy, worldbuilding, and research.
 
 ---
 
@@ -66,7 +66,7 @@ Academic researchers and history enthusiasts documenting historical figures and 
 
 **The Challenge**
 
-You've been building your family tree on Ancestry.com or FamilySearch, but you're curious about using Obsidian and Canvas Roots. You're not very technical, and you want to try Canvas Roots without abandoning your existing work or losing data.
+You've been building your family tree on Ancestry.com or FamilySearch, but you're curious about using Obsidian and Charted Roots. You're not very technical, and you want to try Charted Roots without abandoning your existing work or losing data.
 
 **The Approach**
 
@@ -88,7 +88,7 @@ You've been building your family tree on Ancestry.com or FamilySearch, but you'r
    - Click **Export** to download your family tree (exports 8 generations of ancestors)
    - Save the `.ged` file
 
-2. **Import into Canvas Roots:**
+2. **Import into Charted Roots:**
    - In Obsidian, open the **Control Center**
    - Click **Import/Export** in the left sidebar
    - Click **Import GEDCOM**
@@ -112,10 +112,10 @@ You've been building your family tree on Ancestry.com or FamilySearch, but you'r
 
 **Tips**
 
-- **You can use both:** Exporting to GEDCOM doesn't delete your Ancestry/FamilySearch tree. You can keep using both systems while you explore Canvas Roots.
+- **You can use both:** Exporting to GEDCOM doesn't delete your Ancestry/FamilySearch tree. You can keep using both systems while you explore Charted Roots.
 - **Start with one branch:** If your tree is very large, consider exporting just one branch first (e.g., your direct ancestors for 4 generations). You can always import more later.
-- **Canvas Roots works offline:** Once imported, your data is stored locally in your Obsidian vault. No internet required.
-- **Going back is possible:** If you decide Canvas Roots isn't for you, you can export to GEDCOM anytime and re-import to other genealogy software.
+- **Charted Roots works offline:** Once imported, your data is stored locally in your Obsidian vault. No internet required.
+- **Going back is possible:** If you decide Charted Roots isn't for you, you can export to GEDCOM anytime and re-import to other genealogy software.
 - **Don't stress about perfection:** The Cleanup Wizard will help you find and fix data issues over time. You don't need to fix everything at once.
 
 ---
@@ -128,11 +128,11 @@ You've been building your family tree on Ancestry.com or FamilySearch, but you'r
 
 **The Challenge**
 
-Your 78-year-old relative expressed interest in using Canvas Roots to organize their family tree research. They're not technical—they use email and Facebook, but terms like "plugin" or "YAML" are foreign. You want to help them get started without overwhelming them or committing to being permanent tech support.
+Your 78-year-old relative expressed interest in using Charted Roots to organize their family tree research. They're not technical—they use email and Facebook, but terms like "plugin" or "YAML" are foreign. You want to help them get started without overwhelming them or committing to being permanent tech support.
 
 **The Reality**
 
-This use case is based on a real experience: the installation process (Obsidian → BRAT → Canvas Roots) was successful, but left the relative feeling overwhelmed. While they could technically use the plugin with guidance, the setup complexity created anxiety about using it independently going forward.
+This use case is based on a real experience: the installation process (Obsidian → BRAT → Charted Roots) was successful, but left the relative feeling overwhelmed. While they could technically use the plugin with guidance, the setup complexity created anxiety about using it independently going forward.
 
 **Honest Assessment: Is This a Good Fit?**
 
@@ -140,7 +140,7 @@ Before you begin, ask:
 
 1. **Is your relative already using Obsidian?** If not, they're learning two complex tools at once. This significantly increases overwhelm.
 2. **Do they want to *manage research* or just *view a tree*?** If they just want to see relationships visualized, simpler tools (Ancestry, FamilySearch, Gramps) may be better fits.
-3. **Are you available for ongoing support?** Canvas Roots has a learning curve. Expect follow-up questions about editing notes, troubleshooting, and using features.
+3. **Are you available for ongoing support?** Charted Roots has a learning curve. Expect follow-up questions about editing notes, troubleshooting, and using features.
 4. **Do they enjoy learning new technology?** Some older users thrive on this challenge. Others find it stressful.
 
 **If you decide to proceed:**
@@ -156,15 +156,15 @@ Do the technical heavy lifting for them:
 
 2. **Install BRAT plugin**
    - Browse community plugins → Search for "BRAT" → Install and enable
-   - Explain: "This lets you use Canvas Roots, which isn't in the official plugin store yet"
+   - Explain: "This lets you use Charted Roots, which isn't in the official plugin store yet"
 
-3. **Install Canvas Roots via BRAT**
+3. **Install Charted Roots via BRAT**
    - Settings → BRAT → Add Beta plugin
-   - Enter: `banisterious/obsidian-canvas-roots`
+   - Enter: `banisterious/obsidian-charted-roots`
    - Enable the plugin after installation
 
 4. **Configure basic settings together**
-   - Walk through Canvas Roots settings
+   - Walk through Charted Roots settings
    - Set up folder paths (where notes will be saved)
    - Show them where settings are so they can find them later
 
@@ -202,7 +202,7 @@ Be prepared for these pain points:
 - **Set realistic expectations:** They won't be proficient immediately. This is okay.
 - **Start with import if they have data:** If they've been using Ancestry or FamilySearch, import their GEDCOM first. Starting with a populated tree is less abstract than creating people from scratch.
 - **Check in after a week:** Follow up to see how they're doing. Offer a second session to answer questions.
-- **Know when to pivot:** If they're still struggling after 2-3 sessions, Canvas Roots might not be the right tool. Consider alternatives like Gramps (which has a GUI) or helping them use Ancestry/FamilySearch.
+- **Know when to pivot:** If they're still struggling after 2-3 sessions, Charted Roots might not be the right tool. Consider alternatives like Gramps (which has a GUI) or helping them use Ancestry/FamilySearch.
 
 **Signs They'll Be Successful**
 
@@ -218,19 +218,19 @@ Be prepared for these pain points:
 - They repeatedly ask "Why is this so complicated?" or "Why can't it be simpler?"
 - They need step-by-step instructions for every single action
 
-**Alternative: Be Their Canvas Roots Manager**
+**Alternative: Be Their Charted Roots Manager**
 
 If they have the research knowledge but not the technical skills, consider a different model:
 
 - **They do the research** (gathering records, talking to relatives, taking notes)
-- **You manage Canvas Roots** (entering data, maintaining the tree, generating charts)
+- **You manage Charted Roots** (entering data, maintaining the tree, generating charts)
 - **You share outputs** (export PDFs, images of the tree, printed reports)
 
 This division of labor can work well for family history projects where the genealogist has the knowledge and the technical family member has the skills.
 
 **Long-Term Sustainability**
 
-For Canvas Roots to work long-term for a non-technical user:
+For Charted Roots to work long-term for a non-technical user:
 
 1. **They need to become comfortable with basic Obsidian concepts** (notes, folders, links)
 2. **They should use primarily the Control Center GUI** rather than editing YAML directly
@@ -242,7 +242,7 @@ Without these, they'll likely abandon the tool due to frustration.
 
 - [Getting Started from Ancestry or FamilySearch](#getting-started-from-ancestry-or-familysearch) — Importing existing data
 - [Building a Family Tree from Scratch](#building-a-family-tree-from-scratch) — Creating people and relationships
-- [FAQ: Is Canvas Roots right for me?](FAQ#is-canvas-roots-right-for-me-do-i-need-to-be-technical) — Self-assessment for technical comfort
+- [FAQ: Is Charted Roots right for me?](FAQ#is-canvas-roots-right-for-me-do-i-need-to-be-technical) — Self-assessment for technical comfort
 
 ---
 
@@ -254,7 +254,7 @@ Without these, they'll likely abandon the tool due to frustration.
 
 **The Challenge**
 
-A user new to Canvas Roots wants to migrate existing genealogy data from another application (GEDCOM, Gramps, or CSV) and maintain it exclusively in Obsidian going forward.
+A user new to Charted Roots wants to migrate existing genealogy data from another application (GEDCOM, Gramps, or CSV) and maintain it exclusively in Obsidian going forward.
 
 **The Approach**
 
@@ -266,8 +266,8 @@ A user new to Canvas Roots wants to migrate existing genealogy data from another
 
 **Tips**
 
-- **Trial and error is fine:** If the import doesn't look right, delete the Canvas Roots folder and try again with different options. Deleting from the file system is faster for large imports.
-- **Media files:** When importing a Gramps package (.gpkg), you can avoid duplicating media by deleting the imported `Canvas Roots/Media` folder and creating a symbolic link to your original Gramps media folder instead.
+- **Trial and error is fine:** If the import doesn't look right, delete the Charted Roots folder and try again with different options. Deleting from the file system is faster for large imports.
+- **Media files:** When importing a Gramps package (.gpkg), you can avoid duplicating media by deleting the imported `Charted Roots/Media` folder and creating a symbolic link to your original Gramps media folder instead.
 
 ---
 
@@ -279,7 +279,7 @@ A user new to Canvas Roots wants to migrate existing genealogy data from another
 
 **The Challenge**
 
-A user new to Canvas Roots wants to build their family tree from scratch without importing existing data. They prefer to establish the people and relationships first, then fill in details like events, places, and sources later.
+A user new to Charted Roots wants to build their family tree from scratch without importing existing data. They prefer to establish the people and relationships first, then fill in details like events, places, and sources later.
 
 **The Approach**
 
@@ -298,7 +298,7 @@ A user new to Canvas Roots wants to build their family tree from scratch without
 **Tips**
 
 - **Relationships first, details later:** This workflow lets you quickly sketch out your family structure. You can add events, places, sources, and other details to each person later.
-- **Bidirectional linking:** When you set Person 2's father as Person 1, Canvas Roots automatically adds Person 2 to Person 1's children list.
+- **Bidirectional linking:** When you set Person 2's father as Person 1, Charted Roots automatically adds Person 2 to Person 1's children list.
 
 ---
 
@@ -332,8 +332,8 @@ This workflow is the most efficient, requiring approximately **34 interactions**
 
 *Add media:*
 
-11. Right-click the event note → **Canvas Roots** → **Media** → **Link Media** → Upload birth certificate
-12. Right-click the person note → **Canvas Roots** → **Media** → **Link Media** → Upload baby photo
+11. Right-click the event note → **Charted Roots** → **Media** → **Link Media** → Upload birth certificate
+12. Right-click the person note → **Charted Roots** → **Media** → **Link Media** → Upload baby photo
 
 **Alternative: Create Event First**
 
@@ -348,8 +348,8 @@ Starting with the birth event works well when you want to document the event det
 *Link parents (requires navigating to the person note):*
 
 6. In the file explorer, find the new person note
-7. Right-click → **Canvas Roots** → **Add Relationship** → **Add Father** → Select father
-8. Right-click again → **Canvas Roots** → **Add Relationship** → **Add Mother** → Select mother
+7. Right-click → **Charted Roots** → **Add Relationship** → **Add Father** → Select father
+8. Right-click again → **Charted Roots** → **Add Relationship** → **Add Mother** → Select mother
 
 *Add media as above.*
 
@@ -358,9 +358,9 @@ Starting with the birth event works well when you want to document the event det
 Adding a child through the parent's relationship menu is intuitive but less efficient, requiring approximately **45 interactions**. The main drawback: adding a child via one parent doesn't automatically link to the other parent.
 
 1. Find the father's note in the file explorer
-2. Right-click → **Canvas Roots** → **Add Relationship** → **Add Child** → **Create New Child**
+2. Right-click → **Charted Roots** → **Add Relationship** → **Add Child** → **Create New Child**
 3. Enter name and sex → **Create and Link**
-4. Find the mother's note, right-click → **Canvas Roots** → **Add Relationship** → **Add Child** → Select the child
+4. Find the mother's note, right-click → **Charted Roots** → **Add Relationship** → **Add Child** → Select the child
 5. Continue with adding birthplace, event, and media as above
 
 **Workflow Comparison**
@@ -374,7 +374,7 @@ Adding a child through the parent's relationship menu is intuitive but less effi
 **Tips**
 
 - **Person-first is fastest:** Creating the person with both parents linked in one step saves navigation time.
-- **Bidirectional linking:** Canvas Roots automatically creates the reverse relationship, so you don't need to manually add the child to both parents.
+- **Bidirectional linking:** Charted Roots automatically creates the reverse relationship, so you don't need to manually add the child to both parents.
 - **Batch media uploads:** If you have multiple documents (birth certificate, hospital record, photos), you can upload them all at once via the media picker.
 - **Reuse places:** If the birth location already exists as a place note, linking is faster than creating a new one.
 
@@ -392,7 +392,7 @@ You received incorrect family information from a relative, or you've discovered 
 
 **The Approach**
 
-Canvas Roots doesn't currently have a one-click "Delete Person with cleanup" action, but the two-step workflow is straightforward:
+Charted Roots doesn't currently have a one-click "Delete Person with cleanup" action, but the two-step workflow is straightforward:
 
 **Step 1: Delete the person note**
 
@@ -794,7 +794,7 @@ You're documenting burials at a local cemetery for historical preservation or pe
 
 **The Challenge**
 
-A relative uses different genealogy software (Ancestry, FamilySearch, etc.) and wants a copy of your research. You need to export your Canvas Roots data in a format they can import.
+A relative uses different genealogy software (Ancestry, FamilySearch, etc.) and wants a copy of your research. You need to export your Charted Roots data in a format they can import.
 
 **The Approach**
 
@@ -837,22 +837,22 @@ You have hundreds of person notes and want to filter, sort, and analyze your dat
 
 **Tips**
 
-- **Pre-built views:** Canvas Roots base templates include several pre-configured views (by birth year, by location, missing data, etc.).
+- **Pre-built views:** Charted Roots base templates include several pre-configured views (by birth year, by location, missing data, etc.).
 - **Cross-reference:** Use Bases to identify patterns you might miss browsing individual notes.
 - **Data quality:** Filter for missing required fields to create a to-do list for data cleanup.
 
 ---
 
-*Have a use case to share? Post in the [Use Cases discussion category](https://github.com/banisterious/obsidian-canvas-roots/discussions/categories/use-cases)!*
+*Have a use case to share? Post in the [Use Cases discussion category](https://github.com/banisterious/obsidian-charted-roots/discussions/categories/use-cases)!*
 
 ---
 
 ## Share Your Story
 
-We'd love to feature your workflow! [Post in the Use Cases discussion category](https://github.com/banisterious/obsidian-canvas-roots/discussions/categories/use-cases) and consider including:
+We'd love to feature your workflow! [Post in the Use Cases discussion category](https://github.com/banisterious/obsidian-charted-roots/discussions/categories/use-cases) and consider including:
 
 - What problem were you trying to solve?
-- Which Canvas Roots features did you use?
+- Which Charted Roots features did you use?
 - What worked well? Any tips for others?
 - Screenshots or examples (optional but helpful)
 
@@ -860,4 +860,4 @@ Your workflow might be featured on this wiki page!
 
 ---
 
-**Questions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-canvas-roots/issues).
+**Questions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-charted-roots/issues).

@@ -1,5 +1,5 @@
 /**
- * GEDCOM Exporter for Canvas Roots
+ * GEDCOM Exporter for Charted Roots
  *
  * Exports person notes from Obsidian vault to GEDCOM 5.5.1 format.
  */
@@ -436,14 +436,14 @@ export class GedcomExporter {
 		const dateStr = `${now.getDate()} ${this.getMonthAbbreviation(now.getMonth())} ${now.getFullYear()}`;
 		const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-		const sourceApp = options.sourceApp || 'Canvas Roots';
+		const sourceApp = options.sourceApp || 'Charted Roots';
 		const sourceVersion = options.sourceVersion || '0.1.3-alpha';
 
 		return [
 			'0 HEAD',
 			'1 SOUR ' + sourceApp,
 			`2 VERS ${sourceVersion}`,
-			'2 NAME Canvas Roots for Obsidian',
+			'2 NAME Charted Roots for Obsidian',
 			'1 DEST ANY',
 			'1 DATE ' + dateStr,
 			`2 TIME ${timeStr}`,
@@ -454,7 +454,7 @@ export class GedcomExporter {
 			'2 FORM LINEAGE-LINKED',
 			'1 CHAR UTF-8',
 			'0 @SUBM1@ SUBM',
-			'1 NAME Canvas Roots User'
+			'1 NAME Charted Roots User'
 		];
 	}
 
@@ -1190,7 +1190,7 @@ export class GedcomExporter {
 	}
 
 	/**
-	 * Map Canvas Roots event type to GEDCOM tag
+	 * Map Charted Roots event type to GEDCOM tag
 	 */
 	private eventTypeToGedcomTag(eventType: string): string | null {
 		const mapping: Record<string, string> = {

@@ -1,7 +1,7 @@
 /**
  * Media Manager Modal
  *
- * Central hub for all media operations in Canvas Roots.
+ * Central hub for all media operations in Charted Roots.
  * Provides quick access to:
  * - Browse Gallery (unified view of all linked media)
  * - Bulk Link Media (link to multiple entities)

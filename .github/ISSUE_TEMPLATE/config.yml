@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security Vulnerability
-    url: https://github.com/banisterious/obsidian-canvas-roots/blob/main/SECURITY.md
+    url: https://github.com/banisterious/obsidian-charted-roots/blob/main/SECURITY.md
     about: For security issues involving PII exposure or data vulnerabilities, please follow our security policy for private disclosure.
   - name: Questions & Discussion
-    url: https://github.com/banisterious/obsidian-canvas-roots/discussions
-    about: For general questions, help, or discussion about Canvas Roots.
+    url: https://github.com/banisterious/obsidian-charted-roots/discussions
+    about: For general questions, help, or discussion about Charted Roots.

@@ -38,7 +38,7 @@ A comprehensive property and value alias configuration UI providing a single sou
 - I want a unified view of all my customizations
 
 ### As a new user
-- I want to browse available properties to understand what Canvas Roots supports
+- I want to browse available properties to understand what Charted Roots supports
 - I want clear descriptions of what each property does
 - I want to configure everything in one place without hunting through menus
 
@@ -52,7 +52,7 @@ A comprehensive property and value alias configuration UI providing a single sou
 │ Configure custom property names and values                  │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│ Map your custom property names and values to Canvas Roots  │
+│ Map your custom property names and values to Charted Roots  │
 │ fields. Your frontmatter stays unchanged.                   │
 │                                                             │
 │ ┌─────────────────────────────────────────────────────────┐ │

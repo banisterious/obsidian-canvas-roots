@@ -1,6 +1,6 @@
 # Getting Started
 
-Canvas Roots transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas.
+Charted Roots transforms structured genealogical data in your Markdown notes into beautifully laid-out family trees on the Obsidian Canvas.
 
 ---
 
@@ -17,25 +17,25 @@ Canvas Roots transforms structured genealogical data in your Markdown notes into
 ## Prerequisites
 
 - Obsidian v1.7.2 or later
-- Canvas Roots plugin installed and enabled
+- Charted Roots plugin installed and enabled
 
 ## Installation
 
 ### From Community Plugins (Recommended)
 
 1. Open Obsidian Settings → Community plugins
-2. Click "Browse" and search for "Canvas Roots"
+2. Click "Browse" and search for "Charted Roots"
 3. Click "Install" then "Enable"
 
 ### Using BRAT (Beta Testing)
 
 1. Install the [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat)
-2. Add beta plugin: `banisterious/obsidian-canvas-roots`
-3. Enable Canvas Roots in Community plugins
+2. Add beta plugin: `banisterious/obsidian-charted-roots`
+3. Enable Charted Roots in Community plugins
 
 ### Manual Installation
 
-1. Download the latest release from [GitHub Releases](https://github.com/banisterious/obsidian-canvas-roots/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/banisterious/obsidian-charted-roots/releases)
 2. Extract `main.js`, `manifest.json`, and `styles.css` to your vault's `.obsidian/plugins/canvas-roots/` folder
 3. Reload Obsidian and enable the plugin
 
@@ -85,7 +85,7 @@ children: ["[[Bob Smith]]", "[[Alice Smith]]"]
 
 ### 3. Open the Control Center
 
-- Use the command palette: "Canvas Roots: Open Control Center"
+- Use the command palette: "Charted Roots: Open Control Center"
 - Or click the tree icon in the ribbon
 
 ### 4. Generate Your Tree
@@ -106,7 +106,7 @@ children: ["[[Bob Smith]]", "[[Alice Smith]]"]
 
 ### For Worldbuilders
 
-If you're building fictional worlds (fantasy, sci-fi, alternate history), Canvas Roots has dedicated features for you:
+If you're building fictional worlds (fantasy, sci-fi, alternate history), Charted Roots has dedicated features for you:
 
 - [Universe Notes](Universe-Notes) - Create universe notes to organize your fictional worlds with metadata, linked calendars, and maps
 - [Fictional Date Systems](Fictional-Date-Systems) - Define custom calendars with eras (Third Age, After Conquest, etc.)

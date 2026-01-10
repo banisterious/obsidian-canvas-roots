@@ -1,5 +1,5 @@
 /**
- * Person data model matching the Canvas Roots Schema
+ * Person data model matching the Charted Roots Schema
  */
 export interface Person {
 	/** Unique identifier (UUID) - MANDATORY */

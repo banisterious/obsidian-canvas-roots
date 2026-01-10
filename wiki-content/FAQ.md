@@ -1,6 +1,6 @@
 # FAQ
 
-Common questions about Canvas Roots.
+Common questions about Charted Roots.
 
 ---
 
@@ -24,19 +24,19 @@ Common questions about Canvas Roots.
 
 ## General
 
-### What is Canvas Roots?
+### What is Charted Roots?
 
-Canvas Roots is an Obsidian plugin that transforms genealogical data stored in your markdown notes into visual family trees on the Obsidian Canvas. It supports both real-world family research and fictional world-building.
+Charted Roots is an Obsidian plugin that transforms genealogical data stored in your markdown notes into visual family trees on the Obsidian Canvas. It supports both real-world family research and fictional world-building.
 
 ### Do I need to know how to code?
 
-No. Canvas Roots uses YAML frontmatter in your markdown notes, which is a simple key-value format. If you can write `name: John Smith`, you can use Canvas Roots.
+No. Charted Roots uses YAML frontmatter in your markdown notes, which is a simple key-value format. If you can write `name: John Smith`, you can use Charted Roots.
 
-### Is Canvas Roots right for me? Do I need to be technical?
+### Is Charted Roots right for me? Do I need to be technical?
 
-Canvas Roots is designed for genealogists and worldbuilders who want the power of Obsidian's note-taking system combined with visual family trees. But it does have a learning curve. Here's how to assess if it's a good fit:
+Charted Roots is designed for genealogists and worldbuilders who want the power of Obsidian's note-taking system combined with visual family trees. But it does have a learning curve. Here's how to assess if it's a good fit:
 
-**You'll likely thrive with Canvas Roots if:**
+**You'll likely thrive with Charted Roots if:**
 - You're already comfortable with Obsidian or willing to learn it
 - You want to own your genealogy data locally (not in the cloud)
 - You value flexibility and customization over simplicity
@@ -44,7 +44,7 @@ Canvas Roots is designed for genealogists and worldbuilders who want the power o
 - You're researching complex family relationships or doing serious genealogical research
 - You have a technical family member who can help with setup if needed
 
-**Canvas Roots might be overwhelming if:**
+**Charted Roots might be overwhelming if:**
 - You've never used Obsidian before (steep learning curve for both)
 - You just want to "see a tree" without managing research notes
 - You prefer clicking buttons over editing YAML frontmatter
@@ -55,9 +55,9 @@ Canvas Roots is designed for genealogists and worldbuilders who want the power o
 
 - **Obsidian itself:** You need to be comfortable installing desktop software and understanding concepts like "vaults" (folders), plugins, and settings. If terms like "file explorer" or "command palette" are unfamiliar, there's a learning curve ahead.
 
-- **Installing Canvas Roots:** Currently, Canvas Roots requires [BRAT](https://github.com/TfTHacker/obsidian42-brat) (a plugin for installing beta plugins). This adds complexity: install Obsidian → enable community plugins → install BRAT → use BRAT to install Canvas Roots. For non-technical users, this can be daunting.
+- **Installing Charted Roots:** Currently, Charted Roots requires [BRAT](https://github.com/TfTHacker/obsidian42-brat) (a plugin for installing beta plugins). This adds complexity: install Obsidian → enable community plugins → install BRAT → use BRAT to install Charted Roots. For non-technical users, this can be daunting.
 
-- **Using Canvas Roots:** Once installed, you don't need coding knowledge. If you can write `name: John Smith` in your notes, you can use Canvas Roots. But you do need comfort with:
+- **Using Charted Roots:** Once installed, you don't need coding knowledge. If you can write `name: John Smith` in your notes, you can use Charted Roots. But you do need comfort with:
   - Editing text files (markdown notes)
   - Understanding YAML frontmatter (the `---` section at the top of notes)
   - Navigating settings panels
@@ -65,28 +65,28 @@ Canvas Roots is designed for genealogists and worldbuilders who want the power o
 
 **Alternative approaches:**
 
-- **Have a technical helper:** Many users successfully use Canvas Roots with a family member handling the installation and initial setup. Once configured, day-to-day use is much simpler.
-- **Start simple:** If you're already using Obsidian for other purposes (notes, journaling, research), adding Canvas Roots is less overwhelming than learning both at once.
-- **Try traditional software first:** If the technical barrier seems too high, consider starting with user-friendly genealogy software. You can always export to GEDCOM and import to Canvas Roots later.
+- **Have a technical helper:** Many users successfully use Charted Roots with a family member handling the installation and initial setup. Once configured, day-to-day use is much simpler.
+- **Start simple:** If you're already using Obsidian for other purposes (notes, journaling, research), adding Charted Roots is less overwhelming than learning both at once.
+- **Try traditional software first:** If the technical barrier seems too high, consider starting with user-friendly genealogy software. You can always export to GEDCOM and import to Charted Roots later.
 
-**The honest truth:** Canvas Roots rewards investment. If you're willing to climb the learning curve, it offers unmatched flexibility for serious genealogical research within Obsidian. But if you're looking for something you can master in an afternoon, this probably isn't it.
+**The honest truth:** Charted Roots rewards investment. If you're willing to climb the learning curve, it offers unmatched flexibility for serious genealogical research within Obsidian. But if you're looking for something you can master in an afternoon, this probably isn't it.
 
-Still interested? Start with the [Getting Started](Getting-Started) guide and join the [community discussions](https://github.com/banisterious/obsidian-canvas-roots/discussions) where others can help.
+Still interested? Start with the [Getting Started](Getting-Started) guide and join the [community discussions](https://github.com/banisterious/obsidian-charted-roots/discussions) where others can help.
 
-### Can I use Canvas Roots for fictional family trees?
+### Can I use Charted Roots for fictional family trees?
 
-Yes! Canvas Roots works equally well for real genealogy and fictional world-building. Use the `universe` property on place notes to organize fictional worlds, and the geographic features support custom image maps for fantasy worlds.
+Yes! Charted Roots works equally well for real genealogy and fictional world-building. Use the `universe` property on place notes to organize fictional worlds, and the geographic features support custom image maps for fantasy worlds.
 
-### I'm currently using Ancestry or FamilySearch. Can I try Canvas Roots?
+### I'm currently using Ancestry or FamilySearch. Can I try Charted Roots?
 
-Absolutely! You can export your tree to GEDCOM format and import it into Canvas Roots. See the [Getting Started from Ancestry or FamilySearch](Community-Use-Cases#getting-started-from-ancestry-or-familysearch) use case for step-by-step instructions. You can keep using both systems—exporting doesn't delete your cloud tree.
+Absolutely! You can export your tree to GEDCOM format and import it into Charted Roots. See the [Getting Started from Ancestry or FamilySearch](Community-Use-Cases#getting-started-from-ancestry-or-familysearch) use case for step-by-step instructions. You can keep using both systems—exporting doesn't delete your cloud tree.
 
 ## Data Entry
 
 ### What's the minimum information needed for a person?
 
 Just two things:
-- `cr_id`: A unique identifier (Canvas Roots can auto-generate this)
+- `cr_id`: A unique identifier (Charted Roots can auto-generate this)
 - `name`: The person's name
 
 Everything else (dates, relationships, places) is optional.
@@ -109,7 +109,7 @@ spouse2_marriage_date: "1995"
 
 ### What date formats are supported?
 
-Canvas Roots accepts:
+Charted Roots accepts:
 - Year only: `1888`
 - Year and month: `1888-05`
 - Full date: `1888-05-15`
@@ -167,7 +167,7 @@ Yes. Use "Open new family chart" to open additional tabs with different root per
 
 ### What genealogy software can I import from?
 
-Canvas Roots supports multiple import formats:
+Charted Roots supports multiple import formats:
 
 **GEDCOM 5.5.1** — The universal genealogy exchange format, exported by:
 - Ancestry
@@ -186,11 +186,11 @@ See [Import & Export](Import-Export) for detailed instructions.
 
 ### Will importing overwrite my existing data?
 
-No. Canvas Roots detects duplicates by `cr_id` and updates relationships without overwriting research notes you've added.
+No. Charted Roots detects duplicates by `cr_id` and updates relationships without overwriting research notes you've added.
 
 ### How do I protect living relatives in exports?
 
-Enable privacy protection in Settings → Canvas Roots → GEDCOM:
+Enable privacy protection in Settings → Charted Roots → GEDCOM:
 - Set a birth year threshold
 - Choose to exclude or anonymize living persons
 
@@ -198,7 +198,7 @@ Enable privacy protection in Settings → Canvas Roots → GEDCOM:
 
 ### What types of media can I link to entities?
 
-Canvas Roots supports images, videos, audio, PDFs, and documents. Media can be linked to:
+Charted Roots supports images, videos, audio, PDFs, and documents. Media can be linked to:
 - People
 - Events
 - Places
@@ -215,7 +215,7 @@ media:
 
 ### What's the difference between the media linking tools?
 
-Canvas Roots offers several ways to link media, each suited to different workflows:
+Charted Roots offers several ways to link media, each suited to different workflows:
 
 | Tool | Best for | Access |
 |------|----------|--------|
@@ -241,15 +241,15 @@ This renders a gallery from the note's `media` property. With `editable: true`, 
 
 ### How do I get media into my vault from Gramps?
 
-Export from Gramps as a **Gramps Package (`.gpkg`)** file, which bundles XML data and media files together. When you import the `.gpkg` file, Canvas Roots automatically:
+Export from Gramps as a **Gramps Package (`.gpkg`)** file, which bundles XML data and media files together. When you import the `.gpkg` file, Charted Roots automatically:
 1. Extracts media files to your configured media folder
 2. Creates notes with `media` properties linking to the extracted files
 
 ## Reports & Output
 
-### What export/output options does Canvas Roots offer?
+### What export/output options does Charted Roots offer?
 
-Canvas Roots provides several ways to visualize and share your data:
+Charted Roots provides several ways to visualize and share your data:
 
 | Output Type | Formats | Best for |
 |-------------|---------|----------|
@@ -274,7 +274,7 @@ Canvas Roots provides several ways to visualize and share your data:
 
 ### What report types are available?
 
-Canvas Roots includes several genealogical report types:
+Charted Roots includes several genealogical report types:
 
 - **Ancestor Report** — List of ancestors with dates and places
 - **Descendant Report** — List of descendants organized by generation
@@ -307,13 +307,13 @@ Yes. Create a map note with a custom image and coordinate bounds. See [Geographi
 
 ### How do I look up coordinates automatically?
 
-Canvas Roots can query OpenStreetMap's Nominatim service. In place editing, click "Look up coordinates" and review the results.
+Charted Roots can query OpenStreetMap's Nominatim service. In place editing, click "Look up coordinates" and review the results.
 
 ## Performance
 
-### How many people can Canvas Roots handle?
+### How many people can Charted Roots handle?
 
-Canvas Roots has been tested with trees of 500+ people. For very large trees:
+Charted Roots has been tested with trees of 500+ people. For very large trees:
 - Use generation limits
 - Generate focused subtrees (ancestors only, or descendants only)
 - Use the Compact layout algorithm
@@ -331,7 +331,7 @@ Large trees with complex relationships take longer. Try:
 
 - Verify the root person has a `cr_id`
 - Check relationships reference valid `cr_id` values
-- Enable debug logging in Settings → Canvas Roots → Logging
+- Enable debug logging in Settings → Charted Roots → Logging
 
 ### Relationships aren't syncing bidirectionally
 
@@ -442,6 +442,6 @@ See [Settings & Configuration](Settings-And-Configuration#property-aliases) for 
 
 ## Getting Help
 
-- **Bug reports**: [GitHub Issues](https://github.com/banisterious/obsidian-canvas-roots/issues)
-- **Feature requests**: [GitHub Issues](https://github.com/banisterious/obsidian-canvas-roots/issues) with "enhancement" label
+- **Bug reports**: [GitHub Issues](https://github.com/banisterious/obsidian-charted-roots/issues)
+- **Feature requests**: [GitHub Issues](https://github.com/banisterious/obsidian-charted-roots/issues) with "enhancement" label
 - **Documentation**: This wiki

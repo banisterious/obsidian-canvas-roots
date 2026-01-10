@@ -1,5 +1,5 @@
 /**
- * Obsidian Bases template for managing Canvas Roots organization notes
+ * Obsidian Bases template for managing Charted Roots organization notes
  */
 export const ORGANIZATIONS_BASE_TEMPLATE = `visibleProperties:
   - note.name

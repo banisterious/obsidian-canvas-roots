@@ -1,6 +1,6 @@
 # Project Structure
 
-This document describes the Canvas Roots plugin directory layout and component status.
+This document describes the Charted Roots plugin directory layout and component status.
 
 ## Table of Contents
 
@@ -475,13 +475,13 @@ canvas-roots/
 | "Mark/Unmark as root person" | ✅ Complete | Right-click on person note | Toggle root person status for lineage tracking |
 | "Set group name" | ✅ Complete | Right-click on person note | Set custom name for family group |
 | **Place Note Context Menu** | | | |
-| "Canvas Roots" submenu | ✅ Complete | Right-click on place note | Geocode place, view on map, enrich hierarchy |
+| "Charted Roots" submenu | ✅ Complete | Right-click on place note | Geocode place, view on map, enrich hierarchy |
 | **Event Note Context Menu** | | | |
-| "Canvas Roots" submenu | ✅ Complete | Right-click on event note | Edit event, view timeline |
+| "Charted Roots" submenu | ✅ Complete | Right-click on event note | Edit event, view timeline |
 | **Source Note Context Menu** | | | |
-| "Canvas Roots" submenu | ✅ Complete | Right-click on source note | Generate citation, view media |
+| "Charted Roots" submenu | ✅ Complete | Right-click on source note | Generate citation, view media |
 | **Organization Note Context Menu** | | | |
-| "Canvas Roots" submenu | ✅ Complete | Right-click on organization note | View members, edit organization |
+| "Charted Roots" submenu | ✅ Complete | Right-click on organization note | View members, edit organization |
 | **Generic Markdown Context Menu** | | | |
 | "Add essential properties" | ✅ Complete | Right-click on markdown file(s) | Bulk-add all essential properties for note type |
 | **Folder Context Menu** | | | |

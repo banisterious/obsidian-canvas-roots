@@ -1,7 +1,7 @@
 # Place Category → Folder Mapping
 
 - **Status:** Planning
-- **Related Issue:** [#163](https://github.com/banisterious/obsidian-canvas-roots/issues/163)
+- **Related Issue:** [#163](https://github.com/banisterious/obsidian-charted-roots/issues/163)
 - **Created:** 2026-01-08
 
 ## Problem Statement
@@ -57,7 +57,7 @@ Places/
 ```typescript
 interface CanvasRootsSettings {
   // Existing
-  placesFolder: string;  // e.g., "Canvas Roots/Places"
+  placesFolder: string;  // e.g., "Charted Roots/Places"
 
   // New
   useCategorySubfolders: boolean;  // Default: true
@@ -170,13 +170,13 @@ export interface PlaceCategoryFolderRule {
  * Get the folder path for a place based on its category
  * @param settings - Plugin settings
  * @param category - Place category
- * @returns Full folder path (e.g., "Canvas Roots/Places/Historical")
+ * @returns Full folder path (e.g., "Charted Roots/Places/Historical")
  */
 export function getPlaceFolderForCategory(
   settings: CanvasRootsSettings,
   category: PlaceCategory
 ): string {
-  const baseFolder = settings.placesFolder || 'Canvas Roots/Places';
+  const baseFolder = settings.placesFolder || 'Charted Roots/Places';
 
   // Check for explicit rule first
   const rule = settings.placeCategoryFolderRules.find(r => r.category === category);

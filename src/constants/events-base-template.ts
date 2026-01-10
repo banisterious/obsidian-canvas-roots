@@ -1,10 +1,10 @@
 /**
- * Obsidian Bases template for managing Canvas Roots event notes
+ * Obsidian Bases template for managing Charted Roots event notes
  */
 
 /**
  * Property aliases mapping type
- * Maps user's custom property name → Canvas Roots canonical name
+ * Maps user's custom property name → Charted Roots canonical name
  */
 export type PropertyAliases = Record<string, string>;
 

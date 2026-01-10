@@ -24,14 +24,14 @@ The Interactive Family Chart View is a persistent, interactive visualization pan
 
 **Method 1: Command palette**
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Open family chart"
+2. Type "Charted Roots: Open family chart"
 3. Select a root person when prompted
 4. The chart opens in a new view
 
 **Method 2: From a person note**
 1. Open a person note (must have `cr_id` property)
 2. Press `Ctrl/Cmd + P`
-3. Type "Canvas Roots: Open current note in family chart"
+3. Type "Charted Roots: Open current note in family chart"
 4. The chart opens centered on that person
 
 ## Navigation and Exploration
@@ -245,7 +245,7 @@ Open additional family chart tabs to compare different branches or root persons:
 ### Open a New Chart
 
 1. Press `Ctrl/Cmd + P`
-2. Type "Canvas Roots: Open new family chart"
+2. Type "Charted Roots: Open new family chart"
 3. Select a root person
 4. A new chart tab opens alongside existing ones
 

@@ -17,7 +17,7 @@ This document covers data import/export and source image management.
 
 ## Supported Formats
 
-Canvas Roots supports multiple genealogical data formats for interoperability with other genealogy software.
+Charted Roots supports multiple genealogical data formats for interoperability with other genealogy software.
 
 | Format | Import | Export | Description |
 |--------|--------|--------|-------------|
@@ -126,7 +126,7 @@ ABT 15 MAR 1950       → 1950-03-15 (precision: estimated)
 
 **Event type mappings:**
 
-| GEDCOM | Canvas Roots |
+| GEDCOM | Charted Roots |
 |--------|--------------|
 | BIRT | birth |
 | DEAT | death |
@@ -194,7 +194,7 @@ const confidence = nameScore + dateScore + genderBonus;
 | Entry Point | Location | Trigger |
 |-------------|----------|---------|
 | Dashboard | Yellow staging section | When staging has data |
-| Command | `Canvas Roots: Manage staging area` | Always available |
+| Command | `Charted Roots: Manage staging area` | Always available |
 | Import Wizard | Success screen button | After importing to staging |
 
 ---

@@ -1,5 +1,5 @@
 /**
- * Gramps XML Exporter for Canvas Roots
+ * Gramps XML Exporter for Charted Roots
  *
  * Exports person notes from Obsidian vault to Gramps XML format.
  * Based on the Gramps XML DTD: https://github.com/gramps-project/gramps/blob/master/data/grampsxml.dtd
@@ -382,7 +382,7 @@ export class GrampsExporter {
   <header>
     <created date="${dateStr}" version="${options.sourceVersion || '1.0.0'}"/>
     <researcher>
-      <resname>${this.escapeXml(options.sourceApp || 'Canvas Roots')}</resname>
+      <resname>${this.escapeXml(options.sourceApp || 'Charted Roots')}</resname>
     </researcher>
   </header>
 ${sourcesXml.xml}
@@ -694,7 +694,7 @@ ${families.xml}
 	}
 
 	/**
-	 * Map Canvas Roots place type to Gramps place type
+	 * Map Charted Roots place type to Gramps place type
 	 */
 	private mapPlaceTypeToGramps(placeType?: string): string {
 		if (!placeType) return '';
@@ -1569,7 +1569,7 @@ ${families.xml}
 	}
 
 	/**
-	 * Map Canvas Roots event type to Gramps event type
+	 * Map Charted Roots event type to Gramps event type
 	 */
 	private eventTypeToGrampsType(eventType: string): string {
 		const mapping: Record<string, string> = {

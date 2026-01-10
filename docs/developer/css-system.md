@@ -2,7 +2,7 @@
 
 ## Overview
 
-Canvas Roots uses a component-based CSS build system that automatically concatenates, lints, and formats CSS files from the `styles/` directory into a single `styles.css` file for Obsidian.
+Charted Roots uses a component-based CSS build system that automatically concatenates, lints, and formats CSS files from the `styles/` directory into a single `styles.css` file for Obsidian.
 
 ## Directory Structure
 
@@ -93,7 +93,7 @@ Use BEM-style naming with `cr-` or `canvas-roots-` prefix:
 
 ### Custom Properties
 
-Use `--cr-` prefix for Canvas Roots variables:
+Use `--cr-` prefix for Charted Roots variables:
 
 ```css
 :root {

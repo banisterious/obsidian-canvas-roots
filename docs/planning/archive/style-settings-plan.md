@@ -2,7 +2,7 @@
 
 ## Overview
 
-Expose Canvas Roots styling options via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin, allowing users to customize colors and dimensions without editing CSS.
+Expose Charted Roots styling options via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin, allowing users to customize colors and dimensions without editing CSS.
 
 **Target Version:** v0.9.1
 **Type:** Enhancement (customization of existing features)
@@ -71,7 +71,7 @@ Add `/* @settings */` block to `styles.css` (or dedicated `style-settings.css`):
 ```css
 /* @settings
 
-name: Canvas Roots
+name: Charted Roots
 id: canvas-roots
 settings:
   -
@@ -147,7 +147,7 @@ Update component CSS to use variables with fallbacks:
 ## Testing
 
 1. Verify plugin works normally without Style Settings installed
-2. Install Style Settings and verify Canvas Roots section appears
+2. Install Style Settings and verify Charted Roots section appears
 3. Test each color/dimension setting updates live
 4. Verify settings persist across Obsidian restarts
 5. Test with various Obsidian themes (light/dark)

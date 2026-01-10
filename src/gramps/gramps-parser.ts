@@ -1,7 +1,7 @@
 /**
- * Gramps XML Parser for Canvas Roots
+ * Gramps XML Parser for Charted Roots
  *
- * Parses Gramps XML files and converts them to Canvas Roots data structures.
+ * Parses Gramps XML files and converts them to Charted Roots data structures.
  */
 
 import {
@@ -34,7 +34,7 @@ const logger = getLogger('GrampsParser');
 
 /**
  * Parsed person from Gramps format
- * Intermediate format before converting to Canvas Roots PersonData
+ * Intermediate format before converting to Charted Roots PersonData
  */
 export interface ParsedGrampsPerson {
 	id: string;
@@ -139,7 +139,7 @@ export interface ParsedGrampsSource {
 export interface ParsedGrampsCitation {
 	handle: string;
 	id?: string;
-	/** Canvas Roots confidence level (high/medium/low) */
+	/** Charted Roots confidence level (high/medium/low) */
 	confidence: 'high' | 'medium' | 'low';
 	/** Source handle this citation references */
 	sourceHandle?: string;

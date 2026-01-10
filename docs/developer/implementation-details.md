@@ -1,6 +1,6 @@
 # Implementation Details
 
-This document is the index for Canvas Roots technical implementation documentation.
+This document is the index for Charted Roots technical implementation documentation.
 
 ## Documentation Index
 

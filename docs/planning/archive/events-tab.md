@@ -142,7 +142,7 @@ When moving Date Systems from Canvas Settings:
 ## Related Documentation
 
 - [Chronological Story Mapping](chronological-story-mapping.md) - Full event system planning
-- [Fictional Date Systems Wiki](https://github.com/banisterious/obsidian-canvas-roots/wiki/Fictional-Date-Systems) - User documentation
+- [Fictional Date Systems Wiki](https://github.com/banisterious/obsidian-charted-roots/wiki/Fictional-Date-Systems) - User documentation
 
 ## Success Criteria
 

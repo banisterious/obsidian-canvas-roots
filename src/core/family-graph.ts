@@ -1680,7 +1680,7 @@ export class FamilyGraphService {
 	 * Gramps handles start with underscore followed by uppercase letters and digits,
 	 * e.g., "_PTHMF88SXO93W8QTDJ" or "_bc09aafc5ba1cb2a871"
 	 *
-	 * Valid Canvas Roots cr_ids have format: xxx-123-xxx-123
+	 * Valid Charted Roots cr_ids have format: xxx-123-xxx-123
 	 * (3 lowercase letters, 3 digits, 3 lowercase letters, 3 digits)
 	 */
 	private isUnresolvedGrampsHandle(value: string | undefined): boolean {

@@ -1,5 +1,5 @@
 /**
- * GEDCOM Types and Mappings for Canvas Roots
+ * GEDCOM Types and Mappings for Charted Roots
  *
  * Defines types, interfaces, and tag mappings for GEDCOM import v2.
  * Supports comprehensive event, source, and person attribute import.
@@ -13,7 +13,7 @@ import type { GedcomCompatibilityMode, PreprocessorDetection } from './gedcom-pr
 // ============================================================================
 
 /**
- * GEDCOM event tag to Canvas Roots event_type mapping
+ * GEDCOM event tag to Charted Roots event_type mapping
  */
 export const GEDCOM_EVENT_TAG_MAP: Record<string, string> = {
 	// Core events
@@ -94,7 +94,7 @@ export const GEDCOM_FAMILY_EVENT_TAGS = new Set([
 // ============================================================================
 
 /**
- * GEDCOM person attribute tag to Canvas Roots property mapping
+ * GEDCOM person attribute tag to Charted Roots property mapping
  */
 export const GEDCOM_ATTRIBUTE_TAG_MAP: Record<string, string> = {
 	DSCR: 'physicalDescription',
@@ -125,7 +125,7 @@ export { SENSITIVE_FIELDS, isSensitiveField, filterSensitiveFields } from '../co
 // ============================================================================
 
 /**
- * GEDCOM date modifier to Canvas Roots date_precision mapping
+ * GEDCOM date modifier to Charted Roots date_precision mapping
  */
 export const GEDCOM_DATE_PRECISION_MAP: Record<string, DatePrecision> = {
 	'': 'exact',        // No modifier = exact
@@ -142,7 +142,7 @@ export const GEDCOM_DATE_PRECISION_MAP: Record<string, DatePrecision> = {
 // ============================================================================
 
 /**
- * GEDCOM QUAY (quality) value to Canvas Roots source_quality mapping
+ * GEDCOM QUAY (quality) value to Charted Roots source_quality mapping
  */
 export const GEDCOM_SOURCE_QUALITY_MAP: Record<number, string> = {
 	0: 'derivative',  // Unreliable
@@ -161,7 +161,7 @@ export const GEDCOM_SOURCE_QUALITY_MAP: Record<number, string> = {
 export interface GedcomEvent {
 	/** GEDCOM tag (e.g., 'BIRT', 'MARR') */
 	tag: string;
-	/** Canvas Roots event type (e.g., 'birth', 'marriage') */
+	/** Charted Roots event type (e.g., 'birth', 'marriage') */
 	eventType: string;
 	/** Raw GEDCOM date string */
 	dateRaw?: string;
@@ -476,14 +476,14 @@ export function isAttributeTag(tag: string): boolean {
 }
 
 /**
- * Get Canvas Roots event type from GEDCOM tag
+ * Get Charted Roots event type from GEDCOM tag
  */
 export function getEventTypeFromTag(tag: string): string {
 	return GEDCOM_EVENT_TAG_MAP[tag] || 'custom';
 }
 
 /**
- * Get Canvas Roots property name from GEDCOM attribute tag
+ * Get Charted Roots property name from GEDCOM attribute tag
  */
 export function getPropertyFromAttributeTag(tag: string): string | undefined {
 	return GEDCOM_ATTRIBUTE_TAG_MAP[tag];

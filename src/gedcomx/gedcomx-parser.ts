@@ -1,7 +1,7 @@
 /**
- * GEDCOM X Parser for Canvas Roots
+ * GEDCOM X Parser for Charted Roots
  *
- * Parses GEDCOM X JSON files and converts them to Canvas Roots data structures.
+ * Parses GEDCOM X JSON files and converts them to Charted Roots data structures.
  */
 
 import {
@@ -21,7 +21,7 @@ const logger = getLogger('GedcomXParser');
 
 /**
  * Parsed person from GEDCOM X format
- * Intermediate format before converting to Canvas Roots PersonData
+ * Intermediate format before converting to Charted Roots PersonData
  */
 export interface ParsedGedcomXPerson {
 	id: string;

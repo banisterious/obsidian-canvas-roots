@@ -37,7 +37,7 @@ export class CanvasStyleModal extends Modal {
 			const canvasData: CanvasData = JSON.parse(canvasContent);
 			const metadata = canvasData.metadata?.frontmatter;
 
-			if (metadata?.plugin === 'canvas-roots') {
+			if (metadata?.plugin === 'charted-roots' || metadata?.plugin === 'canvas-roots') {
 				this.currentOverrides = metadata.styleOverrides as StyleOverrides | undefined;
 			}
 		} catch (error: unknown) {

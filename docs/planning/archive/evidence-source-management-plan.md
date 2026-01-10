@@ -2,7 +2,7 @@
 
 ## Overview
 
-Evidence & Source Management brings professional genealogical research capabilities to Canvas Roots. This feature enables users to:
+Evidence & Source Management brings professional genealogical research capabilities to Charted Roots. This feature enables users to:
 
 1. Create and manage **source notes** documenting evidence (census records, vital records, photos, etc.)
 2. Link sources to person notes for proper citation
@@ -67,7 +67,7 @@ New settings in plugin configuration:
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `sourcesFolder` | string | `'Canvas Roots/Sources'` | Folder for source notes |
+| `sourcesFolder` | string | `'Charted Roots/Sources'` | Folder for source notes |
 | `defaultCitationFormat` | enum | `'evidence_explained'` | Default citation format |
 | `showSourceThumbnails` | boolean | `true` | Show media previews in gallery |
 | `thumbnailSize` | enum | `'medium'` | Thumbnail size (small/medium/large) |
@@ -167,7 +167,7 @@ showBuiltInSourceTypes: boolean;
 Default values:
 
 ```typescript
-sourcesFolder: 'Canvas Roots/Sources',
+sourcesFolder: 'Charted Roots/Sources',
 defaultCitationFormat: 'evidence_explained',
 showSourceThumbnails: true,
 thumbnailSize: 'medium',
@@ -691,7 +691,7 @@ If filenames follow conventions, extract metadata:
 
 ## Transcription Guidance
 
-Canvas Roots does not include built-in OCR or AI transcription, but users may want to transcribe source documents. The documentation should guide users toward external tools.
+Charted Roots does not include built-in OCR or AI transcription, but users may want to transcribe source documents. The documentation should guide users toward external tools.
 
 ### Best Practices for Census Transcription
 
@@ -747,11 +747,11 @@ When enabled, generated family trees display source count indicators on person n
 |---------|------|---------|-------------|
 | `showSourceIndicators` | boolean | `false` | Display source count badges on person nodes in generated trees |
 
-Located in: Settings → Canvas Roots → Canvas Generation → "Show source indicators"
+Located in: Settings → Charted Roots → Canvas Generation → "Show source indicators"
 
 ### Usage
 
-1. Go to Settings → Canvas Roots → Canvas Generation
+1. Go to Settings → Charted Roots → Canvas Generation
 2. Enable "Show source indicators"
 3. Generate or regenerate a family tree canvas
 4. Source count badges will appear on person nodes that have linked sources

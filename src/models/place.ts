@@ -1,5 +1,5 @@
 /**
- * Place data model for Canvas Roots geographic features
+ * Place data model for Charted Roots geographic features
  * Supports real-world locations, historical places, and fictional geography
  */
 

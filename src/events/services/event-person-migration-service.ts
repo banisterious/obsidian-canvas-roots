@@ -46,7 +46,7 @@ function logLegacyFormatWarning(count: number): void {
 	legacyWarningShown = true;
 
 	console.warn(
-		`[Canvas Roots] Found ${count} event note(s) using the legacy 'person' property. ` +
+		`[Charted Roots] Found ${count} event note(s) using the legacy 'person' property. ` +
 		`This format is deprecated in favor of the 'persons' array. ` +
 		`Use the Cleanup Wizard to migrate to the array format (persons: [...]).`
 	);

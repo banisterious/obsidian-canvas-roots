@@ -193,7 +193,7 @@ export class ImportWizardModal extends Modal {
 			importMedia: true,
 			importNotes: true,  // Default: import notes (Gramps only)
 			createSeparateNoteFiles: false,  // Default: embed notes (Gramps only)
-			mediaFolder: this.plugin?.settings?.mediaFolders?.[0] || 'Canvas Roots/Media',
+			mediaFolder: this.plugin?.settings?.mediaFolders?.[0] || 'Charted Roots/Media',
 			preserveMediaFolderStructure: false,
 			includeDynamicBlocks: true,
 			targetFolder: this.plugin?.settings?.peopleFolder || 'People',
@@ -648,7 +648,7 @@ export class ImportWizardModal extends Modal {
 			// Build folder options
 			const settings = this.plugin?.settings;
 			const configuredFolders = settings?.mediaFolders?.filter((f: string) => f.trim()) || [];
-			const defaultFolder = 'Canvas Roots/Media';
+			const defaultFolder = 'Charted Roots/Media';
 
 			// Option 1: Configured folders from settings
 			for (const folder of configuredFolders) {

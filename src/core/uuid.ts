@@ -1,5 +1,5 @@
 /**
- * UUID generation utilities for Canvas Roots
+ * UUID generation utilities for Charted Roots
  * Implements the cr_id format: abc-123-def-456
  */
 

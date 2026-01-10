@@ -1,7 +1,7 @@
 /**
- * GEDCOM 5.5.1 Parser for Canvas Roots
+ * GEDCOM 5.5.1 Parser for Charted Roots
  *
- * Parses GEDCOM files and converts them to Canvas Roots person data structures.
+ * Parses GEDCOM files and converts them to Charted Roots person data structures.
  */
 
 import { getErrorMessage } from '../core/error-utils';

@@ -92,7 +92,7 @@ parents_id:
 | Property | Type | Description |
 |----------|------|-------------|
 | `parents` | array of wikilinks | Gender-neutral parent references |
-| `parents_id` | array of strings | Canvas Roots IDs for parents |
+| `parents_id` | array of strings | Charted Roots IDs for parents |
 
 ### Relationship to Existing Properties
 

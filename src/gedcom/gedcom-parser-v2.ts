@@ -1,5 +1,5 @@
 /**
- * GEDCOM 5.5.1 Parser v2 for Canvas Roots
+ * GEDCOM 5.5.1 Parser v2 for Charted Roots
  *
  * Extended parser that captures events, sources, and person attributes
  * in addition to basic person and family data.
@@ -344,7 +344,7 @@ export class GedcomParserV2 {
 				return { currentEvent, currentCitation, currentFamcRef: undefined };
 			}
 
-			// Check for custom _RESEARCH_LEVEL tag (Canvas Roots export)
+			// Check for custom _RESEARCH_LEVEL tag (Charted Roots export)
 			if (tag === '_RESEARCH_LEVEL' && value) {
 				const level = parseInt(value, 10);
 				if (!isNaN(level) && level >= 0 && level <= 6) {

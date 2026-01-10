@@ -24,7 +24,7 @@ Generate visual family tree diagrams in multiple formats: interactive Canvas fil
 
 ## Overview
 
-Canvas Roots provides a unified tree generation wizard that supports four output formats:
+Charted Roots provides a unified tree generation wizard that supports four output formats:
 
 | Output | Description | Best For |
 |--------|-------------|----------|
@@ -40,7 +40,7 @@ All formats share the same person selection and tree type steps, then branch int
 ## Opening the Tree Wizard
 
 **From Control Center:**
-1. Open Control Center (`Ctrl/Cmd + P` → "Canvas Roots: Open Control Center")
+1. Open Control Center (`Ctrl/Cmd + P` → "Charted Roots: Open Control Center")
 2. Go to the **Visual Trees** tab in the Output group
 3. Click **New Tree** button
 
@@ -51,7 +51,7 @@ All formats share the same person selection and tree type steps, then branch int
 
 **From Context Menu:**
 1. Right-click on a person note
-2. Select **Canvas Roots** → **Generate Tree**
+2. Select **Charted Roots** → **Generate Tree**
 
 ---
 

@@ -1,6 +1,6 @@
 # Templater Integration
 
-Canvas Roots works well with the [Templater](https://github.com/SilentVoid13/Templater) plugin for creating person, place, event, and source notes with consistent formatting and unique identifiers.
+Charted Roots works well with the [Templater](https://github.com/SilentVoid13/Templater) plugin for creating person, place, event, and source notes with consistent formatting and unique identifiers.
 
 ---
 
@@ -18,16 +18,16 @@ Canvas Roots works well with the [Templater](https://github.com/SilentVoid13/Tem
 
 ## Why Use Templater?
 
-While Canvas Roots provides a context menu action to "Add essential properties" to any note, templates offer advantages:
+While Charted Roots provides a context menu action to "Add essential properties" to any note, templates offer advantages:
 
 - **Consistent format** across all notes of the same type
 - **Custom fields** beyond the essential properties
-- **Automatic cr_id generation** using the same alphanumeric format Canvas Roots uses internally
+- **Automatic cr_id generation** using the same alphanumeric format Charted Roots uses internally
 - **Reduced errors** from copy-paste or manual entry
 
 ## The cr_id Format
 
-Canvas Roots uses a unique identifier format: `abc-123-def-456`
+Charted Roots uses a unique identifier format: `abc-123-def-456`
 
 - Three lowercase letters
 - Hyphen
@@ -224,7 +224,7 @@ If you see an error like `tp.user.generateCrId is not a function`:
 
 ### Different ID Formats
 
-If you previously used a different ID format (like timestamps), Canvas Roots will still recognize your notes. The `cr_id` just needs to be unique within your vault.
+If you previously used a different ID format (like timestamps), Charted Roots will still recognize your notes. The `cr_id` just needs to be unique within your vault.
 
 ## Related Documentation
 

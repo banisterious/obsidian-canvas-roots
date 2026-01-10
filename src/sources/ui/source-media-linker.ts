@@ -450,7 +450,7 @@ export class SourceMediaLinkerModal extends Modal {
 			.setName('Media folder')
 			.setDesc('Select the vault folder containing images to link')
 			.addText((text) => {
-				text.setPlaceholder('Canvas Roots/Sources/Media').setValue(this.selectedFolder);
+				text.setPlaceholder('Charted Roots/Sources/Media').setValue(this.selectedFolder);
 
 				// Only update when user selects from suggestions (matches preferences tab pattern)
 				new FolderSuggest(this.app, text, (value) => {

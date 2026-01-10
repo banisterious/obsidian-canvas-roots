@@ -1,6 +1,6 @@
 # Bases Integration
 
-Canvas Roots is designed to work seamlessly with [Obsidian Bases](https://help.obsidian.md/bases), the core plugin for managing structured data in table views.
+Charted Roots is designed to work seamlessly with [Obsidian Bases](https://help.obsidian.md/bases), the core plugin for managing structured data in table views.
 
 ---
 
@@ -8,7 +8,7 @@ Canvas Roots is designed to work seamlessly with [Obsidian Bases](https://help.o
 
 - [Overview](#overview)
 - [Available Base Templates](#available-base-templates)
-- [Why Use Bases with Canvas Roots?](#why-use-bases-with-canvas-roots)
+- [Why Use Bases with Charted Roots?](#why-use-bases-with-canvas-roots)
 - [Quick Start](#quick-start)
 - [Property Reference](#property-reference)
 - [Example Views](#example-views)
@@ -20,7 +20,7 @@ Canvas Roots is designed to work seamlessly with [Obsidian Bases](https://help.o
 - [Organizations Base Template](#organizations-base-template)
 - [Sources Base Template](#sources-base-template)
 - [Troubleshooting](#troubleshooting)
-- [Integration with Canvas Roots Workflow](#integration-with-canvas-roots-workflow)
+- [Integration with Charted Roots Workflow](#integration-with-canvas-roots-workflow)
 - [Map View for Bases](#map-view-for-bases)
 - [Additional Resources](#additional-resources)
 
@@ -36,19 +36,19 @@ Canvas Roots is designed to work seamlessly with [Obsidian Bases](https://help.o
 - **Sorting**: Organize by date, name, or any property
 - **Summaries**: Aggregate statistics across your data
 
-**Canvas Roots** reads the same YAML frontmatter properties that Bases edits, creating a powerful dual-entry workflow:
+**Charted Roots** reads the same YAML frontmatter properties that Bases edits, creating a powerful dual-entry workflow:
 
 ```
 Individual Notes ←→ Bases Table View
          ↓
-   Canvas Roots
+   Charted Roots
          ↓
   Visualization (Trees, Maps, etc.)
 ```
 
 ## Available Base Templates
 
-Canvas Roots provides ready-to-use templates for five entity types:
+Charted Roots provides ready-to-use templates for five entity types:
 
 | Template | Data Type | Key Features |
 |----------|-----------|--------------|
@@ -79,13 +79,13 @@ Right-click any folder and select:
 - "Create sources Base template"
 
 **From Command Palette:**
-- `Canvas Roots: Create base template` (People)
-- `Canvas Roots: Create places base template`
-- `Canvas Roots: Create events base template`
-- `Canvas Roots: Create organizations base template`
-- `Canvas Roots: Create sources base template`
+- `Charted Roots: Create base template` (People)
+- `Charted Roots: Create places base template`
+- `Charted Roots: Create events base template`
+- `Charted Roots: Create organizations base template`
+- `Charted Roots: Create sources base template`
 
-## Why Use Bases with Canvas Roots?
+## Why Use Bases with Charted Roots?
 
 ### Bulk Data Entry
 Edit multiple family members in a single table view instead of opening individual notes.
@@ -137,7 +137,7 @@ Click any cell to edit properties. Changes are immediately saved to the note's Y
 
 > **Complete Reference:** For the full property schema including advanced spouse metadata, reference numbering systems, and place note properties, see the [Frontmatter Reference](Frontmatter-Reference).
 
-Canvas Roots uses these core properties in note frontmatter:
+Charted Roots uses these core properties in note frontmatter:
 
 ### Required Properties
 
@@ -309,7 +309,7 @@ This makes filtering easier and allows you to exclude non-person notes.
 
 ### 5. Use the `name` Property
 
-While Canvas Roots can use the filename as a fallback, explicitly setting the `name` property gives you more flexibility:
+While Charted Roots can use the filename as a fallback, explicitly setting the `name` property gives you more flexibility:
 
 ```yaml
 ---
@@ -449,7 +449,7 @@ The Places template includes a clickable map link formula:
 map_link: 'if(coordinates_lat, link("obsidian://canvas-roots-map?lat=" + coordinates_lat + "&lng=" + coordinates_long + "&zoom=12", "📌"), "")'
 ```
 
-Clicking the 📌 icon opens Canvas Roots' map view centered on that location.
+Clicking the 📌 icon opens Charted Roots' map view centered on that location.
 
 ### Useful Formulas
 
@@ -711,7 +711,7 @@ year_only: 'if(source_date, source_date.year, "")'
 
 ### Changes Don't Appear in Canvas
 
-**Problem**: Edited data in Bases doesn't show in Canvas Roots tree.
+**Problem**: Edited data in Bases doesn't show in Charted Roots tree.
 
 **Solutions**:
 1. Run the "Re-Layout Current Canvas" command to refresh
@@ -727,13 +727,13 @@ year_only: 'if(source_date, source_date.year, "")'
 2. Use `.join(", ")` to display as text: `list(spouse).map(s => s.toString()).join(", ")`
 3. Create a formula to format the list properly
 
-## Integration with Canvas Roots Workflow
+## Integration with Charted Roots Workflow
 
 ### Recommended Workflow
 
 1. **Initial Setup**: Create person notes with basic data (name, dates)
 2. **Bulk Entry**: Use Bases to quickly add relationships and fill in missing data
-3. **Visualization**: Run Canvas Roots to generate the family tree
+3. **Visualization**: Run Charted Roots to generate the family tree
 4. **Refinement**: Identify gaps in the tree, use Bases to add missing people
 5. **Re-layout**: Update the Canvas with new data
 6. **Analysis**: Use Bases formulas to analyze patterns and data quality
@@ -759,15 +759,15 @@ year_only: 'if(source_date, source_date.year, "")'
 ### Setting Up Map View
 
 1. Install **Obsidian Maps** from Community Plugins
-2. Create a Places Base using the Canvas Roots template
+2. Create a Places Base using the Charted Roots template
 3. In the Base, click the view dropdown → **Map**
 4. Configure the view settings:
    - Set "Marker coordinates" to `coordinates`
    - Optionally set "Marker icon" and "Marker color" to custom properties
 
-### When to Use Obsidian Maps vs. Canvas Roots Map View
+### When to Use Obsidian Maps vs. Charted Roots Map View
 
-| Obsidian Maps | Canvas Roots Map View |
+| Obsidian Maps | Charted Roots Map View |
 |---------------|----------------------|
 | Simple place browsing within a Base | Migration paths (birth → death) |
 | Embedded map in a note | Journey paths through life events |
@@ -776,7 +776,7 @@ year_only: 'if(source_date, source_date.year, "")'
 | | Marker clustering |
 | | Custom image maps (fictional/historical) |
 
-For detailed comparison and coordinated workflows, see [Geographic Features → Using Obsidian Maps Alongside Canvas Roots](Geographic-Features#using-obsidian-maps-alongside-canvas-roots).
+For detailed comparison and coordinated workflows, see [Geographic Features → Using Obsidian Maps Alongside Charted Roots](Geographic-Features#using-obsidian-maps-alongside-canvas-roots).
 
 ## Additional Resources
 

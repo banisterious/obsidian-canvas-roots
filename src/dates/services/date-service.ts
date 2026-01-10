@@ -1,5 +1,5 @@
 /**
- * Date Service for Canvas Roots
+ * Date Service for Charted Roots
  *
  * Unified service for parsing and calculating with dates,
  * supporting both standard (ISO) dates and fictional calendar systems.

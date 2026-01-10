@@ -91,7 +91,7 @@ This schema validates all person notes.
 
 ### Via Control Center (Recommended)
 
-1. Open Control Center (`Ctrl/Cmd + P` → "Canvas Roots: Open control center")
+1. Open Control Center (`Ctrl/Cmd + P` → "Charted Roots: Open control center")
 2. Navigate to the **Schemas** tab
 3. Click **Create schema**
 4. Fill in the form:
@@ -324,19 +324,19 @@ Within constraint expressions, you can access any frontmatter property directly 
 
 | Command | Description |
 |---------|-------------|
-| `Canvas Roots: Open schemas tab` | Open Control Center to Schemas tab |
-| `Canvas Roots: Validate vault against schemas` | Run full vault validation |
+| `Charted Roots: Open schemas tab` | Open Control Center to Schemas tab |
+| `Charted Roots: Validate vault against schemas` | Run full vault validation |
 
 ### Context Menu
 
 **Person notes:**
-- Right-click → Canvas Roots → **Validate against schemas**
+- Right-click → Charted Roots → **Validate against schemas**
 - Validates the single person against all applicable schemas
 
 **Schema notes:**
-- Right-click → Canvas Roots → **Edit schema**
-- Right-click → Canvas Roots → **Validate matching notes**
-- Right-click → Canvas Roots → **Open schemas tab**
+- Right-click → Charted Roots → **Edit schema**
+- Right-click → Charted Roots → **Validate matching notes**
+- Right-click → Charted Roots → **Open schemas tab**
 
 ---
 

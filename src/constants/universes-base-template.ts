@@ -1,5 +1,5 @@
 /**
- * Obsidian Bases template for managing Canvas Roots universe notes
+ * Obsidian Bases template for managing Charted Roots universe notes
  */
 export const UNIVERSES_BASE_TEMPLATE = `visibleProperties:
   - note.name

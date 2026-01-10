@@ -420,7 +420,7 @@ This section documents the visual design system for PDF reports. All reports sha
 Page margins: [40, 60, 40, 60] (left, top, right, bottom)
 
 ┌─────────────────────────────────────────┐
-│  Report Title              Canvas Roots │ ← Header (9pt, #666666)
+│  Report Title              Charted Roots │ ← Header (9pt, #666666)
 │  ─────────────────────────────────────  │ ← Separator line (#cccccc)
 │                                         │
 │              [CONTENT]                  │

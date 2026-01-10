@@ -1,6 +1,6 @@
 /**
  * Template Snippets Modal
- * Provides copyable Templater-compatible templates for Canvas Roots note types
+ * Provides copyable Templater-compatible templates for Charted Roots note types
  */
 
 import { App, Modal, Notice } from 'obsidian';
@@ -10,7 +10,7 @@ export type TemplateType = 'person' | 'event' | 'place' | 'source' | 'organizati
 
 /**
  * Property aliases mapping type
- * Maps user's custom property name → Canvas Roots canonical name
+ * Maps user's custom property name → Charted Roots canonical name
  */
 export type PropertyAliases = Record<string, string>;
 
@@ -265,7 +265,7 @@ export class TemplateSnippetsModal extends Modal {
 		const schemaLink = schemaNote.createEl('a', {
 			text: 'Frontmatter schema reference',
 			cls: 'crc-link',
-			href: 'https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/reference/frontmatter-schema.md'
+			href: 'https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/reference/frontmatter-schema.md'
 		});
 		schemaLink.setAttribute('target', '_blank');
 		schemaNote.appendText('.');
@@ -276,7 +276,7 @@ export class TemplateSnippetsModal extends Modal {
 		const advancedLink = advancedNote.createEl('a', {
 			text: 'Templater integration guide',
 			cls: 'crc-link',
-			href: 'https://github.com/banisterious/obsidian-canvas-roots/wiki/Templater-Integration'
+			href: 'https://github.com/banisterious/obsidian-charted-roots/wiki/Templater-Integration'
 		});
 		advancedLink.setAttribute('target', '_blank');
 		advancedNote.appendText('.');

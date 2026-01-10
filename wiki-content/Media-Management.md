@@ -1,6 +1,6 @@
 # Media Management
 
-Canvas Roots provides comprehensive tools for managing media files (photos, documents, scans) linked to your genealogical data. Media can be attached to people, events, places, organizations, and sources.
+Charted Roots provides comprehensive tools for managing media files (photos, documents, scans) linked to your genealogical data. Media can be attached to people, events, places, organizations, and sources.
 
 ---
 
@@ -52,7 +52,7 @@ The **first item** in the array is treated as the **thumbnail** and is displayed
 The Media Manager is a central hub for all media operations. Open it from:
 
 - **Dashboard → Media tile → Open Media Manager**
-- **Command palette**: "Canvas Roots: Open media manager"
+- **Command palette**: "Charted Roots: Open media manager"
 
 The modal displays four action tiles and a stats bar showing your media coverage.
 
@@ -163,7 +163,7 @@ editable: true
 
 1. **During import**: Enable "Include dynamic content blocks" in GEDCOM or Gramps import
 2. **Context menu**: Right-click a person note → "Insert dynamic blocks"
-3. **Command palette**: "Canvas Roots: Insert dynamic blocks"
+3. **Command palette**: "Charted Roots: Insert dynamic blocks"
 4. **Manually**: Type the code block syntax in any person note
 
 **Freeze to callout:**
@@ -198,7 +198,7 @@ See [Import & Export](Import-Export#gramps-xml--gpkg) for full import documentat
 
 ## Media Folder Settings
 
-Control which folders Canvas Roots scans for media files.
+Control which folders Charted Roots scans for media files.
 
 **Location:** Control Center → Preferences → Media
 
@@ -222,7 +222,7 @@ Control which folders Canvas Roots scans for media files.
 
 ## Supported File Types
 
-Canvas Roots supports a variety of media file types:
+Charted Roots supports a variety of media file types:
 
 | Category | Extensions |
 |----------|------------|

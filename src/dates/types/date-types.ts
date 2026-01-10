@@ -50,7 +50,7 @@ export interface FictionalDateSystem {
 	builtIn?: boolean;
 	/**
 	 * Source of this date system definition
-	 * - undefined or 'custom': User-defined in Canvas Roots settings
+	 * - undefined or 'custom': User-defined in Charted Roots settings
 	 * - 'calendarium': Imported from Calendarium plugin
 	 */
 	source?: 'custom' | 'calendarium';

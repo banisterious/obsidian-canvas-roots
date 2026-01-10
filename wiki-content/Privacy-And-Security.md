@@ -1,6 +1,6 @@
 # Privacy & Security
 
-Canvas Roots handles sensitive genealogical data including names, dates, relationships, and family history. This guide covers how to protect your family's privacy and secure your data.
+Charted Roots handles sensitive genealogical data including names, dates, relationships, and family history. This guide covers how to protect your family's privacy and secure your data.
 
 ---
 
@@ -20,7 +20,7 @@ Canvas Roots handles sensitive genealogical data including names, dates, relatio
 
 ## Data Storage Overview
 
-**All data stays local.** Canvas Roots does not:
+**All data stays local.** Charted Roots does not:
 - Transmit data over the network
 - Connect to external services
 - Upload information to cloud servers
@@ -34,7 +34,7 @@ Your family data is stored in your Obsidian vault as plain Markdown files with Y
 
 ## What Data is Stored
 
-Canvas Roots creates and manages several types of files:
+Charted Roots creates and manages several types of files:
 
 | File Type | Location | Contains |
 |-----------|----------|----------|
@@ -46,11 +46,11 @@ Canvas Roots creates and manages several types of files:
 
 ## Privacy Protection for Living Persons
 
-Canvas Roots includes built-in privacy protection for people who may still be living.
+Charted Roots includes built-in privacy protection for people who may still be living.
 
 ### Enabling Privacy Protection
 
-1. Open **Settings** → **Canvas Roots**
+1. Open **Settings** → **Charted Roots**
 2. Scroll to the **Privacy** section
 3. Enable **Privacy protection for living persons**
 4. Configure the age threshold (default: 100 years)
@@ -181,7 +181,7 @@ For maximum privacy when generating canvases:
 
 ## Log Export Privacy
 
-When troubleshooting issues, you may need to export logs and share them with developers or support. Canvas Roots protects your family's privacy in log exports.
+When troubleshooting issues, you may need to export logs and share them with developers or support. Charted Roots protects your family's privacy in log exports.
 
 ### Automatic Obfuscation
 
@@ -197,13 +197,13 @@ By default, log exports automatically replace personal information with placehol
 
 ### Configuring Log Privacy
 
-1. Open **Settings** → **Canvas Roots**
+1. Open **Settings** → **Charted Roots**
 2. Expand the **Logging** section
 3. Toggle **Obfuscate log exports** (enabled by default)
 
 ### Exporting Logs
 
-1. Open **Settings** → **Canvas Roots** → **Logging**
+1. Open **Settings** → **Charted Roots** → **Logging**
 2. Click **Export** to save logs to your vault
 3. Logs are saved to the configured log folder (default: `.canvas-roots/logs`)
 4. If obfuscation is enabled, personal data is replaced before saving
@@ -219,7 +219,7 @@ You may want to disable obfuscation if:
 
 ## Securing Your Vault
 
-Since Canvas Roots stores data locally, vault security is your responsibility.
+Since Charted Roots stores data locally, vault security is your responsibility.
 
 ### Recommended Practices
 
@@ -297,17 +297,17 @@ If your family tree includes EU residents:
 
 | Task | How To |
 |------|--------|
-| Enable privacy protection | Settings → Canvas Roots → Privacy section |
+| Enable privacy protection | Settings → Charted Roots → Privacy section |
 | Set age threshold | Settings → Configure threshold (default 100) |
 | Mark someone as living | Add `cr_living: true` to frontmatter, or use Edit Person modal |
 | Export with privacy | Control Center → Export → Enable privacy options |
 | Exclude living from export | Choose "Exclude living persons" in export dialog |
 | Generate canvas with privacy | Tree Wizard → Canvas Options → Enable privacy protection |
-| Toggle log obfuscation | Settings → Canvas Roots → Logging → Obfuscate log exports |
-| Export logs | Settings → Canvas Roots → Logging → Export button |
+| Toggle log obfuscation | Settings → Charted Roots → Logging → Obfuscate log exports |
+| Export logs | Settings → Charted Roots → Logging → Export button |
 
 ## See Also
 
 - [Import & Export](Import-Export) - Detailed export options including privacy
 - [Frontmatter Reference](Frontmatter-Reference) - All frontmatter properties including `cr_living`
-- [SECURITY.md](https://github.com/banisterious/obsidian-canvas-roots/blob/main/SECURITY.md) - Security policy and vulnerability reporting
+- [SECURITY.md](https://github.com/banisterious/obsidian-charted-roots/blob/main/SECURITY.md) - Security policy and vulnerability reporting

@@ -6,9 +6,9 @@
   "rules": {
     "custom-property-pattern": null,
     "selector-class-pattern": [
-      "^(cr|crc|canvas-roots)-[a-z0-9-]+(__[a-z0-9-]+)?(--[a-z0-9-]+)?$",
+      "^(cr|crc|canvas-roots|charted-roots)-[a-z0-9-]+(__[a-z0-9-]+)?(--[a-z0-9-]+)?$",
       {
-        "message": "Expected class selector to use BEM format with cr-/crc-/canvas-roots- prefix (selector-class-pattern)"
+        "message": "Expected class selector to use BEM format with cr-/crc-/canvas-roots-/charted-roots- prefix (selector-class-pattern)"
       }
     ],
     "declaration-empty-line-before": [

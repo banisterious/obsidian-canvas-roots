@@ -1,7 +1,7 @@
 /**
  * Value Alias Service
  *
- * Allows users to map custom property values to Canvas Roots canonical values.
+ * Allows users to map custom property values to Charted Roots canonical values.
  * This enables compatibility with existing vaults that use different terminology
  * (e.g., "nameday" instead of "birth" for event types).
  */

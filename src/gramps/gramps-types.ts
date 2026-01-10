@@ -228,7 +228,7 @@ export interface GrampsMedia {
 export type GrampsConfidence = 0 | 1 | 2 | 3 | 4;
 
 /**
- * Map Gramps confidence (0-4) to Canvas Roots confidence (high/medium/low)
+ * Map Gramps confidence (0-4) to Charted Roots confidence (high/medium/low)
  */
 export function mapGrampsConfidence(confidence?: number): 'high' | 'medium' | 'low' {
 	if (confidence === undefined || confidence === null) return 'medium';
@@ -277,7 +277,7 @@ export interface GrampsValidationResult {
 }
 
 /**
- * Convert Gramps gender to Canvas Roots format
+ * Convert Gramps gender to Charted Roots format
  */
 export function convertGrampsGender(gender?: GrampsGender): 'M' | 'F' | undefined {
 	if (gender === 'M') return 'M';

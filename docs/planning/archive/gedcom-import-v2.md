@@ -2,7 +2,7 @@
 
 ## Overview
 
-Enhanced GEDCOM import that creates source notes, event notes, and place notes in addition to person notes. This upgrade captures the full richness of GEDCOM data and integrates with Canvas Roots' existing entity types.
+Enhanced GEDCOM import that creates source notes, event notes, and place notes in addition to person notes. This upgrade captures the full richness of GEDCOM data and integrates with Charted Roots' existing entity types.
 
 ## Current State Analysis
 
@@ -51,7 +51,7 @@ Enhanced GEDCOM import that creates source notes, event notes, and place notes i
 
 **GEDCOM Event Tag Mapping:**
 
-| GEDCOM Tag | Canvas Roots `event_type` | Category | Notes |
+| GEDCOM Tag | Charted Roots `event_type` | Category | Notes |
 |------------|---------------------------|----------|-------|
 | **Core Events** ||||
 | `BIRT` | `birth` | Core | |
@@ -100,7 +100,7 @@ Enhanced GEDCOM import that creates source notes, event notes, and place notes i
 
 These are stored as properties on the person note, not as separate event notes.
 
-| GEDCOM Tag | Canvas Roots Property | Notes |
+| GEDCOM Tag | Charted Roots Property | Notes |
 |------------|----------------------|-------|
 | `DSCR` | `physicalDescription` | Physical description |
 | `IDNO` | `identityNumber` | ID number ⚠️ Sensitive |
@@ -117,7 +117,7 @@ These are stored as properties on the person note, not as separate event notes.
 
 **Date Precision Mapping:**
 
-| GEDCOM Modifier | Canvas Roots `date_precision` |
+| GEDCOM Modifier | Charted Roots `date_precision` |
 |-----------------|-------------------------------|
 | (none) | `exact` |
 | `ABT` | `estimated` |
@@ -201,7 +201,7 @@ citation_detail: ""  # PAGE goes here on event citations
 
 **Source Quality Mapping (QUAY):**
 
-| GEDCOM QUAY | Canvas Roots `source_quality` |
+| GEDCOM QUAY | Charted Roots `source_quality` |
 |-------------|-------------------------------|
 | 0 | `derivative` (unreliable) |
 | 1 | `secondary` (questionable) |
@@ -286,7 +286,7 @@ function normalizePlaceString(place: string): string {
 │                                         │
 │ ☐ Attempt geocoding (slow)              │
 │                                         │
-│ Staging folder: [Canvas Roots/Staging]  │
+│ Staging folder: [Charted Roots/Staging]  │
 │                                         │
 │ Preview:                                │
 │   152 individuals → person notes        │
@@ -376,7 +376,7 @@ src/gedcom/
 ### Unit Tests
 
 - Parse individual GEDCOM tags correctly
-- Map GEDCOM event types to Canvas Roots types
+- Map GEDCOM event types to Charted Roots types
 - Handle date modifiers (ABT, BEF, AFT, BET)
 - Normalize and deduplicate place strings
 - Generate valid cr_id values

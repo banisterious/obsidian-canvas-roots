@@ -50,7 +50,7 @@ View comprehensive analytics about person notes in any folder.
 
 ## Excalidraw Export
 
-Canvas Roots supports Excalidraw in two ways:
+Charted Roots supports Excalidraw in two ways:
 
 1. **Direct generation**: Generate Excalidraw files directly from the Tree Wizard (see [Visual Trees](Visual-Trees#canvasexcalidraw-path))
 2. **Canvas conversion**: Export an existing Canvas file to Excalidraw format (documented below)
@@ -98,7 +98,7 @@ If you already have a Canvas file, you can convert it to Excalidraw:
 **Method 2: Command Palette**
 1. Open the canvas you want to export
 2. Press `Ctrl/Cmd + P`
-3. Type "Canvas Roots: Export to Excalidraw"
+3. Type "Charted Roots: Export to Excalidraw"
 4. Press Enter
 
 ### What Gets Exported
@@ -143,7 +143,7 @@ Once exported, you can:
 
 **Research → Canvas → Excalidraw → Presentation**
 
-1. **Build tree in Canvas**: Use Canvas Roots to generate and style your family tree
+1. **Build tree in Canvas**: Use Charted Roots to generate and style your family tree
 2. **Export to Excalidraw**: Convert the structured tree to editable drawing
 3. **Annotate and enhance**: Add photos, dates, notes, decorative elements
 4. **Present or share**: Export polished diagram for presentations or publications
@@ -158,7 +158,7 @@ Once exported, you can:
 ### Requirements
 
 - [Excalidraw plugin](https://github.com/zsviczian/obsidian-excalidraw-plugin) must be installed and enabled
-- Canvas file must be a valid Canvas Roots-generated family tree
+- Canvas file must be a valid Charted Roots-generated family tree
 - Excalidraw files are stored alongside Canvas files (same vault location)
 
 ### Troubleshooting
@@ -168,10 +168,10 @@ Once exported, you can:
 - Try re-exporting or regenerating the file
 
 **Text not centered in boxes:**
-- Update to Canvas Roots v0.17.1+ which fixes text centering issues
+- Update to Charted Roots v0.17.1+ which fixes text centering issues
 
 **Nodes positioned incorrectly:**
-- Canvas Roots automatically normalizes negative coordinates to positive space
+- Charted Roots automatically normalizes negative coordinates to positive space
 - If issues persist, try regenerating the Canvas first, then re-export
 
 **Missing wiki links:**
@@ -189,7 +189,7 @@ The Split Canvas Wizard helps you plan how to split large family trees into mana
 ### Accessing the Wizard
 
 1. Right-click on any canvas file
-2. Select **Canvas Roots** → **Split canvas wizard**
+2. Select **Charted Roots** → **Split canvas wizard**
 
 ### Split Methods
 

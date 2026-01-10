@@ -3,7 +3,7 @@
 Planning document for adding staging management functionality to Import/Export wizards.
 
 - **Status:** Complete
-- **GitHub Issue:** [#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137)
+- **GitHub Issue:** [#137](https://github.com/banisterious/obsidian-charted-roots/issues/137)
 - **Created:** 2025-12-28
 - **Updated:** 2026-01-04
 
@@ -23,7 +23,7 @@ Staging is a workflow for reviewing imported genealogical data before promoting 
 4. **Promote** - Move reviewed files to the main folder
 5. **Cleanup** - Delete rejected staging data
 
-**Supported Entity Types:** Staging handles all Canvas Roots entity types imported from external sources: people, places, sources, events, organizations. The UI displays entity counts and allows filtering by `cr_type`.
+**Supported Entity Types:** Staging handles all Charted Roots entity types imported from external sources: people, places, sources, events, organizations. The UI displays entity counts and allows filtering by `cr_type`.
 
 ---
 
@@ -217,7 +217,7 @@ Modal for reviewing and resolving duplicate matches.
 Create a new `StagingManagementModal` accessible from:
 - Import Wizard "Manage Staging" button (post-import action)
 - Control Center Dashboard tile
-- Command palette: "Canvas Roots: Manage staging area"
+- Command palette: "Charted Roots: Manage staging area"
 
 **Pros:**
 - Focused UI for staging operations
@@ -295,7 +295,7 @@ The following CSS classes were used in the deprecated tab and should be reused o
 
 ### Phase 2: Entry Points
 
-- [x] Add command: "Canvas Roots: Manage staging area"
+- [x] Add command: "Charted Roots: Manage staging area"
 - [x] Add "Manage Staging" button to Import Wizard success screen
 - [x] Add "Staging" section to Dashboard (when staging has data)
 - [x] Add "Staging" entry to TOOL_CONFIGS
@@ -310,7 +310,7 @@ The following CSS classes were used in the deprecated tab and should be reused o
 
 ## Future Considerations
 
-### Web Clipper Integration ([#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128))
+### Web Clipper Integration ([#128](https://github.com/banisterious/obsidian-charted-roots/issues/128))
 
 Phase 2 of Web Clipper Integration depends on this feature. The Staging Manager should support:
 - Filtering by `clip_source_type` frontmatter to show only clipped notes

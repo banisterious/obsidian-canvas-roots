@@ -1,15 +1,15 @@
 # DNA Match Tracking
 
-Planning document for [#126](https://github.com/banisterious/obsidian-canvas-roots/issues/126).
+Planning document for [#126](https://github.com/banisterious/obsidian-charted-roots/issues/126).
 
 ---
 
 ## Overview
 
-Add lightweight DNA match tracking to Canvas Roots, enabling genetic genealogists to record key DNA matches alongside their family tree research. Designed to be **fully opt-in**—invisible to users who don't need it.
+Add lightweight DNA match tracking to Charted Roots, enabling genetic genealogists to record key DNA matches alongside their family tree research. Designed to be **fully opt-in**—invisible to users who don't need it.
 
 **Design Philosophy:**
-- Canvas Roots is not a DNA analysis tool—specialized tools (DNAPainter, Genetic Affairs, etc.) handle that well
+- Charted Roots is not a DNA analysis tool—specialized tools (DNAPainter, Genetic Affairs, etc.) handle that well
 - Focus on tracking "key matches" (BKM/BMM methodology) rather than comprehensive DNA management
 - All phases are opt-in via settings; default experience is unchanged
 - Leverage existing infrastructure (Bases, custom relationships, reports)
@@ -305,7 +305,7 @@ These belong in specialized DNA tools.
 
 ### Pedigree Collapse
 
-When the same ancestor appears multiple times in a tree, DNA may be inherited through multiple paths. Canvas Roots doesn't attempt to model this—users should record the match and use external tools for segment analysis.
+When the same ancestor appears multiple times in a tree, DNA may be inherited through multiple paths. Charted Roots doesn't attempt to model this—users should record the match and use external tools for segment analysis.
 
 ### Shared cM Project Ranges
 
@@ -360,13 +360,13 @@ Explicitly out of scope:
 - **Automatic relationship prediction** — Too error-prone
 - **DNA import from testing companies** — API access varies, privacy concerns
 
-Canvas Roots provides a place to **record and organize** key DNA matches alongside genealogical research, not to replace specialized DNA tools.
+Charted Roots provides a place to **record and organize** key DNA matches alongside genealogical research, not to replace specialized DNA tools.
 
 ---
 
 ## References
 
-- [Issue #126](https://github.com/banisterious/obsidian-canvas-roots/issues/126)
+- [Issue #126](https://github.com/banisterious/obsidian-charted-roots/issues/126)
 - [Shared cM Project](https://thednageek.com/the-shared-cm-project-version-4-0-march-2020/)
 - [Leeds Method](https://www.danaleeds.com/the-leeds-method/)
 - [BKM/BMM Methodology](https://genealogyjunkie.net/bestmatchmethod/) (Best Match Method)

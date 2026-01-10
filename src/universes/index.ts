@@ -1,7 +1,7 @@
 /**
  * Universes module
  *
- * Provides universe management functionality for Canvas Roots.
+ * Provides universe management functionality for Charted Roots.
  * Universes are first-class entities that represent fictional worlds,
  * story settings, or alternate realities within a vault.
  */

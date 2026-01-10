@@ -1,5 +1,5 @@
 /**
- * Type definitions for Canvas Roots Map View
+ * Type definitions for Charted Roots Map View
  */
 
 import type * as L from 'leaflet';
@@ -483,14 +483,14 @@ export interface SVGExportOptions {
 // ============================================================================
 
 /**
- * Extended marker with Canvas Roots metadata
+ * Extended marker with Charted Roots metadata
  */
 export interface CRMarker extends L.Marker {
 	crData?: MapMarker;
 }
 
 /**
- * Extended polyline with Canvas Roots metadata
+ * Extended polyline with Charted Roots metadata
  */
 export interface CRPolyline extends L.Polyline {
 	crData?: MigrationPath | AggregatedPath;
@@ -600,7 +600,7 @@ export const DEFAULT_MAP_SETTINGS: MapSettings = {
 	showJourneyLabels: true,
 	heatMapBlur: 15,
 	heatMapRadius: 25,
-	customMapsFolder: 'Canvas Roots/Places/Maps'
+	customMapsFolder: 'Charted Roots/Places/Maps'
 };
 
 /**

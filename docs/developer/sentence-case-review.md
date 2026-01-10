@@ -537,11 +537,11 @@ This document lists all `obsidianmd/ui/sentence-case` warnings for manual review
 
 ### src/organizations/ui/create-organization-modal.ts
 
-- Line 156: `Canvas Roots/Organizations`
+- Line 156: `Charted Roots/Organizations`
 
 ### src/reports/ui/report-generator-modal.ts
 
-- Line 180: `Canvas Roots/Reports`
+- Line 180: `Charted Roots/Reports`
 
 ### src/settings.ts
 
@@ -549,12 +549,12 @@ This document lists all `obsidianmd/ui/sentence-case` warnings for manual review
 
 ### src/sources/ui/source-image-wizard.ts
 
-- Line 231: `Canvas Roots/Sources/Media`
-- Line 743: `Canvas Roots/Sources`
+- Line 231: `Charted Roots/Sources/Media`
+- Line 743: `Charted Roots/Sources`
 
 ### src/sources/ui/source-media-linker.ts
 
-- Line 241: `Canvas Roots/Sources/Media`
+- Line 241: `Charted Roots/Sources/Media`
 
 ### src/sources/ui/sources-tab.ts
 
@@ -562,7 +562,7 @@ This document lists all `obsidianmd/ui/sentence-case` warnings for manual review
 
 ### src/ui/control-center.ts
 
-- Line 1251: `Canvas Roots generates family trees on the Obsidian Canvas f...`
+- Line 1251: `Charted Roots generates family trees on the Obsidian Canvas f...`
 - Line 1312: `Open Data Quality`
 - Line 1864: `Create People base`
 - Line 1889: `Data Quality tab`

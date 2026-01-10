@@ -6,8 +6,8 @@
 
 /* @settings
 
-name: Canvas Roots
-id: canvas-roots
+name: Charted Roots
+id: charted-roots
 settings:
   -
     id: family-chart-heading
@@ -117,7 +117,7 @@ settings:
   -
     id: canvas-nodes-info
     title: Configure in plugin settings
-    description: "Node width, height, and spacing are configured in the Canvas Roots plugin settings (Settings → Canvas Roots → Canvas Output) or in the Control Center's Canvas Settings tab. These values are written directly into canvas files when generating trees."
+    description: "Node width, height, and spacing are configured in the Charted Roots plugin settings (Settings → Charted Roots → Canvas Output) or in the Control Center's Canvas Settings tab. These values are written directly into canvas files when generating trees."
     type: info-text
     markdown: true
   -

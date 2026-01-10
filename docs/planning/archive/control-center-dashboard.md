@@ -299,7 +299,7 @@ These ideas are interesting but deferred to keep initial scope manageable:
 
 2. **Tile count:** 9 tiles (3 rows of 3). Covers core entity creation, key features, and visualization.
 
-3. **Recent tracking scope:** Track file opens via Canvas Roots features only. Cleaner data, and users opening files directly probably don't need the Dashboard reminder.
+3. **Recent tracking scope:** Track file opens via Charted Roots features only. Cleaner data, and users opening files directly probably don't need the Dashboard reminder.
 
 4. **Tab icon:** `home` — feels intuitive as the "starting point" for CR operations.
 

@@ -268,9 +268,9 @@ interface PersonMembership {
 - View memberships
 
 **Commands:**
-- `Canvas Roots: Create organization note`
-- `Canvas Roots: Open organizations tab`
-- `Canvas Roots: Add membership to current person`
+- `Charted Roots: Create organization note`
+- `Charted Roots: Open organizations tab`
+- `Charted Roots: Add membership to current person`
 
 ### Phase 6: Bases Integration
 

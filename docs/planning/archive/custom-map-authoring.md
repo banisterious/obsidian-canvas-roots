@@ -19,7 +19,7 @@ This document covers two complementary problems:
 ### The Problems
 
 **Map Creation:**
-> "I have a beautiful map image of my fantasy world. I want to use it in Canvas Roots, but the setup process is confusing. What coordinate system should I use? What are bounds? I just want to see my map and start adding locations."
+> "I have a beautiful map image of my fantasy world. I want to use it in Charted Roots, but the setup process is confusing. What coordinate system should I use? What are bounds? I just want to see my map and start adding locations."
 
 **Place Positioning:**
 > "I have a map configured, but adding places is tedious. I have to open the image in an external editor, find pixel coordinates, type them into frontmatter, reload the map to check placement, and repeat. It takes 5 minutes per place."
@@ -120,7 +120,7 @@ Step 4: Review & Create
 ### Entry Points
 
 1. **Control Center → Maps → "Create map wizard"** (new button)
-2. **Command palette: "Canvas Roots: Create custom map"** (new command)
+2. **Command palette: "Charted Roots: Create custom map"** (new command)
 3. **Context menu on image file → "Use as custom map"** (new option)
 
 ### Implementation Notes
@@ -331,8 +331,8 @@ Right-click an image file in the file explorer:
 
 ### Command Palette
 
-- "Canvas Roots: Create custom map" → Opens Map Creation Wizard
-- "Canvas Roots: Add place to current map" → Opens CreatePlaceModal with current map's universe
+- "Charted Roots: Create custom map" → Opens Map Creation Wizard
+- "Charted Roots: Add place to current map" → Opens CreatePlaceModal with current map's universe
 
 ### Quick Switcher Integration
 
@@ -398,7 +398,7 @@ Right-click an image file in the file explorer:
 
 #### Phase 1f: Entry Points
 - [x] Add "Wizard" button to Control Center Maps tab
-- [x] Add command: "Canvas Roots: Create custom map"
+- [x] Add command: "Charted Roots: Create custom map"
 - [x] Add context menu on image files: "Use as custom map"
 
 ### Phase 2: Right-Click to Create Place

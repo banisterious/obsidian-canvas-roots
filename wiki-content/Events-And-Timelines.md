@@ -1,6 +1,6 @@
 # Events & Timelines
 
-Canvas Roots provides tools for documenting life events and visualizing them in chronological order. This feature supports both genealogists (who derive events from historical sources) and worldbuilders (who create canonical events directly).
+Charted Roots provides tools for documenting life events and visualizing them in chronological order. This feature supports both genealogists (who derive events from historical sources) and worldbuilders (who create canonical events directly).
 
 ---
 
@@ -102,7 +102,7 @@ Additional notes about this event...
 
 ### Event Types
 
-Canvas Roots includes 22 built-in event types across four categories:
+Charted Roots includes 22 built-in event types across four categories:
 
 **Core Events** (vital records):
 | Type | Icon | Color | Description |
@@ -139,7 +139,7 @@ Canvas Roots includes 22 built-in event types across four categories:
 
 **Custom Events:**
 
-You can define custom event types in **Settings > Canvas Roots > Events**.
+You can define custom event types in **Settings > Charted Roots > Events**.
 
 ### Date Precision
 
@@ -157,7 +157,7 @@ The `date_precision` field indicates how accurate the date is:
 
 ### Fictional Date Systems
 
-Events integrate with Canvas Roots' [Fictional Date Systems](Fictional-Date-Systems). When `date_system` is specified, the date is parsed using that system's era definitions.
+Events integrate with Charted Roots' [Fictional Date Systems](Fictional-Date-Systems). When `date_system` is specified, the date is parsed using that system's era definitions.
 
 **Example with Middle-earth Calendar:**
 
@@ -495,11 +495,11 @@ Seven event templates are available in the Template Snippets modal:
 
 ## Settings
 
-Event-related settings are in **Settings > Canvas Roots**:
+Event-related settings are in **Settings > Charted Roots**:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| Events folder | `Canvas Roots/Events` | Default folder for new event notes |
+| Events folder | `Charted Roots/Events` | Default folder for new event notes |
 | Show built-in event types | true | Include 22 built-in types |
 | Custom event types | [] | User-defined event types |
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Enhanced export functionality that includes events, sources, places, and media in addition to person notes. This upgrade ensures round-trip fidelity with GEDCOM Import v2 and captures the full richness of Canvas Roots data.
+Enhanced export functionality that includes events, sources, places, and media in addition to person notes. This upgrade ensures round-trip fidelity with GEDCOM Import v2 and captures the full richness of Charted Roots data.
 
 **Supported Export Formats:**
 - GEDCOM 5.5.1 (legacy compatibility)
@@ -71,7 +71,7 @@ Events become tags under the individual:
 
 **Event Type Mapping (Export):**
 
-| Canvas Roots `event_type` | GEDCOM Tag |
+| Charted Roots `event_type` | GEDCOM Tag |
 |---------------------------|------------|
 | `birth` | `BIRT` |
 | `death` | `DEAT` |
@@ -137,7 +137,7 @@ GEDCOM 7.0 uses similar structure but with enhanced features:
 
 **Date Precision Mapping (Export):**
 
-| Canvas Roots `date_precision` | GEDCOM Output |
+| Charted Roots `date_precision` | GEDCOM Output |
 |-------------------------------|---------------|
 | `exact` | `15 MAR 1850` |
 | `estimated` | `ABT 15 MAR 1850` |
@@ -224,7 +224,7 @@ event,[[John Smith]],immigration,1875,year_only,"New York, USA",,unknown
 
 1. Add event collection to all exporters
 2. Create event note reader service (shared)
-3. Map Canvas Roots event types to format-specific tags
+3. Map Charted Roots event types to format-specific tags
 4. Link events to persons via `person` wikilink resolution
 5. Handle family events (marriage, divorce) on FAM records
 
@@ -281,7 +281,7 @@ GEDCOM 7.0 sources support multimedia objects directly:
 
 **Source Quality Mapping (Export):**
 
-| Canvas Roots `confidence` | GEDCOM QUAY |
+| Charted Roots `confidence` | GEDCOM QUAY |
 |---------------------------|-------------|
 | `primary` | 3 |
 | `secondary` | 2 |
@@ -867,7 +867,7 @@ The manifest provides a complete inventory of bundled media:
 {
   "version": "1.0",
   "created": "2024-01-15T10:30:00Z",
-  "generator": "Canvas Roots v0.11.0",
+  "generator": "Charted Roots v0.11.0",
   "format": "GEDCOM 7.0",
   "media": [
     {
@@ -1114,7 +1114,7 @@ Export complete!
 
 ```
 ┌──────────────────────────────────────────┐
-│ Canvas Roots Vault                       │
+│ Charted Roots Vault                       │
 │ ├── Person notes (with cr_id)            │
 │ ├── Event notes (with person wikilinks)  │
 │ ├── Source notes (with cr_id + media)    │
@@ -1189,7 +1189,7 @@ src/
 
 ### Problem Statement
 
-Canvas Roots v0.9.3+ allows users to configure custom property names (property aliases) and custom property values (value aliases). Exporters must respect these configurations when reading note frontmatter.
+Charted Roots v0.9.3+ allows users to configure custom property names (property aliases) and custom property values (value aliases). Exporters must respect these configurations when reading note frontmatter.
 
 **Example scenarios:**
 - User has `dob` aliased to canonical `born` property
@@ -1470,7 +1470,7 @@ Custom relationships (godparent, mentor, rival, etc.) could map to:
 
 ### Problem Statement
 
-Canvas Roots supports fictional calendar systems via the `date_system` field. When exporting fictional dates, we need to preserve:
+Charted Roots supports fictional calendar systems via the `date_system` field. When exporting fictional dates, we need to preserve:
 1. The original fictional date string
 2. The calendar system name
 3. (Optional) Gregorian equivalent if available
@@ -1685,10 +1685,10 @@ This plan update adds critical missing pieces:
 ## Related Documentation
 
 - [GEDCOM Import v2](gedcom-import-v2.md) - Import side implementation
-- [Events & Timelines](https://github.com/banisterious/obsidian-canvas-roots/wiki/Events-And-Timelines)
-- [Evidence & Sources](https://github.com/banisterious/obsidian-canvas-roots/wiki/Evidence-And-Sources)
-- [Geographic Features](https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features)
-- [Privacy & Security](https://github.com/banisterious/obsidian-canvas-roots/wiki/Privacy-And-Security)
+- [Events & Timelines](https://github.com/banisterious/obsidian-charted-roots/wiki/Events-And-Timelines)
+- [Evidence & Sources](https://github.com/banisterious/obsidian-charted-roots/wiki/Evidence-And-Sources)
+- [Geographic Features](https://github.com/banisterious/obsidian-charted-roots/wiki/Geographic-Features)
+- [Privacy & Security](https://github.com/banisterious/obsidian-charted-roots/wiki/Privacy-And-Security)
 
 ## References
 

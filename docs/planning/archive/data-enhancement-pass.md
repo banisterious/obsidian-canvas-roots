@@ -2,7 +2,7 @@
 
 ## Overview
 
-A set of commands and UI tools to upgrade existing vaults by creating missing linked entities (events, places, sources) from existing person note data. Designed for users who imported GEDCOM before Canvas Roots supported these entity types.
+A set of commands and UI tools to upgrade existing vaults by creating missing linked entities (events, places, sources) from existing person note data. Designed for users who imported GEDCOM before Charted Roots supported these entity types.
 
 ## Use Cases
 
@@ -141,7 +141,7 @@ birthPlace: "[[Dublin, Ireland]]"
 - [ ] Scan event notes
 - [ ] Update references after creation (default: on)
 - [ ] Parse place hierarchy (create parent places)
-- Place folder: `Canvas Roots/Places`
+- Place folder: `Charted Roots/Places`
 
 ### 3. Re-parse GEDCOM for Sources
 
@@ -235,7 +235,7 @@ Unmatched individuals:
 │ ☑ Death events                          │
 │ ☐ Overwrite existing events             │
 │                                         │
-│ Events folder: [Canvas Roots/Events ▼]  │
+│ Events folder: [Charted Roots/Events ▼]  │
 │                                         │
 │ ─────────────────────────────────────── │
 │                                         │
@@ -297,9 +297,9 @@ Creating event: Birth of Margaret Wilson
 
 | Command | Description |
 |---------|-------------|
-| `Canvas Roots: Generate event notes from person dates` | Opens enhancement modal for events |
-| `Canvas Roots: Generate place notes from place strings` | Opens enhancement modal for places |
-| `Canvas Roots: Re-parse GEDCOM for sources` | Opens GEDCOM re-parse modal |
+| `Charted Roots: Generate event notes from person dates` | Opens enhancement modal for events |
+| `Charted Roots: Generate place notes from place strings` | Opens enhancement modal for places |
+| `Charted Roots: Re-parse GEDCOM for sources` | Opens GEDCOM re-parse modal |
 
 ## Implementation
 

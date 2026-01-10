@@ -449,7 +449,7 @@ export class CreateNoteModal extends Modal {
 		}
 
 		try {
-			const notesFolder = this.plugin.settings.notesFolder || 'Canvas Roots/Notes';
+			const notesFolder = this.plugin.settings.notesFolder || 'Charted Roots/Notes';
 			const crId = `note_${generateCrId()}`;
 
 			// Determine the note type to use

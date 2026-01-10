@@ -80,7 +80,7 @@ This is approximately 20+ configurable options spread across a single scrollable
 | **Watermark text** | Diagonal text across pages (e.g., "DRAFT", "CONFIDENTIAL") | None |
 | **Watermark opacity** | Transparency (10-50%) | 20% |
 | **Custom footer graphic** | Small image in footer (e.g., family crest) | None |
-| **Canvas Roots branding** | Show "Canvas Roots for Obsidian" on cover | On |
+| **Charted Roots branding** | Show "Charted Roots for Obsidian" on cover | On |
 
 #### Typography
 

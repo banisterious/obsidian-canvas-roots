@@ -1,5 +1,5 @@
 /**
- * Tree preview renderer for Canvas Roots
+ * Tree preview renderer for Charted Roots
  * Provides visual preview of family trees before canvas generation
  */
 

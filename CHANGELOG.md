@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Canvas Roots will be documented in this file.
+All notable changes to Charted Roots will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -15,15 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Automatic wikilink resolution** ([#104](https://github.com/banisterious/obsidian-canvas-roots/issues/104)): Wikilinks in relationship fields now automatically resolve to `cr_id` values. You can write `father: "[[John Smith]]"` without needing a separate `father_id` field — the plugin resolves the wikilink to the person's `cr_id` at graph-building time. Explicit `_id` fields still take precedence when present. If multiple person notes share the same basename (e.g., two "John Smith.md" files), resolution returns null and the ambiguity is surfaced in the Data Quality report.
+- **Automatic wikilink resolution** ([#104](https://github.com/banisterious/obsidian-charted-roots/issues/104)): Wikilinks in relationship fields now automatically resolve to `cr_id` values. You can write `father: "[[John Smith]]"` without needing a separate `father_id` field — the plugin resolves the wikilink to the person's `cr_id` at graph-building time. Explicit `_id` fields still take precedence when present. If multiple person notes share the same basename (e.g., two "John Smith.md" files), resolution returns null and the ambiguity is surfaced in the Data Quality report.
 
-- **Wikidata Place Web Clipper template** ([#166](https://github.com/banisterious/obsidian-canvas-roots/issues/166)): Added AI-powered Web Clipper template for extracting place data from Wikidata. Auto-triggers on Wikidata Q-pages and extracts coordinates, place type, parent place, alternate names, administrative hierarchy, and Wikipedia links. Works seamlessly with enhanced staging promotion workflow.
+- **Wikidata Place Web Clipper template** ([#166](https://github.com/banisterious/obsidian-charted-roots/issues/166)): Added AI-powered Web Clipper template for extracting place data from Wikidata. Auto-triggers on Wikidata Q-pages and extracts coordinates, place type, parent place, alternate names, administrative hierarchy, and Wikipedia links. Works seamlessly with enhanced staging promotion workflow.
 
 ### Enhanced
 
-- **Staging promotion workflow** ([#165](https://github.com/banisterious/obsidian-canvas-roots/issues/165)): Enhanced the promotion process to automatically assign `cr_id` to notes missing it, route notes to correct folders based on type (places to Places folder, events to Events folder, etc.), and remove clipper metadata on promotion. This ensures Web Clipper notes (like Wikidata places) are fully functional in Canvas Roots immediately after promotion.
+- **Staging promotion workflow** ([#165](https://github.com/banisterious/obsidian-charted-roots/issues/165)): Enhanced the promotion process to automatically assign `cr_id` to notes missing it, route notes to correct folders based on type (places to Places folder, events to Events folder, etc.), and remove clipper metadata on promotion. This ensures Web Clipper notes (like Wikidata places) are fully functional in Charted Roots immediately after promotion.
 
-- **PersonIndexService integration** ([#104](https://github.com/banisterious/obsidian-canvas-roots/issues/104)): RelationshipValidator and ProofSummaryService now use the centralized PersonIndexService for cr_id lookups, eliminating duplicate vault scanning and improving performance.
+- **PersonIndexService integration** ([#104](https://github.com/banisterious/obsidian-charted-roots/issues/104)): RelationshipValidator and ProofSummaryService now use the centralized PersonIndexService for cr_id lookups, eliminating duplicate vault scanning and improving performance.
 
 ---
 
@@ -31,20 +31,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **GEDCOM anonymization tool**: Added `tools/anonymize_gedcom.py` script to help users create shareable test files when reporting GEDCOM import issues without exposing sensitive genealogical data. The script anonymizes names, places, dates, notes, and contact information while preserving GEDCOM structure and relationships for debugging. Supports `--keep-dates` and `--keep-places` flags for targeted debugging scenarios. See [Troubleshooting wiki](https://github.com/banisterious/obsidian-canvas-roots/wiki/Troubleshooting#sharing-gedcom-files-for-debugging) for usage instructions.
+- **GEDCOM anonymization tool**: Added `tools/anonymize_gedcom.py` script to help users create shareable test files when reporting GEDCOM import issues without exposing sensitive genealogical data. The script anonymizes names, places, dates, notes, and contact information while preserving GEDCOM structure and relationships for debugging. Supports `--keep-dates` and `--keep-places` flags for targeted debugging scenarios. See [Troubleshooting wiki](https://github.com/banisterious/obsidian-charted-roots/wiki/Troubleshooting#sharing-gedcom-files-for-debugging) for usage instructions.
 
 ### Fixed
 
-- **Find a Grave Web Clipper templates** ([#155](https://github.com/banisterious/obsidian-canvas-roots/issues/155)): Fixed URL trigger pattern to include HTTPS protocol for auto-selection. Fixed person name extraction to use `.bio-name` CSS selector instead of page title, removing unwanted "Grave - " prefix. Removed hardcoded path configuration to allow user customization.
-- **Gramps event names include all participants** ([#156](https://github.com/banisterious/obsidian-canvas-roots/issues/156)): Fixed Gramps import creating event titles with all participants instead of just the principal person. Event names were joining all participants with "and" (e.g., "Birth of Baby and Mother"). Now filters for participants with role="Primary", falling back to the first participant if no role is assigned. The frontmatter `persons` field still lists all participants for reference.
-- **Create Place modal missing parent dropdown from Dashboard** ([#158](https://github.com/banisterious/obsidian-canvas-roots/issues/158)): Fixed inconsistent UI in Create Place modal depending on entry point. When opened from Dashboard, the parent place dropdown was missing and showed only a text input. Now passes the required place graph services to enable the dropdown in both Dashboard and Places tab.
-- **Dynamic blocks fail with 'value.startsWith is not a function' error** ([#160](https://github.com/banisterious/obsidian-canvas-roots/issues/160)): Fixed timeline and relationships dynamic blocks crashing when config values contain commas inside wikilinks. The config parser was splitting all comma-containing values into arrays, breaking values like `[[Person Name|Alias]]` or `[[Place, City]]`. Now only splits on commas outside wikilink brackets.
-- **Import Wizard Preview stuck on 'Parsing file...'** ([#161](https://github.com/banisterious/obsidian-canvas-roots/issues/161)): Fixed Preview step getting stuck showing "Parsing file..." indefinitely. The `isParsing` flag was being cleared in the finally block after the UI re-render, causing the render to always see the loading state. Moved the flag reset before the render call so the parsed counts display properly.
-- **Create Place modal doesn't recognize existing parent places** ([#162](https://github.com/banisterious/obsidian-canvas-roots/issues/162)): Fixed modal prompting to create duplicate parent places even when they already exist. Two scenarios were broken: (1) When typing a parent name that exists as a grandparent, the stale place graph cache didn't reflect the newly created intermediate place, causing it to miss existing grandparents. Now reloads the cache before opening each parent modal. (2) When selecting an existing parent from the dropdown, the modal still prompted for creation because `pendingParentPlace` wasn't cleared. Now clears the pending parent flag in all dropdown selection cases.
+- **Find a Grave Web Clipper templates** ([#155](https://github.com/banisterious/obsidian-charted-roots/issues/155)): Fixed URL trigger pattern to include HTTPS protocol for auto-selection. Fixed person name extraction to use `.bio-name` CSS selector instead of page title, removing unwanted "Grave - " prefix. Removed hardcoded path configuration to allow user customization.
+- **Gramps event names include all participants** ([#156](https://github.com/banisterious/obsidian-charted-roots/issues/156)): Fixed Gramps import creating event titles with all participants instead of just the principal person. Event names were joining all participants with "and" (e.g., "Birth of Baby and Mother"). Now filters for participants with role="Primary", falling back to the first participant if no role is assigned. The frontmatter `persons` field still lists all participants for reference.
+- **Create Place modal missing parent dropdown from Dashboard** ([#158](https://github.com/banisterious/obsidian-charted-roots/issues/158)): Fixed inconsistent UI in Create Place modal depending on entry point. When opened from Dashboard, the parent place dropdown was missing and showed only a text input. Now passes the required place graph services to enable the dropdown in both Dashboard and Places tab.
+- **Dynamic blocks fail with 'value.startsWith is not a function' error** ([#160](https://github.com/banisterious/obsidian-charted-roots/issues/160)): Fixed timeline and relationships dynamic blocks crashing when config values contain commas inside wikilinks. The config parser was splitting all comma-containing values into arrays, breaking values like `[[Person Name|Alias]]` or `[[Place, City]]`. Now only splits on commas outside wikilink brackets.
+- **Import Wizard Preview stuck on 'Parsing file...'** ([#161](https://github.com/banisterious/obsidian-charted-roots/issues/161)): Fixed Preview step getting stuck showing "Parsing file..." indefinitely. The `isParsing` flag was being cleared in the finally block after the UI re-render, causing the render to always see the loading state. Moved the flag reset before the render call so the parsed counts display properly.
+- **Create Place modal doesn't recognize existing parent places** ([#162](https://github.com/banisterious/obsidian-charted-roots/issues/162)): Fixed modal prompting to create duplicate parent places even when they already exist. Two scenarios were broken: (1) When typing a parent name that exists as a grandparent, the stale place graph cache didn't reflect the newly created intermediate place, causing it to miss existing grandparents. Now reloads the cache before opening each parent modal. (2) When selecting an existing parent from the dropdown, the modal still prompted for creation because `pendingParentPlace` wasn't cleared. Now clears the pending parent flag in all dropdown selection cases.
 
 ### Documentation
 
-- **Web Clipper Integration wiki**: Added section documenting potential future place templates (Wikidata, GOV) and clarifying which place sources are better suited for Web Clipper templates vs native plugin integration. Related to [#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128).
+- **Web Clipper Integration wiki**: Added section documenting potential future place templates (Wikidata, GOV) and clarifying which place sources are better suited for Web Clipper templates vs native plugin integration. Related to [#128](https://github.com/banisterious/obsidian-charted-roots/issues/128).
 - **Unified Place Lookup planning document**: Created comprehensive planning document (`docs/planning/unified-place-lookup.md`) for native multi-source place lookup feature with detailed TypeScript implementation examples for PlaceLookupService, PlaceLookupModal, and integration with Create Place modal. Covers FamilySearch Places API, Wikidata, GeoNames, GOV, and Nominatim with automatic parent place hierarchy creation.
 - **Place Data Sources research document**: Added reference document (`docs/research/place-data-sources.md`) comparing 5 genealogical place databases with API endpoints, authentication requirements, rate limits, use case recommendations for different research scenarios, and implementation priority guidance.
 
@@ -54,11 +54,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Ambiguous wikilink detection in Data Quality** ([#104](https://github.com/banisterious/obsidian-canvas-roots/issues/104)): The Data Quality report now detects when wikilinks in relationship fields (father, mother, spouse, children, etc.) match multiple files with the same basename. When multiple person notes share the same name (e.g., two "John Smith.md" files in different folders), wikilink references become ambiguous and cannot be resolved. The new check generates warnings (code: `AMBIGUOUS_WIKILINK`, category: relationship_inconsistency) suggesting users add `_id` fields (e.g., `father_id`) to disambiguate. This is part of Phase 3 of the wikilink-to-cr_id resolution implementation.
+- **Ambiguous wikilink detection in Data Quality** ([#104](https://github.com/banisterious/obsidian-charted-roots/issues/104)): The Data Quality report now detects when wikilinks in relationship fields (father, mother, spouse, children, etc.) match multiple files with the same basename. When multiple person notes share the same name (e.g., two "John Smith.md" files in different folders), wikilink references become ambiguous and cannot be resolved. The new check generates warnings (code: `AMBIGUOUS_WIKILINK`, category: relationship_inconsistency) suggesting users add `_id` fields (e.g., `father_id`) to disambiguate. This is part of Phase 3 of the wikilink-to-cr_id resolution implementation.
 
 ### Fixed
 
-- **Infinite preprocessing loop in GEDCOM import** ([#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)): Fixed infinite loop causing repeated preprocessing during GEDCOM import. The import wizard Step 4 (Preview) was triggering concurrent calls to parseFileForPreview() because renders occurred while async parsing was still in progress. Added isParsing guard flag to prevent concurrent parsing attempts.
+- **Infinite preprocessing loop in GEDCOM import** ([#144](https://github.com/banisterious/obsidian-charted-roots/issues/144)): Fixed infinite loop causing repeated preprocessing during GEDCOM import. The import wizard Step 4 (Preview) was triggering concurrent calls to parseFileForPreview() because renders occurred while async parsing was still in progress. Added isParsing guard flag to prevent concurrent parsing attempts.
 
 ---
 
@@ -66,8 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Import wizard toggles can't be re-enabled** ([#154](https://github.com/banisterious/obsidian-canvas-roots/issues/154)): Fixed bug where entity type toggles (People, Places, Sources, Events, etc.) in the import wizard couldn't be turned back on after being toggled off. The click handler captured the initial value in a closure instead of reading the current DOM state.
-- **MyHeritage GEDCOM preprocessing creates invalid lines** ([#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)): Fixed "Invalid GEDCOM line format" parse error when importing large MyHeritage files. The preprocessor was converting `<br>` tags to actual newlines, which created lines without level numbers. Changed to replace `<br>` with spaces instead.
+- **Import wizard toggles can't be re-enabled** ([#154](https://github.com/banisterious/obsidian-charted-roots/issues/154)): Fixed bug where entity type toggles (People, Places, Sources, Events, etc.) in the import wizard couldn't be turned back on after being toggled off. The click handler captured the initial value in a closure instead of reading the current DOM state.
+- **MyHeritage GEDCOM preprocessing creates invalid lines** ([#144](https://github.com/banisterious/obsidian-charted-roots/issues/144)): Fixed "Invalid GEDCOM line format" parse error when importing large MyHeritage files. The preprocessor was converting `<br>` tags to actual newlines, which created lines without level numbers. Changed to replace `<br>` with spaces instead.
 
 ---
 
@@ -75,13 +75,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **MyHeritage GEDCOM compatibility** ([#144](https://github.com/banisterious/obsidian-canvas-roots/issues/144)): Automatically detect and fix MyHeritage GEDCOM export issues during import. MyHeritage exports contain UTF-8 BOM, double-encoded HTML entities (`&amp;lt;` instead of `<`), and `<br>` tags that prevent parsing. New preprocessing automatically detects MyHeritage files (via `1 SOUR MYHERITAGE` tag) and applies fixes. Three modes available in Settings → Import/Export: Auto (default, detect and fix), MyHeritage (always fix), None (disabled). Import results modal shows what was fixed.
+- **MyHeritage GEDCOM compatibility** ([#144](https://github.com/banisterious/obsidian-charted-roots/issues/144)): Automatically detect and fix MyHeritage GEDCOM export issues during import. MyHeritage exports contain UTF-8 BOM, double-encoded HTML entities (`&amp;lt;` instead of `<`), and `<br>` tags that prevent parsing. New preprocessing automatically detects MyHeritage files (via `1 SOUR MYHERITAGE` tag) and applies fixes. Three modes available in Settings → Import/Export: Auto (default, detect and fix), MyHeritage (always fix), None (disabled). Import results modal shows what was fixed.
 
 ### Fixed
 
-- **Special character sanitization for all importers** ([#139](https://github.com/banisterious/obsidian-canvas-roots/issues/139)): Extended relationship name sanitization to Gramps, CSV, and GedcomX importers. Previously only the GEDCOM importer sanitized names containing special characters like `"`, `()`, `[]`, `{}`. Now all importers use a shared `sanitizeName()` utility to ensure wikilinks in relationship fields (father, mother, spouse, stepparents, adoptive parents, children) match sanitized filenames, preventing "linked to person who doesn't exist" warnings.
+- **Special character sanitization for all importers** ([#139](https://github.com/banisterious/obsidian-charted-roots/issues/139)): Extended relationship name sanitization to Gramps, CSV, and GedcomX importers. Previously only the GEDCOM importer sanitized names containing special characters like `"`, `()`, `[]`, `{}`. Now all importers use a shared `sanitizeName()` utility to ensure wikilinks in relationship fields (father, mother, spouse, stepparents, adoptive parents, children) match sanitized filenames, preventing "linked to person who doesn't exist" warnings.
 - **Duplicate person filenames during batch import**: Fixed "File already exists" errors when importing multiple people with identical names (e.g., multiple "Son (stillborn)" entries). The vault index doesn't update fast enough between sequential file creations, causing race conditions. Solution: Track created paths in a Set and add retry logic with counter increment, matching the existing approach used for event notes.
-- **Map view "Link existing place" crash** ([#151](https://github.com/banisterious/obsidian-canvas-roots/issues/151)): Fixed error "createFolderFilterService is not a function" when using right-click → "Link existing place here" on maps. The code was calling non-existent factory methods on the plugin object. Solution: Import and instantiate `FolderFilterService` and `PlaceGraphService` directly.
+- **Map view "Link existing place" crash** ([#151](https://github.com/banisterious/obsidian-charted-roots/issues/151)): Fixed error "createFolderFilterService is not a function" when using right-click → "Link existing place here" on maps. The code was calling non-existent factory methods on the plugin object. Solution: Import and instantiate `FolderFilterService` and `PlaceGraphService` directly.
 - **Edit Place modal styling issues**: Fixed truncated labels (e.g., "Parent place" showing as "P...") and horizontal scrollbar in the Edit Place modal. Added CSS to prevent setting-item labels from shrinking and constrained dropdown widths.
 
 ---
@@ -90,16 +90,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **DMS coordinate format support** ([#121](https://github.com/banisterious/obsidian-canvas-roots/issues/121)): Opt-in DMS (degrees, minutes, seconds) parsing for coordinate input in the place creation modal. When enabled via Settings → Data & detection → "Accept DMS coordinate format", users can enter coordinates like `33°51'08"N` or `33 51 08 N` and they automatically convert to decimal degrees. Supports symbol notation, space-separated, hyphen-separated, and direction prefix formats.
-- **Create place context menu for folders** ([#152](https://github.com/banisterious/obsidian-canvas-roots/issues/152)): Added "Create place" option to right-click context menu when clicking on the Places folder or any subfolder within it. Opens the Create Place modal with the target folder pre-selected as destination.
-- **Link existing place to map location** ([#151](https://github.com/banisterious/obsidian-canvas-roots/issues/151)): Added "Link existing place here" option to map right-click context menu. Opens a place picker to select an existing place note and updates its coordinates to the clicked location, then refreshes the map to show the marker.
-- **Optional person names** ([#140](https://github.com/banisterious/obsidian-canvas-roots/issues/140)): The name field is now optional when creating person notes, allowing placeholder persons to be created and filled in later. Useful for genealogy research where relationships are known before identities (e.g., "John's father" before learning his name). Unnamed persons display as "Unnamed" in the UI and trigger a data quality warning.
-- **DNA match tracking - Phase 1** ([#126](https://github.com/banisterious/obsidian-canvas-roots/issues/126)): Lightweight DNA match tracking for genetic genealogy workflows. Phase 1 adds documentation and templates only—no code changes required to core functionality. Includes: DNA match template snippet in the template snippets modal (with fields for shared cM, testing company, kit ID, match type, endogamy flag, and notes); "DNA Matches" view in the People Bases template (filters by dna_shared_cm, sorts by highest matches first); documented frontmatter properties (dna_shared_cm, dna_testing_company, dna_kit_id, dna_match_type, dna_endogamy_flag, dna_notes) for manual use.
+- **DMS coordinate format support** ([#121](https://github.com/banisterious/obsidian-charted-roots/issues/121)): Opt-in DMS (degrees, minutes, seconds) parsing for coordinate input in the place creation modal. When enabled via Settings → Data & detection → "Accept DMS coordinate format", users can enter coordinates like `33°51'08"N` or `33 51 08 N` and they automatically convert to decimal degrees. Supports symbol notation, space-separated, hyphen-separated, and direction prefix formats.
+- **Create place context menu for folders** ([#152](https://github.com/banisterious/obsidian-charted-roots/issues/152)): Added "Create place" option to right-click context menu when clicking on the Places folder or any subfolder within it. Opens the Create Place modal with the target folder pre-selected as destination.
+- **Link existing place to map location** ([#151](https://github.com/banisterious/obsidian-charted-roots/issues/151)): Added "Link existing place here" option to map right-click context menu. Opens a place picker to select an existing place note and updates its coordinates to the clicked location, then refreshes the map to show the marker.
+- **Optional person names** ([#140](https://github.com/banisterious/obsidian-charted-roots/issues/140)): The name field is now optional when creating person notes, allowing placeholder persons to be created and filled in later. Useful for genealogy research where relationships are known before identities (e.g., "John's father" before learning his name). Unnamed persons display as "Unnamed" in the UI and trigger a data quality warning.
+- **DNA match tracking - Phase 1** ([#126](https://github.com/banisterious/obsidian-charted-roots/issues/126)): Lightweight DNA match tracking for genetic genealogy workflows. Phase 1 adds documentation and templates only—no code changes required to core functionality. Includes: DNA match template snippet in the template snippets modal (with fields for shared cM, testing company, kit ID, match type, endogamy flag, and notes); "DNA Matches" view in the People Bases template (filters by dna_shared_cm, sorts by highest matches first); documented frontmatter properties (dna_shared_cm, dna_testing_company, dna_kit_id, dna_match_type, dna_endogamy_flag, dna_notes) for manual use.
 
 ### Fixed
 
-- **Event edit modal deletes custom frontmatter properties** ([#150](https://github.com/banisterious/obsidian-canvas-roots/issues/150)): Fixed editing events through the context menu deleting custom properties added via Templater or manually. The edit modal was rebuilding frontmatter from scratch, only preserving known properties. Solution: Switched to Obsidian's `processFrontMatter` API which safely updates only managed properties while preserving all others.
-- **BCE date sorting in dynamic timeline blocks** ([#146](https://github.com/banisterious/obsidian-canvas-roots/issues/146)): Fixed events spanning BCE/AD boundary sorting incorrectly in timeline codeblocks. The `extractYear` method only matched positive years, so "11 BCE" was extracted as "11" instead of "-11", causing it to appear after "14 AD". Now properly handles BCE/BC suffix, ISO negative years, and AD/CE suffix formats.
+- **Event edit modal deletes custom frontmatter properties** ([#150](https://github.com/banisterious/obsidian-charted-roots/issues/150)): Fixed editing events through the context menu deleting custom properties added via Templater or manually. The edit modal was rebuilding frontmatter from scratch, only preserving known properties. Solution: Switched to Obsidian's `processFrontMatter` API which safely updates only managed properties while preserving all others.
+- **BCE date sorting in dynamic timeline blocks** ([#146](https://github.com/banisterious/obsidian-charted-roots/issues/146)): Fixed events spanning BCE/AD boundary sorting incorrectly in timeline codeblocks. The `extractYear` method only matched positive years, so "11 BCE" was extracted as "11" instead of "-11", causing it to appear after "14 AD". Now properly handles BCE/BC suffix, ISO negative years, and AD/CE suffix formats.
 
 ---
 
@@ -107,12 +107,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **BCE/AD date sorting in timelines** ([#146](https://github.com/banisterious/obsidian-canvas-roots/issues/146)): Fixed incorrect chronological ordering of events spanning the BCE/AD boundary. Events with BCE dates (e.g., "11 BCE") now properly sort before AD dates (e.g., "14 AD"). Root cause: sort-order-service.ts used lexicographic string comparison which doesn't handle negative years correctly. Solution: Added compareDates() helper that extracts years numerically for proper chronological ordering.
-- **Timeline place text whitespace collapse** ([#146](https://github.com/banisterious/obsidian-canvas-roots/issues/146)): Fixed missing space between event title and place in dynamic timeline blocks. Browser was collapsing whitespace when MarkdownRenderer created block-level elements for wikilinks, causing "Marriage of Person Ain Place" instead of "Marriage of Person A in Place". Solution: Added non-breaking space (`\u00A0`) before "in" text to prevent whitespace collapse.
-- **Wikilink resolution for names with special characters** ([#139](https://github.com/banisterious/obsidian-canvas-roots/issues/139)): Fixed wikilink references breaking for relationship names containing quotes and other special characters. When importing from GEDCOM, filenames were sanitized to remove characters like `"()[]{}`, but relationship fields (father, mother, spouse, children, step-parents, adoptive parents) still contained the original unsanitized names. This caused wikilink mismatches where `[[Jane "Jennie" Smith]]` couldn't resolve to file `Jane Jennie Smith.md`. Solution: Extracted sanitization logic into dedicated `sanitizeName()` method and applied it consistently to all relationship name fields during import, ensuring wikilinks match actual filenames.
-- **Pedigree chart PDF export artifacts** ([#148](https://github.com/banisterious/obsidian-canvas-roots/issues/148)): Fixed raw markdown code block delimiters (` ``` `) appearing in PDF exports of pedigree charts. The fenced code blocks were used to preserve ASCII tree formatting in markdown but rendered as visible backticks in PDF output. Solution: Removed code block markers since Unicode box-drawing characters render properly without them in both markdown and PDF formats.
-- **Unicode box-drawing characters invisible in PDF exports** ([#148](https://github.com/banisterious/obsidian-canvas-roots/issues/148)): Fixed pedigree tree connectors (├──, └──, │) rendering as blank spaces in PDF exports while displaying correctly in markdown. Root cause: pdfmake doesn't properly handle Unicode glyphs missing from embedded fonts. Solution: Switched from RobotoMono to DejaVu Sans Mono fonts which provide comprehensive Unicode coverage including box-drawing characters. Added build-fonts.js script to bundle fonts into pdfmake's virtual file system.
-- **Staging manager shows incorrect entity count** ([#149](https://github.com/banisterious/obsidian-canvas-roots/issues/149)): Fixed "All" filter showing 0 total entities when clipped notes are present in staging. Root cause: staging-service.ts was missing `entityCounts.other` from the total calculation, so clipped notes (categorized as "other" type) weren't being counted. Solution: Added `entityCounts.other` to totalEntities calculation. Also removed confusing "Import Batches" terminology from UI and improved entity type breakdown visual alignment.
+- **BCE/AD date sorting in timelines** ([#146](https://github.com/banisterious/obsidian-charted-roots/issues/146)): Fixed incorrect chronological ordering of events spanning the BCE/AD boundary. Events with BCE dates (e.g., "11 BCE") now properly sort before AD dates (e.g., "14 AD"). Root cause: sort-order-service.ts used lexicographic string comparison which doesn't handle negative years correctly. Solution: Added compareDates() helper that extracts years numerically for proper chronological ordering.
+- **Timeline place text whitespace collapse** ([#146](https://github.com/banisterious/obsidian-charted-roots/issues/146)): Fixed missing space between event title and place in dynamic timeline blocks. Browser was collapsing whitespace when MarkdownRenderer created block-level elements for wikilinks, causing "Marriage of Person Ain Place" instead of "Marriage of Person A in Place". Solution: Added non-breaking space (`\u00A0`) before "in" text to prevent whitespace collapse.
+- **Wikilink resolution for names with special characters** ([#139](https://github.com/banisterious/obsidian-charted-roots/issues/139)): Fixed wikilink references breaking for relationship names containing quotes and other special characters. When importing from GEDCOM, filenames were sanitized to remove characters like `"()[]{}`, but relationship fields (father, mother, spouse, children, step-parents, adoptive parents) still contained the original unsanitized names. This caused wikilink mismatches where `[[Jane "Jennie" Smith]]` couldn't resolve to file `Jane Jennie Smith.md`. Solution: Extracted sanitization logic into dedicated `sanitizeName()` method and applied it consistently to all relationship name fields during import, ensuring wikilinks match actual filenames.
+- **Pedigree chart PDF export artifacts** ([#148](https://github.com/banisterious/obsidian-charted-roots/issues/148)): Fixed raw markdown code block delimiters (` ``` `) appearing in PDF exports of pedigree charts. The fenced code blocks were used to preserve ASCII tree formatting in markdown but rendered as visible backticks in PDF output. Solution: Removed code block markers since Unicode box-drawing characters render properly without them in both markdown and PDF formats.
+- **Unicode box-drawing characters invisible in PDF exports** ([#148](https://github.com/banisterious/obsidian-charted-roots/issues/148)): Fixed pedigree tree connectors (├──, └──, │) rendering as blank spaces in PDF exports while displaying correctly in markdown. Root cause: pdfmake doesn't properly handle Unicode glyphs missing from embedded fonts. Solution: Switched from RobotoMono to DejaVu Sans Mono fonts which provide comprehensive Unicode coverage including box-drawing characters. Added build-fonts.js script to bundle fonts into pdfmake's virtual file system.
+- **Staging manager shows incorrect entity count** ([#149](https://github.com/banisterious/obsidian-charted-roots/issues/149)): Fixed "All" filter showing 0 total entities when clipped notes are present in staging. Root cause: staging-service.ts was missing `entityCounts.other` from the total calculation, so clipped notes (categorized as "other" type) weren't being counted. Solution: Added `entityCounts.other` to totalEntities calculation. Also removed confusing "Import Batches" terminology from UI and improved entity type breakdown visual alignment.
 
 ---
 
@@ -120,7 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Web Clipper Integration - Phase 1** ([#128](https://github.com/banisterious/obsidian-canvas-roots/issues/128)):
+- **Web Clipper Integration - Phase 1** ([#128](https://github.com/banisterious/obsidian-charted-roots/issues/128)):
   - Auto-detect clipped notes in staging folder (files with `clip_source_type`, `clipped_from`, or `clipped_date` properties)
   - Unified Dashboard "Staging" card shows breakdown: "3 clips (1 new), 1 other"
   - Toggle buttons in Staging Manager: [All] [Clipped] [Other] for filtering staging content
@@ -132,7 +132,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Timeline event location spacing: fixed missing space between event links and location text (e.g., "Murder of Agrippina in Baiae")
-- **Filename sanitization for special characters** ([#139](https://github.com/banisterious/obsidian-canvas-roots/issues/139)): Strip parentheses and brackets from filenames to prevent wikilink errors (e.g., `Susan (Sue)` → `Susan Sue.md`). Fallback to `Unknown.md` when sanitization results in empty string
+- **Filename sanitization for special characters** ([#139](https://github.com/banisterious/obsidian-charted-roots/issues/139)): Strip parentheses and brackets from filenames to prevent wikilink errors (e.g., `Susan (Sue)` → `Susan Sue.md`). Fallback to `Unknown.md` when sanitization results in empty string
 
 ---
 
@@ -140,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Staging Management UI** ([#137](https://github.com/banisterious/obsidian-canvas-roots/issues/137)):
+- **Staging Management UI** ([#137](https://github.com/banisterious/obsidian-charted-roots/issues/137)):
   - New dedicated modal for managing staged imports with batch organization
   - View staging folder statistics: total files, batches, and potential duplicates
   - Expandable batch cards showing entity breakdown (people, places, sources, events, organizations)
@@ -159,7 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Event edit modal loses person link on save** ([#135](https://github.com/banisterious/obsidian-canvas-roots/issues/135)):
+- **Event edit modal loses person link on save** ([#135](https://github.com/banisterious/obsidian-charted-roots/issues/135)):
   - Fixed bug where editing an event would silently remove the person link
   - The modal only checked the legacy `person:` property but events are now created with `persons:` array
   - Now properly loads person from `persons[0]` first, then falls back to `person` for compatibility
@@ -170,15 +170,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Auto-exclude template folders from note discovery** ([#136](https://github.com/banisterious/obsidian-canvas-roots/issues/136)):
+- **Auto-exclude template folders from note discovery** ([#136](https://github.com/banisterious/obsidian-charted-roots/issues/136)):
   - Automatically detects and excludes template folders configured in core Templates, Templater, and QuickAdd plugins
   - Template files (containing Templater syntax like `<% tp.file.title %>`) no longer appear in person/place/event lists
   - New settings in Advanced section: toggle for auto-detection, info box showing detected folders, text area for additional folders
-  - Changed built-in Templater snippets to leave `cr_id` empty (Canvas Roots auto-generates when notes are indexed)
+  - Changed built-in Templater snippets to leave `cr_id` empty (Charted Roots auto-generates when notes are indexed)
 
 ### Fixed
 
-- **Gramps import hangs during gzip decompression** ([#134](https://github.com/banisterious/obsidian-canvas-roots/issues/134)):
+- **Gramps import hangs during gzip decompression** ([#134](https://github.com/banisterious/obsidian-charted-roots/issues/134)):
   - Fixed .gpkg and .gramps file imports hanging indefinitely when decompressing gzip data
   - Added 30-second timeout to `DecompressionStream` operations to prevent indefinite hanging
   - Changed .gramps file handling to use proper decompression utility instead of raw text read
@@ -190,7 +190,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Privacy-aware canvas generation** ([#102](https://github.com/banisterious/obsidian-canvas-roots/issues/102)):
+- **Privacy-aware canvas generation** ([#102](https://github.com/banisterious/obsidian-charted-roots/issues/102)):
   - New privacy options in Tree Wizard for canvas and Excalidraw generation
   - Living persons can be obfuscated with text nodes showing "Living", "Private", or initials
   - Text nodes include wikilink for navigation to the person's note
@@ -201,22 +201,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Adoptive relationships: duplicate nodes and missing children in family chart** ([#129](https://github.com/banisterious/obsidian-canvas-roots/issues/129)):
+- **Adoptive relationships: duplicate nodes and missing children in family chart** ([#129](https://github.com/banisterious/obsidian-charted-roots/issues/129)):
   - Adopted children now appear when viewing family chart from adoptive parent's perspective
   - Fixed duplicate parent nodes when both `adoptive_parent` and `adopted_child` are set
   - Added bidirectional sync: `adopted_child` on parent now syncs to `adoptive_parent` on child
   - Descendant tree views now include adopted children
 
-- **Gramps XML import hangs at "Parsing file..."** ([#130](https://github.com/banisterious/obsidian-canvas-roots/issues/130)):
+- **Gramps XML import hangs at "Parsing file..."** ([#130](https://github.com/banisterious/obsidian-charted-roots/issues/130)):
   - Fixed async/await bug in gzip decompression that caused the import wizard to hang indefinitely
   - The decompression stream writer operations were not being awaited, preventing the reader from completing
 
-- **GEDCOM import: wikilinks point to wrong person when names are duplicated** ([#132](https://github.com/banisterious/obsidian-canvas-roots/issues/132)):
+- **GEDCOM import: wikilinks point to wrong person when names are duplicated** ([#132](https://github.com/banisterious/obsidian-charted-roots/issues/132)):
   - When multiple people share the same name (e.g., father and child both named "George Hall"), wikilinks now correctly point to the right person's file
   - Previously, global string replacement caused all `[[George Hall]]` references to point to the same file
   - Now uses cr_id-targeted replacement to match each wikilink with its corresponding `_id` field
 
-- **Gramps import: wikilinks point to wrong person when names are duplicated** ([#133](https://github.com/banisterious/obsidian-canvas-roots/issues/133)):
+- **Gramps import: wikilinks point to wrong person when names are duplicated** ([#133](https://github.com/banisterious/obsidian-charted-roots/issues/133)):
   - Same fix as #132 applied to the Gramps XML importer
   - Affects .gramps and .gpkg file imports
 
@@ -226,19 +226,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Private fields support** ([#98](https://github.com/banisterious/obsidian-canvas-roots/issues/98)):
+- **Private fields support** ([#98](https://github.com/banisterious/obsidian-charted-roots/issues/98)):
   - New `private_fields` frontmatter property to mark specific fields as private
   - Fields listed in `private_fields` will be excluded from exports (with user confirmation)
   - Common use cases: protecting deadnames (`previous_names`), medical notes, legal information
   - Added utility functions for private field filtering in export contexts
 
-- **Export warnings for private fields** ([#99](https://github.com/banisterious/obsidian-canvas-roots/issues/99)):
+- **Export warnings for private fields** ([#99](https://github.com/banisterious/obsidian-charted-roots/issues/99)):
   - Warning modal shown before export when private fields are detected
   - Displays which fields are marked private and how many people have them
   - Users can choose to include, exclude, or cancel the export
   - Supports deadname protection via `previous_names` + `private_fields` pattern
 
-- **Privacy feature discoverability** ([#100](https://github.com/banisterious/obsidian-canvas-roots/issues/100)):
+- **Privacy feature discoverability** ([#100](https://github.com/banisterious/obsidian-charted-roots/issues/100)):
   - First-run notice shown after importing data when living persons are detected and privacy protection is disabled
   - Users can configure privacy settings, dismiss permanently, or be reminded later
   - Export wizard preview now shows info notice when privacy is disabled and living persons will be exported
@@ -246,13 +246,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Control Center and person picker freezes on large vaults** ([#113](https://github.com/banisterious/obsidian-canvas-roots/issues/113)):
+- **Control Center and person picker freezes on large vaults** ([#113](https://github.com/banisterious/obsidian-charted-roots/issues/113)):
   - Clicking names in Control Center or using Add Father/Mother/etc. caused 30+ second freezes on macOS with large vaults
   - Added caching for graph services at the modal level to avoid expensive recomputation on every click
   - PersonPickerModal now uses plugin's graph service when available, avoiding redundant cache loading
   - Graph data is computed once and reused, with cache invalidation when data changes
 
-- **Relationship calculator asymmetry with unresolved Gramps handles** ([#109](https://github.com/banisterious/obsidian-canvas-roots/issues/109)):
+- **Relationship calculator asymmetry with unresolved Gramps handles** ([#109](https://github.com/banisterious/obsidian-charted-roots/issues/109)):
   - Root cause 1: When a referenced person doesn't exist in the Gramps data (e.g., ancestors not in database), the import left Gramps handles (e.g., `_PTHMF88SXO93W8QTDJ`) in `_id` fields instead of cr_ids
   - Root cause 2: When multiple people have the same name, the import's relationship update pass was reading the wrong file due to filename collisions
   - Added cleanup step in Gramps import to remove unresolved handles from `_id` fields after the cr_id replacement pass
@@ -265,34 +265,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Timeline block missing space before place name** - Fixed whitespace collapsing in dynamic timeline display ([#122](https://github.com/banisterious/obsidian-canvas-roots/issues/122)):
+- **Timeline block missing space before place name** - Fixed whitespace collapsing in dynamic timeline display ([#122](https://github.com/banisterious/obsidian-charted-roots/issues/122)):
   - Changed place text from separate text node to leading space in span content
   - Fixes "Residencein" appearing instead of "Residence in"
 
-- **Dashboard "data issues" count links to wrong destination** ([#115](https://github.com/banisterious/obsidian-canvas-roots/issues/115), part of [#114](https://github.com/banisterious/obsidian-canvas-roots/issues/114)):
+- **Dashboard "data issues" count links to wrong destination** ([#115](https://github.com/banisterious/obsidian-charted-roots/issues/115), part of [#114](https://github.com/banisterious/obsidian-charted-roots/issues/114)):
   - Dashboard now shows the same issue count as Statistics Dashboard
   - Changed dashboard to calculate total issues as: missing birth dates + orphaned people + unsourced events
   - Added `unsourcedEvents` to VaultStatsService for efficient counting
 
-- **Statistics Dashboard total doesn't match visible category sums** ([#116](https://github.com/banisterious/obsidian-canvas-roots/issues/116), part of [#114](https://github.com/banisterious/obsidian-canvas-roots/issues/114)):
+- **Statistics Dashboard total doesn't match visible category sums** ([#116](https://github.com/banisterious/obsidian-charted-roots/issues/116), part of [#114](https://github.com/banisterious/obsidian-charted-roots/issues/114)):
   - Clarified what the "Issues" total represents
   - Changed subtitle from "Items needing attention" to "Missing births + orphans + unsourced events"
 
-- **Data Quality checker flags `male`/`female` as non-standard sex format** ([#117](https://github.com/banisterious/obsidian-canvas-roots/issues/117), part of [#114](https://github.com/banisterious/obsidian-canvas-roots/issues/114)):
+- **Data Quality checker flags `male`/`female` as non-standard sex format** ([#117](https://github.com/banisterious/obsidian-charted-roots/issues/117), part of [#114](https://github.com/banisterious/obsidian-charted-roots/issues/114)):
   - Now accepts common synonyms (male/female) in addition to GEDCOM codes (M/F/X/U)
   - Uses existing value alias system for consistent synonym handling
 
-- **"Living people" calculation is inaccurate for historical genealogy data** ([#118](https://github.com/banisterious/obsidian-canvas-roots/issues/118), part of [#114](https://github.com/banisterious/obsidian-canvas-roots/issues/114)):
+- **"Living people" calculation is inaccurate for historical genealogy data** ([#118](https://github.com/banisterious/obsidian-charted-roots/issues/118), part of [#114](https://github.com/banisterious/obsidian-charted-roots/issues/114)):
   - Living person count now uses `livingPersonAgeThreshold` setting (default 100 years)
   - Only counts people as "potentially living" if birth year is within threshold and no death date
 
-- **Gramps import creates invalid cr_id formats** ([#119](https://github.com/banisterious/obsidian-canvas-roots/issues/119), part of [#114](https://github.com/banisterious/obsidian-canvas-roots/issues/114)):
+- **Gramps import creates invalid cr_id formats** ([#119](https://github.com/banisterious/obsidian-charted-roots/issues/119), part of [#114](https://github.com/banisterious/obsidian-charted-roots/issues/114)):
   - Fixed cr_id replacement in second pass to respect property aliases
   - Now `father_id`, `mother_id`, `spouse_id`, `children_id`, and other relationship fields are correctly updated
 
 ### Added
 
-- **Distinguish actionable errors from informational data gaps** ([#120](https://github.com/banisterious/obsidian-canvas-roots/issues/120), part of [#114](https://github.com/banisterious/obsidian-canvas-roots/issues/114)):
+- **Distinguish actionable errors from informational data gaps** ([#120](https://github.com/banisterious/obsidian-charted-roots/issues/120), part of [#114](https://github.com/banisterious/obsidian-charted-roots/issues/114)):
   - Data quality section now groups issues by severity
   - **Errors** (red): Date inconsistencies and other fixable problems
   - **Data Gaps** (yellow/orange): Missing data that may be unavailable for historical records
@@ -305,30 +305,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Relationship calculator not traversing gender-neutral parents** - BFS pathfinding now correctly traverses `parents`/`parents_id` relationships ([#109](https://github.com/banisterious/obsidian-canvas-roots/issues/109)):
+- **Relationship calculator not traversing gender-neutral parents** - BFS pathfinding now correctly traverses `parents`/`parents_id` relationships ([#109](https://github.com/banisterious/obsidian-charted-roots/issues/109)):
   - Added traversal of `parentCrIds` in relationship calculator so paths can go "up" through gender-neutral parents
   - Added reverse child inference from `parentCrIds` in family graph cache so parents using gender-neutral fields have `childrenCrIds` populated
   - Added debug logging to help diagnose asymmetric relationship calculation issues
 
-- **New child notes created with obsolete `child` property** - Fixed legacy property name usage ([#110](https://github.com/banisterious/obsidian-canvas-roots/issues/110)):
+- **New child notes created with obsolete `child` property** - Fixed legacy property name usage ([#110](https://github.com/banisterious/obsidian-charted-roots/issues/110)):
   - Removed automatic addition of empty `child` property when creating new person notes
   - Updated relationship-history, data-quality, and base-template to use normalized `children` property
   - Read operations still support legacy `child` property for backward compatibility
 
-- **Import completion screen shows wrong entity counts** - Fixed completion screen to show actual imported counts ([#111](https://github.com/banisterious/obsidian-canvas-roots/issues/111)):
+- **Import completion screen shows wrong entity counts** - Fixed completion screen to show actual imported counts ([#111](https://github.com/banisterious/obsidian-charted-roots/issues/111)):
   - Completion screen now shows counts from import results instead of file preview counts
   - Entity types not selected for import no longer appear in the summary
 
-- **Family Tree canvas separates spouses when grouping siblings** - Spouses now stay adjacent when siblings are grouped by parent pair ([#103](https://github.com/banisterious/obsidian-canvas-roots/issues/103)):
+- **Family Tree canvas separates spouses when grouping siblings** - Spouses now stay adjacent when siblings are grouped by parent pair ([#103](https://github.com/banisterious/obsidian-charted-roots/issues/103)):
   - In-laws are now attached to their blood-relative spouse's parent-pair group
   - Prevents spouses from being "captured" into different sibling groups
 
-- **Custom Relationship uses `parent` instead of `parents` and Family Tree only shows one parent when mixing property types** - Fixed gender-neutral parent property handling ([#112](https://github.com/banisterious/obsidian-canvas-roots/issues/112)):
+- **Custom Relationship uses `parent` instead of `parents` and Family Tree only shows one parent when mixing property types** - Fixed gender-neutral parent property handling ([#112](https://github.com/banisterious/obsidian-charted-roots/issues/112)):
   - Changed built-in relationship type IDs from `parent`/`child` to `parents`/`children` so Custom Relationship writes to correct properties
   - Family Tree view now shows all parents when mixing `father`/`mother` with `parents` property (up to 2 total)
   - Children are now correctly recognized as belonging to a parent using `parentCrIds` even when biological parents exist
 
-- **Person picker search may not work on macOS** - Improved search input focus and event handling ([#113](https://github.com/banisterious/obsidian-canvas-roots/issues/113)):
+- **Person picker search may not work on macOS** - Improved search input focus and event handling ([#113](https://github.com/banisterious/obsidian-charted-roots/issues/113)):
   - Added multiple focus attempts with staggered delays for reliable focus after context menu dismissal
   - Added `keyup` event listener as fallback for `input` events
 
@@ -338,12 +338,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Couples grouping not detecting all couples** - "By couples" grouping now correctly groups all couples with `spouse_id` set ([#105](https://github.com/banisterious/obsidian-canvas-roots/issues/105)):
+- **Couples grouping not detecting all couples** - "By couples" grouping now correctly groups all couples with `spouse_id` set ([#105](https://github.com/banisterious/obsidian-charted-roots/issues/105)):
   - Changed from child-parent inference to direct spouse relationship detection
   - Fixes couples without children not being grouped
   - Fixes couples whose children use gender-neutral `parents` field instead of `father`/`mother`
 
-- **Gender-neutral parents not respected** - Fixed two issues with the gender-neutral `parents`/`parents_id` fields ([#108](https://github.com/banisterious/obsidian-canvas-roots/issues/108)):
+- **Gender-neutral parents not respected** - Fixed two issues with the gender-neutral `parents`/`parents_id` fields ([#108](https://github.com/banisterious/obsidian-charted-roots/issues/108)):
   - Bidirectional linker no longer auto-adds `father`/`mother` fields when `parents`/`parents_id` already exist and "Enable inclusive/gender-neutral parent fields" is enabled
   - Edit Person modal now correctly displays existing `parents` relationships when opened via file explorer context menu or Control Center
 
@@ -353,20 +353,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Rename file when person name changes** - Option to rename the note file when editing a person's name ([#107](https://github.com/banisterious/obsidian-canvas-roots/issues/107)):
+- **Rename file when person name changes** - Option to rename the note file when editing a person's name ([#107](https://github.com/banisterious/obsidian-charted-roots/issues/107)):
   - When saving changes in Edit Person modal with a new name, prompts to rename the file
   - Handles duplicate filenames by appending a number (e.g., "John Smith 1.md")
   - Automatically updates relationship wikilinks in related notes (parents, spouses, children)
   - Uses `cr_id` matching to ensure correct relationships are updated
 
-- **Canvas grouping for family units** - Visual groups to organize related nodes on canvases ([#105](https://github.com/banisterious/obsidian-canvas-roots/issues/105)):
+- **Canvas grouping for family units** - Visual groups to organize related nodes on canvases ([#105](https://github.com/banisterious/obsidian-charted-roots/issues/105)):
   - Four grouping strategies: None, By generation, By couples, By collection
   - "By couples" groups parent pairs who share children (not including children)
   - Groups rendered as JSON Canvas 1.0 `type: "group"` nodes
   - Available in global settings (Preferences → Canvas styling) and per-tree in Tree Wizard
   - Works for both Canvas and Excalidraw output
 
-- **Sensitive field redaction utilities** - Centralized utilities for filtering sensitive fields from exports ([#96](https://github.com/banisterious/obsidian-canvas-roots/issues/96)):
+- **Sensitive field redaction utilities** - Centralized utilities for filtering sensitive fields from exports ([#96](https://github.com/banisterious/obsidian-charted-roots/issues/96)):
   - Added `SENSITIVE_FIELDS` constant with SSN and identity number fields
   - Added `isSensitiveField()` function to check if a field is sensitive
   - Added `filterSensitiveFields()` function to remove sensitive fields from frontmatter objects
@@ -374,7 +374,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Children display property not accumulating** - When adding multiple children via "Add child" button, the `children` display property now correctly shows all children instead of just the first ([#106](https://github.com/banisterious/obsidian-canvas-roots/issues/106)):
+- **Children display property not accumulating** - When adding multiple children via "Add child" button, the `children` display property now correctly shows all children instead of just the first ([#106](https://github.com/banisterious/obsidian-charted-roots/issues/106)):
   - Fixed reading from legacy `child` property instead of normalized `children` property
   - Affected both Create Person modal and bidirectional linking
 
@@ -384,7 +384,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Pronouns field support** - Add and display pronouns for people ([#101](https://github.com/banisterious/obsidian-canvas-roots/issues/101)):
+- **Pronouns field support** - Add and display pronouns for people ([#101](https://github.com/banisterious/obsidian-charted-roots/issues/101)):
   - New `pronouns` frontmatter property (free-form string, e.g., "she/her", "they/them")
   - `showPronouns` setting in Settings → Display (default: enabled)
   - Pronouns displayed in person pickers after name in parentheses
@@ -392,7 +392,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pronouns included in all report outputs (Markdown, ODT, PDF)
   - PDF reports updated: Individual Summary and Family Group Sheet vital statistics
 
-- **Manual living status override** - Override automatic living/deceased detection for privacy protection ([#97](https://github.com/banisterious/obsidian-canvas-roots/issues/97)):
+- **Manual living status override** - Override automatic living/deceased detection for privacy protection ([#97](https://github.com/banisterious/obsidian-charted-roots/issues/97)):
   - New `cr_living` frontmatter property (boolean)
   - `cr_living: true` — Always treat as living (protected in exports)
   - `cr_living: false` — Always treat as deceased (not protected)
@@ -402,7 +402,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Sibling ordering in Family Tree canvas** - Children from different parent pairs are now grouped together instead of being interleaved ([#103](https://github.com/banisterious/obsidian-canvas-roots/issues/103)):
+- **Sibling ordering in Family Tree canvas** - Children from different parent pairs are now grouped together instead of being interleaved ([#103](https://github.com/banisterious/obsidian-charted-roots/issues/103)):
   - Added post-processing step to group full-siblings by parent pair
   - Works around upstream family-chart library layout issue with multi-spouse families
 
@@ -421,7 +421,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Card Style Options** - Choose from 4 card styles in Family Chart view ([#87](https://github.com/banisterious/obsidian-canvas-roots/issues/87)):
+- **Card Style Options** - Choose from 4 card styles in Family Chart view ([#87](https://github.com/banisterious/obsidian-charted-roots/issues/87)):
   - **Rectangle**: Default style with avatar thumbnails and full details
   - **Circle**: Circular avatar cards with name labels below
   - **Compact**: Text-only cards without avatars for denser layouts
@@ -429,7 +429,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Card style persists across Obsidian restarts
   - PNG/PDF export support for all card styles including circle
 
-- **Separate Note Files (Phase 4)** - Create standalone note entity files during Gramps import ([#79](https://github.com/banisterious/obsidian-canvas-roots/issues/79), [#80](https://github.com/banisterious/obsidian-canvas-roots/issues/80)):
+- **Separate Note Files (Phase 4)** - Create standalone note entity files during Gramps import ([#79](https://github.com/banisterious/obsidian-charted-roots/issues/79), [#80](https://github.com/banisterious/obsidian-charted-roots/issues/80)):
 
   **Import Integration**
   - New "Create separate note files" checkbox in Gramps import wizard (opt-in, default off)
@@ -441,21 +441,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   **Manual Note Creation**
   - Create Note modal with note type, title, privacy toggle, and linked entities
   - Linked entities field with typed entity pickers: dropdown menu (Person, Event, Place, Source) opens corresponding picker modal
-  - "Canvas Roots: Create note" command in command palette
-  - Right-click context menu "New Canvas Roots note" in Notes folder
+  - "Charted Roots: Create note" command in command palette
+  - Right-click context menu "New Charted Roots note" in Notes folder
   - Notes tile and 3 templates added to Templater templates modal
 
   **Infrastructure**
-  - `notesFolder` setting (default: "Canvas Roots/Notes")
+  - `notesFolder` setting (default: "Charted Roots/Notes")
   - Notes base template for Obsidian Bases with 11 views
   - Form state persistence for Create Note modal
 
 ### Fixed
 
-- **Export text overflow** - Fixed text spilling outside card bounds in PNG/PDF exports; clip-path attributes now preserved during SVG preparation ([#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88))
-- **High Contrast theme readability** - Fixed white text on bright cyan/magenta backgrounds in dark mode; High Contrast preset now uses black text for accessibility ([#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88))
-- **Multi-line date display** - Birth and death dates now display on separate lines when both are enabled; cards automatically resize to accommodate the extra line ([#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88))
-- **Spacing state persistence** - Node and level spacing settings now persist across Obsidian restarts; added checkmarks to spacing menu items to indicate current selection ([#88](https://github.com/banisterious/obsidian-canvas-roots/issues/88))
+- **Export text overflow** - Fixed text spilling outside card bounds in PNG/PDF exports; clip-path attributes now preserved during SVG preparation ([#88](https://github.com/banisterious/obsidian-charted-roots/issues/88))
+- **High Contrast theme readability** - Fixed white text on bright cyan/magenta backgrounds in dark mode; High Contrast preset now uses black text for accessibility ([#88](https://github.com/banisterious/obsidian-charted-roots/issues/88))
+- **Multi-line date display** - Birth and death dates now display on separate lines when both are enabled; cards automatically resize to accommodate the extra line ([#88](https://github.com/banisterious/obsidian-charted-roots/issues/88))
+- **Spacing state persistence** - Node and level spacing settings now persist across Obsidian restarts; added checkmarks to spacing menu items to indicate current selection ([#88](https://github.com/banisterious/obsidian-charted-roots/issues/88))
 
 ---
 
@@ -463,17 +463,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Edit Person Events & Sources** - Manage events and sources directly from the Edit Person modal ([#33](https://github.com/banisterious/obsidian-canvas-roots/issues/33)):
+- **Edit Person Events & Sources** - Manage events and sources directly from the Edit Person modal ([#33](https://github.com/banisterious/obsidian-charted-roots/issues/33)):
   - **Sources section**: Multi-value picker to link source notes with Link and Create buttons; stores as `sources` (wikilinks) and `sources_id` (cr_ids) arrays for reliable linking
   - **Events section**: Display events referencing this person with type badges and dates; link/unlink existing events or create new events with person pre-filled
   - **Type badges**: Color-coded type badges for both events and sources matching picker modal styles
 
 ### Fixed
 
-- **Context menu Edit Person** - Fixed missing plugin reference causing "Plugin not available" error when clicking Link/Create buttons in Edit Person modal opened via context menu ([#33](https://github.com/banisterious/obsidian-canvas-roots/issues/33))
-- **Children display in Edit Person** - Fixed children displaying as cr_ids instead of names in Edit Person modal; was reading from deprecated `child` property instead of `children` ([#86](https://github.com/banisterious/obsidian-canvas-roots/issues/86))
-- **Duplicate children_id during Gramps import** - Fixed duplicate values appearing in `children_id` arrays after importing Gramps .gpkg files; bidirectional sync now suspended during import to prevent file watcher from triggering relationship sync before Phase 2 handle replacement ([#84](https://github.com/banisterious/obsidian-canvas-roots/issues/84))
-- **Deprecated `child` property in imports** - New person notes now use `children` (plural) property instead of deprecated `child` (singular), matching v0.18.11 property naming normalization ([#85](https://github.com/banisterious/obsidian-canvas-roots/issues/85))
+- **Context menu Edit Person** - Fixed missing plugin reference causing "Plugin not available" error when clicking Link/Create buttons in Edit Person modal opened via context menu ([#33](https://github.com/banisterious/obsidian-charted-roots/issues/33))
+- **Children display in Edit Person** - Fixed children displaying as cr_ids instead of names in Edit Person modal; was reading from deprecated `child` property instead of `children` ([#86](https://github.com/banisterious/obsidian-charted-roots/issues/86))
+- **Duplicate children_id during Gramps import** - Fixed duplicate values appearing in `children_id` arrays after importing Gramps .gpkg files; bidirectional sync now suspended during import to prevent file watcher from triggering relationship sync before Phase 2 handle replacement ([#84](https://github.com/banisterious/obsidian-charted-roots/issues/84))
+- **Deprecated `child` property in imports** - New person notes now use `children` (plural) property instead of deprecated `child` (singular), matching v0.18.11 property naming normalization ([#85](https://github.com/banisterious/obsidian-charted-roots/issues/85))
 - **Lint warnings from Obsidian bot** - Fixed various lint issues flagged during PR review: Object stringification, async/await usage, deprecated method calls, innerHTML usage, and type assertions
 
 ---
@@ -482,7 +482,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Gramps Notes Import** - Import notes attached to Gramps entities during Gramps XML import ([#36](https://github.com/banisterious/obsidian-canvas-roots/issues/36), [#76](https://github.com/banisterious/obsidian-canvas-roots/issues/76), [#77](https://github.com/banisterious/obsidian-canvas-roots/issues/77)):
+- **Gramps Notes Import** - Import notes attached to Gramps entities during Gramps XML import ([#36](https://github.com/banisterious/obsidian-charted-roots/issues/36), [#76](https://github.com/banisterious/obsidian-charted-roots/issues/76), [#77](https://github.com/banisterious/obsidian-charted-roots/issues/77)):
 
   **Person Notes (Phase 1)**
   - Import notes attached to persons as "## Notes" section at bottom of person note
@@ -502,12 +502,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Step/adoptive parent canvas positioning** - Fixed step/adoptive parents not rendering on generated canvas trees; positioning pass was missing after layout engine ([#75](https://github.com/banisterious/obsidian-canvas-roots/issues/75))
-- **Circular relationship freeze** - Added cycle detection to prevent Obsidian from freezing when circular parent-child relationships exist (e.g., A is parent of B and B is parent of A); cycles are now detected and broken with a warning ([#83](https://github.com/banisterious/obsidian-canvas-roots/issues/83))
+- **Step/adoptive parent canvas positioning** - Fixed step/adoptive parents not rendering on generated canvas trees; positioning pass was missing after layout engine ([#75](https://github.com/banisterious/obsidian-charted-roots/issues/75))
+- **Circular relationship freeze** - Added cycle detection to prevent Obsidian from freezing when circular parent-child relationships exist (e.g., A is parent of B and B is parent of A); cycles are now detected and broken with a warning ([#83](https://github.com/banisterious/obsidian-charted-roots/issues/83))
 
 ### Changed
 
-- **Person note context menu reorganization** - Restructured the Canvas Roots context menu for person notes to be less cluttered and more intuitive ([#82](https://github.com/banisterious/obsidian-canvas-roots/issues/82)):
+- **Person note context menu reorganization** - Restructured the Charted Roots context menu for person notes to be less cluttered and more intuitive ([#82](https://github.com/banisterious/obsidian-charted-roots/issues/82)):
   - Renamed "Add relationship..." to "Relationships" submenu
   - Moved "Validate relationships" and "Calculate relationship..." into Relationships submenu
   - Removed duplicate "More options..." entry (same as "Generate visual tree")
@@ -519,18 +519,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Adoptive parent relationship fixes** - Multiple fixes for adoptive parent relationships ([#75](https://github.com/banisterious/obsidian-canvas-roots/issues/75)):
+- **Adoptive parent relationship fixes** - Multiple fixes for adoptive parent relationships ([#75](https://github.com/banisterious/obsidian-charted-roots/issues/75)):
   - Added `adoptive_parent`/`adoptive_parent_id` gender-neutral property support alongside existing `adoptive_father`/`adoptive_mother`
   - Added `adopted_child`/`adopted_child_id` parsing from parent's perspective with automatic reverse relationship
   - Fixed `parents_id` validation false positive ("Child doesn't list this person as parent")
   - Fixed adoptive parents rendering in Family Chart when biological parents also exist
   - Adoptive parents now appear on canvas trees when relationship is defined from either direction
-- **Dynamic block metadata timing** - Timeline and relationships blocks now show "Waiting for metadata..." instead of errors when opened on newly created person notes, then auto-refresh when ready ([#74](https://github.com/banisterious/obsidian-canvas-roots/issues/74))
-- **Timeline event detection** - Timeline block now listens for event note changes and file creation, so new events appear without requiring a page refresh ([#74](https://github.com/banisterious/obsidian-canvas-roots/issues/74))
-- **Family Chart color dropdown** - Removed non-functional color scheme dropdown from Family Chart toolbar; sex-based coloring remains available via the palette button ([#72](https://github.com/banisterious/obsidian-canvas-roots/issues/72))
-- **Settings label clarity** - Renamed "Maps folder" setting to "Map notes folder" to clarify it controls where map notes are created, not map images ([#71](https://github.com/banisterious/obsidian-canvas-roots/issues/71))
+- **Dynamic block metadata timing** - Timeline and relationships blocks now show "Waiting for metadata..." instead of errors when opened on newly created person notes, then auto-refresh when ready ([#74](https://github.com/banisterious/obsidian-charted-roots/issues/74))
+- **Timeline event detection** - Timeline block now listens for event note changes and file creation, so new events appear without requiring a page refresh ([#74](https://github.com/banisterious/obsidian-charted-roots/issues/74))
+- **Family Chart color dropdown** - Removed non-functional color scheme dropdown from Family Chart toolbar; sex-based coloring remains available via the palette button ([#72](https://github.com/banisterious/obsidian-charted-roots/issues/72))
+- **Settings label clarity** - Renamed "Maps folder" setting to "Map notes folder" to clarify it controls where map notes are created, not map images ([#71](https://github.com/banisterious/obsidian-charted-roots/issues/71))
 - **ESLint compliance** - Fixed 36 non-sentence-case ESLint errors across 15 files (unused imports, promise handling, style assignments, async/await issues)
-- **Event template properties** - Templater event templates now use `persons` array instead of deprecated `person` property ([#69](https://github.com/banisterious/obsidian-canvas-roots/issues/69))
+- **Event template properties** - Templater event templates now use `persons` array instead of deprecated `person` property ([#69](https://github.com/banisterious/obsidian-charted-roots/issues/69))
 
 ---
 
@@ -538,7 +538,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Cleanup Wizard Phase 4** - UX improvements for the Post-Import Cleanup Wizard ([#65](https://github.com/banisterious/obsidian-canvas-roots/issues/65)):
+- **Cleanup Wizard Phase 4** - UX improvements for the Post-Import Cleanup Wizard ([#65](https://github.com/banisterious/obsidian-charted-roots/issues/65)):
 
   **Batch Progress Indicators**
   - Real-time progress bars during batch operations (Steps 2-6, 10-14)
@@ -553,7 +553,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ARIA attributes (role, aria-label) for screen reader accessibility
   - Visual focus indicators matching hover styles
 
-- **Property Naming Normalization** - Standardized `child` → `children` property naming ([#65](https://github.com/banisterious/obsidian-canvas-roots/issues/65)):
+- **Property Naming Normalization** - Standardized `child` → `children` property naming ([#65](https://github.com/banisterious/obsidian-charted-roots/issues/65)):
 
   **Cleanup Wizard Step 14**
   - Batch migrate legacy `child` property to `children` across vault
@@ -576,7 +576,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Custom Map Authoring** - Streamlined custom map creation and place positioning ([#66](https://github.com/banisterious/obsidian-canvas-roots/issues/66)):
+- **Custom Map Authoring** - Streamlined custom map creation and place positioning ([#66](https://github.com/banisterious/obsidian-charted-roots/issues/66)):
 
   **Map Creation Wizard**
   - 4-step guided wizard: select image → configure map → add initial places → review & create
@@ -598,7 +598,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Event essential properties** - "Add essential event properties" context menu now adds `persons: []` array instead of deprecated singular `person` property ([#69](https://github.com/banisterious/obsidian-canvas-roots/issues/69))
+- **Event essential properties** - "Add essential event properties" context menu now adds `persons: []` array instead of deprecated singular `person` property ([#69](https://github.com/banisterious/obsidian-charted-roots/issues/69))
 
 ---
 
@@ -606,7 +606,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Nested Properties Redesign** - Flat property format for evidence tracking and life events, fixing Obsidian Properties panel compatibility ([#52](https://github.com/banisterious/obsidian-canvas-roots/issues/52)):
+- **Nested Properties Redesign** - Flat property format for evidence tracking and life events, fixing Obsidian Properties panel compatibility ([#52](https://github.com/banisterious/obsidian-charted-roots/issues/52)):
 
   **Evidence Tracking Migration (sourced_facts → sourced_*)**
   - Old nested `sourced_facts` object replaced with individual flat properties
@@ -664,7 +664,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Inclusive Parent Relationships** - Opt-in gender-neutral parent support for diverse family structures ([#63](https://github.com/banisterious/obsidian-canvas-roots/issues/63)):
+- **Inclusive Parent Relationships** - Opt-in gender-neutral parent support for diverse family structures ([#63](https://github.com/banisterious/obsidian-charted-roots/issues/63)):
 
   **Settings (Control Center > Preferences)**
   - Enable Inclusive Parents toggle (default: OFF) - opt-in feature
@@ -675,7 +675,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   **Schema Changes**
   - New `parents` property (wikilinks, can be array for multiple parents)
-  - New `parents_id` property (Canvas Roots IDs, dual storage pattern)
+  - New `parents_id` property (Charted Roots IDs, dual storage pattern)
   - Independent of `father`/`mother` - users can use either or both
   - Supports mixed usage for blended families or migration scenarios
 
@@ -717,7 +717,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Media Upload and Management Enhancement** - Comprehensive file upload system allowing users to upload media directly from Canvas Roots and link to entities without manual file management ([#60](https://github.com/banisterious/obsidian-canvas-roots/issues/60)):
+- **Media Upload and Management Enhancement** - Comprehensive file upload system allowing users to upload media directly from Charted Roots and link to entities without manual file management ([#60](https://github.com/banisterious/obsidian-charted-roots/issues/60)):
 
   **1. Settings Enhancement**
   - Drag-and-drop reordering of media folders in Preferences
@@ -904,7 +904,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Intermediate canvas file cleanup** - When exporting to Excalidraw format, the intermediate canvas file is now automatically deleted after successful conversion.
 
-- **Restored "Open in family chart" context menu action** - Re-added the missing menu item for person notes under the Canvas Roots submenu.
+- **Restored "Open in family chart" context menu action** - Re-added the missing menu item for person notes under the Charted Roots submenu.
 
 ---
 
@@ -912,7 +912,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Family Creation Wizard** - New 5-step wizard for creating interconnected family groups. Start from scratch by creating a central person, or build around an existing person in your vault. Add spouses, children, and parents with automatic bidirectional relationship linking. Access via command palette ("Canvas Roots: Create family wizard"), Dashboard tile, People tab actions, or folder context menu.
+- **Family Creation Wizard** - New 5-step wizard for creating interconnected family groups. Start from scratch by creating a central person, or build around an existing person in your vault. Add spouses, children, and parents with automatic bidirectional relationship linking. Access via command palette ("Charted Roots: Create family wizard"), Dashboard tile, People tab actions, or folder context menu.
 
 - **Inline person creation in Edit Modal** - Create new people directly from relationship fields (spouse, father, mother, children) without leaving the Edit Modal. Click the "+" button next to any relationship field to open a mini-form, enter basic details, and the new person is created and linked automatically.
 
@@ -1025,7 +1025,7 @@ The legacy `person` property continues to be read for backward compatibility. To
 
 - **Gramps import: family events missing Person field** - Events with multiple participants (marriage, divorce, residence, etc.) now correctly populate the Person property when importing from Gramps. These events are attached to families rather than persons in Gramps XML, and are now properly linked to both spouses.
 
-- **"Create person note" command opening retired tab** - The command palette "Canvas Roots: Create person note" command now directly opens the Create Person modal instead of attempting to open the retired Data Entry tab in Control Center.
+- **"Create person note" command opening retired tab** - The command palette "Charted Roots: Create person note" command now directly opens the Create Person modal instead of attempting to open the retired Data Entry tab in Control Center.
 
 ---
 
@@ -1039,11 +1039,11 @@ The legacy `person` property continues to be read for backward compatibility. To
 
 - **Research Level export to GEDCOM and Gramps** - The `research_level` property is exported as `_RESEARCH_LEVEL` custom tag in GEDCOM files and as `<attribute type="Research Level">` in Gramps XML exports.
 
-- **Research Level import from GEDCOM and Gramps** - When importing files that contain research level data (from previous Canvas Roots exports), the `_RESEARCH_LEVEL` tag (GEDCOM) or "Research Level" attribute (Gramps) is automatically imported back into person notes.
+- **Research Level import from GEDCOM and Gramps** - When importing files that contain research level data (from previous Charted Roots exports), the `_RESEARCH_LEVEL` tag (GEDCOM) or "Research Level" attribute (Gramps) is automatically imported back into person notes.
 
 - **Research Level in Bases** - Person bases include "By research level" grouped view, "Needs research" filtered view (Level ≤ 2), and "Not assessed" filtered view for tracking research progress across your tree.
 
-- **Media folder selection for Gramps .gpkg import** - When importing `.gpkg` files with bundled media, a dropdown in the Preview step lets you choose the destination folder: configured media folders from Preferences, the default `Canvas Roots/Media`, or a custom path. Option to preserve the original folder structure from the package.
+- **Media folder selection for Gramps .gpkg import** - When importing `.gpkg` files with bundled media, a dropdown in the Preview step lets you choose the destination folder: configured media folders from Preferences, the default `Charted Roots/Media`, or a custom path. Option to preserve the original folder structure from the package.
 
 ### Changed
 
@@ -1160,7 +1160,7 @@ The legacy `person` property continues to be read for backward compatibility. To
 
 ### Added
 
-- **Post-Import Cleanup Wizard** - 10-step guided wizard that consolidates post-import data quality operations into a single sequential workflow. Accessible via command palette ("Canvas Roots: Post-Import Cleanup Wizard"), Data Quality tab, or Import Wizard completion screen.
+- **Post-Import Cleanup Wizard** - 10-step guided wizard that consolidates post-import data quality operations into a single sequential workflow. Accessible via command palette ("Charted Roots: Post-Import Cleanup Wizard"), Data Quality tab, or Import Wizard completion screen.
   - Step 1: Quality Report (review-only with collapsible categories)
   - Step 2: Fix Bidirectional Relationships
   - Step 3: Normalize Date Formats
@@ -1285,7 +1285,7 @@ The legacy `person` property continues to be read for backward compatibility. To
 
 ### Added
 
-- **Create universe command** - New command palette entry "Canvas Roots: Create universe" opens the Universe Wizard directly, making universe creation more discoverable.
+- **Create universe command** - New command palette entry "Charted Roots: Create universe" opens the Universe Wizard directly, making universe creation more discoverable.
 
 - **Universes tab always visible** - The Universes tab is now always shown in the Control Center sidebar, even when no universes exist. Previously it was hidden until the first universe was created.
 
@@ -1404,7 +1404,7 @@ The legacy `person` property continues to be read for backward compatibility. To
 
 - **First-run welcome notice** - Dismissible welcome message for new users orienting them to the renamed Dashboard tab (formerly Status).
 
-- **Recent file tracking service** - New `RecentFilesService` tracks file access via Canvas Roots features (People tab "Open" button, create modals). Stores up to 5 recent files in settings.
+- **Recent file tracking service** - New `RecentFilesService` tracks file access via Charted Roots features (People tab "Open" button, create modals). Stores up to 5 recent files in settings.
 
 ---
 
@@ -1751,7 +1751,7 @@ The legacy `person` property continues to be read for backward compatibility. To
 
 ### Added
 
-- **Calendarium integration (Phase 1)** - Canvas Roots can now import calendar definitions from the [Calendarium](https://github.com/javalent/calendarium) plugin. When Calendarium is installed and enabled, an "Integrations" card appears in Control Center Preferences with a toggle to enable read-only calendar import. Imported calendars appear in the "From Calendarium" section of the Date Systems card and can be selected when creating events with fictional dates. This eliminates the need to manually recreate calendar systems that are already defined in Calendarium.
+- **Calendarium integration (Phase 1)** - Charted Roots can now import calendar definitions from the [Calendarium](https://github.com/javalent/calendarium) plugin. When Calendarium is installed and enabled, an "Integrations" card appears in Control Center Preferences with a toggle to enable read-only calendar import. Imported calendars appear in the "From Calendarium" section of the Date Systems card and can be selected when creating events with fictional dates. This eliminates the need to manually recreate calendar systems that are already defined in Calendarium.
 
 ### Changed
 
@@ -2277,7 +2277,7 @@ Place management improvements and Calendarium integration planning.
 
 - **Flatten nested properties modal**: New batch operation to migrate legacy nested YAML to flat properties
   - Available in Data Quality tab → Batch operations
-  - Scans all Canvas Roots notes for nested `coordinates:` and `custom_coordinates:` properties
+  - Scans all Charted Roots notes for nested `coordinates:` and `custom_coordinates:` properties
   - Converts to flat format (e.g., `coordinates_lat`, `coordinates_long`)
   - Shows preview of affected files before applying
   - Progress indicator during migration
@@ -2690,7 +2690,7 @@ Bug fix release with Templater documentation.
 
 ### Added
 
-- **Templater Integration Guide**: Comprehensive wiki documentation for using Templater with Canvas Roots
+- **Templater Integration Guide**: Comprehensive wiki documentation for using Templater with Charted Roots
   - Explains `cr_id` format (`abc-123-def-456`)
   - Provides inline template snippets and reusable user script approaches
   - Complete example templates for Person, Place, Event, and Source notes
@@ -2872,7 +2872,7 @@ Chronological Story Mapping release: Event notes, person timelines, family timel
 - **Person Note File Context Menus**: Right-click on person note files in file explorer
   - Events submenu with "Create event for this person" and timeline export options
   - Export timeline to Canvas or Excalidraw formats
-  - Mobile-friendly with "Canvas Roots:" prefixes on flat menu items
+  - Mobile-friendly with "Charted Roots:" prefixes on flat menu items
 
 - **Source Event Extraction**: Extract events from source notes
   - "Extract events" button in Sources tab action column
@@ -2937,7 +2937,7 @@ Chronological Story Mapping release: Event notes, person timelines, family timel
 
 ### Settings Added
 
-- `eventsFolder`: Default folder for event notes (default: `Canvas Roots/Events`)
+- `eventsFolder`: Default folder for event notes (default: `Charted Roots/Events`)
 - `customEventTypes`: User-defined event types
 - `showBuiltInEventTypes`: Toggle visibility of built-in event types (default: true)
 
@@ -2949,7 +2949,7 @@ Value Aliases release: Use custom property values without editing your notes.
 
 ### Added
 
-- **Value Aliases**: Map custom property values to Canvas Roots canonical values
+- **Value Aliases**: Map custom property values to Charted Roots canonical values
   - Configure aliases in Control Center → Preferences → Aliases
   - Supports three field types: event types, gender, and place categories
   - Event types: `birth`, `death`, `marriage`, `burial`, `residence`, `occupation`, `education`, `military`, `immigration`, `baptism`, `confirmation`, `ordination`, `custom`
@@ -2961,7 +2961,7 @@ Value Aliases release: Use custom property values without editing your notes.
 
 - **Bases Folder Setting**: Configure where Obsidian Bases files are created
   - New setting in Plugin Settings → Folder Locations and Preferences → Folder Locations
-  - Default: `Canvas Roots/Bases`
+  - Default: `Charted Roots/Bases`
   - Leave empty to create bases in the context menu folder
 
 - **Nested Property Detection**: Data Quality now detects non-flat frontmatter structures
@@ -2999,7 +2999,7 @@ Property Aliases release: Use custom property names without renaming your frontm
 
 ### Added
 
-- **Property Aliases**: Map custom frontmatter property names to Canvas Roots fields
+- **Property Aliases**: Map custom frontmatter property names to Charted Roots fields
   - Configure aliases in Control Center → Preferences → Property Aliases
   - Supports all person note properties: identity, dates, places, relationships
   - Read resolution: canonical property first, then falls back to aliases
@@ -3050,7 +3050,7 @@ Style Settings integration and code quality improvements.
 
 ### Added
 
-- **Style Settings Integration**: Customize Canvas Roots colors via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin
+- **Style Settings Integration**: Customize Charted Roots colors via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin
   - **Family Chart View colors**: Female, male, and unknown gender card colors; chart background (light/dark); card text color (light/dark)
   - **Evidence Visualization colors**: Primary/secondary/derivative source colors; research coverage threshold colors (well-researched/moderate/needs research)
   - **Canvas Node Dimensions**: Info panel directing users to plugin settings (not CSS-controlled)
@@ -3148,7 +3148,7 @@ Evidence & Source Management release: Complete source management with media gall
   - **Color coding**: Green badges for 3+ sources (well-documented), yellow for 1-2 sources
   - Only appears on nodes that have at least one linked source
   - Source notes identified by `type: source` frontmatter property
-  - Toggle in Settings → Canvas Roots → Canvas styling → "Show source indicators"
+  - Toggle in Settings → Charted Roots → Canvas styling → "Show source indicators"
   - Uses Obsidian's `resolvedLinks` to detect wikilinks from source notes to person notes
   - Helps identify which ancestors need more research at a glance
 
@@ -3256,7 +3256,7 @@ World-Building Suite release: Custom Relationships, Fictional Date Systems, and 
 ### Removed
 
 - **Advanced Tab**: Retired from Control Center to reduce tab count
-  - Logging settings moved to plugin's native Settings tab (Settings → Canvas Roots → Logging)
+  - Logging settings moved to plugin's native Settings tab (Settings → Charted Roots → Logging)
   - "Create base template" button moved to Data Quality tab under "Data tools" section
   - Log export folder and obfuscation settings now accessible in plugin settings
 
@@ -3577,7 +3577,7 @@ World-Building Suite release: Custom Relationships, Fictional Date Systems, and 
     - Options: include spouses, match maiden names, handle spelling variants
     - Separate canvas per surname or combined output
   - Preview showing expected canvas count and people
-  - Access via canvas context menu → Canvas Roots → Split canvas wizard
+  - Access via canvas context menu → Charted Roots → Split canvas wizard
 
 ### Changed
 

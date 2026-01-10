@@ -32,7 +32,7 @@ Fictional Date Systems support:
 
 ## Built-in Calendars
 
-Canvas Roots includes four built-in calendar presets that you can enable or disable:
+Charted Roots includes four built-in calendar presets that you can enable or disable:
 
 ### Middle-earth Calendar
 
@@ -253,7 +253,7 @@ Date systems are stored in plugin settings:
 
 ## Calendarium Integration
 
-Canvas Roots integrates with the [Calendarium](https://github.com/javalent/calendarium) plugin to import calendar definitions. If you already use Calendarium for fantasy calendar management, you can now use those same calendars in Canvas Roots without duplicate configuration.
+Charted Roots integrates with the [Calendarium](https://github.com/javalent/calendarium) plugin to import calendar definitions. If you already use Calendarium for fantasy calendar management, you can now use those same calendars in Charted Roots without duplicate configuration.
 
 ### Enabling the Integration
 
@@ -264,9 +264,9 @@ Canvas Roots integrates with the [Calendarium](https://github.com/javalent/calen
 
 ### How It Works
 
-- **Automatic import**: Calendarium calendars appear automatically in Canvas Roots
+- **Automatic import**: Calendarium calendars appear automatically in Charted Roots
 - **Zero configuration**: Calendar names, eras, and abbreviations are imported as-is
-- **Read-only**: Canvas Roots reads from Calendarium but doesn't modify it
+- **Read-only**: Charted Roots reads from Calendarium but doesn't modify it
 - **Invisible when not needed**: The Integrations card only appears if Calendarium is installed
 
 ### Where Calendarium Calendars Appear
@@ -286,7 +286,7 @@ The current integration (Phase 1) imports calendar structure only:
 - Year direction (forward/backward) is preserved
 
 **Not yet supported:**
-- Displaying Calendarium events on Canvas Roots timelines
+- Displaying Calendarium events on Charted Roots timelines
 - Bidirectional sync between plugins
 - Cross-calendar date translation
 
@@ -315,4 +315,4 @@ See the [Calendarium Integration roadmap](Roadmap#calendarium-integration) for d
 
 ---
 
-**Questions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-canvas-roots/issues).
+**Questions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-charted-roots/issues).

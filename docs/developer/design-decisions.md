@@ -1,6 +1,6 @@
 # Design Decisions
 
-This document records architectural decisions (ADRs) for Canvas Roots.
+This document records architectural decisions (ADRs) for Charted Roots.
 
 ## Table of Contents
 

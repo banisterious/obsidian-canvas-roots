@@ -1033,7 +1033,7 @@ export class FamilyChartView extends ItemView {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			const errorStack = error instanceof Error ? error.stack : undefined;
 			logger.error('chart-init', 'Failed to initialize chart', { message: errorMessage, stack: errorStack });
-			console.error('[Canvas Roots] Family chart initialization error:', error);
+			console.error('[Charted Roots] Family chart initialization error:', error);
 
 			// Show error state with more detail
 			const errorContainer = this.chartContainerEl.createDiv({ cls: 'cr-family-chart-error' });
@@ -2158,9 +2158,9 @@ export class FamilyChartView extends ItemView {
 				pdf.setDocumentProperties({
 					title: pdfOptions.coverTitle || filename.replace('.pdf', ''),
 					subject: 'Family Tree Chart',
-					author: 'Canvas Roots - Obsidian Plugin',
+					author: 'Charted Roots - Obsidian Plugin',
 					keywords: 'family tree, genealogy, chart',
-					creator: 'Canvas Roots'
+					creator: 'Charted Roots'
 				});
 
 				// Track total pages for footer
@@ -2532,10 +2532,10 @@ export class FamilyChartView extends ItemView {
 		// People count
 		pdf.text(`${this.chartData.length} people`, pageWidth / 2, footerY + 14, { align: 'center' });
 
-		// "Canvas Roots for Obsidian" branding
+		// "Charted Roots for Obsidian" branding
 		pdf.setFontSize(9);
 		pdf.setTextColor(170, 170, 170); // #aaaaaa - light muted
-		pdf.text('Canvas Roots for Obsidian', pageWidth / 2, footerY + 26, { align: 'center' });
+		pdf.text('Charted Roots for Obsidian', pageWidth / 2, footerY + 26, { align: 'center' });
 
 		// Reset text color for subsequent pages
 		pdf.setTextColor(0, 0, 0);

@@ -125,7 +125,7 @@ CreatePersonModal
 - [x] Same pattern: pre-fill sex based on field type
 
 #### Phase 1e: Folder Context Menu
-- [x] Add "Create person" to People folder context menu (Canvas Roots submenu)
+- [x] Add "Create person" to People folder context menu (Charted Roots submenu)
 - [x] Pass clicked folder path as `directory` option to CreatePersonModal
 - [x] Works for People folder and any subfolder within it
 
@@ -232,11 +232,11 @@ For users starting completely fresh, a guided flow could be faster than creating
 
 ### Entry Points
 
-1. **Command palette** - `Canvas Roots: Create family wizard`
+1. **Command palette** - `Charted Roots: Create family wizard`
 2. **Control Center Dashboard** - Quick action tile (replaces Reports tile after merging into Statistics)
 3. **Control Center Tools category** - "Create Family" tool entry in sidebar
 4. **Control Center People tab > Actions card** - Button alongside "Create person"
-5. **People folder context menu** - "Create family" in Canvas Roots submenu
+5. **People folder context menu** - "Create family" in Charted Roots submenu
 
 ### Bundled Change: Merge Statistics and Reports
 
@@ -249,7 +249,7 @@ To make room for "Create Family" on the Dashboard while keeping 12 tiles:
 ### Implementation Checklist
 
 #### Entry Points
-- [x] Add command: `Canvas Roots: Create family wizard`
+- [x] Add command: `Charted Roots: Create family wizard`
 - [x] Add "Create Family" tile to Dashboard (after removing Reports)
 - [x] Add "Create Family" to TOOL_CONFIGS in lucide-icons.ts
 - [x] Add "Create family" button to People tab Actions card
@@ -314,7 +314,7 @@ This becomes valuable when:
 
 > **Standalone feature:** Can be implemented independently. Bundled here for v0.18.1 release.
 >
-> **GitHub Issue:** [#46](https://github.com/banisterious/obsidian-canvas-roots/issues/46)
+> **GitHub Issue:** [#46](https://github.com/banisterious/obsidian-charted-roots/issues/46)
 
 Add `nickname` as a first-class frontmatter property on Person notes, with import support.
 

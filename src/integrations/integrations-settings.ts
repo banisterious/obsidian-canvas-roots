@@ -66,7 +66,7 @@ function renderCalendariumSection(
 	// Integration mode dropdown
 	new Setting(container)
 		.setName('Integration mode')
-		.setDesc('Controls how Canvas Roots interacts with Calendarium')
+		.setDesc('Controls how Charted Roots interacts with Calendarium')
 		.addDropdown(dropdown => {
 			dropdown
 				.addOption('off', 'Off')

@@ -32,7 +32,7 @@ Organizations are a distinct note type separate from person notes. They support:
 ### Using the Command
 
 1. Open the Command Palette (Ctrl/Cmd + P)
-2. Search for "Canvas Roots: Create organization note"
+2. Search for "Charted Roots: Create organization note"
 3. Fill in the organization details in the modal
 
 ### Using the Control Center
@@ -77,7 +77,7 @@ universe: westeros
 
 ## Organization Types
 
-Canvas Roots includes 8 built-in organization types:
+Charted Roots includes 8 built-in organization types:
 
 | Type ID | Display Name | Color | Icon | Use Case |
 |---------|--------------|-------|------|----------|
@@ -134,7 +134,7 @@ memberships:
 #### Via Context Menu
 
 1. Right-click a person note in the file explorer
-2. Select **Canvas Roots** → **Add organization membership...**
+2. Select **Charted Roots** → **Add organization membership...**
 3. Select the organization and fill in details
 
 #### Via Add Relationship Modal
@@ -171,12 +171,12 @@ The Control Center includes a dedicated **Organizations** tab with:
 
 ## Bases Integration
 
-Canvas Roots includes a pre-configured Bases template for organizations with 17 views:
+Charted Roots includes a pre-configured Bases template for organizations with 17 views:
 
 ### Creating the Template
 
 1. Open Command Palette
-2. Run "Canvas Roots: Create organizations base template"
+2. Run "Charted Roots: Create organizations base template"
 3. The template creates `organizations.base` in your vault
 
 ### Available Views

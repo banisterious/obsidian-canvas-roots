@@ -1,5 +1,5 @@
 /**
- * Canvas Roots Logging System
+ * Charted Roots Logging System
  *
  * Structured logging with support for export and analysis.
  * Based on Sonigraph's logging implementation.
@@ -155,7 +155,7 @@ class Logger implements ILogger {
 		if (LOG_LEVELS[entry.level] <= LoggerFactoryClass.getLogLevelValue()) {
 			const contextStr = entry.context ? ` [${safeStringify(entry.context)}]` : '';
 			const dataStr = entry.data ? ` | ${safeStringify(entry.data)}` : '';
-			const logMessage = `[Canvas Roots] [${entry.timestamp.toISOString()}] [${entry.level.toUpperCase()}] [${entry.component}/${entry.category}]${contextStr} ${entry.message}${dataStr}`;
+			const logMessage = `[Charted Roots] [${entry.timestamp.toISOString()}] [${entry.level.toUpperCase()}] [${entry.component}/${entry.category}]${contextStr} ${entry.message}${dataStr}`;
 
 			switch (entry.level) {
 				case 'debug':

@@ -593,7 +593,7 @@ Creating a note from an orphan:
 - Lists all essential universe frontmatter properties (cr_type, cr_id, name, description, author, genre, status, default_calendar, default_map)
 
 ### Context Menu: Add Essential Universe Properties
-- Right-click on universe notes shows Canvas Roots submenu
+- Right-click on universe notes shows Charted Roots submenu
 - "Add essential universe properties" action adds all essential fields
 - Follows same pattern as person/place/source/event notes
 

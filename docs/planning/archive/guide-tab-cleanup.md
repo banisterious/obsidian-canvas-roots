@@ -8,7 +8,7 @@ The Guide tab currently contains **19 cards** spanning ~976 lines of code. It's 
 
 | Card | Lines | Purpose |
 |------|-------|---------|
-| Welcome to Canvas Roots | ~20 | Intro text |
+| Welcome to Charted Roots | ~20 | Intro text |
 | Quick start | ~45 | 3-step overview |
 | Essential person note properties | ~30 | Property list |
 | Essential place note properties | ~30 | Property list |
@@ -113,7 +113,7 @@ Use external links to wiki pages:
 ```typescript
 const wikiLink = content.createEl('a', {
   text: 'Learn more in the wiki →',
-  href: 'https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Entry',
+  href: 'https://github.com/banisterious/obsidian-charted-roots/wiki/Data-Entry',
   cls: 'crc-link external-link'
 });
 wikiLink.setAttr('target', '_blank');

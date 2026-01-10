@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the implementation plan for Custom Relationship Types in Canvas Roots v0.7.0. This feature allows users to define non-familial relationships (mentor, guardian, godparent, liege, etc.) between person notes.
+This document outlines the implementation plan for Custom Relationship Types in Charted Roots v0.7.0. This feature allows users to define non-familial relationships (mentor, guardian, godparent, liege, etc.) between person notes.
 
 ## Goals
 

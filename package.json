@@ -1,5 +1,5 @@
 {
-	"name": "obsidian-canvas-roots",
+	"name": "obsidian-charted-roots",
 	"version": "0.18.32",
 	"description": "Family tree visualization for genealogists and worldbuilders. Interactive charts, geographic maps, evidence tracking, GEDCOM support, and fictional calendars.",
 	"main": "main.js",
@@ -24,13 +24,15 @@
 		"family-tree",
 		"genealogy",
 		"canvas",
-		"d3"
+		"d3",
+		"charted-roots",
+		"canvas-roots"
 	],
 	"author": "banisterious",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/banisterious/obsidian-canvas-roots.git"
+		"url": "https://github.com/banisterious/obsidian-charted-roots.git"
 	},
 	"devDependencies": {
 		"@fontsource/roboto-mono": "^5.2.8",

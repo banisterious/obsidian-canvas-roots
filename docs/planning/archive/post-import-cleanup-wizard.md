@@ -271,7 +271,7 @@ Compact horizontal bar on step views:
 ```
 
 **Save Report:**
-- Creates markdown note: `Canvas Roots/Reports/Cleanup Summary YYYY-MM-DD.md`
+- Creates markdown note: `Charted Roots/Reports/Cleanup Summary YYYY-MM-DD.md`
 - Includes timestamp, summary stats, per-step details
 - Provides audit trail for data quality improvements
 
@@ -281,7 +281,7 @@ Compact horizontal bar on step views:
 |----------|---------|---------|
 | Import Wizard results | "Run Cleanup Wizard" button | After completing GEDCOM import |
 | Control Center > Data Quality > Quick Start card | Action button | Manual access from Data Quality tab |
-| Command palette | "Canvas Roots: Post-Import Cleanup Wizard" | Keyboard shortcut access |
+| Command palette | "Charted Roots: Post-Import Cleanup Wizard" | Keyboard shortcut access |
 
 ## Smart Defaults
 

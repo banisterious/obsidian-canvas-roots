@@ -1,7 +1,7 @@
 /**
  * Recent Files Service
  *
- * Tracks files accessed via Canvas Roots features for the Dashboard.
+ * Tracks files accessed via Charted Roots features for the Dashboard.
  * Stores up to 5 most recent files, persisted in plugin settings.
  */
 

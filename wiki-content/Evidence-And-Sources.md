@@ -1,6 +1,6 @@
 # Evidence & Source Management
 
-Canvas Roots provides tools for managing genealogical sources and evidence, helping you document your research with proper citations and track which ancestors are well-documented.
+Charted Roots provides tools for managing genealogical sources and evidence, helping you document your research with proper citations and track which ancestors are well-documented.
 
 ---
 
@@ -42,7 +42,7 @@ Canvas Roots provides tools for managing genealogical sources and evidence, help
 
 ## Overview
 
-Canvas Roots' source management system is inspired by the **Genealogical Proof Standard (GPS)**, the methodology used by professional genealogists to build reliable family histories. The GPS emphasizes:
+Charted Roots' source management system is inspired by the **Genealogical Proof Standard (GPS)**, the methodology used by professional genealogists to build reliable family histories. The GPS emphasizes:
 
 - **Reasonably exhaustive research** - Thoroughly search relevant sources before drawing conclusions
 - **Complete and accurate citations** - Document where evidence comes from so others can verify
@@ -50,7 +50,7 @@ Canvas Roots' source management system is inspired by the **Genealogical Proof S
 - **Resolution of conflicts** - Address contradictory evidence rather than ignoring it
 - **Written conclusions** - Document your reasoning in proof summaries
 
-While Canvas Roots doesn't enforce strict GPS compliance, the source management features are designed to support these practices. Source notes capture citation details, quality classifications help you evaluate evidence, and the Research Gaps Report identifies where more research is needed.
+While Charted Roots doesn't enforce strict GPS compliance, the source management features are designed to support these practices. Source notes capture citation details, quality classifications help you evaluate evidence, and the Research Gaps Report identifies where more research is needed.
 
 To track overall research progress toward GPS-compliant documentation, you can use the [`research_level`](Frontmatter-Reference#research-level) property on person notes. This 0-6 scale (based on Yvette Hoitink's "Six Levels of Ancestral Profiles") helps you identify which ancestors need more work.
 
@@ -67,7 +67,7 @@ Source notes are structured markdown files that document your evidence. They use
 
 **⚠️ Nested Properties and Obsidian Compatibility**
 
-Canvas Roots uses nested YAML structures for certain advanced features (like the Evidence Service). Obsidian's property panel doesn't support nested properties and will show "Type mismatch" warnings for them.
+Charted Roots uses nested YAML structures for certain advanced features (like the Evidence Service). Obsidian's property panel doesn't support nested properties and will show "Type mismatch" warnings for them.
 
 **Important:** Do not click "update" on any property showing a type mismatch warning, as this will corrupt the data by converting it to `"[object Object]"` strings.
 
@@ -156,7 +156,7 @@ See [Bulk Source Image Import](#bulk-source-image-import) below for importing mu
 
 ## Linking Sources to People
 
-Source notes link to person notes using wikilinks in the note body. When a source note contains a link like `[[John Smith]]`, Canvas Roots detects this connection automatically.
+Source notes link to person notes using wikilinks in the note body. When a source note contains a link like `[[John Smith]]`, Charted Roots detects this connection automatically.
 
 **Example source note linking to people:**
 
@@ -179,7 +179,7 @@ source_type: census
 ...
 ```
 
-Canvas Roots uses Obsidian's `resolvedLinks` to detect these connections, so any valid wikilink from a source to a person note will be counted.
+Charted Roots uses Obsidian's `resolvedLinks` to detect these connections, so any valid wikilink from a source to a person note will be counted.
 
 ## Source Indicators on Trees
 
@@ -187,7 +187,7 @@ When generating family trees, you can display badges showing how many sources li
 
 ### Enabling Source Indicators
 
-1. Go to **Settings > Canvas Roots > Canvas styling**
+1. Go to **Settings > Charted Roots > Canvas styling**
 2. Enable **"Show source indicators"**
 3. Generate or regenerate a family tree
 
@@ -200,7 +200,7 @@ When generating family trees, you can display badges showing how many sources li
 
 ### How It Works
 
-During tree generation, Canvas Roots:
+During tree generation, Charted Roots:
 
 1. Scans all notes with `cr_type: source` frontmatter
 2. Counts how many link to each person note
@@ -210,7 +210,7 @@ This helps you identify which ancestors need more research at a glance.
 
 ## Sources Bases Template
 
-Canvas Roots includes a pre-configured Obsidian Bases template for managing sources in a spreadsheet-like interface.
+Charted Roots includes a pre-configured Obsidian Bases template for managing sources in a spreadsheet-like interface.
 
 ### Creating a Sources Base
 
@@ -497,7 +497,7 @@ Use confidence to track source reliability:
 
 ## Transcription Tips
 
-Canvas Roots doesn't include built-in OCR, but you can transcribe documents using external tools:
+Charted Roots doesn't include built-in OCR, but you can transcribe documents using external tools:
 
 | Tool | Best For |
 |------|----------|
@@ -515,7 +515,7 @@ Canvas Roots doesn't include built-in OCR, but you can transcribe documents usin
 
 ## Further Reading
 
-The source classification and citation practices in Canvas Roots are informed by established genealogical methodology:
+The source classification and citation practices in Charted Roots are informed by established genealogical methodology:
 
 - **Elizabeth Shown Mills**, *Evidence Explained: Citing History Sources from Artifacts to Cyberspace* (3rd ed., 2015) - The definitive guide to genealogical citation, introducing the distinction between sources, information, and evidence
 - **Board for Certification of Genealogists**, *Genealogy Standards* (2nd ed., 2019) - Defines the Genealogical Proof Standard (GPS) and professional research practices

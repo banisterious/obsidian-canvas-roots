@@ -1,6 +1,6 @@
 # Web Clipper Integration
 
-Capture genealogical data from web sources directly into your Canvas Roots vault using Obsidian Web Clipper.
+Capture genealogical data from web sources directly into your Charted Roots vault using Obsidian Web Clipper.
 
 ---
 
@@ -19,7 +19,7 @@ Capture genealogical data from web sources directly into your Canvas Roots vault
 
 ### What is Web Clipper Integration?
 
-Canvas Roots integrates with [Obsidian Web Clipper](https://help.obsidian.md/Clipper), the official browser extension for capturing web content. This integration streamlines the process of collecting genealogical data from online sources.
+Charted Roots integrates with [Obsidian Web Clipper](https://help.obsidian.md/Clipper), the official browser extension for capturing web content. This integration streamlines the process of collecting genealogical data from online sources.
 
 ### When to Use It
 
@@ -35,7 +35,7 @@ Web Clipper is ideal for capturing:
 
 1. Create Web Clipper templates with special metadata properties
 2. Clip content from web pages into your staging folder
-3. Canvas Roots automatically detects clipped notes
+3. Charted Roots automatically detects clipped notes
 4. Dashboard shows: "3 clips (1 new), 1 other"
 5. Review clips in Staging Manager with filtering
 6. Promote verified data to your main tree
@@ -53,13 +53,13 @@ Install the browser extension for your browser:
 
 ### 2. Configure Output Folder
 
-**Important:** Configure Web Clipper to save clips to your Canvas Roots staging folder.
+**Important:** Configure Web Clipper to save clips to your Charted Roots staging folder.
 
 1. Open Web Clipper settings
 2. Set **Default vault** to your Obsidian vault
 3. Set **Default folder** to your staging folder (e.g., `Family/Staging`)
 
-**Why this matters:** Canvas Roots only detects clips saved to the staging folder. Clips saved elsewhere won't be detected or filtered.
+**Why this matters:** Charted Roots only detects clips saved to the staging folder. Clips saved elsewhere won't be detected or filtered.
 
 ### 3. Verify Staging Settings
 
@@ -74,7 +74,7 @@ In Obsidian:
 
 ### Clipper Metadata Properties
 
-For Canvas Roots to detect your clipped notes, include **at least one** of these properties in your Web Clipper templates:
+For Charted Roots to detect your clipped notes, include **at least one** of these properties in your Web Clipper templates:
 
 | Property | Purpose | Example Value |
 |----------|---------|---------------|
@@ -103,7 +103,7 @@ clipped_date: "{{date}}"
 
 ### Adding Genealogical Properties
 
-Combine clipper metadata with Canvas Roots properties:
+Combine clipper metadata with Charted Roots properties:
 
 ```yaml
 ---
@@ -155,7 +155,7 @@ Based on community testing:
 
 ### 2. Reviewing Clips in Dashboard
 
-After clipping, Canvas Roots detects the new note:
+After clipping, Charted Roots detects the new note:
 
 1. Open **Control Center** → **Dashboard** tab
 2. The **Staging** card shows: "3 clips (1 new), 1 other"
@@ -195,7 +195,7 @@ After verifying clipped data:
 
 Have a great Web Clipper template for genealogy? Share it with the community:
 
-1. Post in [GitHub Discussions](https://github.com/banisterious/obsidian-canvas-roots/discussions)
+1. Post in [GitHub Discussions](https://github.com/banisterious/obsidian-charted-roots/discussions)
 2. Include:
    - Source type (Find A Grave, obituary, etc.)
    - Template JSON
@@ -211,7 +211,7 @@ Check GitHub Discussions for templates shared by other users. Look for:
 
 ### Official Templates
 
-Canvas Roots provides curated, tested templates in the `docs/clipper-templates/` directory of the GitHub repository.
+Charted Roots provides curated, tested templates in the `docs/clipper-templates/` directory of the GitHub repository.
 
 **Available Templates:**
 - **Find a Grave - Person** (CSS selectors, no AI required)
@@ -223,28 +223,28 @@ Canvas Roots provides curated, tested templates in the `docs/clipper-templates/`
 - **Wikidata - Place (LLM)** (AI-powered, geographic place data extraction)
 
 **How to Use:**
-1. Download template `.json` files from [docs/clipper-templates/](https://github.com/banisterious/obsidian-canvas-roots/tree/main/docs/clipper-templates)
+1. Download template `.json` files from [docs/clipper-templates/](https://github.com/banisterious/obsidian-charted-roots/tree/main/docs/clipper-templates)
 2. Open Web Clipper extension settings
 3. Click **Import** and select the downloaded template
 4. Templates auto-trigger on matching URLs (Find a Grave, FamilySearch) or can be manually selected (Obituary)
 
-See the [template documentation](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/clipper-templates/CLIPPER-TEMPLATES.md) for detailed documentation on each template, including:
+See the [template documentation](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/clipper-templates/CLIPPER-TEMPLATES.md) for detailed documentation on each template, including:
 - Prerequisites and setup
 - Fields extracted
 - AI requirements
 - Usage examples
 
-Community template sharing is still encouraged! Share your custom templates in [GitHub Discussions](https://github.com/banisterious/obsidian-canvas-roots/discussions).
+Community template sharing is still encouraged! Share your custom templates in [GitHub Discussions](https://github.com/banisterious/obsidian-charted-roots/discussions).
 
 ### Place Templates
 
-Canvas Roots now includes a **Wikidata - Place (LLM)** template for extracting structured geographic place data. This template:
+Charted Roots now includes a **Wikidata - Place (LLM)** template for extracting structured geographic place data. This template:
 - Auto-triggers on Wikidata Q-pages (`wikidata.org/wiki/Q*`)
 - Extracts coordinates, place type, administrative hierarchy, and alternate names
-- Works seamlessly with Canvas Roots' staging promotion workflow
+- Works seamlessly with Charted Roots' staging promotion workflow
 - Automatically assigns `cr_id` and routes to Places folder on promotion
 
-See the [template documentation](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/clipper-templates/CLIPPER-TEMPLATES.md#wikidata---place-llm) for setup instructions and extracted fields.
+See the [template documentation](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/clipper-templates/CLIPPER-TEMPLATES.md#wikidata---place-llm) for setup instructions and extracted fields.
 
 ### Potential Future Place Templates
 
@@ -253,9 +253,9 @@ See the [template documentation](https://github.com/banisterious/obsidian-canvas
 - **Best for:** German, Austrian, Polish, and European genealogy; church jurisdictions
 - **Why it's a good candidate:** Browsable pages with historical jurisdiction data and temporal relationships
 
-**Note on other sources:** For API-based place sources (FamilySearch Places API, GeoNames, OpenStreetMap Nominatim), Canvas Roots is planning native plugin integration via the **Unified Place Lookup** feature. This will provide a better user experience than Web Clipper templates for API-only sources. See [Place Data Sources Research](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/research/place-data-sources.md) for detailed comparison of all available sources.
+**Note on other sources:** For API-based place sources (FamilySearch Places API, GeoNames, OpenStreetMap Nominatim), Charted Roots is planning native plugin integration via the **Unified Place Lookup** feature. This will provide a better user experience than Web Clipper templates for API-only sources. See [Place Data Sources Research](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/research/place-data-sources.md) for detailed comparison of all available sources.
 
-If you're interested in helping develop a GOV template or have suggestions for other place sources, please contribute to [issue #128](https://github.com/banisterious/obsidian-canvas-roots/issues/128).
+If you're interested in helping develop a GOV template or have suggestions for other place sources, please contribute to [issue #128](https://github.com/banisterious/obsidian-charted-roots/issues/128).
 
 ---
 
@@ -266,7 +266,7 @@ If you're interested in helping develop a GOV template or have suggestions for o
 **Problem:** Clipped notes don't appear in Dashboard or filter in Staging Manager
 
 **Solutions:**
-1. Verify clip was saved to the staging folder configured in Canvas Roots settings
+1. Verify clip was saved to the staging folder configured in Charted Roots settings
 2. Check that your template includes at least one clipper metadata property: `clip_source_type`, `clipped_from`, or `clipped_date`
 3. Reload Obsidian (file watcher only detects files created after plugin loads)
 
@@ -311,4 +311,4 @@ If you're interested in helping develop a GOV template or have suggestions for o
 
 ---
 
-**Questions or suggestions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-canvas-roots/issues).
+**Questions or suggestions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-charted-roots/issues).

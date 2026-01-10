@@ -1,5 +1,5 @@
 /**
- * CSV Importer for Canvas Roots
+ * CSV Importer for Charted Roots
  *
  * Imports CSV data into the Obsidian vault as person notes.
  * Supports flexible column mapping and two-pass relationship resolution.
@@ -165,7 +165,7 @@ export interface CsvImportResult {
 }
 
 /**
- * Import CSV files into Canvas Roots
+ * Import CSV files into Charted Roots
  */
 export class CsvImporter {
 	private app: App;

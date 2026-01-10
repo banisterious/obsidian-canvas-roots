@@ -1,5 +1,5 @@
 /**
- * Relationship History Service for Canvas Roots
+ * Relationship History Service for Charted Roots
  *
  * Tracks relationship changes with timestamps and provides undo functionality.
  * History is persisted to plugin data and can be configured with retention periods.

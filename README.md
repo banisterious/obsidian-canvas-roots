@@ -1,12 +1,14 @@
-# Canvas Roots: Genealogical Family Tree Plugin for Obsidian
+# Charted Roots: Genealogical Family Tree Plugin for Obsidian
 
-[![Version](https://img.shields.io/badge/version-0.18.32-blue.svg)](https://github.com/banisterious/obsidian-canvas-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+> **Formerly known as Canvas Roots** — renamed to better reflect the plugin's broader genealogical visualization capabilities beyond Obsidian Canvas.
 
-**Canvas Roots** brings professional genealogical tools to Obsidian—import, organize, visualize, and share family histories and fictional worlds without leaving your vault. From GEDCOM imports to PDF reports, interactive charts to map views, manage your research with the power of linked Markdown notes. Built for genealogists, historians, writers, and world-builders.
+[![Version](https://img.shields.io/badge/version-0.18.32-blue.svg)](https://github.com/banisterious/obsidian-charted-roots/releases) [![Status](https://img.shields.io/badge/status-stable-green.svg)](docs/roadmap.md)
+
+**Charted Roots** brings professional genealogical tools to Obsidian—import, organize, visualize, and share family histories and fictional worlds without leaving your vault. From GEDCOM imports to PDF reports, interactive charts to map views, manage your research with the power of linked Markdown notes. Built for genealogists, historians, writers, and world-builders.
 
 ## Demo
 
-[![Canvas Roots Demo](https://img.youtube.com/vi/elQfn1fk1VQ/maxresdefault.jpg)](https://youtu.be/elQfn1fk1VQ)
+[![Charted Roots Demo](https://img.youtube.com/vi/elQfn1fk1VQ/maxresdefault.jpg)](https://youtu.be/elQfn1fk1VQ)
 
 **Watch:** Import GEDCOM → Generate family tree → Interactive family chart → Geolocate places → Map view
 
@@ -14,7 +16,7 @@
 
 ## Features
 
-### [Canvas Trees](https://github.com/banisterious/obsidian-canvas-roots/wiki/Canvas-Trees)
+### [Canvas Trees](https://github.com/banisterious/obsidian-charted-roots/wiki/Canvas-Trees)
 
 | Feature | Description |
 |---------|-------------|
@@ -25,7 +27,7 @@
 | **Multi-Family Detection** | Automatically detects disconnected family groups |
 | **Regenerate Canvas** | Update existing canvases with current data via right-click |
 
-### [Import & Export](https://github.com/banisterious/obsidian-canvas-roots/wiki/Import-Export)
+### [Import & Export](https://github.com/banisterious/obsidian-charted-roots/wiki/Import-Export)
 
 | Feature | Description |
 |---------|-------------|
@@ -39,7 +41,7 @@
 | **Selective Branch Export** | Export only ancestors or descendants of a specific person |
 | **Privacy-Aware Exports** | Optional anonymization of living persons in all export formats |
 
-### [Interactive Family Chart](https://github.com/banisterious/obsidian-canvas-roots/wiki/Interactive-Family-Chart)
+### [Interactive Family Chart](https://github.com/banisterious/obsidian-charted-roots/wiki/Interactive-Family-Chart)
 
 | Feature | Description |
 |---------|-------------|
@@ -49,7 +51,7 @@
 | **Multiple Color Schemes** | Gender, Generation, Collection, or Monochrome |
 | **Export Options** | High-quality PNG, SVG, PDF, or ODT with customizable filenames |
 
-### [Data Management](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Management)
+### [Data Management](https://github.com/banisterious/obsidian-charted-roots/wiki/Data-Management)
 
 | Feature | Description |
 |---------|-------------|
@@ -58,14 +60,14 @@
 | **Smart Duplicate Detection** | Fuzzy name matching and date proximity analysis |
 | **Merge Wizard** | Field-level conflict resolution with automatic relationship reconciliation |
 | **Staging Workflow** | Dedicated Staging Manager for reviewing imports: batch cards, expandable file previews, duplicate detection, promote/delete actions |
-| **[Data Quality Tools](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Quality)** | Quality scores, 15+ issue types, batch normalization |
+| **[Data Quality Tools](https://github.com/banisterious/obsidian-charted-roots/wiki/Data-Quality)** | Quality scores, 15+ issue types, batch normalization |
 | **Post-Import Cleanup Wizard** | 14-step guided workflow for data quality after import (dates, genders, relationships, places, sources, property migrations) with batch progress indicators and keyboard navigation |
 | **Family Creation Wizard** | 5-step guided workflow for creating interconnected family groups with automatic bidirectional relationship linking |
-| **[Schema Validation](https://github.com/banisterious/obsidian-canvas-roots/wiki/Schema-Validation)** | User-defined schemas with required properties, type validation, enum constraints, and custom rules |
+| **[Schema Validation](https://github.com/banisterious/obsidian-charted-roots/wiki/Schema-Validation)** | User-defined schemas with required properties, type validation, enum constraints, and custom rules |
 | **Generate Place Notes** | Batch create place notes from references in person/event notes with hierarchy linking |
-| **[Dynamic Note Content](https://github.com/banisterious/obsidian-canvas-roots/wiki/Dynamic-Note-Content)** | Live-rendered timeline, relationships, and media gallery blocks within person notes |
+| **[Dynamic Note Content](https://github.com/banisterious/obsidian-charted-roots/wiki/Dynamic-Note-Content)** | Live-rendered timeline, relationships, and media gallery blocks within person notes |
 
-### [Geographic Features](https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features)
+### [Geographic Features](https://github.com/banisterious/obsidian-charted-roots/wiki/Geographic-Features)
 
 | Feature | Description |
 |---------|-------------|
@@ -90,14 +92,14 @@
 | **Lineage Tracking** | Track patrilineal, matrilineal, or all descendants |
 | **Relationship Calculator** | Find connections with proper genealogical terms (cousin, 2nd cousin once removed, etc.) |
 | **Relationship History** | Track all changes with timestamps and one-click undo |
-| **[Custom Relationships](https://github.com/banisterious/obsidian-canvas-roots/wiki/Custom-Relationships)** | Extended relationships beyond family (godparent, guardian, mentor, apprentice) with colored canvas edges |
+| **[Custom Relationships](https://github.com/banisterious/obsidian-charted-roots/wiki/Custom-Relationships)** | Extended relationships beyond family (godparent, guardian, mentor, apprentice) with colored canvas edges |
 | **Step & Adoptive Parents** | Dedicated fields for step-parents and adoptive parents with distinct line styles on canvas trees |
-| **[Fictional Date Systems](https://github.com/banisterious/obsidian-canvas-roots/wiki/Fictional-Date-Systems)** | Custom calendars and eras for world-building (Middle-earth, Westeros, Star Wars, or custom) |
-| **[Organization Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Organization-Notes)** | Track non-genealogical hierarchies: noble houses, guilds, corporations, military units, religious orders |
-| **[Universe Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Universe-Notes)** | First-class entities for organizing fictional worlds with metadata, linked calendars, maps, and validation schemas |
-| **[Events & Timelines](https://github.com/banisterious/obsidian-canvas-roots/wiki/Events-And-Timelines)** | Document life events with person/family/place timelines, visual exports, groups/factions filtering, and sort order computation |
+| **[Fictional Date Systems](https://github.com/banisterious/obsidian-charted-roots/wiki/Fictional-Date-Systems)** | Custom calendars and eras for world-building (Middle-earth, Westeros, Star Wars, or custom) |
+| **[Organization Notes](https://github.com/banisterious/obsidian-charted-roots/wiki/Organization-Notes)** | Track non-genealogical hierarchies: noble houses, guilds, corporations, military units, religious orders |
+| **[Universe Notes](https://github.com/banisterious/obsidian-charted-roots/wiki/Universe-Notes)** | First-class entities for organizing fictional worlds with metadata, linked calendars, maps, and validation schemas |
+| **[Events & Timelines](https://github.com/banisterious/obsidian-charted-roots/wiki/Events-And-Timelines)** | Document life events with person/family/place timelines, visual exports, groups/factions filtering, and sort order computation |
 
-### [Statistics & Reports](https://github.com/banisterious/obsidian-canvas-roots/wiki/Statistics-And-Reports)
+### [Statistics & Reports](https://github.com/banisterious/obsidian-charted-roots/wiki/Statistics-And-Reports)
 
 | Feature | Description |
 |---------|-------------|
@@ -110,7 +112,7 @@
 | **Extended Reports** | Source Summary, Timeline Report, Place Summary, Media Inventory, Universe Overview, Collection Overview |
 | **PDF & ODT Export** | All 17 report types exportable as styled PDFs or editable ODT files with customizable cover pages, logos, and date formats |
 
-### [Evidence & Sources](https://github.com/banisterious/obsidian-canvas-roots/wiki/Evidence-And-Sources)
+### [Evidence & Sources](https://github.com/banisterious/obsidian-charted-roots/wiki/Evidence-And-Sources)
 
 | Feature | Description |
 |---------|-------------|
@@ -141,13 +143,13 @@
 |---------|-------------|
 | **Calendarium Integration** | Import calendar definitions from [Calendarium](https://github.com/javalent/calendarium) for fictional dates |
 | **Type Customization** | Full type managers for events, sources, organizations, relationships, and places; create, edit, hide, and customize types and categories |
-| **[Property Aliases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration#property-aliases)** | Map custom property names to Canvas Roots fields without renaming frontmatter |
-| **[Value Aliases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration#value-aliases)** | Map custom property values (event types, gender, place categories) to Canvas Roots canonical values |
-| **[Obsidian Bases](https://github.com/banisterious/obsidian-canvas-roots/wiki/Bases-Integration)** | Ready-to-use Base templates: People, Places, Events, Organizations, Sources, Universes; respects property aliases |
-| **[Style Settings](https://github.com/banisterious/obsidian-canvas-roots/wiki/Styling-And-Theming#style-settings-plugin)** | Customize colors via [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin |
-| **[Context Menu Actions](https://github.com/banisterious/obsidian-canvas-roots/wiki/Context-Menus)** | Right-click person notes, folders, and canvases for quick actions |
+| **[Property Aliases](https://github.com/banisterious/obsidian-charted-roots/wiki/Settings-And-Configuration#property-aliases)** | Map custom property names to Charted Roots fields without renaming frontmatter |
+| **[Value Aliases](https://github.com/banisterious/obsidian-charted-roots/wiki/Settings-And-Configuration#value-aliases)** | Map custom property values (event types, gender, place categories) to Charted Roots canonical values |
+| **[Obsidian Bases](https://github.com/banisterious/obsidian-charted-roots/wiki/Bases-Integration)** | Ready-to-use Base templates: People, Places, Events, Organizations, Sources, Universes; respects property aliases |
+| **[Style Settings](https://github.com/banisterious/obsidian-charted-roots/wiki/Styling-And-Theming#style-settings-plugin)** | Customize colors via [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin |
+| **[Context Menu Actions](https://github.com/banisterious/obsidian-charted-roots/wiki/Context-Menus)** | Right-click person notes, folders, and canvases for quick actions |
 | **YAML-First Data** | Compatible with Dataview, Bases, and other Obsidian tools |
-| **[Privacy Protection](https://github.com/banisterious/obsidian-canvas-roots/wiki/Privacy-And-Security)** | Optional anonymization of living persons in exports |
+| **[Privacy Protection](https://github.com/banisterious/obsidian-charted-roots/wiki/Privacy-And-Security)** | Optional anonymization of living persons in exports |
 
 ---
 
@@ -172,7 +174,7 @@
 ### Control Center
 <img src="docs/images/canvas-roots-control-center-dashboard-tab.png" alt="Control Center Dashboard Tab" width="700">
 
-*Central hub for all Canvas Roots operations: vault statistics, import/export, tree generation, data quality tools, and quick actions.*
+*Central hub for all Charted Roots operations: vault statistics, import/export, tree generation, data quality tools, and quick actions.*
 
 ### Statistics View
 <img src="docs/images/canvas-roots-statistics-view.png" alt="Statistics View" width="700">
@@ -192,20 +194,20 @@
 
 1. Install [BRAT](https://github.com/TfTHacker/obsidian42-brat) from Community Plugins
 2. Run command: `BRAT: Add a beta plugin for testing`
-3. Enter: `https://github.com/banisterious/obsidian-canvas-roots`
-4. Enable Canvas Roots in Settings → Community Plugins
+3. Enter: `https://github.com/banisterious/obsidian-charted-roots`
+4. Enable Charted Roots in Settings → Community Plugins
 
 ### Manual Installation
 
-1. Download from [Releases](https://github.com/banisterious/obsidian-canvas-roots/releases)
+1. Download from [Releases](https://github.com/banisterious/obsidian-charted-roots/releases)
 2. Extract to `<vault>/.obsidian/plugins/canvas-roots/`
 3. Reload Obsidian and enable the plugin
 
 ### From Source
 
 ```bash
-git clone https://github.com/banisterious/obsidian-canvas-roots
-cd obsidian-canvas-roots
+git clone https://github.com/banisterious/obsidian-charted-roots
+cd obsidian-charted-roots
 npm install && npm run build
 ```
 
@@ -252,7 +254,7 @@ died: 1952-08-20
 - **Statistics:** Open Statistics Dashboard view for vault health, metrics, and data quality analysis
 - **Reports:** Generate 13 report types including Ahnentafel, family group sheets, timelines, and more—export as PDF or Markdown
 
-See the [Wiki](https://github.com/banisterious/obsidian-canvas-roots/wiki) for complete documentation.
+See the [Wiki](https://github.com/banisterious/obsidian-charted-roots/wiki) for complete documentation.
 
 ---
 
@@ -266,28 +268,28 @@ If you find this plugin useful, please consider supporting its development!
 
 ## Documentation
 
-📖 **[Full Documentation on the Wiki](https://github.com/banisterious/obsidian-canvas-roots/wiki)**
+📖 **[Full Documentation on the Wiki](https://github.com/banisterious/obsidian-charted-roots/wiki)**
 
 ### Quick Links
-- [Getting Started](https://github.com/banisterious/obsidian-canvas-roots/wiki/Getting-Started) - Installation and first steps
-- [Data Entry](https://github.com/banisterious/obsidian-canvas-roots/wiki/Data-Entry) - Creating person notes
-- [Canvas Trees](https://github.com/banisterious/obsidian-canvas-roots/wiki/Canvas-Trees) - Generating family trees
-- [Import & Export](https://github.com/banisterious/obsidian-canvas-roots/wiki/Import-Export) - GEDCOM 5.5.1, GEDCOM X (JSON), Gramps XML, and CSV
-- [Geographic Features](https://github.com/banisterious/obsidian-canvas-roots/wiki/Geographic-Features) - Maps and places
-- [Evidence & Sources](https://github.com/banisterious/obsidian-canvas-roots/wiki/Evidence-And-Sources) - Source management and indicators
-- [Events & Timelines](https://github.com/banisterious/obsidian-canvas-roots/wiki/Events-And-Timelines) - Life events and timeline visualization
-- [Settings & Configuration](https://github.com/banisterious/obsidian-canvas-roots/wiki/Settings-And-Configuration) - All settings and property aliases
-- [FAQ](https://github.com/banisterious/obsidian-canvas-roots/wiki/FAQ) - Common questions
-- [Troubleshooting](https://github.com/banisterious/obsidian-canvas-roots/wiki/Troubleshooting) - Problem solving
+- [Getting Started](https://github.com/banisterious/obsidian-charted-roots/wiki/Getting-Started) - Installation and first steps
+- [Data Entry](https://github.com/banisterious/obsidian-charted-roots/wiki/Data-Entry) - Creating person notes
+- [Canvas Trees](https://github.com/banisterious/obsidian-charted-roots/wiki/Canvas-Trees) - Generating family trees
+- [Import & Export](https://github.com/banisterious/obsidian-charted-roots/wiki/Import-Export) - GEDCOM 5.5.1, GEDCOM X (JSON), Gramps XML, and CSV
+- [Geographic Features](https://github.com/banisterious/obsidian-charted-roots/wiki/Geographic-Features) - Maps and places
+- [Evidence & Sources](https://github.com/banisterious/obsidian-charted-roots/wiki/Evidence-And-Sources) - Source management and indicators
+- [Events & Timelines](https://github.com/banisterious/obsidian-charted-roots/wiki/Events-And-Timelines) - Life events and timeline visualization
+- [Settings & Configuration](https://github.com/banisterious/obsidian-charted-roots/wiki/Settings-And-Configuration) - All settings and property aliases
+- [FAQ](https://github.com/banisterious/obsidian-charted-roots/wiki/FAQ) - Common questions
+- [Troubleshooting](https://github.com/banisterious/obsidian-charted-roots/wiki/Troubleshooting) - Problem solving
 
 ### For Worldbuilders
-- [Universe Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Universe-Notes) - Organize fictional worlds with metadata and linked resources
-- [Organization Notes](https://github.com/banisterious/obsidian-canvas-roots/wiki/Organization-Notes) - Noble houses, guilds, military units, and hierarchies
-- [Fictional Date Systems](https://github.com/banisterious/obsidian-canvas-roots/wiki/Fictional-Date-Systems) - Custom calendars and eras
+- [Universe Notes](https://github.com/banisterious/obsidian-charted-roots/wiki/Universe-Notes) - Organize fictional worlds with metadata and linked resources
+- [Organization Notes](https://github.com/banisterious/obsidian-charted-roots/wiki/Organization-Notes) - Noble houses, guilds, military units, and hierarchies
+- [Fictional Date Systems](https://github.com/banisterious/obsidian-charted-roots/wiki/Fictional-Date-Systems) - Custom calendars and eras
 
 ### Other Resources
 - [Changelog](CHANGELOG.md) - Version history
-- [Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap) - Planned features
+- [Roadmap](https://github.com/banisterious/obsidian-charted-roots/wiki/Roadmap) - Planned features
 
 ### For Developers
 - [Getting Started](docs/developer/getting-started.md) - Development environment setup
@@ -314,8 +316,8 @@ MIT License - see [LICENSE](LICENSE)
 
 ## Issues & Support
 
-- **Bug Reports:** [GitHub Issues](https://github.com/banisterious/obsidian-canvas-roots/issues)
-- **Feature Requests:** [GitHub Discussions](https://github.com/banisterious/obsidian-canvas-roots/discussions)
+- **Bug Reports:** [GitHub Issues](https://github.com/banisterious/obsidian-charted-roots/issues)
+- **Feature Requests:** [GitHub Discussions](https://github.com/banisterious/obsidian-charted-roots/discussions)
 - **Security:** See [SECURITY.md](SECURITY.md)
 
 ---

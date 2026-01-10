@@ -1,5 +1,5 @@
 /**
- * CSV Exporter for Canvas Roots
+ * CSV Exporter for Charted Roots
  *
  * Exports person notes from Obsidian vault to CSV format.
  */

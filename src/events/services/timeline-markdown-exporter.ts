@@ -2,7 +2,7 @@
  * Timeline Markdown Exporter
  *
  * Exports event timelines to styled markdown using nested callouts.
- * Compatible with the Canvas Roots timeline callout CSS.
+ * Compatible with the Charted Roots timeline callout CSS.
  *
  * Output format:
  * > [!cr-timeline-outer] Timeline Title
@@ -449,7 +449,7 @@ export class TimelineMarkdownExporter {
 			const content = lines.join('\n');
 
 			// Write file
-			const folder = this.settings.timelinesFolder || this.settings.eventsFolder || 'Canvas Roots/Timelines';
+			const folder = this.settings.timelinesFolder || this.settings.eventsFolder || 'Charted Roots/Timelines';
 			await ensureFolderExists(this.app, folder);
 
 			const filename = `${toSafeFilename(title)}.md`;
@@ -792,7 +792,7 @@ export class TimelineMarkdownExporter {
 		} = options;
 
 		try {
-			const eventsFolder = this.settings.eventsFolder || 'Canvas Roots/Events';
+			const eventsFolder = this.settings.eventsFolder || 'Charted Roots/Events';
 
 			// Build markdown content with Dataview query
 			const lines: string[] = [];
@@ -956,7 +956,7 @@ export class TimelineMarkdownExporter {
 	 * Helper: Write export file
 	 */
 	private async writeExportFile(title: string, content: string): Promise<TimelineMarkdownResult> {
-		const folder = this.settings.timelinesFolder || this.settings.eventsFolder || 'Canvas Roots/Timelines';
+		const folder = this.settings.timelinesFolder || this.settings.eventsFolder || 'Charted Roots/Timelines';
 		await ensureFolderExists(this.app, folder);
 
 		const filename = `${toSafeFilename(title)}.md`;

@@ -422,7 +422,7 @@ export class ExportOptionsBuilder {
 
 		const setting = new Setting(container)
 			.setName('Include collection codes')
-			.setDesc('Preserve Canvas Roots collection data in export')
+			.setDesc('Preserve Charted Roots collection data in export')
 			.addToggle(toggle => toggle
 				.setValue(true)
 				.onChange(value => {

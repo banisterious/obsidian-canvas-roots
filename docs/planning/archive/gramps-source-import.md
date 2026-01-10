@@ -9,7 +9,7 @@
 
 **Priority:** ✅ Complete
 
-**Summary:** Import source and citation records from Gramps XML files, creating Canvas Roots source notes with full metadata and linking citations to person/event notes. This completes the Gramps migration path by handling the remaining entity type not currently imported.
+**Summary:** Import source and citation records from Gramps XML files, creating Charted Roots source notes with full metadata and linking citations to person/event notes. This completes the Gramps migration path by handling the remaining entity type not currently imported.
 
 ---
 
@@ -20,7 +20,7 @@ Gramps XML import currently supports people, places, and events, but source/cita
 1. Manually recreate their source documentation, OR
 2. Re-import via GEDCOM (which loses Gramps-specific metadata)
 
-This creates significant friction for users with extensive source documentation in Gramps who want to migrate to Canvas Roots.
+This creates significant friction for users with extensive source documentation in Gramps who want to migrate to Charted Roots.
 
 ---
 
@@ -96,7 +96,7 @@ Notes can be attached to sources and contain research notes or descriptions.
 
 ### Source Fields
 
-| Gramps Field | Canvas Roots Field | Notes |
+| Gramps Field | Charted Roots Field | Notes |
 |--------------|-------------------|-------|
 | `<stitle>` | `title` | Direct mapping |
 | `<sauthor>` | `author` | Direct mapping |
@@ -108,7 +108,7 @@ Notes can be attached to sources and contain research notes or descriptions.
 
 ### Confidence Mapping
 
-| Gramps Value | Meaning | Canvas Roots Value |
+| Gramps Value | Meaning | Charted Roots Value |
 |--------------|---------|-------------------|
 | 0 | Very Low | `low` |
 | 1 | Low | `low` |
@@ -120,7 +120,7 @@ Notes can be attached to sources and contain research notes or descriptions.
 
 Gramps sources don't have explicit types. Infer from title/author patterns:
 
-| Pattern Match | Canvas Roots Type |
+| Pattern Match | Charted Roots Type |
 |---------------|-------------------|
 | "Census" in title | `census` |
 | "Vital Records", "Birth", "Death", "Marriage" in title | `vital_record` |

@@ -1,6 +1,6 @@
 # Development Guide
 
-This is the main index for Canvas Roots developer documentation.
+This is the main index for Charted Roots developer documentation.
 
 ## Quick Start
 
@@ -44,7 +44,7 @@ Copy `main.js`, `manifest.json`, and `styles.css` to your vault's `.obsidian/plu
 
 ## Related Resources
 
-- [Wiki: Roadmap](https://github.com/banisterious/obsidian-canvas-roots/wiki/Roadmap) - Planned features
-- [Wiki: Release History](https://github.com/banisterious/obsidian-canvas-roots/wiki/Release-History) - Completed features documentation
+- [Wiki: Roadmap](https://github.com/banisterious/obsidian-charted-roots/wiki/Roadmap) - Planned features
+- [Wiki: Release History](https://github.com/banisterious/obsidian-charted-roots/wiki/Release-History) - Completed features documentation
 - [CHANGELOG.md](../CHANGELOG.md) - Version history
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - How to contribute

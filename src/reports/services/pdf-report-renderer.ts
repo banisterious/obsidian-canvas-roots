@@ -457,7 +457,7 @@ export class PdfReportRenderer {
 		return (currentPage: number, pageCount: number): Content => ({
 			columns: [
 				{ text: reportTitle, style: 'pageHeader', alignment: 'left' },
-				{ text: 'Canvas Roots', style: 'pageHeader', alignment: 'right' }
+				{ text: 'Charted Roots', style: 'pageHeader', alignment: 'right' }
 			],
 			margin: [40, 20, 40, 0]
 		});
@@ -572,7 +572,7 @@ export class PdfReportRenderer {
 		});
 
 		content.push({
-			text: 'Canvas Roots for Obsidian',
+			text: 'Charted Roots for Obsidian',
 			fontSize: 10,
 			alignment: 'center',
 			color: COLORS.lightMuted,

@@ -12,7 +12,7 @@ This draft specification documented a planned v2.0 architecture using D3.js for 
 
 - **Layout Engine:** Implemented using [family-chart](https://github.com/donatso/family-chart) library instead of D3.js
 - **Feature Set:** Many features described in this specification were not implemented
-- **Current Status:** Canvas Roots is at v0.2.3-beta with a stable feature set focused on core genealogical workflows
+- **Current Status:** Charted Roots is at v0.2.3-beta with a stable feature set focused on core genealogical workflows
 
 **Why Archived:**
 - Represented unimplemented features and outdated architecture decisions

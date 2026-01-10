@@ -1,5 +1,5 @@
 /**
- * Lineage Tracking Service for Canvas Roots
+ * Lineage Tracking Service for Charted Roots
  *
  * Computes and tracks multi-generational lineages from marked root persons.
  * Allows filtering and analysis of ancestor/descendant lines in Bases.

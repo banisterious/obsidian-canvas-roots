@@ -1,6 +1,6 @@
 # Roadmap
 
-This document outlines planned features for Canvas Roots. For completed features, see [Release History](Release-History). For version-specific changes, see the [GitHub Releases](https://github.com/banisterious/obsidian-canvas-roots/releases).
+This document outlines planned features for Charted Roots. For completed features, see [Release History](Release-History). For version-specific changes, see the [GitHub Releases](https://github.com/banisterious/obsidian-charted-roots/releases).
 
 ---
 
@@ -68,9 +68,9 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **Status:** Planning
 
-**GitHub Issue:** [#141](https://github.com/banisterious/obsidian-canvas-roots/issues/141)
+**GitHub Issue:** [#141](https://github.com/banisterious/obsidian-charted-roots/issues/141)
 
-**Summary:** Rename the plugin from "Canvas Roots" to "Charted Roots" based on community feedback. The current name suggests the plugin only works with Obsidian Canvas, limiting perceived scope for traditional family tree and genealogical chart users.
+**Summary:** Rename the plugin from "Charted Roots" to "Charted Roots" based on community feedback. The current name suggests the plugin only works with Obsidian Canvas, limiting perceived scope for traditional family tree and genealogical chart users.
 
 **The Problem:** Community feedback indicates "Canvas" creates confusion about whether the plugin supports non-canvas visualizations (family charts, trees, graphs). Users searching for genealogy plugins may not discover the plugin due to the canvas-centric name.
 
@@ -96,8 +96,8 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 - CSS classes (`cr-*`) and properties (`cr_*`) preserved
 
 **Documentation:**
-- See [Plugin Rename Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/plugin-rename.md) for detailed specifications
-- Community discussion: [#58](https://github.com/banisterious/obsidian-canvas-roots/discussions/58)
+- See [Plugin Rename Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/plugin-rename.md) for detailed specifications
+- Community discussion: [#58](https://github.com/banisterious/obsidian-charted-roots/discussions/58)
 
 ---
 
@@ -107,11 +107,11 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 
 **Status:** Planning (Phase 1 ready for implementation)
 
-**GitHub Issue:** [#145](https://github.com/banisterious/obsidian-canvas-roots/issues/145) (consolidates #124, #125)
+**GitHub Issue:** [#145](https://github.com/banisterious/obsidian-charted-roots/issues/145) (consolidates #124, #125)
 
 **Summary:** Enable genealogists to manage research workflow using GPS (Genealogical Proof Standard) methodology with support for research projects, reports, individual research notes, and research journals.
 
-**The Problem:** Serious genealogists need to track research progress, document negative findings, maintain research logs, and synthesize analysis across sources. Current Canvas Roots focuses on person/event/source entities but lacks structures for research workflow.
+**The Problem:** Serious genealogists need to track research progress, document negative findings, maintain research logs, and synthesize analysis across sources. Current Charted Roots focuses on person/event/source entities but lacks structures for research workflow.
 
 **The Solution:** Four GPS-aligned research entity types:
 - **Research Project** — Hub for complex, multi-phase research cases
@@ -153,7 +153,7 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 - **Integration with existing features** — Data Quality filtering, schema validation, export privacy
 
 **Documentation:**
-- See [Research Workflow Integration Planning](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/research-workflow-integration.md) for detailed specifications
+- See [Research Workflow Integration Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/research-workflow-integration.md) for detailed specifications
 - Community contributors: @ANYroots (IRN structure, GPS methodology, templates), @wilbry (lightweight approach, unified design)
 
 ---
@@ -167,7 +167,7 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 **Summary:** Lightweight DNA match tracking for genetic genealogists, designed to record key DNA matches alongside family tree research. Keeps advanced features out of the way of users who don't need them.
 
 **Design Philosophy:**
-- Canvas Roots is not a DNA analysis tool—specialized tools (DNAPainter, Genetic Affairs, etc.) handle that well
+- Charted Roots is not a DNA analysis tool—specialized tools (DNAPainter, Genetic Affairs, etc.) handle that well
 - Focus on tracking "key matches" (BKM/BMM methodology) rather than comprehensive DNA management
 - All phases are opt-in via settings; default experience is unchanged
 
@@ -198,7 +198,7 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 - Automatic relationship prediction
 - DNA import from testing companies
 
-See [DNA Match Tracking Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/dna-match-tracking.md) for detailed specifications.
+See [DNA Match Tracking Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/dna-match-tracking.md) for detailed specifications.
 
 ---
 
@@ -208,7 +208,7 @@ See [DNA Match Tracking Planning Document](https://github.com/banisterious/obsid
 
 **Status:** Planning
 
-**GitHub Issue:** [#153](https://github.com/banisterious/obsidian-canvas-roots/issues/153)
+**GitHub Issue:** [#153](https://github.com/banisterious/obsidian-charted-roots/issues/153)
 
 **Summary:** Allow places to be restricted to specific custom maps rather than appearing on all maps within a universe. Enables regional maps, era-specific views, and detail-level separation.
 
@@ -247,7 +247,7 @@ maps:
 - Opt-in via frontmatter property
 - Supports both single-map and multi-map assignment
 
-See [Per-Map Marker Assignment Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/per-map-marker-assignment.md) for detailed specifications.
+See [Per-Map Marker Assignment Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/per-map-marker-assignment.md) for detailed specifications.
 
 ---
 
@@ -269,13 +269,13 @@ See [Per-Map Marker Assignment Planning Document](https://github.com/banisteriou
 
 | Mode | Description | Use Case |
 |------|-------------|----------|
-| Standalone | Canvas Roots manages its own calendars | Users without Calendarium |
-| Calendarium Primary | Canvas Roots reads Calendarium calendars | Existing Calendarium users |
+| Standalone | Charted Roots manages its own calendars | Users without Calendarium |
+| Calendarium Primary | Charted Roots reads Calendarium calendars | Existing Calendarium users |
 | Bidirectional | Full sync between both plugins | Power users wanting unified experience |
 
 **Phased Approach:**
 - ✅ **Phase 1 (v0.12.0):** Import calendar definitions from Calendarium—delivers ~80% of value
-- ✅ **Phase 2 (v0.15.2):** Display Calendarium events on Canvas Roots timelines; support date ranges (`fc-end`)
+- ✅ **Phase 2 (v0.15.2):** Display Calendarium events on Charted Roots timelines; support date ranges (`fc-end`)
 - **Phase 3:** Bidirectional sync between plugins
 - **Phase 4:** Cross-calendar date translation
 
@@ -290,7 +290,7 @@ See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#ca
 
 **Data Mapping (Planned for Phase 3+):**
 
-| Canvas Roots Field | Calendarium Field |
+| Charted Roots Field | Calendarium Field |
 |--------------------|-------------------|
 | `fictional_date` | `fc-date` / `fc-start` |
 | `fictional_date_end` | `fc-end` |
@@ -305,7 +305,7 @@ See [Fictional Date Systems - Calendarium Integration](Fictional-Date-Systems#ca
 
 **Future Consideration:** Per-calendar frontmatter fields (e.g., `mycalendar-date` instead of `fc-calendar` + `fc-date`) to allow one note to have dates across multiple calendars.
 
-See [Calendarium Integration Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/archive/calendarium-integration.md) for implementation details.
+See [Calendarium Integration Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/calendarium-integration.md) for implementation details.
 
 ---
 
@@ -343,7 +343,7 @@ oral_facts:
 
 **Status:** Planning
 
-**GitHub Issue:** [#167](https://github.com/banisterious/obsidian-canvas-roots/issues/167)
+**GitHub Issue:** [#167](https://github.com/banisterious/obsidian-charted-roots/issues/167)
 
 **Summary:** Add a preference setting that lets users choose whether the UI displays "Spouse" or "Partner" throughout the plugin — in menus, forms, labels, and wizards. The underlying data structure stays the same; this only changes what users see in the interface.
 
@@ -369,7 +369,7 @@ oral_facts:
 - Default behavior unchanged (shows "Spouse")
 - Opt-in preference for users who want "Partner" terminology
 
-See [Spouse/Partner Terminology Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/spouse-partner-terminology.md) for detailed specifications.
+See [Spouse/Partner Terminology Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/spouse-partner-terminology.md) for detailed specifications.
 
 ---
 
@@ -379,7 +379,7 @@ See [Spouse/Partner Terminology Planning Document](https://github.com/banisterio
 
 **Status:** Planning
 
-**GitHub Issue:** [#157](https://github.com/banisterious/obsidian-canvas-roots/issues/157)
+**GitHub Issue:** [#157](https://github.com/banisterious/obsidian-charted-roots/issues/157)
 
 **Summary:** For certain event types (Occupation, Residence, Military, Education), display the event description instead of the event title in person timelines. This provides more meaningful information at a glance.
 
@@ -411,7 +411,7 @@ See [Spouse/Partner Terminology Planning Document](https://github.com/banisterio
 - Events without descriptions continue showing title
 - Birth/Death/Marriage events unaffected
 
-See [Timeline Event Description Display Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/timeline-event-description-display.md) for detailed specifications.
+See [Timeline Event Description Display Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/timeline-event-description-display.md) for detailed specifications.
 
 ---
 
@@ -421,7 +421,7 @@ See [Timeline Event Description Display Planning Document](https://github.com/ba
 
 **Status:** Planning
 
-**GitHub Issue:** [#163](https://github.com/banisterious/obsidian-canvas-roots/issues/163)
+**GitHub Issue:** [#163](https://github.com/banisterious/obsidian-charted-roots/issues/163)
 
 **Summary:** Automatically store places in category-specific subfolders. When creating a place with `place_category: historical`, it would be saved to `Places/Historical/` instead of the root `Places/` folder.
 
@@ -451,7 +451,7 @@ Places/
 - Enabled by default for new installs
 - Optional bulk migration tool to reorganize existing places
 
-See [Place Category Folder Mapping Planning Document](https://github.com/banisterious/obsidian-canvas-roots/blob/main/docs/planning/place-category-folder-mapping.md) for detailed specifications.
+See [Place Category Folder Mapping Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/place-category-folder-mapping.md) for detailed specifications.
 
 ---
 
@@ -509,7 +509,7 @@ This pattern is already documented as a [recommended naming convention](Evidence
 - Supporting FAN (Friends, Associates, Neighbors) research workflows
 - Better handling of enslaved ancestor research where context matters
 
-**Note:** Canvas Roots intentionally avoids dictating naming conventions—this would be an opt-in enhancement for users who follow the ED/page pattern.
+**Note:** Charted Roots intentionally avoids dictating naming conventions—this would be an opt-in enhancement for users who follow the ED/page pattern.
 
 ### Accessibility
 
@@ -543,7 +543,7 @@ See [known-limitations.md](known-limitations.md) for complete details.
 - Single vault only (no multi-vault merging)
 - No undo/redo for Bases edits (platform limitation)
 - No bulk operations from Bases multi-select (platform limitation)
-- Privacy obfuscation for canvas display requires generation-time application (runtime toggle not feasible due to Obsidian Canvas API limitations) — see [#95](https://github.com/banisterious/obsidian-canvas-roots/issues/95)
+- Privacy obfuscation for canvas display requires generation-time application (runtime toggle not feasible due to Obsidian Canvas API limitations) — see [#95](https://github.com/banisterious/obsidian-charted-roots/issues/95)
 - Interactive Canvas features limited by Obsidian Canvas API
 
 ### Context Menu Submenu Behavior
@@ -556,7 +556,7 @@ On desktop, submenus don't dismiss when hovering over a different submenu. This 
 
 We welcome feedback on feature priorities!
 
-1. Check [existing issues](https://github.com/banisterious/obsidian-canvas-roots/issues)
+1. Check [existing issues](https://github.com/banisterious/obsidian-charted-roots/issues)
 2. Open a new issue with `feature-request` label
 3. Describe your use case and why the feature would be valuable
 
@@ -564,4 +564,4 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for development guidelines.
 
 ---
 
-**Questions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-canvas-roots/issues).
+**Questions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-charted-roots/issues).

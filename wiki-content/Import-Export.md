@@ -1,6 +1,6 @@
 # Import & Export
 
-Canvas Roots supports importing and exporting family data in GEDCOM, Gramps XML, and CSV formats through guided step-by-step wizards.
+Charted Roots supports importing and exporting family data in GEDCOM, Gramps XML, and CSV formats through guided step-by-step wizards.
 
 ## Table of Contents
 
@@ -41,7 +41,7 @@ The Import/Export Hub provides a centralized entry point for all data import and
 |--------|-----|
 | **Control Center** | Click **Import/Export** in the Tools group |
 | **Dashboard** | Click the **Import** quick action tile |
-| **Command Palette** | `Ctrl/Cmd+P` → "Canvas Roots: Open Import/Export Hub" |
+| **Command Palette** | `Ctrl/Cmd+P` → "Charted Roots: Open Import/Export Hub" |
 
 The hub displays two cards:
 - **Import** — Launch the 7-step import wizard
@@ -95,7 +95,7 @@ Toggle which entity types to include in the export:
 
 ## GEDCOM Import/Export
 
-Canvas Roots provides full round-trip support for GEDCOM 5.5.1 format, allowing you to import family trees from popular genealogy software and export your Obsidian data back to GEDCOM format.
+Charted Roots provides full round-trip support for GEDCOM 5.5.1 format, allowing you to import family trees from popular genealogy software and export your Obsidian data back to GEDCOM format.
 
 ### Importing a GEDCOM File
 
@@ -116,7 +116,7 @@ Canvas Roots provides full round-trip support for GEDCOM 5.5.1 format, allowing 
 
 **Data Quality Preview:**
 
-Before any files are created, Canvas Roots analyzes the GEDCOM data and shows a quality preview modal if issues or place name variants are detected. This allows you to:
+Before any files are created, Charted Roots analyzes the GEDCOM data and shows a quality preview modal if issues or place name variants are detected. This allows you to:
 
 - **Review detected issues** organized by category:
   - **Dates**: Death before birth, future dates, events before birth/after death
@@ -199,7 +199,7 @@ During import, a modal shows:
 
 ### After Import
 
-1. **Wait for sync completion** - If bidirectional sync is enabled, Canvas Roots automatically processes all imported relationships. Progress notifications show sync status.
+1. **Wait for sync completion** - If bidirectional sync is enabled, Charted Roots automatically processes all imported relationships. Progress notifications show sync status.
 2. **Review imported notes** in your configured folders (People, Events, Sources, Places)
 3. **Add research notes** below the frontmatter in each file
 4. **Generate tree** using Control Center → Tree Generation
@@ -227,7 +227,7 @@ US state abbreviations are automatically expanded to full names during import:
 This prevents duplicate place notes from being created when GEDCOM data contains inconsistent state formats. All 50 US states plus DC are supported.
 
 **Place Type Inference:**
-When importing places, Canvas Roots uses context-aware type inference:
+When importing places, Charted Roots uses context-aware type inference:
 - Administrative division suffixes (County, Parish, Township, etc.) are detected
 - When both "Abbeville" and "Abbeville County" exist as siblings, the non-suffixed version is inferred as a city/town rather than a county
 
@@ -264,10 +264,10 @@ Export your family data back to GEDCOM format for sharing with other genealogy s
 
 ### Privacy Protection for Export
 
-Canvas Roots includes optional privacy controls for protecting living persons in GEDCOM exports:
+Charted Roots includes optional privacy controls for protecting living persons in GEDCOM exports:
 
 **Enable Privacy Protection:**
-1. Go to Settings → Canvas Roots → GEDCOM section
+1. Go to Settings → Charted Roots → GEDCOM section
 2. Enable "Privacy protection for living persons"
 3. Configure the birth year threshold (default: 100 years ago)
 
@@ -287,7 +287,7 @@ Canvas Roots includes optional privacy controls for protecting living persons in
 
 ## Gramps XML Import
 
-Canvas Roots supports importing family data from [Gramps](https://gramps-project.org/), a popular open-source genealogy application.
+Charted Roots supports importing family data from [Gramps](https://gramps-project.org/), a popular open-source genealogy application.
 
 ### Supported File Formats
 
@@ -295,7 +295,7 @@ Canvas Roots supports importing family data from [Gramps](https://gramps-project
 - **`.gramps`** - Native Gramps compressed format (gzip-compressed XML)
 - **`.xml`** - Uncompressed Gramps XML export
 
-> **💡 Tip:** Export from Gramps as `.gpkg` to include media files (photos, documents, scans). Canvas Roots will extract them to your vault automatically.
+> **💡 Tip:** Export from Gramps as `.gpkg` to include media files (photos, documents, scans). Charted Roots will extract them to your vault automatically.
 
 ### Importing a Gramps File
 
@@ -325,7 +325,7 @@ Canvas Roots supports importing family data from [Gramps](https://gramps-project
 
 ### Place Linking
 
-When you enable "Create place notes", Canvas Roots:
+When you enable "Create place notes", Charted Roots:
 1. Creates place notes first
 2. Automatically converts birth/death places in person notes to wikilinks
 3. Links event notes to place notes as well
@@ -334,9 +334,9 @@ This creates a fully connected web of notes where you can navigate between peopl
 
 ### Supported Event Types
 
-Gramps events are mapped to Canvas Roots event types:
+Gramps events are mapped to Charted Roots event types:
 
-| Gramps Event | Canvas Roots Type |
+| Gramps Event | Charted Roots Type |
 |--------------|-------------------|
 | Birth | birth |
 | Death | death |
@@ -358,7 +358,7 @@ Events not in this list are imported as "custom" type.
 
 Gramps person attributes are imported when present:
 
-| Gramps Attribute | Canvas Roots Property | Description |
+| Gramps Attribute | Charted Roots Property | Description |
 |------------------|----------------------|-------------|
 | `Research Level` | `research_level` | Research progress level (0-6) |
 
@@ -441,7 +441,7 @@ In addition to importing notes from Gramps, you can manually create note entitie
 
 | Method | How |
 |--------|-----|
-| **Command Palette** | `Ctrl/Cmd+P` → "Canvas Roots: Create note" |
+| **Command Palette** | `Ctrl/Cmd+P` → "Charted Roots: Create note" |
 | **Control Center** | Click **Create Note** in the Quick Actions |
 
 **Create Note Form:**
@@ -482,7 +482,7 @@ Your note content here...
 
 ### Place Type Mapping
 
-Gramps place types are preserved and mapped to Canvas Roots place types:
+Gramps place types are preserved and mapped to Charted Roots place types:
 - Administrative: country, state, province, county, region, district, borough, municipality
 - Populated: city, town, village, parish, neighborhood
 - Specific: cemetery, church, building, farm, street, address
@@ -495,7 +495,7 @@ Gramps place types are preserved and mapped to Canvas Roots place types:
 
 ### Media Import from .gpkg
 
-When importing a `.gpkg` package file, Canvas Roots:
+When importing a `.gpkg` package file, Charted Roots:
 
 1. **Extracts media files** to your configured media folder
 2. **Links media to entities** — Photos, documents, and scans attached in Gramps are linked to the corresponding person, event, place, or source notes via the `media` frontmatter property
@@ -509,7 +509,7 @@ Media extracted from Gramps packages can be viewed using the [Media Gallery](Dyn
 
 ## CSV Import/Export
 
-Canvas Roots supports CSV and TSV file formats for easy data exchange with spreadsheets and other applications.
+Charted Roots supports CSV and TSV file formats for easy data exchange with spreadsheets and other applications.
 
 ### Importing from CSV/TSV
 
@@ -525,7 +525,7 @@ Canvas Roots supports CSV and TSV file formats for easy data exchange with sprea
 
 **Auto-Detected Column Mapping:**
 
-Canvas Roots automatically detects common column names and maps them to person properties:
+Charted Roots automatically detects common column names and maps them to person properties:
 
 | Detected columns | Maps to |
 |-----------------|---------|

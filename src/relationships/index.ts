@@ -1,5 +1,5 @@
 /**
- * Relationships module for Canvas Roots
+ * Relationships module for Charted Roots
  *
  * Provides custom relationship type management, parsing, and visualization.
  */

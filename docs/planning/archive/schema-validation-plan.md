@@ -309,8 +309,8 @@ interface ValidationWarning {
 - Schema note: "Edit schema", "Validate matching notes"
 
 **Commands:**
-- "Canvas Roots: Validate vault against schemas"
-- "Canvas Roots: Open Schemas tab"
+- "Charted Roots: Validate vault against schemas"
+- "Charted Roots: Open Schemas tab"
 
 ---
 

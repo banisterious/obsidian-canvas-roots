@@ -1,7 +1,7 @@
 # Plan: DMS to Decimal Degrees Coordinate Conversion (Issue #121)
 
 - **Status:** Implemented
-- **GitHub Issue:** [#121](https://github.com/banisterious/obsidian-canvas-roots/issues/121)
+- **GitHub Issue:** [#121](https://github.com/banisterious/obsidian-charted-roots/issues/121)
 - **Implemented:** 2026-01-07
 
 ---

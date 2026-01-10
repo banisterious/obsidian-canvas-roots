@@ -5,7 +5,7 @@
 
 This document catalogs available sources for place data that can be used for:
 1. Native plugin place lookup (see [Unified Place Lookup](../planning/unified-place-lookup.md))
-2. Obsidian Web Clipper templates (see [issue #128](https://github.com/banisterious/obsidian-canvas-roots/issues/128))
+2. Obsidian Web Clipper templates (see [issue #128](https://github.com/banisterious/obsidian-charted-roots/issues/128))
 
 ## Source Comparison
 
@@ -437,8 +437,8 @@ GET https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json
 - [Unified Place Lookup Planning](../planning/unified-place-lookup.md) - Native plugin integration
 - [Web Clipper Templates](../clipper-templates/CLIPPER-TEMPLATES.md) - Template documentation
 - [Geographic Features Wiki](../wiki-content/Geographic-Features.md) - User documentation
-- [Issue #128](https://github.com/banisterious/obsidian-canvas-roots/issues/128) - Web Clipper template tracking
-- [Issue #155](https://github.com/banisterious/obsidian-canvas-roots/issues/155) - FamilySearch template specifically
+- [Issue #128](https://github.com/banisterious/obsidian-charted-roots/issues/128) - Web Clipper template tracking
+- [Issue #155](https://github.com/banisterious/obsidian-charted-roots/issues/155) - FamilySearch template specifically
 
 ---
 

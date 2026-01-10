@@ -111,7 +111,7 @@ TreePreviewRenderer (SVG) OR CanvasGenerator (Canvas JSON)
 
 ### Layout Engines
 
-Canvas Roots implements four distinct layout algorithms:
+Charted Roots implements four distinct layout algorithms:
 
 #### Family-Chart Layout (`src/core/family-chart-layout.ts`)
 

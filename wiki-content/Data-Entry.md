@@ -1,6 +1,6 @@
 # Data Entry
 
-This page covers how to create person notes with relationship data that Canvas Roots uses to generate family trees.
+This page covers how to create person notes with relationship data that Charted Roots uses to generate family trees.
 
 > **Reference:** For a complete list of all supported properties, see the [Frontmatter Reference](Frontmatter-Reference).
 
@@ -31,7 +31,7 @@ The Create Person Modal provides a form-based interface for creating new person 
 
 | Method | Description |
 |--------|-------------|
-| Command palette | `Canvas Roots: Create person` |
+| Command palette | `Charted Roots: Create person` |
 | Dashboard | Click "Create Person" tile |
 | Control Center | People tab → Actions → Create person |
 | Folder context menu | Right-click a people folder → Create person |
@@ -64,7 +64,7 @@ The Family Creation Wizard is a 5-step guided workflow for creating interconnect
 
 | Method | Description |
 |--------|-------------|
-| Command palette | `Canvas Roots: Create family wizard` |
+| Command palette | `Charted Roots: Create family wizard` |
 | Dashboard | Click "Create Family" tile |
 | Control Center | People tab → Actions → Create family |
 | Folder context menu | Right-click a people folder → Create family |
@@ -140,7 +140,7 @@ The fastest way to set up a person note is using the context menu:
 
 1. Create a new markdown note for the person
 2. Right-click the file in the file explorer
-3. Select **Canvas Roots → Add essential person properties**
+3. Select **Charted Roots → Add essential person properties**
 
 This automatically adds all required fields (`cr_id`, `cr_type`, `name`) plus common optional fields (`born`, `died`, `father`, `mother`, `spouse`). You can also select multiple files and add properties to all of them at once.
 
@@ -238,7 +238,7 @@ For each spouse (spouse1, spouse2, etc.), you can specify:
 
 ## Wikilinks vs IDs
 
-Canvas Roots supports both wikilinks and ID-based relationships:
+Charted Roots supports both wikilinks and ID-based relationships:
 
 **Wikilinks** (`father`, `mother`, `spouse`, `children`):
 - Human-readable in your notes
@@ -264,7 +264,7 @@ Capture genealogical data directly from web pages using [Obsidian Web Clipper](h
 ### Quick Overview
 
 1. Install Obsidian Web Clipper browser extension
-2. Configure output to your Canvas Roots staging folder
+2. Configure output to your Charted Roots staging folder
 3. Create Web Clipper templates with special metadata properties
 4. Clip content from web pages
 5. Review and verify in Staging Manager (Dashboard shows "3 clips (1 new)")
@@ -281,7 +281,7 @@ Capture genealogical data directly from web pages using [Obsidian Web Clipper](h
 
 ### Benefits of the Staging Workflow
 
-The Web Clipper integration uses Canvas Roots' staging folder, which provides:
+The Web Clipper integration uses Charted Roots' staging folder, which provides:
 - Review clips before adding to main tree
 - Detect potential duplicates before promotion
 - Verify LLM-extracted data for accuracy
@@ -303,7 +303,7 @@ For entering many family members at once, consider using [Obsidian Bases](Bases-
 
 ## Other Data Types
 
-Canvas Roots also supports Places and Organizations, each with their own data entry workflows:
+Charted Roots also supports Places and Organizations, each with their own data entry workflows:
 
 ### Place Notes
 

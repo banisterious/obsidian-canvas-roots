@@ -50,7 +50,7 @@ There are several entry points to create a new universe:
 
 | Method | How |
 |--------|-----|
-| **Command palette** | `Ctrl/Cmd+P` → "Canvas Roots: Create universe" |
+| **Command palette** | `Ctrl/Cmd+P` → "Charted Roots: Create universe" |
 | **Universes tab** | Open Control Center → Universes tab → "Create Universe" tile |
 | **Statistics tab** | Open Control Center → Statistics tab → Universes section → Create button |
 
@@ -275,14 +275,14 @@ Click a universe to see all its entities. Click "View full statistics →" to op
 
 ## Universes Base Template
 
-Canvas Roots includes a pre-configured Bases template for universes with 12 views.
+Charted Roots includes a pre-configured Bases template for universes with 12 views.
 
 ### Creating the Template
 
 1. Open the Universes tab in Control Center
 2. Click **Create universes base** in the Actions card
 
-Or use the command palette: "Canvas Roots: Create universes base template"
+Or use the command palette: "Charted Roots: Create universes base template"
 
 ### Available Views
 
@@ -459,4 +459,4 @@ See [Statistics & Reports](Statistics-And-Reports) for full documentation.
 
 ---
 
-**Questions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-canvas-roots/issues).
+**Questions?** Open an issue on [GitHub](https://github.com/banisterious/obsidian-charted-roots/issues).

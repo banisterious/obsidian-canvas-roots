@@ -5,7 +5,7 @@
  * Maintains cached mappings between basenames, paths, and cr_ids to enable
  * automatic wikilink resolution in relationship fields.
  *
- * @see https://github.com/banisterious/obsidian-canvas-roots/issues/104
+ * @see https://github.com/banisterious/obsidian-charted-roots/issues/104
  */
 
 import { App, TFile, EventRef } from 'obsidian';

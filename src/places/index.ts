@@ -1,5 +1,5 @@
 /**
- * Places module for Canvas Roots
+ * Places module for Charted Roots
  *
  * Provides place type management, hierarchy, and geographic features.
  */

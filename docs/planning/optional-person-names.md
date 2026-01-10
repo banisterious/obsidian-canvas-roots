@@ -1,9 +1,9 @@
 # Optional Person Names
 
-Planning document for making person names optional in Canvas Roots.
+Planning document for making person names optional in Charted Roots.
 
 - **Status:** Implemented
-- **GitHub Issue:** [#140](https://github.com/banisterious/obsidian-canvas-roots/issues/140)
+- **GitHub Issue:** [#140](https://github.com/banisterious/obsidian-charted-roots/issues/140)
 - **Created:** 2026-01-05
 - **Implemented:** 2026-01-07
 

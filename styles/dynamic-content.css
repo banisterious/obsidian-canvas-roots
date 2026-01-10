@@ -2,9 +2,9 @@
  * Dynamic Content Styles
  *
  * Styles for dynamic code block content:
- * - canvas-roots-timeline
- * - canvas-roots-relationships
- * - canvas-roots-media
+ * - charted-roots-timeline (legacy: canvas-roots-timeline)
+ * - charted-roots-relationships (legacy: canvas-roots-relationships)
+ * - charted-roots-media (legacy: canvas-roots-media)
  */
 
 /* ==========================================================================

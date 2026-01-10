@@ -1,7 +1,7 @@
 /**
  * Plugin Rename Migration Service
  *
- * Handles one-time migration of vault data when upgrading from Canvas Roots to Charted Roots.
+ * Handles one-time migration of vault data when upgrading from Charted Roots to Charted Roots.
  * This service runs once on plugin load if the migration hasn't been completed.
  *
  * Migration tasks:
@@ -43,7 +43,7 @@ export interface PluginRenameMigrationResult {
 }
 
 /**
- * Service for migrating vault data from Canvas Roots to Charted Roots
+ * Service for migrating vault data from Charted Roots to Charted Roots
  */
 export class PluginRenameMigrationService {
 	constructor(private app: App) {}
@@ -273,7 +273,7 @@ export function showMigrationNotice(result: PluginRenameMigrationResult): void {
 		parts.push(`${result.markdownFilesUpdated} note${result.markdownFilesUpdated === 1 ? '' : 's'} with code blocks`);
 	}
 
-	const message = `Charted Roots: Migrated ${parts.join(' and ')} from Canvas Roots format.`;
+	const message = `Charted Roots: Migrated ${parts.join(' and ')} from Charted Roots format.`;
 
 	if (result.errors.length > 0) {
 		new Notice(`${message}\n\n${result.errors.length} error(s) occurred. Check console for details.`, 10000);

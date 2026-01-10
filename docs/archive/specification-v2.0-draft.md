@@ -1,4 +1,4 @@
-# Canvas Roots Plugin - Technical Specification
+# Charted Roots Plugin - Technical Specification
 
 > **ARCHIVED:** This document was archived on 2025-11-24 as it represents a v2.0 draft specification that was never implemented. The plugin went in a different direction using the family-chart library instead of D3.js, and many planned features described here were not developed.
 >
@@ -31,7 +31,7 @@
 
 ### 1.1 Purpose
 
-Canvas Roots is an Obsidian plugin that automates the creation and layout of complex family trees within Obsidian Canvas, using structured note data as the source and D3.js-based layout algorithms for positioning.
+Charted Roots is an Obsidian plugin that automates the creation and layout of complex family trees within Obsidian Canvas, using structured note data as the source and D3.js-based layout algorithms for positioning.
 
 ### 1.2 Key Differentiators
 
@@ -84,7 +84,7 @@ Each person in the family tree is represented by an individual Markdown note wit
 
 #### 2.1.2 Privacy and Identity Protection
 
-**Gender and Identity:** Canvas Roots respects the distinction between biological sex (relevant for GEDCOM data interchange and medical history) and gender identity (a person's authentic self-identification). The plugin supports both fields independently:
+**Gender and Identity:** Charted Roots respects the distinction between biological sex (relevant for GEDCOM data interchange and medical history) and gender identity (a person's authentic self-identification). The plugin supports both fields independently:
 
 - **`sex`**: Used for GEDCOM compatibility and optional color coding in canvas visualizations. Supports standard GEDCOM values: M (male), F (female), U (unknown/unspecified). This field is optional and should reflect biological sex as recorded in genealogical records, not gender identity.
 - **`gender`**: Free-form text field for recording gender identity. Examples: "Woman", "Man", "Non-binary", "Genderfluid", "Transgender woman", etc. This field takes precedence for display purposes and respectful language in UI.
@@ -384,10 +384,10 @@ Reference numbers are exported using the standard `REFN` (Reference Number) tag:
 #### User Interface
 
 **Commands:**
-- `Canvas Roots: Assign Reference Numbers` - Calculate for entire vault
-- `Canvas Roots: Recalculate Reference Numbers` - Recalculate based on current settings
-- `Canvas Roots: Clear Reference Numbers` - Remove all `cr_ref_num` properties
-- `Canvas Roots: Set Root Person for Reference Numbering` - Choose new root
+- `Charted Roots: Assign Reference Numbers` - Calculate for entire vault
+- `Charted Roots: Recalculate Reference Numbers` - Recalculate based on current settings
+- `Charted Roots: Clear Reference Numbers` - Remove all `cr_ref_num` properties
+- `Charted Roots: Set Root Person for Reference Numbering` - Choose new root
 
 **Detail Panel Integration:**
 
@@ -463,7 +463,7 @@ Reference numbering systems are planned for **Phase 2** (enhancement features), 
 
 ### 3.1 Tree Generation Command
 
-**Command:** `Canvas Roots: Generate Tree for Current Note`
+**Command:** `Charted Roots: Generate Tree for Current Note`
 
 **Trigger Context:** User views a person note (the "root person")
 
@@ -484,7 +484,7 @@ Reference numbering systems are planned for **Phase 2** (enhancement features), 
 
 ### 3.2 Re-Layout Command
 
-**Command:** `Canvas Roots: Re-Layout Current Canvas`
+**Command:** `Charted Roots: Re-Layout Current Canvas`
 
 **Purpose:** Re-run layout calculation on existing Canvas nodes to snap them back to D3-calculated positions after manual rearrangement.
 
@@ -509,7 +509,7 @@ Reference numbering systems are planned for **Phase 2** (enhancement features), 
 **Panel Location:** Right sidebar (configurable in settings)
 
 **Activation:**
-- **Command:** `Canvas Roots: Open Person Detail Panel`
+- **Command:** `Charted Roots: Open Person Detail Panel`
 - **Context menu:** Right-click person node on canvas → "View Person Details"
 - **Keyboard shortcut:** Configurable hotkey
 - **Auto-open:** Optional setting to open when clicking canvas nodes
@@ -742,7 +742,7 @@ If note is edited externally while panel is open:
 
 **Design Philosophy:**
 
-Canvas Roots uses a **Smart Hybrid Approach** with two parallel collection systems:
+Charted Roots uses a **Smart Hybrid Approach** with two parallel collection systems:
 
 1. **Detected Components** (automatic, zero-config)
    - Computed from relationship graph using BFS traversal
@@ -756,7 +756,7 @@ Canvas Roots uses a **Smart Hybrid Approach** with two parallel collection syste
    - Works alongside detected components
    - Stored as simple YAML property
 
-**Key Constraint:** Many Obsidian users do not use folders or tags, and do not wish to. Canvas Roots must work perfectly for flat vaults with zero configuration.
+**Key Constraint:** Many Obsidian users do not use folders or tags, and do not wish to. Charted Roots must work perfectly for flat vaults with zero configuration.
 
 #### 3.4.2 Detected Family Components
 
@@ -1198,7 +1198,7 @@ A user managing large datasets:
 2. See `collection` column (text field)
 3. Use Bases features: sort, filter, drag-down fill, find-replace
 4. Bulk-assign collections to 50+ people in seconds
-5. Canvas Roots respects all changes (collections are just YAML properties)
+5. Charted Roots respects all changes (collections are just YAML properties)
 6. Generate trees with updated collection assignments
 
 ### 3.5 Tree Visualization Modes
@@ -1298,24 +1298,24 @@ interface TreeViewState {
 ```
 
 **Commands:**
-- `Canvas Roots: Open Tree View` - Opens Tree View for active person note
-- `Canvas Roots: Open Tree View for Collection` - Shows collection picker first
+- `Charted Roots: Open Tree View` - Opens Tree View for active person note
+- `Charted Roots: Open Tree View for Collection` - Shows collection picker first
 
 **Mode 2: Native Canvas View**
 
-Standard Obsidian Canvas with optional Canvas Roots enhancements:
+Standard Obsidian Canvas with optional Charted Roots enhancements:
 
 **Option A: Pure Canvas (Minimal Enhancement)**
 
 User works with standard `.canvas` files:
 - Open any `.canvas` file normally in Obsidian
 - All native Canvas features available
-- Canvas Roots adds commands to generate/re-layout trees
+- Charted Roots adds commands to generate/re-layout trees
 - No custom UI wrapper needed
 
 **Commands:**
-- `Canvas Roots: Generate Tree to Canvas` - Writes tree to active Canvas
-- `Canvas Roots: Re-Layout Canvas` - Recalculates positions for existing nodes
+- `Charted Roots: Generate Tree to Canvas` - Writes tree to active Canvas
+- `Charted Roots: Re-Layout Canvas` - Recalculates positions for existing nodes
 
 **Option B: Enhanced Canvas View (Future)**
 
@@ -1323,7 +1323,7 @@ Custom leaf view that wraps native Canvas with dataset browser:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ Canvas Roots: Smith-Main-Tree.canvas                [⚙️] │
+│ Charted Roots: Smith-Main-Tree.canvas                [⚙️] │
 ├──────────────┬──────────────────────────────────────────┤
 │ Dataset      │  [Native Obsidian Canvas View]           │
 │ Browser      │  - Full Canvas editing capabilities      │
@@ -1347,7 +1347,7 @@ Custom leaf view that wraps native Canvas with dataset browser:
 - All native Canvas interactions
 - Standard Canvas file format
 - Compatible with other Canvas plugins
-- Canvas Roots only adds optional UI wrapper and commands
+- Charted Roots only adds optional UI wrapper and commands
 
 #### 3.5.3 Shared Layout Engine
 
@@ -1386,7 +1386,7 @@ canvasGenerator.writeToCanvas(layout);  // Write to .canvas JSON
 
 **Status:** ✅ **IMPLEMENTED** (2025-11-22)
 
-Canvas files generated by Canvas Roots include embedded metadata in the standard Obsidian Canvas `metadata.frontmatter` field. This enables intelligent re-layout with preserved settings.
+Canvas files generated by Charted Roots include embedded metadata in the standard Obsidian Canvas `metadata.frontmatter` field. This enables intelligent re-layout with preserved settings.
 
 **Implemented Format:**
 
@@ -1571,7 +1571,7 @@ export class TreeView extends ItemView {
 
 ### 3.6 Control Center Modal
 
-**Requirement:** Provide a centralized, Material Design-based modal interface for accessing all Canvas Roots features, settings, and operations.
+**Requirement:** Provide a centralized, Material Design-based modal interface for accessing all Charted Roots features, settings, and operations.
 
 #### 3.6.1 Overview
 
@@ -1582,7 +1582,7 @@ export class TreeView extends ItemView {
 - Professional, consistent user experience
 
 **Activation:**
-- **Command:** `Canvas Roots: Open Control Center`
+- **Command:** `Charted Roots: Open Control Center`
 - **Ribbon icon:** Optional persistent access
 - **Keyboard shortcut:** Configurable hotkey
 
@@ -1610,7 +1610,7 @@ class ControlCenterModal extends Modal {
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│ [X]  Canvas Roots Control Center    [Actions...]   │ ← Sticky Header
+│ [X]  Charted Roots Control Center    [Actions...]   │ ← Sticky Header
 ├──────────┬──────────────────────────────────────────┤
 │ Status   │  Tab Content Area                        │
 │ Actions  │  (Dynamic content based on active tab)   │
@@ -2144,7 +2144,7 @@ children: ["cr-id-345", "cr-id-678"]
 born: "1888-05-15"
 died: "1952-08-20"
 
-# Canvas Roots-specific properties (cr_ prefix)
+# Charted Roots-specific properties (cr_ prefix)
 cr_id: "abc-123-def-456"
 cr_living: true
 cr_root: true
@@ -2170,10 +2170,10 @@ cr_ref_num: "12.3"
    └─────────────────────────────────────┘
    ```
 
-2. **Canvas Roots Properties:**
+2. **Charted Roots Properties:**
    ```
    ┌─────────────────────────────────────┐
-   │ Canvas Roots-Specific Properties    │
+   │ Charted Roots-Specific Properties    │
    ├─────────────────────────────────────┤
    │ Unique ID:       [cr_id       ]     │
    │ Living Status:   [cr_living   ]     │
@@ -2236,7 +2236,7 @@ cr_ref_num: "12.3"
 - **Preset Configurations:**
   - GEDCOM Standard (default)
   - Gramps Style (`birth_date`, `death_date`)
-  - Legacy Canvas Roots (`cr_father`, `cr_mother`)
+  - Legacy Charted Roots (`cr_father`, `cr_mother`)
   - Custom user presets
 
 **Implementation Notes:**
@@ -2252,7 +2252,7 @@ export interface PropertyNameConfig {
   born: string;          // default: "born"
   died: string;          // default: "died"
 
-  // Canvas Roots properties
+  // Charted Roots properties
   crId: string;          // default: "cr_id"
   crLiving: string;      // default: "cr_living"
   crRoot: string;        // default: "cr_root"
@@ -2271,7 +2271,7 @@ export interface CanvasRootsSettings {
 1. **Existing Vault Migration:**
    - User has existing notes with custom property names
    - Configure Properties tab to match existing convention
-   - Or use migration tool to standardize to Canvas Roots defaults (`born`, `died`)
+   - Or use migration tool to standardize to Charted Roots defaults (`born`, `died`)
 
 2. **Localization:**
    - German user prefers `geboren` (born), `gestorben` (died)
@@ -2280,7 +2280,7 @@ export interface CanvasRootsSettings {
 
 3. **Multi-System Integration:**
    - User imports from Gramps (uses `birth_date`, `death_date`)
-   - Configure Canvas Roots to read Gramps property names
+   - Configure Charted Roots to read Gramps property names
    - Export to GEDCOM using standard mapping
 
 4. **Custom Namespacing:**
@@ -2521,7 +2521,7 @@ Based on Material Design 3 principles, using Obsidian's native color system:
 
 **Class Naming Convention:**
 
-- Prefix: `crc-` (Canvas Roots Control)
+- Prefix: `crc-` (Charted Roots Control)
 - BEM methodology: `crc-block__element--modifier`
 - Examples:
   - `.crc-modal-container`
@@ -2567,7 +2567,7 @@ this.addCommand({
 // Optional ribbon icon
 this.addRibbonIcon(
   'git-branch',
-  'Canvas Roots Control Center',
+  'Charted Roots Control Center',
   () => {
     new ControlCenterModal(this.app, this).open();
   }
@@ -2727,7 +2727,7 @@ The plugin reads and writes Obsidian's Canvas file format (`.canvas`):
 
 ### 4.4 Canvas CSS Variables and Theming
 
-**Overview:** Obsidian Canvas provides CSS variables for customizing canvas appearance. Canvas Roots leverages these for consistent visual styling.
+**Overview:** Obsidian Canvas provides CSS variables for customizing canvas appearance. Charted Roots leverages these for consistent visual styling.
 
 **Available Canvas CSS Variables:**
 
@@ -2743,7 +2743,7 @@ The plugin reads and writes Obsidian's Canvas file format (`.canvas`):
 | `--canvas-color-5` | Card/edge color 5 (Blue) | Spouse edges |
 | `--canvas-color-6` | Card/edge color 6 (Purple) | Female nodes |
 
-**Canvas Roots Color Usage (v1.8):**
+**Charted Roots Color Usage (v1.8):**
 
 ```typescript
 // Node colors (based on sex/gender field)
@@ -2763,10 +2763,10 @@ getEdgeColor(type: RelationType): string {
 
 **Future Enhancement - Custom Theme Support:**
 
-Canvas Roots could provide custom CSS snippets to override canvas colors specifically for family trees:
+Charted Roots could provide custom CSS snippets to override canvas colors specifically for family trees:
 
 ```css
-/* Custom Canvas Roots theme */
+/* Custom Charted Roots theme */
 .canvas-node[data-canvas-roots="true"] {
   /* Override canvas colors for family trees */
   --canvas-color-4: #4a9eff; /* Custom male color */
@@ -2801,7 +2801,7 @@ Canvas Roots could provide custom CSS snippets to override canvas colors specifi
 
 ### 5.1 Overview
 
-GEDCOM (Genealogical Data Communication) is the industry standard format for family tree data exchange. Canvas Roots supports import and export.
+GEDCOM (Genealogical Data Communication) is the industry standard format for family tree data exchange. Charted Roots supports import and export.
 
 ### 5.2 Import Modes
 
@@ -2835,7 +2835,7 @@ GEDCOM (Genealogical Data Communication) is the industry standard format for fam
 
 ### 5.3 Export (Round-Trip)
 
-**Command:** `Canvas Roots: Export to GEDCOM`
+**Command:** `Charted Roots: Export to GEDCOM`
 
 **Process:**
 1. Find all notes containing `cr_id`
@@ -2909,7 +2909,7 @@ cr_id: "abc-123-def-456"  # UUID v4 format recommended
 
 #### 5.5.2 Merge Command
 
-**Command:** `Canvas Roots: Merge External Collection`
+**Command:** `Charted Roots: Merge External Collection`
 
 **Workflow:**
 
@@ -3066,7 +3066,7 @@ When different `cr_id` values have suspiciously similar data:
 
 - Export to Family Tree Maker, keep `cr_id` in custom tag
 - Re-import after external edits, preserve identity
-- Merge external GEDCOM files that originated from Canvas Roots
+- Merge external GEDCOM files that originated from Charted Roots
 
 #### 5.5.5 Collaborative Research Workflow
 
@@ -3194,7 +3194,7 @@ merge_settings:
 
 **Migration from Other Tools:**
 - Export from Family Tree Maker
-- Import to Canvas Roots (assign UUIDs)
+- Import to Charted Roots (assign UUIDs)
 - Continue research in Obsidian
 - Later merge with data from GenoPro (also UUID-tagged)
 
@@ -3215,7 +3215,7 @@ The plugin must support optional obfuscation during export and canvas rendering:
 
 **Canvas Obfuscation:**
 - Temporary display mode for screenshots/presentations
-- Toggle via command: `Canvas Roots: Toggle Obfuscation Mode`
+- Toggle via command: `Charted Roots: Toggle Obfuscation Mode`
 - Visual indicator when obfuscation is active
 - Does not modify underlying notes
 
@@ -3378,7 +3378,7 @@ When obfuscation is applied, optionally generate a JSON mapping file for reversi
 ```
 
 **Canvas Obfuscation Command:**
-- Command palette: `Canvas Roots: Toggle Obfuscation Mode`
+- Command palette: `Charted Roots: Toggle Obfuscation Mode`
 - Settings to set default obfuscation level
 - Status bar indicator when active
 - Automatic de-obfuscation on plugin reload
@@ -4272,7 +4272,7 @@ Right-click actions for `.canvas` files (in addition to existing "Regenerate can
 - Reuse existing components: PersonPicker, Notice, Modal classes
 
 **UI Guidelines:**
-- Add separator before Canvas Roots menu items
+- Add separator before Charted Roots menu items
 - Use Lucide icons for visual clarity
 - Group related actions together
 - Follow Obsidian's context menu patterns
@@ -4287,7 +4287,7 @@ Right-click actions for `.canvas` files (in addition to existing "Regenerate can
 
 ## 7. World-Building and Organizational Features
 
-**Purpose:** Extend Canvas Roots beyond traditional genealogy to support fantasy world-building, historical dynasties, corporate succession tracking, and institutional evolution.
+**Purpose:** Extend Charted Roots beyond traditional genealogy to support fantasy world-building, historical dynasties, corporate succession tracking, and institutional evolution.
 
 ### 7.1 Visual Grouping and Styling Rules
 
@@ -5089,7 +5089,7 @@ Add a command that automatically generates separate canvas files for all disconn
 
 **User Interface:**
 ```
-Command Palette: "Canvas Roots: Generate all family trees"
+Command Palette: "Charted Roots: Generate all family trees"
 
 Workflow:
 1. Detect all family components
@@ -5267,7 +5267,7 @@ Add setting for default behavior when encountering multi-family vaults.
 
 **User Interface:**
 ```
-Settings > Canvas Roots > Multi-Family Handling
+Settings > Charted Roots > Multi-Family Handling
 
 When vault contains multiple family trees:
 ( ) Show notice only (current)
@@ -5319,13 +5319,13 @@ Start with §8.5 (action button) as the quickest high-impact improvement. This c
 | Term | Definition |
 |------|------------|
 | **Canvas** | Obsidian's infinite canvas feature for visual organization |
-| **Control Center** | Material Design modal interface providing centralized access to all Canvas Roots features |
+| **Control Center** | Material Design modal interface providing centralized access to all Charted Roots features |
 | **D3.js** | JavaScript library for data visualization and layout algorithms |
 | **GEDCOM** | Genealogical Data Communication - standard format for family tree data |
 | **Frontmatter** | YAML metadata block at the top of Markdown files |
 | **Dataview** | Popular Obsidian plugin for querying and displaying note metadata |
 | **Bidirectional Link** | Reciprocal relationship links between two notes |
-| **cr_id** | Canvas Roots unique identifier for each person |
+| **cr_id** | Charted Roots unique identifier for each person |
 
 ---
 

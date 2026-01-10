@@ -1157,7 +1157,7 @@ async function handleCanvasExport(
 	groupByPerson: boolean,
 	exportBtn: HTMLButtonElement
 ): Promise<void> {
-	const folder = plugin.settings.canvasesFolder || 'Canvas Roots';
+	const folder = plugin.settings.canvasesFolder || 'Charted Roots';
 	const safeTitle = title.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
 	const expectedPath = `${folder}/${safeTitle}.canvas`;
 	const existingFile = plugin.app.vault.getAbstractFileByPath(expectedPath);
@@ -1232,7 +1232,7 @@ async function handleExcalidrawExport(
 		fontSize: number;
 	}
 ): Promise<void> {
-	const folder = plugin.settings.canvasesFolder || 'Canvas Roots';
+	const folder = plugin.settings.canvasesFolder || 'Charted Roots';
 	const safeTitle = title.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
 	const expectedExcalidrawPath = `${folder}/${safeTitle}.excalidraw.md`;
 	const existingExcalidraw = plugin.app.vault.getAbstractFileByPath(expectedExcalidrawPath);
@@ -1332,7 +1332,7 @@ async function handleMarkdownExport(
 	groupValue: string,
 	exportBtn: HTMLButtonElement
 ): Promise<void> {
-	const folder = plugin.settings.timelinesFolder || plugin.settings.eventsFolder || 'Canvas Roots/Timelines';
+	const folder = plugin.settings.timelinesFolder || plugin.settings.eventsFolder || 'Charted Roots/Timelines';
 	const safeTitle = title.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
 	const expectedPath = `${folder}/${safeTitle}.md`;
 	const existingFile = plugin.app.vault.getAbstractFileByPath(expectedPath);

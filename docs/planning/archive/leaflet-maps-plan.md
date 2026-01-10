@@ -25,7 +25,7 @@ This document details the implementation plan for Phase 4 Geographic Features: i
 
 ## Overview
 
-Add interactive map visualization to Canvas Roots, enabling users to:
+Add interactive map visualization to Charted Roots, enabling users to:
 - View birth/death locations as pins on real-world maps
 - Visualize migration patterns with directional path lines
 - See geographic clustering with heat maps
@@ -202,7 +202,7 @@ Note: Some plugins may need manual type declarations in `src/maps/types/`.
 1. **Marker layer**
    - Birth markers (green) from birth_place coordinates
    - Death markers (red) from death_place coordinates
-   - Custom marker icons with Canvas Roots styling
+   - Custom marker icons with Charted Roots styling
 
 2. **Marker clustering**
    - Configure markercluster for each marker type

@@ -1,5 +1,5 @@
 /**
- * Obsidian Bases template for managing Canvas Roots source notes
+ * Obsidian Bases template for managing Charted Roots source notes
  */
 export const SOURCES_BASE_TEMPLATE = `visibleProperties:
   - note.name
