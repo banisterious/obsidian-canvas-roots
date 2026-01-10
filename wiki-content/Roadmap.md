@@ -9,6 +9,7 @@ This document outlines planned features for Charted Roots. For completed feature
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
   - [GPS Research Workflow Integration](#gps-research-workflow-integration) 📋 Medium
+  - [Partial Date Support](#partial-date-support) 📋 Medium
   - [DNA Match Tracking](#dna-match-tracking) 💡 Low
   - [Per-Map Marker Assignment](#per-map-marker-assignment) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
@@ -116,6 +117,53 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 **Documentation:**
 - See [Research Workflow Integration Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/research-workflow-integration.md) for detailed specifications
 - Community contributors: @ANYroots (IRN structure, GPS methodology, templates), @wilbry (lightweight approach, unified design)
+
+---
+
+### Partial Date Support
+
+**Priority:** 📋 Medium — Preserves data fidelity for GEDCOM round-trip
+
+**Status:** Planning
+
+**GitHub Issue:** [#172](https://github.com/banisterious/obsidian-charted-roots/issues/172)
+
+**Summary:** Preserve date precision instead of normalizing partial dates to full ISO format. Currently `1850` becomes `1850-01-01`, adding false precision that misrepresents the source data.
+
+**The Problem:** Genealogists frequently have incomplete date information. A year-only birth date (`1850`) is different from a known January 1st birth (`1850-01-01`), but the plugin currently treats them identically. This affects:
+- GEDCOM import (converts partial dates to full ISO)
+- UI modals (re-normalizes dates on save)
+- Export round-trip (loses original precision)
+
+**GEDCOM Date Formats to Support:**
+
+| Format | Example | Current | Desired |
+|--------|---------|---------|---------|
+| Year only | `1850` | `1850-01-01` | `1850` |
+| Month + year | `MAR 1855` | `1855-03-01` | `1855-03` |
+| Approximate | `ABT 1878` | `1878-01-01` | `ABT 1878` |
+| Before/After | `BEF 1950` | `1950-01-01` | `BEF 1950` |
+| Range | `BET 1882 AND 1885` | varies | `BET 1882 AND 1885` |
+
+**The Solution:** Store dates as entered/imported without fabricating precision:
+- Modify `gedcomDateToISO()` to preserve partial dates and qualifiers
+- Update UI modals to not normalize dates on save
+- DateService already handles partial dates downstream (age calculation, sorting)
+
+**Phased Approach:**
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| 1 | GEDCOM import preserves partial dates | Planning |
+| 2 | UI modals preserve partial dates on save | Planning |
+| 3 | Display formatting and export round-trip | Future |
+
+**User Impact:** Non-breaking change
+- Existing dates remain as stored
+- New imports/edits preserve precision
+- Manual frontmatter editing already works (if you avoid UI re-edit)
+
+See [Partial Date Support Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/partial-date-support.md) for detailed specifications.
 
 ---
 
