@@ -162,6 +162,7 @@ During import, a modal shows:
 - `FAMC`/`FAMS` - Family relationships
 - `SEX` - Gender
 - `_UUID` - Preserved as `cr_id`
+- Xref IDs (e.g., `@I0001@`) → `external_id` for round-trip export support
 
 *Events (create event notes):*
 - **Core:** `BIRT`, `DEAT`, `MARR`, `DIV`
@@ -261,6 +262,7 @@ Export your family data back to GEDCOM format for sharing with other genealogy s
 - `cr_id` values preserved as `_UUID` tags
 - `group_name` values preserved as collection codes
 - `research_level` preserved as `_RESEARCH_LEVEL` custom tag (0-6)
+- Original GEDCOM xref IDs (if imported from GEDCOM) for round-trip support
 
 ### Privacy Protection for Export
 

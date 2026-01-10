@@ -275,6 +275,8 @@ spouses:
 | `collection` | `string` | User-defined grouping/collection name | `"Smith Family"` |
 | `private` | `boolean` | Marks note as containing private data (set automatically during Gramps import if any attached note has privacy flag) | `true` |
 | `private_fields` | `string[]` | List of field names to treat as private. These fields will be excluded from exports unless explicitly included with user confirmation. | `["previous_names", "medical_notes"]` |
+| `external_id` | `string` | Original ID from the import source (e.g., GEDCOM xref, Gramps handle). Preserved during re-export for round-trip support. | `"I0001"`, `"abc123def456"` |
+| `external_id_source` | `string` | Source of the external ID. Set automatically during import. | `"gedcom"`, `"gramps"` |
 
 #### Private Fields
 
