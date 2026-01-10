@@ -12,6 +12,7 @@ import type {
 	VisualTreeNode,
 	VisualTreeConnection
 } from '../types/visual-tree-types';
+import { formatDisplayDate } from '../../dates';
 
 /**
  * Color scheme matching family-chart
@@ -424,7 +425,7 @@ export class VisualTreeSvgRenderer {
 		if (nodeContent === 'name-dates' || nodeContent === 'name-dates-places') {
 			// Format dates more compactly
 			if (node.person.birthDate) {
-				lines.push(node.person.birthDate);
+				lines.push(formatDisplayDate(node.person.birthDate));
 			}
 		}
 

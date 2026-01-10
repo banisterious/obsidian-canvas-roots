@@ -10,6 +10,7 @@ import { TimelineLayoutEngine } from '../core/timeline-layout';
 import { HourglassLayoutEngine } from '../core/hourglass-layout';
 import type { ColorScheme } from '../settings';
 import { jsPDF } from 'jspdf';
+import { formatDisplayDate } from '../dates';
 
 /**
  * Renders interactive SVG preview of family trees
@@ -380,9 +381,9 @@ export class TreePreviewRenderer {
 		if (person.birthDate || person.deathDate) {
 			this.tooltipElement.createEl('br');
 			let dateText = '';
-			if (person.birthDate) dateText += `b. ${person.birthDate}`;
+			if (person.birthDate) dateText += `b. ${formatDisplayDate(person.birthDate)}`;
 			if (person.birthDate && person.deathDate) dateText += ' | ';
-			if (person.deathDate) dateText += `d. ${person.deathDate}`;
+			if (person.deathDate) dateText += `d. ${formatDisplayDate(person.deathDate)}`;
 			this.tooltipElement.appendText(dateText);
 		}
 

@@ -278,38 +278,80 @@ export class DynamicContentService {
 
 	/**
 	 * Format a date for display
-	 * Converts ISO dates to a more readable format
+	 * Converts ISO dates and GEDCOM qualifiers to a more readable format
 	 */
 	formatDate(dateStr: string | undefined): string {
 		if (!dateStr) return '';
 
-		// If already in GEDCOM-like format, return as-is
-		if (dateStr.match(/\d{1,2}\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+\d{4}/i)) {
-			return dateStr;
+		const trimmed = dateStr.trim();
+		const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+			'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+		// Handle BET X AND Y ranges → "X–Y"
+		const betMatch = trimmed.match(/^BET\s+(\d{4})\s+AND\s+(\d{4})$/i);
+		if (betMatch) {
+			return `${betMatch[1]}–${betMatch[2]}`;
 		}
 
-		// Convert ISO to readable format
-		const isoMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+		// Handle qualifiers with year only (ABT 1878 → "c. 1878")
+		const qualifierYearMatch = trimmed.match(/^(ABT|BEF|AFT|CAL|EST)\s+(\d{4})$/i);
+		if (qualifierYearMatch) {
+			const qualifier = qualifierYearMatch[1].toUpperCase();
+			const year = qualifierYearMatch[2];
+			switch (qualifier) {
+				case 'ABT':
+				case 'CAL':
+				case 'EST':
+					return `c. ${year}`;
+				case 'BEF':
+					return `before ${year}`;
+				case 'AFT':
+					return `after ${year}`;
+			}
+		}
+
+		// Handle qualifiers with ISO partial date (ABT 1855-03 → "c. Mar 1855")
+		const qualifierPartialMatch = trimmed.match(/^(ABT|BEF|AFT|CAL|EST)\s+(\d{4})-(\d{2})$/i);
+		if (qualifierPartialMatch) {
+			const qualifier = qualifierPartialMatch[1].toUpperCase();
+			const year = qualifierPartialMatch[2];
+			const monthIdx = parseInt(qualifierPartialMatch[3]) - 1;
+			const formattedDate = `${months[monthIdx]} ${year}`;
+			switch (qualifier) {
+				case 'ABT':
+				case 'CAL':
+				case 'EST':
+					return `c. ${formattedDate}`;
+				case 'BEF':
+					return `before ${formattedDate}`;
+				case 'AFT':
+					return `after ${formattedDate}`;
+			}
+		}
+
+		// If already in GEDCOM-like format, return as-is
+		if (trimmed.match(/\d{1,2}\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+\d{4}/i)) {
+			return trimmed;
+		}
+
+		// Convert ISO to readable format (YYYY-MM-DD → "D Mon YYYY")
+		const isoMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})/);
 		if (isoMatch) {
-			const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-				'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 			const year = isoMatch[1];
 			const monthIdx = parseInt(isoMatch[2]) - 1;
 			const day = parseInt(isoMatch[3]);
 			return `${day} ${months[monthIdx]} ${year}`;
 		}
 
-		// Year-month only
-		const yearMonthMatch = dateStr.match(/^(\d{4})-(\d{2})$/);
+		// Year-month only (YYYY-MM → "Mon YYYY")
+		const yearMonthMatch = trimmed.match(/^(\d{4})-(\d{2})$/);
 		if (yearMonthMatch) {
-			const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-				'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 			const year = yearMonthMatch[1];
 			const monthIdx = parseInt(yearMonthMatch[2]) - 1;
 			return `${months[monthIdx]} ${year}`;
 		}
 
-		return dateStr;
+		return trimmed;
 	}
 
 	/**

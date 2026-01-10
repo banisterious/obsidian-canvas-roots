@@ -5,6 +5,7 @@ import { FolderFilterService } from '../core/folder-filter';
 import { isPersonNote } from '../utils/note-type-detection';
 import { QuickCreatePersonModal, RelationshipContext } from './quick-create-person-modal';
 import type CanvasRootsPlugin from '../../main';
+import { formatDisplayDate } from '../dates';
 
 /**
  * Place reference info for person detail view
@@ -730,13 +731,13 @@ export class PersonPickerModal extends Modal {
 			const dateIcon = createLucideIcon('calendar', 12);
 			dateBadge.appendChild(dateIcon);
 
-			// Format: "1888-1952" or "b. 1888" or "d. 1952"
+			// Format: "1888–1952" or "b. 1888" or "d. 1952"
 			if (person.birthDate && person.deathDate) {
-				dateBadge.appendText(`${person.birthDate} – ${person.deathDate}`);
+				dateBadge.appendText(`${formatDisplayDate(person.birthDate)} – ${formatDisplayDate(person.deathDate)}`);
 			} else if (person.birthDate) {
-				dateBadge.appendText(`b. ${person.birthDate}`);
+				dateBadge.appendText(`b. ${formatDisplayDate(person.birthDate)}`);
 			} else if (person.deathDate) {
-				dateBadge.appendText(`d. ${person.deathDate}`);
+				dateBadge.appendText(`d. ${formatDisplayDate(person.deathDate)}`);
 			}
 		} else {
 			// Fallback: show cr_id only when no dates available

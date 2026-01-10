@@ -10,6 +10,7 @@ import type { CanvasRootsSettings } from '../../settings';
 import { createLucideIcon } from '../../ui/lucide-icons';
 import { EventService } from '../services/event-service';
 import { EventNote, getEventType, DATE_PRECISION_LABELS } from '../types/event-types';
+import { formatDisplayDate } from '../../dates';
 
 /**
  * Extract unique calendar/date system values from events
@@ -58,15 +59,17 @@ function formatDateForDisplay(event: EventNote): string {
 		return 'Date unknown';
 	}
 
-	let dateStr = event.date;
+	let dateStr = formatDisplayDate(event.date);
 
 	// Add end date for ranges
 	if (event.dateEnd) {
-		dateStr += ` – ${event.dateEnd}`;
+		dateStr += ` – ${formatDisplayDate(event.dateEnd)}`;
 	}
 
-	// Add precision indicator if not exact
-	if (event.datePrecision && event.datePrecision !== 'exact') {
+	// Add precision indicator if not exact and not already shown in the formatted date
+	// Skip if the date format already conveys the precision (e.g., "c. 1878" for approximate)
+	const hasQualifier = /^(c\.|before|after|\d{4}–\d{4})/.test(dateStr);
+	if (!hasQualifier && event.datePrecision && event.datePrecision !== 'exact') {
 		const precisionLabel = DATE_PRECISION_LABELS[event.datePrecision];
 		if (precisionLabel && precisionLabel !== 'Exact date') {
 			dateStr += ` (${precisionLabel.toLowerCase()})`;

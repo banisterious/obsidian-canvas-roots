@@ -36,3 +36,6 @@ export { renderEventsTab } from './ui/events-tab';
 // Services
 export { DateService, createDateService } from './services/date-service';
 export type { DateServiceSettings, ParsedDate } from './services/date-service';
+
+// Utilities
+export { formatDisplayDate } from './utils/date-display';

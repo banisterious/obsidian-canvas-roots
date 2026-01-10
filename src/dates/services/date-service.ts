@@ -187,6 +187,95 @@ export class DateService {
 	}
 
 	/**
+	 * Format a date for user-friendly display, prettifying GEDCOM qualifiers
+	 *
+	 * Converts:
+	 * - ABT 1878 → "c. 1878"
+	 * - BEF 1950 → "before 1950"
+	 * - AFT 1880 → "after 1880"
+	 * - CAL 1945 → "c. 1945"
+	 * - EST 1880 → "c. 1880"
+	 * - BET 1882 AND 1885 → "1882–1885"
+	 * - Partial dates (1855-03) → "Mar 1855"
+	 */
+	formatDisplayDate(dateStr: string | undefined, universe?: string): string {
+		if (!dateStr) {
+			return '';
+		}
+
+		const trimmed = dateStr.trim();
+
+		// Try fictional date formatting first
+		const parsed = this.parseDate(trimmed, universe);
+		if (parsed?.type === 'fictional' && parsed.fictional && this.fictionalParser) {
+			return this.fictionalParser.format(parsed.fictional);
+		}
+
+		// Handle BET X AND Y ranges
+		const betMatch = trimmed.match(/^BET\s+(\d{4})\s+AND\s+(\d{4})$/i);
+		if (betMatch) {
+			return `${betMatch[1]}–${betMatch[2]}`;
+		}
+
+		// Handle qualifiers with year only
+		const qualifierYearMatch = trimmed.match(/^(ABT|BEF|AFT|CAL|EST)\s+(\d{4})$/i);
+		if (qualifierYearMatch) {
+			const qualifier = qualifierYearMatch[1].toUpperCase();
+			const year = qualifierYearMatch[2];
+			switch (qualifier) {
+				case 'ABT':
+				case 'CAL':
+				case 'EST':
+					return `c. ${year}`;
+				case 'BEF':
+					return `before ${year}`;
+				case 'AFT':
+					return `after ${year}`;
+			}
+		}
+
+		// Handle qualifiers with ISO partial date (e.g., ABT 1855-03)
+		const qualifierPartialMatch = trimmed.match(/^(ABT|BEF|AFT|CAL|EST)\s+(\d{4})-(\d{2})$/i);
+		if (qualifierPartialMatch) {
+			const qualifier = qualifierPartialMatch[1].toUpperCase();
+			const year = qualifierPartialMatch[2];
+			const month = this.monthNumberToName(qualifierPartialMatch[3]);
+			const formattedDate = `${month} ${year}`;
+			switch (qualifier) {
+				case 'ABT':
+				case 'CAL':
+				case 'EST':
+					return `c. ${formattedDate}`;
+				case 'BEF':
+					return `before ${formattedDate}`;
+				case 'AFT':
+					return `after ${formattedDate}`;
+			}
+		}
+
+		// Handle ISO partial dates (YYYY-MM) without qualifiers
+		const partialMatch = trimmed.match(/^(\d{4})-(\d{2})$/);
+		if (partialMatch) {
+			const year = partialMatch[1];
+			const month = this.monthNumberToName(partialMatch[2]);
+			return `${month} ${year}`;
+		}
+
+		// Return as-is for full ISO dates (YYYY-MM-DD) and year-only
+		return trimmed;
+	}
+
+	/**
+	 * Convert month number to abbreviated month name
+	 */
+	private monthNumberToName(monthNum: string): string {
+		const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+		                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		const index = parseInt(monthNum, 10) - 1;
+		return months[index] ?? monthNum;
+	}
+
+	/**
 	 * Check if a date string looks like a fictional date
 	 */
 	looksLikeFictionalDate(dateStr: string): boolean {

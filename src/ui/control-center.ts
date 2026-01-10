@@ -35,7 +35,7 @@ import { CreateSchemaModal } from './create-schema-modal';
 import { SchemaService, ValidationService } from '../schemas';
 import type { SchemaNote, ValidationResult, ValidationSummary } from '../schemas';
 import { renderRelationshipsTab } from '../relationships';
-import { renderEventsTab } from '../dates';
+import { renderEventsTab, formatDisplayDate } from '../dates';
 import { renderOrganizationsTab } from '../organizations';
 import { renderStatisticsTab } from '../statistics';
 import { renderPersonTimeline, createTimelineSummary } from '../events/ui/person-timeline';
@@ -3110,13 +3110,13 @@ export class ControlCenterModal extends Modal {
 
 		// Birth date cell
 		row.createEl('td', {
-			text: person.birthDate || '—',
+			text: person.birthDate ? formatDisplayDate(person.birthDate) : '—',
 			cls: 'crc-person-table__td crc-person-table__td--date'
 		});
 
 		// Death date cell
 		row.createEl('td', {
-			text: person.deathDate || '—',
+			text: person.deathDate ? formatDisplayDate(person.deathDate) : '—',
 			cls: 'crc-person-table__td crc-person-table__td--date'
 		});
 
