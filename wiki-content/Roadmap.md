@@ -8,7 +8,6 @@ This document outlines planned features for Charted Roots. For completed feature
 
 - [Completed Features](#completed-features)
 - [Planned Features](#planned-features)
-  - [Plugin Rename: Charted Roots](#plugin-rename-charted-roots) 📋 Medium
   - [GPS Research Workflow Integration](#gps-research-workflow-integration) 📋 Medium
   - [DNA Match Tracking](#dna-match-tracking) 💡 Low
   - [Per-Map Marker Assignment](#per-map-marker-assignment) 💡 Low
@@ -34,6 +33,7 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.19.0 | [Plugin Rename](Release-History#plugin-rename-canvas-roots--charted-roots-v0190) | Renamed from Canvas Roots to Charted Roots with automatic vault migration |
 | v0.18.32 | [Automatic Wikilink Resolution](Release-History#automatic-wikilink-resolution-v01832) | Resolve `[[Person Name]]` wikilinks to cr_id values in relationship fields |
 | v0.18.28 | [MyHeritage GEDCOM Import Compatibility](Release-History#myheritage-gedcom-import-compatibility-v01828) | Auto-detect and fix MyHeritage GEDCOM exports (BOM, double-encoded entities, `<br>` tags) |
 | v0.18.27 | [Optional Person Names](Release-History#optional-person-names-v01827) | Create placeholder persons without names; fill in later as research progresses |
@@ -59,45 +59,6 @@ Features are prioritized to complete the data lifecycle: **import → enhance �
 | ⚡ High | Core workflow | Completes essential data portability |
 | 📋 Medium | User value | Highly requested sharing/output features |
 | 💡 Low | Specialized | Advanced use cases, niche workflows |
-
----
-
-### Plugin Rename: Charted Roots
-
-**Priority:** 📋 Medium — Improves discoverability and clarifies plugin scope
-
-**Status:** Planning
-
-**GitHub Issue:** [#141](https://github.com/banisterious/obsidian-charted-roots/issues/141)
-
-**Summary:** Rename the plugin from "Charted Roots" to "Charted Roots" based on community feedback. The current name suggests the plugin only works with Obsidian Canvas, limiting perceived scope for traditional family tree and genealogical chart users.
-
-**The Problem:** Community feedback indicates "Canvas" creates confusion about whether the plugin supports non-canvas visualizations (family charts, trees, graphs). Users searching for genealogy plugins may not discover the plugin due to the canvas-centric name.
-
-**The Solution:** "Charted Roots" because:
-- **Broader scope:** Encompasses charts, trees, graphs, networks, and canvas
-- **Preserves identity:** Keeps "Roots" and 'C' initial, maintaining `cr-` prefixes
-- **Better searchability:** "Charted" relates to genealogical charts and family trees
-- **No conflicts:** No existing tools use this name
-
-**Implementation:**
-
-| Component | Change Required |
-|-----------|----------------|
-| Plugin metadata | Update `manifest.json`, `package.json` |
-| Documentation | Update README, wiki, developer docs |
-| Repository | Rename GitHub repo (auto-redirects old URLs) |
-| Community | Update Obsidian Community Plugins listing |
-
-**User Impact:** Non-breaking change
-- Plugin name updates after normal update
-- All data remains fully compatible
-- No vault modifications required
-- CSS classes (`cr-*`) and properties (`cr_*`) preserved
-
-**Documentation:**
-- See [Plugin Rename Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/plugin-rename.md) for detailed specifications
-- Community discussion: [#58](https://github.com/banisterious/obsidian-charted-roots/discussions/58)
 
 ---
 

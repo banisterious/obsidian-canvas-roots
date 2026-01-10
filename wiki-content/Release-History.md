@@ -8,6 +8,8 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 
 ## Table of Contents
 
+- [v0.19.x](#v019x)
+  - [Plugin Rename: Canvas Roots → Charted Roots](#plugin-rename-canvas-roots--charted-roots-v0190)
 - [v0.18.x](#v018x)
   - [Automatic Wikilink Resolution](#automatic-wikilink-resolution-v01832)
   - [MyHeritage GEDCOM Import Compatibility](#myheritage-gedcom-import-compatibility-v01828)
@@ -87,6 +89,53 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
   - [Maps Tab](#maps-tab-v062)
   - [Geographic Features](#geographic-features-v060)
   - [Import/Export Enhancements](#importexport-enhancements-v060)
+
+---
+
+## v0.19.x
+
+### Plugin Rename: Canvas Roots → Charted Roots (v0.19.0)
+
+Renamed the plugin from "Canvas Roots" to "Charted Roots" to better reflect the plugin's broader genealogical visualization capabilities beyond Obsidian Canvas.
+
+**GitHub Issue:** [#141](https://github.com/banisterious/obsidian-charted-roots/issues/141)
+
+**Features Implemented:**
+
+| Feature | Description |
+|---------|-------------|
+| Plugin rename | All code, documentation, and UI updated from "Canvas Roots" to "Charted Roots" |
+| Repository rename | GitHub repository renamed from `obsidian-canvas-roots` to `obsidian-charted-roots` |
+| Automatic vault migration | One-time migration of canvas metadata and code blocks on first load |
+| Backward compatibility | Dual-registration for protocol handlers and commands; old identifiers continue working |
+
+**Migration Service:**
+
+The plugin includes a one-time migration service that automatically updates:
+- Canvas metadata: `plugin: 'canvas-roots'` → `plugin: 'charted-roots'`
+- Code blocks: `canvas-roots-timeline`, `canvas-roots-relationships`, `canvas-roots-media` → `charted-roots-*`
+
+**What Stays the Same:**
+- All vault data and notes
+- CSS class prefixes (`cr-*`)
+- Property prefixes (`cr_*`)
+- All plugin functionality and settings
+
+**For BRAT Users:**
+
+If you installed via BRAT using the old repository name, update your configuration:
+1. Settings → BRAT → Beta Plugin List
+2. Remove `banisterious/obsidian-canvas-roots`
+3. Add `banisterious/obsidian-charted-roots`
+
+**Files Added:**
+
+- `src/migration/plugin-rename-migration-service.ts` — One-time vault migration service
+
+**Documentation:**
+
+- [Plugin Rename Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/plugin-rename.md)
+- Community discussion: [#58](https://github.com/banisterious/obsidian-charted-roots/discussions/58)
 
 ---
 

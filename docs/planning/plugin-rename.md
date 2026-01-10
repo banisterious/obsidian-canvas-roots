@@ -1,10 +1,11 @@
-# Plugin Rename: Charted Roots → Charted Roots
+# Plugin Rename: Canvas Roots → Charted Roots
 
-Planning document for renaming the plugin from "Charted Roots" to "Charted Roots".
+Planning document for renaming the plugin from "Canvas Roots" to "Charted Roots".
 
-- **Status:** Planning
+- **Status:** ✅ Complete (v0.19.0)
 - **GitHub Issue:** [#141](https://github.com/banisterious/obsidian-charted-roots/issues/141)
 - **Created:** 2026-01-05
+- **Completed:** 2026-01-09
 - **Community Discussion:** [#58](https://github.com/banisterious/obsidian-charted-roots/discussions/58)
 
 ---
