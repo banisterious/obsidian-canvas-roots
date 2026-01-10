@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **User-friendly date display formatting** ([#172](https://github.com/banisterious/obsidian-charted-roots/issues/172)): Qualified dates are now prettified throughout the UI. `ABT 1878` displays as "c. 1878", `BEF 1950` as "before 1950", `AFT 1880` as "after 1880", and `BET 1882 AND 1885` as "1882–1885". ISO partial dates like `1855-03` display as "Mar 1855". This formatting applies to person tables, person picker, timelines, tree previews, and visual tree exports.
 
+- **Export round-trip for partial dates** ([#172](https://github.com/banisterious/obsidian-charted-roots/issues/172)): GEDCOM, Gramps, and GedcomX exporters now correctly handle partial dates and qualifiers. Dates like `ABT 1878` or `BET 1882 AND 1885` export in each format's expected structure, ensuring data round-trips cleanly without losing precision.
+
 ---
 
 ## [0.19.1] - 2026-01-10
