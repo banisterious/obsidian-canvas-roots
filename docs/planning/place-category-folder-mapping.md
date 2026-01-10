@@ -55,7 +55,7 @@ Places/
 
 **Settings:**
 ```typescript
-interface CanvasRootsSettings {
+interface ChartedRootsSettings {
   // Existing
   placesFolder: string;  // e.g., "Charted Roots/Places"
 
@@ -87,7 +87,7 @@ interface PlaceCategoryFolderRule {
   folder: string;  // Relative to placesFolder
 }
 
-interface CanvasRootsSettings {
+interface ChartedRootsSettings {
   placeCategoryFolderRules: PlaceCategoryFolderRule[];
 }
 ```
@@ -120,7 +120,7 @@ interface CanvasRootsSettings {
 
 **Settings:**
 ```typescript
-interface CanvasRootsSettings {
+interface ChartedRootsSettings {
   // Enable/disable automatic category subfolders
   useCategorySubfolders: boolean;  // Default: true
 
@@ -147,7 +147,7 @@ Best balance of convenience and flexibility.
 
 ```typescript
 // src/settings.ts
-export interface CanvasRootsSettings {
+export interface ChartedRootsSettings {
   // ... existing settings
 
   // Category → Folder mapping
@@ -173,7 +173,7 @@ export interface PlaceCategoryFolderRule {
  * @returns Full folder path (e.g., "Charted Roots/Places/Historical")
  */
 export function getPlaceFolderForCategory(
-  settings: CanvasRootsSettings,
+  settings: ChartedRootsSettings,
   category: PlaceCategory
 ): string {
   const baseFolder = settings.placesFolder || 'Charted Roots/Places';
@@ -313,34 +313,141 @@ Update the "Place Category Rules" section:
 
 ## Testing Scenarios
 
+### Create Place Modal
 1. **New place with category**: Create place with `historical` category → stored in `Places/Historical/`
 2. **Default category**: Create place with default `real` category → stored in `Places/` root
 3. **Custom rule**: Configure `fictional` → `Fantasy/Places`, create fictional place → stored correctly
 4. **Subfolder creation**: Create place in non-existent category folder → folder created automatically
 5. **Feature disabled**: Disable `useCategorySubfolders` → all places go to base folder
-6. **Category change**: Change category in modal → directory field updates to show new location
-7. **Upgrade migration**: Existing vault upgrades → feature disabled by default, no files moved
+6. **Category change in create modal**: Change category → directory field updates to show new location
 
-## Open Questions
+### Edit Place Modal
+7. **Category change with move**: Edit place, change category, click Move → file moves to new folder
+8. **Category change without move**: Edit place, change category, click Keep Here → file stays, category updates
+9. **Wikilink preservation**: After move, verify wikilinks still resolve correctly
+
+### Import Workflows
+10. **GEDCOM import**: Import places → all go to base folder regardless of future category
+11. **Post-import organization**: Run "Organize places by category" → places move to category folders
+12. **Data Quality check**: After import, DQ shows "Places not in category folders" with count
+
+### Migration
+13. **New install**: Fresh vault → `useCategorySubfolders: true` by default
+14. **Upgrade with data**: Existing vault with person notes → `useCategorySubfolders: false` by default
+15. **Upgrade without data**: Vault with plugin but no data → treated as new install
+
+### Edge Cases
+16. **Parent in different folder**: Create fictional child of real parent → child goes to Fictional/ folder
+17. **Manual file move**: User moves place file manually → category unchanged, DQ flags mismatch
+18. **Missing defaultPlaceCategory**: Settings missing default → falls back to 'real'
+
+## Open Questions (Resolved)
 
 1. **Should we provide bulk migration tool?**
-   - Add command: "Organize places by category" to move existing places
+   - **Decision:** Yes. Add command "Organize places by category" to move existing places
    - Include in Data Quality report with "Fix" button
 
 2. **What about parent hierarchy?**
-   - If a place has a parent in different category folder, where should it go?
-   - Proposal: Parent's folder takes precedence over category
+   - **Decision:** Category folder takes precedence over parent location
+   - A fictional place should go to `Places/Fictional/` even if its parent is in a different folder
+   - Document this clearly in wiki
 
 3. **Should we block cross-category parent-child relationships?**
-   - Probably not - categories are metadata, not strict hierarchy rules
-   - But maybe warn in Data Quality report?
+   - **Decision:** No - categories are metadata, not strict hierarchy rules
+   - Warn in Data Quality report if parent/child have mismatched categories
+
+## Additional Considerations
+
+### Import Handling (GEDCOM/Gramps)
+
+**Decision:** Imports should NOT respect category subfolders by default.
+
+**Rationale:**
+- Imports create many places at once
+- Automatic category detection from folder rules wouldn't work (chicken-and-egg problem)
+- Changing import behavior mid-stream could confuse users
+
+**Approach:**
+- Import all places to base folder (current behavior preserved)
+- Add a Data Quality check: "Places not in category-appropriate folders"
+- Provide bulk "Organize places by category" command for post-import cleanup
+- Document this workflow in Import-Export wiki
+
+### Category Change Behavior (Edit Place Modal)
+
+**Decision:** Don't auto-move files when category changes. Instead, offer a choice.
+
+**Behavior:**
+- When user changes category in Edit Place modal, show a notice:
+  - "Category changed to Historical. Move to Places/Historical/?"
+  - Buttons: `[Move]` `[Keep Here]`
+- For Create Place modal: always use category-based folder (no prompt needed)
+
+**Rationale:**
+- Auto-moving is too surprising and may break wikilinks
+- User should be in control of file organization
+- Create vs Edit have different expectations
+
+### Manual File Moves
+
+**Decision:** Don't auto-update category when user manually moves files.
+
+**Behavior:**
+- If user moves a place file to a different folder, category stays unchanged
+- Folder → Category rules (if configured) only apply at creation time
+- Data Quality can flag "Category doesn't match folder" as informational
+
+**Rationale:**
+- Users may have valid reasons for custom organization
+- Automatic changes to frontmatter could be disruptive
+- Existing folder → category rules already handle this if configured
+
+### Migration Detection (New vs Upgrade)
+
+**Decision:** Use heuristics to detect existing vault.
+
+**Detection logic:**
+```typescript
+function isExistingVault(app: App, settings: ChartedRootsSettings): boolean {
+  // Check for plugin data.json (settings already saved)
+  if (settings.peopleFolder !== DEFAULT_SETTINGS.peopleFolder) {
+    return true;  // User has customized settings
+  }
+
+  // Check for any existing person notes with cr_id
+  const files = app.vault.getMarkdownFiles();
+  for (const file of files) {
+    const cache = app.metadataCache.getFileCache(file);
+    if (cache?.frontmatter?.cr_id) {
+      return true;  // Found existing data
+    }
+  }
+
+  return false;  // New install
+}
+```
+
+**Defaults:**
+- New install: `useCategorySubfolders: true`
+- Existing vault: `useCategorySubfolders: false`
+
+### Default Category Fallback
+
+**Decision:** Fall back to `'real'` if `defaultPlaceCategory` is not set.
+
+```typescript
+const defaultCategory = settings.defaultPlaceCategory || 'real';
+```
 
 ## Next Steps
 
 1. ✅ Create planning document (this file)
-2. Get user feedback on proposal
-3. Implement Option C (Hybrid approach)
-4. Add settings UI for configuration
-5. Update documentation
-6. Add bulk migration command (optional)
-7. Test with existing vaults
+2. ✅ Resolve open questions and edge cases
+3. ✅ Get user feedback on proposal
+4. Implement Option C (Hybrid approach)
+5. Add settings UI for configuration
+6. Update Edit Place modal with move prompt
+7. Add Data Quality check for misplaced places
+8. Add bulk migration command
+9. Update documentation (Geographic-Features, Import-Export)
+10. Test with existing vaults
