@@ -56,7 +56,10 @@ export const CANONICAL_PERSON_PROPERTIES = [
 	'image',
 	'sources',
 	'sourced_facts',
-	'relationships'
+	'relationships',
+	// External IDs (for import round-trip)
+	'external_id',
+	'external_id_source'
 ] as const;
 
 export type CanonicalPersonProperty = typeof CANONICAL_PERSON_PROPERTIES[number];
@@ -206,6 +209,8 @@ export const CANONICAL_PROPERTY_LABELS: Record<string, string> = {
 	image: 'Image',
 	sourced_facts: 'Sourced facts',
 	relationships: 'Relationships',
+	external_id: 'External ID',
+	external_id_source: 'External ID source',
 	// Event properties
 	cr_type: 'CR type',
 	title: 'Title',
@@ -537,6 +542,21 @@ export const PERSON_PROPERTY_METADATA: PropertyMetadata[] = [
 		description: 'Custom relationship definitions',
 		category: 'person',
 		commonAliases: ['custom_relationships', 'relations']
+	},
+	// External IDs (for import round-trip)
+	{
+		canonical: 'external_id',
+		label: 'External ID',
+		description: 'Original ID from imported data source (e.g., GEDCOM xref, Gramps handle)',
+		category: 'person',
+		commonAliases: ['import_id', 'source_id', 'original_id']
+	},
+	{
+		canonical: 'external_id_source',
+		label: 'External ID source',
+		description: 'Source of the external ID (e.g., "gedcom", "gramps", "familysearch")',
+		category: 'person',
+		commonAliases: ['id_source', 'import_source']
 	}
 ];
 
