@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Large import mode** ([#180](https://github.com/banisterious/obsidian-charted-roots/issues/180)): New toggle in import wizard (Step 3 → Performance) that suspends relationship syncing during import to prevent file system timeouts on large imports (500+ people). Shows notices when activated and when import completes.
+
+### Fixed
+
+- **Membership YAML array formatting**: Fixed YAML serialization for organization memberships where the hyphen appeared on a separate line from the first property. Now produces standard YAML format with the first property on the same line as the hyphen.
+
 ---
 
 ## [0.19.4] - 2026-01-11

@@ -139,6 +139,9 @@ export interface MembershipData {
  * membership_to_dates:
  *   - "298 AC"
  *   - "298 AC"
+ * membership_notes:
+ *   - ""
+ *   - "Appointed after death of Jon Arryn"
  * ```
  */
 export interface FlatMembershipProperties {
@@ -152,6 +155,8 @@ export interface FlatMembershipProperties {
 	membership_from_dates?: string[];
 	/** End dates of memberships (parallel array) */
 	membership_to_dates?: string[];
+	/** Additional notes/context for memberships (parallel array) */
+	membership_notes?: string[];
 }
 
 /**

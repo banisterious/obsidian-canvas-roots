@@ -71,6 +71,7 @@ export class MembershipService {
 			const roles = (fm.membership_roles as string[] | undefined) || [];
 			const fromDates = (fm.membership_from_dates as string[] | undefined) || [];
 			const toDates = (fm.membership_to_dates as string[] | undefined) || [];
+			const notes = (fm.membership_notes as string[] | undefined) || [];
 
 			for (let i = 0; i < orgs.length; i++) {
 				const orgLink = orgs[i];
@@ -86,6 +87,7 @@ export class MembershipService {
 					roles[i],
 					fromDates[i],
 					toDate,
+					notes[i],
 					!toDate // Current if no end date
 				);
 				memberships.push(membership);
@@ -107,6 +109,7 @@ export class MembershipService {
 						m.role,
 						m.from,
 						m.to,
+						m.notes,
 						!m.to // Current if no end date
 					);
 					memberships.push(membership);
@@ -128,6 +131,7 @@ export class MembershipService {
 				fm.role,
 				undefined,
 				undefined,
+				undefined, // No notes in simple format
 				true // Simple memberships are considered current
 			);
 			memberships.push(membership);
@@ -190,6 +194,7 @@ export class MembershipService {
 		const roles: string[] = Array.isArray(fm.membership_roles) ? [...fm.membership_roles] : [];
 		const fromDates: string[] = Array.isArray(fm.membership_from_dates) ? [...fm.membership_from_dates] : [];
 		const toDates: string[] = Array.isArray(fm.membership_to_dates) ? [...fm.membership_to_dates] : [];
+		const notes: string[] = Array.isArray(fm.membership_notes) ? [...fm.membership_notes] : [];
 
 		// Add new membership to each array
 		orgs.push(membership.org);
@@ -197,6 +202,7 @@ export class MembershipService {
 		roles.push(membership.role || '');
 		fromDates.push(membership.from || '');
 		toDates.push(membership.to || '');
+		notes.push(membership.notes || '');
 
 		// Update all flat arrays
 		content = this.updateFrontmatterField(content, 'membership_orgs', orgs);
@@ -204,6 +210,7 @@ export class MembershipService {
 		content = this.updateFrontmatterField(content, 'membership_roles', roles);
 		content = this.updateFrontmatterField(content, 'membership_from_dates', fromDates);
 		content = this.updateFrontmatterField(content, 'membership_to_dates', toDates);
+		content = this.updateFrontmatterField(content, 'membership_notes', notes);
 
 		await this.app.vault.modify(personFile, content);
 		logger.info('addMembership', `Added membership to ${personFile.basename}`);
@@ -237,6 +244,7 @@ export class MembershipService {
 				const roles: string[] = Array.isArray(fm.membership_roles) ? [...fm.membership_roles] : [];
 				const fromDates: string[] = Array.isArray(fm.membership_from_dates) ? [...fm.membership_from_dates] : [];
 				const toDates: string[] = Array.isArray(fm.membership_to_dates) ? [...fm.membership_to_dates] : [];
+				const notes: string[] = Array.isArray(fm.membership_notes) ? [...fm.membership_notes] : [];
 				const newOrgIds = [...orgIds];
 
 				orgs.splice(indexToRemove, 1);
@@ -244,6 +252,7 @@ export class MembershipService {
 				roles.splice(indexToRemove, 1);
 				fromDates.splice(indexToRemove, 1);
 				toDates.splice(indexToRemove, 1);
+				notes.splice(indexToRemove, 1);
 
 				// Update all arrays (or remove if empty)
 				if (orgs.length === 0) {
@@ -252,12 +261,14 @@ export class MembershipService {
 					content = this.removeFrontmatterField(content, 'membership_roles');
 					content = this.removeFrontmatterField(content, 'membership_from_dates');
 					content = this.removeFrontmatterField(content, 'membership_to_dates');
+					content = this.removeFrontmatterField(content, 'membership_notes');
 				} else {
 					content = this.updateFrontmatterField(content, 'membership_orgs', orgs);
 					content = this.updateFrontmatterField(content, 'membership_org_ids', newOrgIds);
 					content = this.updateFrontmatterField(content, 'membership_roles', roles);
 					content = this.updateFrontmatterField(content, 'membership_from_dates', fromDates);
 					content = this.updateFrontmatterField(content, 'membership_to_dates', toDates);
+					content = this.updateFrontmatterField(content, 'membership_notes', notes);
 				}
 
 				await this.app.vault.modify(personFile, content);
@@ -327,6 +338,7 @@ export class MembershipService {
 		role: string | undefined,
 		from: string | undefined,
 		to: string | undefined,
+		notes: string | undefined,
 		isCurrent: boolean
 	): PersonMembership {
 		// Try to resolve org cr_id from link if not provided
@@ -351,6 +363,7 @@ export class MembershipService {
 			role,
 			from,
 			to,
+			notes,
 			isCurrent
 		};
 	}
