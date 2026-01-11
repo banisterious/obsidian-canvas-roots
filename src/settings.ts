@@ -1048,6 +1048,323 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				}));
 
 		// ═══════════════════════════════════════════════════════════════════════
+		// SECTION 3: CANVAS & TREES
+		// ═══════════════════════════════════════════════════════════════════════
+		const canvasDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
+		const canvasSummary = canvasDetails.createEl('summary');
+		canvasSummary.createSpan({ text: 'Canvas & trees' });
+		canvasSummary.createSpan({ cls: 'cr-section-desc', text: 'Tree generation layout and styling' });
+		const canvasContent = canvasDetails.createDiv({ cls: 'cr-section-content' });
+
+		// Info text
+		const canvasInfo = canvasContent.createDiv({ cls: 'setting-item-description cr-info-box' });
+		canvasInfo.appendText('Changes apply to new tree generations. To update existing canvases, right-click the canvas file and select "Re-layout family tree".');
+
+		// --- Node dimensions subsection ---
+		canvasContent.createEl('h4', { text: 'Node dimensions', cls: 'cr-subsection-title' });
+
+		new Setting(canvasContent)
+			.setName('Node width')
+			.setDesc('Width of person nodes in pixels')
+			.addSlider(slider => slider
+				.setLimits(100, 500, 25)
+				.setValue(this.plugin.settings.defaultNodeWidth)
+				.setDynamicTooltip()
+				.onChange(async (value) => {
+					this.plugin.settings.defaultNodeWidth = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(canvasContent)
+			.setName('Node height')
+			.setDesc('Height of person nodes in pixels')
+			.addSlider(slider => slider
+				.setLimits(50, 300, 25)
+				.setValue(this.plugin.settings.defaultNodeHeight)
+				.setDynamicTooltip()
+				.onChange(async (value) => {
+					this.plugin.settings.defaultNodeHeight = value;
+					await this.plugin.saveSettings();
+				}));
+
+		// --- Spacing subsection ---
+		canvasContent.createEl('h4', { text: 'Spacing', cls: 'cr-subsection-title' });
+
+		new Setting(canvasContent)
+			.setName('Horizontal spacing')
+			.setDesc('Space between nodes horizontally')
+			.addSlider(slider => slider
+				.setLimits(100, 1000, 50)
+				.setValue(this.plugin.settings.horizontalSpacing)
+				.setDynamicTooltip()
+				.onChange(async (value) => {
+					this.plugin.settings.horizontalSpacing = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(canvasContent)
+			.setName('Vertical spacing')
+			.setDesc('Space between generations vertically')
+			.addSlider(slider => slider
+				.setLimits(100, 1000, 50)
+				.setValue(this.plugin.settings.verticalSpacing)
+				.setDynamicTooltip()
+				.onChange(async (value) => {
+					this.plugin.settings.verticalSpacing = value;
+					await this.plugin.saveSettings();
+				}));
+
+		// --- Colors & styling subsection ---
+		canvasContent.createEl('h4', { text: 'Colors & styling', cls: 'cr-subsection-title' });
+
+		new Setting(canvasContent)
+			.setName('Color scheme')
+			.setDesc('How to color person nodes in family trees')
+			.addDropdown(dropdown => dropdown
+				.addOption('sex', 'Sex - green for males, purple for females')
+				.addOption('generation', 'Generation - color by generation level')
+				.addOption('collection', 'Collection - different color per collection')
+				.addOption('monochrome', 'Monochrome - no coloring')
+				.setValue(this.plugin.settings.nodeColorScheme)
+				.onChange(async (value) => {
+					this.plugin.settings.nodeColorScheme = value as ColorScheme;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(canvasContent)
+			.setName('Canvas grouping')
+			.setDesc('Visual groups to organize related nodes on the canvas')
+			.addDropdown(dropdown => dropdown
+				.addOption('none', 'None - no grouping')
+				.addOption('generation', 'By generation')
+				.addOption('nuclear-family', 'By couples')
+				.addOption('collection', 'By collection')
+				.setValue(this.plugin.settings.canvasGroupingStrategy)
+				.onChange(async (value) => {
+					this.plugin.settings.canvasGroupingStrategy = value as CanvasGroupingStrategy;
+					await this.plugin.saveSettings();
+				}));
+
+		// --- Arrow styles subsection ---
+		canvasContent.createEl('h4', { text: 'Arrow styles', cls: 'cr-subsection-title' });
+
+		new Setting(canvasContent)
+			.setName('Parent → child arrows')
+			.setDesc('Arrow style for parent-child relationships')
+			.addDropdown(dropdown => dropdown
+				.addOption('directed', 'Directed (→)')
+				.addOption('bidirectional', 'Bidirectional (↔)')
+				.addOption('undirected', 'Undirected (—)')
+				.setValue(this.plugin.settings.parentChildArrowStyle)
+				.onChange(async (value) => {
+					this.plugin.settings.parentChildArrowStyle = value as ArrowStyle;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(canvasContent)
+			.setName('Spouse arrows')
+			.setDesc('Arrow style for spouse relationships')
+			.addDropdown(dropdown => dropdown
+				.addOption('directed', 'Directed (→)')
+				.addOption('bidirectional', 'Bidirectional (↔)')
+				.addOption('undirected', 'Undirected (—)')
+				.setValue(this.plugin.settings.spouseArrowStyle)
+				.onChange(async (value) => {
+					this.plugin.settings.spouseArrowStyle = value as ArrowStyle;
+					await this.plugin.saveSettings();
+				}));
+
+		// --- Spouse edges subsection ---
+		canvasContent.createEl('h4', { text: 'Spouse edges', cls: 'cr-subsection-title' });
+
+		new Setting(canvasContent)
+			.setName('Show spouse edges')
+			.setDesc('Display edges between spouses with marriage metadata')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.showSpouseEdges)
+				.onChange(async (value) => {
+					this.plugin.settings.showSpouseEdges = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(canvasContent)
+			.setName('Spouse edge label format')
+			.setDesc('How to display marriage information on spouse edges')
+			.addDropdown(dropdown => dropdown
+				.addOption('none', 'None')
+				.addOption('date-only', 'Date only')
+				.addOption('date-location', 'Date and location')
+				.addOption('full', 'Full details')
+				.setValue(this.plugin.settings.spouseEdgeLabelFormat)
+				.onChange(async (value) => {
+					this.plugin.settings.spouseEdgeLabelFormat = value as SpouseEdgeLabelFormat;
+					await this.plugin.saveSettings();
+				}));
+
+		// ═══════════════════════════════════════════════════════════════════════
+		// SECTION 5: DATES & VALIDATION
+		// ═══════════════════════════════════════════════════════════════════════
+		const datesDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
+		const datesSummary = datesDetails.createEl('summary');
+		datesSummary.createSpan({ text: 'Dates & validation' });
+		datesSummary.createSpan({ cls: 'cr-section-desc', text: 'Date format and validation rules' });
+		const datesContent = datesDetails.createDiv({ cls: 'cr-section-content' });
+
+		new Setting(datesContent)
+			.setName('Date format standard')
+			.setDesc('Preferred date format standard for validation')
+			.addDropdown(dropdown => dropdown
+				.addOption('iso8601', 'ISO 8601 - strict YYYY-MM-DD')
+				.addOption('gedcom', 'GEDCOM - DD MMM YYYY')
+				.addOption('flexible', 'Flexible - multiple formats')
+				.setValue(this.plugin.settings.dateFormatStandard)
+				.onChange(async (value) => {
+					this.plugin.settings.dateFormatStandard = value as 'iso8601' | 'gedcom' | 'flexible';
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(datesContent)
+			.setName('Allow partial dates')
+			.setDesc('Accept dates with missing day or month (e.g., "1920-05" or "1920")')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.allowPartialDates)
+				.onChange(async (value) => {
+					this.plugin.settings.allowPartialDates = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(datesContent)
+			.setName('Allow circa dates')
+			.setDesc('Accept approximate dates with "c.", "ca.", "circa", or "~" prefix')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.allowCircaDates)
+				.onChange(async (value) => {
+					this.plugin.settings.allowCircaDates = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(datesContent)
+			.setName('Allow date ranges')
+			.setDesc('Accept date ranges with hyphen or "to" (e.g., "1850-1920")')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.allowDateRanges)
+				.onChange(async (value) => {
+					this.plugin.settings.allowDateRanges = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(datesContent)
+			.setName('Require leading zeros')
+			.setDesc('Require zero-padded months and days (e.g., "1920-05-01")')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.requireLeadingZeros)
+				.onChange(async (value) => {
+					this.plugin.settings.requireLeadingZeros = value;
+					await this.plugin.saveSettings();
+				}));
+
+		// ═══════════════════════════════════════════════════════════════════════
+		// SECTION 6: SEX & GENDER
+		// ═══════════════════════════════════════════════════════════════════════
+		const sexDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
+		const sexSummary = sexDetails.createEl('summary');
+		sexSummary.createSpan({ text: 'Sex & gender' });
+		sexSummary.createSpan({ cls: 'cr-section-desc', text: 'Sex normalization and inclusive options' });
+		const sexContent = sexDetails.createDiv({ cls: 'cr-section-content' });
+
+		new Setting(sexContent)
+			.setName('Sex normalization mode')
+			.setDesc('How sex values are normalized in batch operations')
+			.addDropdown(dropdown => dropdown
+				.addOption('standard', 'Standard - normalize to GEDCOM M/F')
+				.addOption('schema-aware', 'Schema-aware - skip notes with custom schemas')
+				.addOption('disabled', 'Disabled - never normalize')
+				.setValue(this.plugin.settings.sexNormalizationMode)
+				.onChange(async (value) => {
+					this.plugin.settings.sexNormalizationMode = value as SexNormalizationMode;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(sexContent)
+			.setName('Enable gender-neutral parent property')
+			.setDesc('Show a "Parents" property in person modals for inclusive terminology')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enableInclusiveParents)
+				.onChange(async (value) => {
+					this.plugin.settings.enableInclusiveParents = value;
+					await this.plugin.saveSettings();
+					this.display(); // Refresh to show/hide label setting
+				}));
+
+		if (this.plugin.settings.enableInclusiveParents) {
+			new Setting(sexContent)
+				.setName('Parent property label')
+				.setDesc('Customize the UI label for the gender-neutral parent property')
+				.addText(text => text
+					.setPlaceholder('Parents')
+					.setValue(this.plugin.settings.parentFieldLabel)
+					.onChange(async (value) => {
+						this.plugin.settings.parentFieldLabel = value || 'Parents';
+						await this.plugin.saveSettings();
+					}));
+		}
+
+		new Setting(sexContent)
+			.setName('Show pronouns')
+			.setDesc('Display pronouns in person pickers and cards')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.showPronouns)
+				.onChange(async (value) => {
+					this.plugin.settings.showPronouns = value;
+					await this.plugin.saveSettings();
+				}));
+
+		// ═══════════════════════════════════════════════════════════════════════
+		// SECTION 7: PLACES
+		// ═══════════════════════════════════════════════════════════════════════
+		const placesDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
+		const placesSummary = placesDetails.createEl('summary');
+		placesSummary.createSpan({ text: 'Places' });
+		placesSummary.createSpan({ cls: 'cr-section-desc', text: 'Place organization and coordinate handling' });
+		const placesContent = placesDetails.createDiv({ cls: 'cr-section-content' });
+
+		new Setting(placesContent)
+			.setName('Use category-based subfolders')
+			.setDesc('Automatically organize new places into subfolders based on their category')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.useCategorySubfolders)
+				.onChange(async (value) => {
+					this.plugin.settings.useCategorySubfolders = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(placesContent)
+			.setName('Default place category')
+			.setDesc('Category assigned to new places when not specified')
+			.addDropdown(dropdown => dropdown
+				.addOption('real', 'Real')
+				.addOption('historical', 'Historical')
+				.addOption('disputed', 'Disputed')
+				.addOption('legendary', 'Legendary')
+				.addOption('mythological', 'Mythological')
+				.addOption('fictional', 'Fictional')
+				.setValue(this.plugin.settings.defaultPlaceCategory)
+				.onChange(async (value) => {
+					this.plugin.settings.defaultPlaceCategory = value as PlaceCategory;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(placesContent)
+			.setName('Accept DMS coordinate format')
+			.setDesc('Allow entering coordinates in degrees, minutes, seconds format')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enableDMSCoordinates)
+				.onChange(async (value) => {
+					this.plugin.settings.enableDMSCoordinates = value;
+					await this.plugin.saveSettings();
+				}));
+
+		// ═══════════════════════════════════════════════════════════════════════
 		// RESEARCH TOOLS SECTION (Collapsible)
 		// ═══════════════════════════════════════════════════════════════════════
 		const researchDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
