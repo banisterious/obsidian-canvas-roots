@@ -14,6 +14,7 @@ import {
 } from '../core/merge-service';
 import type { CanvasRootsSettings } from '../settings';
 import { getLogger } from '../core/logging';
+import { getSpouseLabel } from '../utils/terminology';
 
 const logger = getLogger('MergeWizard');
 
@@ -197,7 +198,7 @@ export class MergeWizardModal extends Modal {
 		}
 
 		// Show preview modal
-		const previewModal = new MergePreviewModal(this.app, preview);
+		const previewModal = new MergePreviewModal(this.app, preview, this.settings);
 		previewModal.open();
 	}
 
@@ -252,7 +253,7 @@ export class MergeWizardModal extends Modal {
  * Modal for previewing merged result
  */
 class MergePreviewModal extends Modal {
-	constructor(app: App, private preview: PersonFrontmatter) {
+	constructor(app: App, private preview: PersonFrontmatter, private settings: CanvasRootsSettings) {
 		super(app);
 	}
 
@@ -278,7 +279,7 @@ class MergePreviewModal extends Modal {
 			{ key: 'sex', label: 'Sex' },
 			{ key: 'father', label: 'Father' },
 			{ key: 'mother', label: 'Mother' },
-			{ key: 'spouse', label: 'Spouse(s)' },
+			{ key: 'spouse', label: `${getSpouseLabel(this.settings)}(s)` },
 			{ key: 'child', label: 'Children' }
 		];
 

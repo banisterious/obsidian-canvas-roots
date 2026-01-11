@@ -36,6 +36,7 @@ interface SelectedPerson {
 }
 import { createLucideIcon, type LucideIconName } from './lucide-icons';
 import { getLogger } from '../core/logging';
+import { getSpouseLabel } from '../utils/terminology';
 
 const logger = getLogger('SplitWizard');
 
@@ -555,8 +556,8 @@ export class SplitWizardModal extends Modal {
 
 		// Include spouses
 		new Setting(configSection)
-			.setName('Include spouses')
-			.setDesc('Include spouses of people on the lineage')
+			.setName(`Include ${getSpouseLabel(this.settings, { plural: true, lowercase: true })}`)
+			.setDesc(`Include ${getSpouseLabel(this.settings, { plural: true, lowercase: true })} of people on the lineage`)
 			.addToggle(toggle => {
 				toggle
 					.setValue(this.lineageIncludeSpouses)
@@ -671,8 +672,8 @@ export class SplitWizardModal extends Modal {
 
 		// Include spouses
 		new Setting(configSection)
-			.setName('Include spouses')
-			.setDesc('Include spouses in both canvases')
+			.setName(`Include ${getSpouseLabel(this.settings, { plural: true, lowercase: true })}`)
+			.setDesc(`Include ${getSpouseLabel(this.settings, { plural: true, lowercase: true })} in both canvases`)
 			.addToggle(toggle => {
 				toggle
 					.setValue(this.ancestorDescendantIncludeSpouses)
@@ -778,8 +779,8 @@ export class SplitWizardModal extends Modal {
 
 		// Include spouses
 		new Setting(configSection)
-			.setName('Include spouses')
-			.setDesc('Include spouses of matching people (with different surnames)')
+			.setName(`Include ${getSpouseLabel(this.settings, { plural: true, lowercase: true })}`)
+			.setDesc(`Include ${getSpouseLabel(this.settings, { plural: true, lowercase: true })} of matching people (with different surnames)`)
 			.addToggle(toggle => {
 				toggle
 					.setValue(this.surnameIncludeSpouses)
@@ -1502,7 +1503,7 @@ export class SplitWizardModal extends Modal {
 		}
 
 		if (this.surnameIncludeSpouses) {
-			details.push('Spouses will be included');
+			details.push(`${getSpouseLabel(this.settings, { plural: true })} will be included`);
 		}
 
 		if (this.surnameIncludeMaidenNames) {

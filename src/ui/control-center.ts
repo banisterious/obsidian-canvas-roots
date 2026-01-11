@@ -79,6 +79,8 @@ import type {
 	ProofSummaryNote
 } from '../sources';
 
+import { getSpouseLabel, getSpouseCompoundLabel } from '../utils/terminology';
+
 const logger = getLogger('ControlCenter');
 
 /**
@@ -1082,10 +1084,10 @@ export class ControlCenterModal extends Modal {
 		this.createStatRow(relContent, 'Total links', stats.relationships.totalRelationships);
 		this.createStatRow(relContent, 'Father links', stats.relationships.totalFatherLinks);
 		this.createStatRow(relContent, 'Mother links', stats.relationships.totalMotherLinks);
-		this.createStatRow(relContent, 'Spouse links', stats.relationships.totalSpouseLinks);
+		this.createStatRow(relContent, getSpouseCompoundLabel(this.plugin.settings, 'links'), stats.relationships.totalSpouseLinks);
 		this.createStatRow(relContent, 'People with father', stats.people.peopleWithFather);
 		this.createStatRow(relContent, 'People with mother', stats.people.peopleWithMother);
-		this.createStatRow(relContent, 'People with spouse', stats.people.peopleWithSpouse);
+		this.createStatRow(relContent, `People with ${getSpouseLabel(this.plugin.settings, { lowercase: true })}`, stats.people.peopleWithSpouse);
 
 		container.appendChild(relCard);
 
@@ -2535,7 +2537,7 @@ export class ControlCenterModal extends Modal {
 		const spousePercent = stats.people.totalPeople > 0
 			? Math.round((stats.people.peopleWithSpouse / stats.people.totalPeople) * 100)
 			: 0;
-		this.createStatItem(relGrid, 'With spouse', `${stats.people.peopleWithSpouse} (${spousePercent}%)`);
+		this.createStatItem(relGrid, `With ${getSpouseLabel(this.plugin.settings, { lowercase: true })}`, `${stats.people.peopleWithSpouse} (${spousePercent}%)`);
 
 		// Total relationships
 		this.createStatItem(relGrid, 'Total relationships', stats.relationships.totalRelationships.toString());

@@ -34,6 +34,8 @@ import { FamilyChartExportWizard } from './family-chart-export-wizard';
 import type { ProgressCallback } from './family-chart-export-progress-modal';
 import { generateOdt } from './odt-generator';
 
+import { getSpouseLabel } from '../../utils/terminology';
+
 const logger = getLogger('FamilyChartView');
 
 export const VIEW_TYPE_FAMILY_CHART = 'canvas-roots-family-chart';
@@ -645,7 +647,7 @@ export class FamilyChartView extends ItemView {
 
 		// Spouses
 		if (personData.rels.spouses.length > 0) {
-			this.renderRelationshipGroup(relSection, 'Spouses', personData.rels.spouses);
+			this.renderRelationshipGroup(relSection, getSpouseLabel(this.plugin.settings, { plural: true }), personData.rels.spouses);
 		}
 
 		// Children
@@ -4007,7 +4009,7 @@ export class FamilyChartView extends ItemView {
 
 			// Set appropriate label text
 			if (isSpouseLink) {
-				label.textContent = 'Spouse';
+				label.textContent = getSpouseLabel(this.plugin.settings);
 				label.classList.add('cr-kinship-label--spouse');
 			} else {
 				// Parent-child link - label based on direction
