@@ -376,7 +376,26 @@ export class MembershipService {
 			if (value.length === 0) {
 				return '[]';
 			}
-			return '\n' + value.map(item => `${spaces}- ${this.toYaml(item, indent + 1)}`).join('\n');
+			return '\n' + value.map(item => {
+				// For objects in arrays, inline the first property with the hyphen
+				if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+					const entries = Object.entries(item);
+					if (entries.length === 0) {
+						return `${spaces}- {}`;
+					}
+					const [firstKey, firstVal] = entries[0];
+					const firstLine = `${spaces}- ${firstKey}: ${this.toYamlValue(firstVal)}`;
+					if (entries.length === 1) {
+						return firstLine;
+					}
+					// Remaining properties indented under the first
+					const restLines = entries.slice(1)
+						.map(([k, v]) => `${spaces}  ${k}: ${this.toYamlValue(v)}`)
+						.join('\n');
+					return `${firstLine}\n${restLines}`;
+				}
+				return `${spaces}- ${this.toYaml(item, indent + 1)}`;
+			}).join('\n');
 		}
 
 		if (typeof value === 'object' && value !== null) {
@@ -391,6 +410,26 @@ export class MembershipService {
 
 		// At this point, value is a primitive (symbol, bigint, etc.)
 		return String(value as symbol | bigint);
+	}
+
+	/**
+	 * Convert a simple value to YAML (for use in array item objects)
+	 */
+	private toYamlValue(value: unknown): string {
+		if (value === null || value === undefined) {
+			return 'null';
+		}
+		if (typeof value === 'string') {
+			if (value.includes('\n') || value.includes(':') || value.includes('#')) {
+				return `"${value.replace(/"/g, '\\"')}"`;
+			}
+			return value;
+		}
+		if (typeof value === 'number' || typeof value === 'boolean') {
+			return String(value);
+		}
+		// For complex nested values, fall back to toYaml
+		return this.toYaml(value, 0);
 	}
 }
 
