@@ -1,6 +1,6 @@
 # Plan: Romantic Relationship Label Preference (Issue #167)
 
-- **Status:** In Progress
+- **Status:** Complete
 - **Target Version:** v0.19.5
 - **GitHub Issue:** [#167](https://github.com/banisterious/obsidian-charted-roots/issues/167)
 
@@ -161,13 +161,29 @@ text: getAddSpouseLabel(this.plugin.settings)
 
 ## Testing Checklist
 
-- [ ] Setting persists across plugin reloads
-- [ ] All 14 affected files display correct terminology
-- [ ] Switching preference updates UI without restart
-- [ ] Default ("Spouse") matches current behavior exactly
-- [ ] Both singular and plural forms work correctly
-- [ ] Compound labels read naturally ("Partner arrows", "Include partners")
+- [x] Setting persists across plugin reloads
+- [x] All affected files display correct terminology
+- [x] Switching preference updates UI without restart
+- [x] Default ("Spouse") matches current behavior exactly
+- [x] Both singular and plural forms work correctly
+- [x] Compound labels read naturally ("Partner arrows", "Include partners")
 
-## Estimate
+## Implementation Notes
 
-1-2 hours implementation time. Low risk — UI text only, no data model changes.
+The following files were updated:
+- `settings.ts` - Setting interface, default value, UI dropdown
+- `terminology.ts` - Helper functions (new file)
+- `create-person-modal.ts` - Person creation/editing UI
+- `family-creation-wizard.ts` - Family wizard labels
+- `preferences-tab.ts` - Display preferences
+- `canvas-style-modal.ts` - Canvas style overrides
+- `unified-tree-wizard-modal.ts` - Tree wizard options
+- `split-wizard-modal.ts` - Canvas split options
+- `family-chart-view.ts` - Family chart relationship labels
+- `control-center.ts` - Statistics display
+- `merge-wizard-modal.ts` - Merge preview fields
+
+Files **not** updated (data model, not UI labels):
+- `relationship-calculator-modal.ts` - Shows computed relationship types from internal data
+- `tree-statistics-modal.ts` - Reads metadata from saved canvases (no settings access)
+- `template-snippets-modal.ts` - Template fact_type values (data, not UI)
