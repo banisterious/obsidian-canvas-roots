@@ -80,6 +80,9 @@ import type {
 } from '../sources';
 
 import { getSpouseLabel, getSpouseCompoundLabel } from '../utils/terminology';
+import { REPORT_METADATA } from '../reports/types/report-types';
+import type { ReportType } from '../reports/types/report-types';
+import { ReportWizardModal } from '../reports/ui/report-wizard-modal';
 
 const logger = getLogger('ControlCenter');
 
@@ -4483,6 +4486,94 @@ export class ControlCenterModal extends Modal {
 			'Right-click recent trees for regenerate, reveal, or delete options.'
 		];
 		tips.forEach(tip => tipsList.createEl('li', { text: tip }));
+
+		// === Reports Card ===
+		const reportsCard = container.createDiv({ cls: 'crc-tree-card' });
+		const reportsHeader = reportsCard.createDiv({ cls: 'crc-tree-card__header crc-tree-card__header--simple' });
+		reportsHeader.appendChild(createLucideIcon('file-text', 18));
+		reportsHeader.createSpan({ text: 'Reports', cls: 'crc-tree-card__title' });
+
+		const reportsContent = reportsCard.createDiv({ cls: 'crc-tree-card__content' });
+		const reportsDesc = reportsContent.createDiv({ cls: 'crc-text-muted crc-mb-2' });
+		reportsDesc.setText('Generate formatted reports from your genealogy data.');
+
+		const reportsGrid = reportsContent.createDiv({ cls: 'cr-sv-reports-grid' });
+
+		// Create a card for each report type (excluding visual trees which use the tree wizard)
+		for (const [type, metadata] of Object.entries(REPORT_METADATA)) {
+			// Skip visual trees - they're generated via the tree wizard above
+			if (metadata.category === 'visual-trees') continue;
+
+			const reportCard = reportsGrid.createDiv({ cls: 'cr-sv-report-card' });
+
+			const reportCardHeader = reportCard.createDiv({ cls: 'cr-sv-report-card-header' });
+			const iconEl = reportCardHeader.createSpan({ cls: 'cr-sv-report-card-icon' });
+			setIcon(iconEl, metadata.icon);
+			reportCardHeader.createSpan({ cls: 'cr-sv-report-card-title', text: metadata.name });
+
+			reportCard.createDiv({ cls: 'cr-sv-report-card-desc crc-text-muted', text: metadata.description });
+
+			const reportCardActions = reportCard.createDiv({ cls: 'cr-sv-report-card-actions' });
+			const generateBtn = reportCardActions.createEl('button', {
+				cls: 'mod-cta',
+				text: 'Generate'
+			});
+
+			generateBtn.addEventListener('click', () => {
+				const modal = new ReportWizardModal(this.plugin, {
+					reportType: type as ReportType
+				});
+				modal.open();
+			});
+		}
+
+		// === Visual Trees Card (PDF exports) ===
+		const visualTreesCard = container.createDiv({ cls: 'crc-tree-card' });
+		const visualTreesHeader = visualTreesCard.createDiv({ cls: 'crc-tree-card__header crc-tree-card__header--simple' });
+		visualTreesHeader.appendChild(createLucideIcon('file-image', 18));
+		visualTreesHeader.createSpan({ text: 'Visual trees', cls: 'crc-tree-card__title' });
+
+		const visualTreesContent = visualTreesCard.createDiv({ cls: 'crc-tree-card__content' });
+		const visualTreesDesc = visualTreesContent.createDiv({ cls: 'crc-text-muted crc-mb-2' });
+		visualTreesDesc.setText('Generate printable PDF tree diagrams with positioned boxes and connecting lines.');
+
+		const visualTreesGrid = visualTreesContent.createDiv({ cls: 'cr-sv-reports-grid' });
+
+		// Visual tree type mapping for the unified wizard
+		const visualTreeTypes: Record<string, 'full' | 'ancestors' | 'descendants' | 'fan'> = {
+			'pedigree-tree-pdf': 'ancestors',
+			'descendant-tree-pdf': 'descendants',
+			'hourglass-tree-pdf': 'full',
+			'fan-chart-pdf': 'fan'
+		};
+
+		// Create a card for each visual tree report
+		for (const [type, metadata] of Object.entries(REPORT_METADATA)) {
+			if (metadata.category !== 'visual-trees') continue;
+
+			const vtCard = visualTreesGrid.createDiv({ cls: 'cr-sv-report-card' });
+
+			const vtCardHeader = vtCard.createDiv({ cls: 'cr-sv-report-card-header' });
+			const vtIconEl = vtCardHeader.createSpan({ cls: 'cr-sv-report-card-icon' });
+			setIcon(vtIconEl, metadata.icon);
+			vtCardHeader.createSpan({ cls: 'cr-sv-report-card-title', text: metadata.name });
+
+			vtCard.createDiv({ cls: 'cr-sv-report-card-desc crc-text-muted', text: metadata.description });
+
+			const vtCardActions = vtCard.createDiv({ cls: 'cr-sv-report-card-actions' });
+			const vtGenerateBtn = vtCardActions.createEl('button', {
+				cls: 'mod-cta',
+				text: 'Generate'
+			});
+
+			vtGenerateBtn.addEventListener('click', () => {
+				const wizard = new UnifiedTreeWizardModal(this.plugin, {
+					outputFormat: 'pdf',
+					treeType: visualTreeTypes[type]
+				});
+				wizard.open();
+			});
+		}
 
 		// === Canvas Settings Section ===
 		// Canvas Layout and Styling cards (moved from Preferences tab)

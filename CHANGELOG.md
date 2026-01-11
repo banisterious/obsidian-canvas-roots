@@ -9,9 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.19.4] - 2026-01-11
+
 ### Changed
 
 - **Settings consolidated to Plugin Settings** ([#176](https://github.com/banisterious/obsidian-charted-roots/issues/176)): All settings have been moved from Control Center → Preferences to the standard Obsidian plugin settings location (Settings → Charted Roots). The Preferences tab has been removed from Control Center. Settings are now organized into 9 sections: Folders, Data & detection, Canvas & trees, Privacy & export, Dates & validation, Sex & gender, Places, Property & value aliases, and Advanced.
+
+- **Statistics Dashboard reorganization**: The "Visual Trees" tab has been renamed to "Trees & reports" and now consolidates all output generation. Both "Generate Reports" (markdown reports) and "Visual Trees" (PDF tree exports) have been moved from Statistics to this tab. The Statistics view is now purely analytical, addressing user feedback that action wizards felt out of place among statistics.
 
 ### Added
 

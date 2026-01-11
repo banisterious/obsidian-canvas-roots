@@ -274,9 +274,9 @@ export const TOOL_CONFIGS: ToolConfig[] = [
 	},
 	{
 		id: 'statistics',
-		name: 'Statistics & Reports',
+		name: 'Statistics',
 		icon: 'chart-bar-decreasing',
-		description: 'Data analysis, statistics dashboard, and reports'
+		description: 'Data analysis and statistics dashboard'
 	},
 	{
 		id: 'create-family',
@@ -374,9 +374,9 @@ export const TAB_CONFIGS: TabConfig[] = [
 	// Output group
 	{
 		id: 'tree-generation',
-		name: 'Visual Trees',
+		name: 'Trees & reports',
 		icon: 'git-branch',
-		description: 'Generate visual family tree diagrams',
+		description: 'Generate visual trees and formatted reports',
 		group: 'output'
 	},
 	{
