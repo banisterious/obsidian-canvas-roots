@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Settings consolidated to Plugin Settings** ([#176](https://github.com/banisterious/obsidian-charted-roots/issues/176)): All settings have been moved from Control Center → Preferences to the standard Obsidian plugin settings location (Settings → Charted Roots). The Preferences tab has been removed from Control Center. Settings are now organized into 9 sections: Folders, Data & detection, Canvas & trees, Privacy & export, Dates & validation, Sex & gender, Places, Property & value aliases, and Advanced.
+
 ### Added
 
 - **Edit current note command**: New command "Edit current note" opens the appropriate edit modal (person, place, or event) for the active note. Assign a hotkey in Settings → Hotkeys to quickly edit notes without navigating through the file menu. Reduces the friction of: 3-dot menu → Charted Roots → Edit.
