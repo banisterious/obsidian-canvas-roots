@@ -173,7 +173,7 @@ export class MembershipService {
 	}
 
 	/**
-	 * Add a membership to a person's note
+	 * Add a membership to a person's note using flat parallel arrays
 	 */
 	async addMembership(personFile: TFile, membership: MembershipData): Promise<void> {
 		const cache = this.app.metadataCache.getFileCache(personFile);
@@ -181,30 +181,41 @@ export class MembershipService {
 			throw new Error('Person file has no frontmatter');
 		}
 
-		const content = await this.app.vault.read(personFile);
+		let content = await this.app.vault.read(personFile);
 		const fm = cache.frontmatter;
 
-		// Get existing memberships array or create new one
-		const existingMemberships: MembershipData[] = Array.isArray(fm.memberships)
-			? [...fm.memberships]
-			: [];
+		// Get existing flat arrays or initialize empty
+		const orgs: string[] = Array.isArray(fm.membership_orgs) ? [...fm.membership_orgs] : [];
+		const orgIds: string[] = Array.isArray(fm.membership_org_ids) ? [...fm.membership_org_ids] : [];
+		const roles: string[] = Array.isArray(fm.membership_roles) ? [...fm.membership_roles] : [];
+		const fromDates: string[] = Array.isArray(fm.membership_from_dates) ? [...fm.membership_from_dates] : [];
+		const toDates: string[] = Array.isArray(fm.membership_to_dates) ? [...fm.membership_to_dates] : [];
 
-		// Add new membership
-		existingMemberships.push(membership);
+		// Add new membership to each array
+		orgs.push(membership.org);
+		orgIds.push(membership.org_id || '');
+		roles.push(membership.role || '');
+		fromDates.push(membership.from || '');
+		toDates.push(membership.to || '');
 
-		// Update frontmatter
-		const newContent = this.updateFrontmatterField(
-			content,
-			'memberships',
-			existingMemberships
-		);
+		// Update all flat arrays
+		content = this.updateFrontmatterField(content, 'membership_orgs', orgs);
+		content = this.updateFrontmatterField(content, 'membership_org_ids', orgIds);
+		content = this.updateFrontmatterField(content, 'membership_roles', roles);
+		content = this.updateFrontmatterField(content, 'membership_from_dates', fromDates);
+		content = this.updateFrontmatterField(content, 'membership_to_dates', toDates);
 
-		await this.app.vault.modify(personFile, newContent);
+		await this.app.vault.modify(personFile, content);
 		logger.info('addMembership', `Added membership to ${personFile.basename}`);
 	}
 
 	/**
 	 * Remove a membership from a person's note
+	 *
+	 * Handles all three formats:
+	 * - Flat parallel arrays (new format)
+	 * - Legacy nested array (memberships)
+	 * - Simple single membership (house/organization)
 	 */
 	async removeMembership(personFile: TFile, orgCrId: string): Promise<void> {
 		const cache = this.app.metadataCache.getFileCache(personFile);
@@ -212,38 +223,77 @@ export class MembershipService {
 			return;
 		}
 
-		const content = await this.app.vault.read(personFile);
+		let content = await this.app.vault.read(personFile);
 		const fm = cache.frontmatter;
 
-		// Check if it's a simple membership
+		// Check flat parallel arrays first (new format)
+		if (Array.isArray(fm.membership_org_ids)) {
+			const orgIds = fm.membership_org_ids as string[];
+			const indexToRemove = orgIds.findIndex(id => id === orgCrId);
+
+			if (indexToRemove !== -1) {
+				// Remove from all parallel arrays at the same index
+				const orgs: string[] = Array.isArray(fm.membership_orgs) ? [...fm.membership_orgs] : [];
+				const roles: string[] = Array.isArray(fm.membership_roles) ? [...fm.membership_roles] : [];
+				const fromDates: string[] = Array.isArray(fm.membership_from_dates) ? [...fm.membership_from_dates] : [];
+				const toDates: string[] = Array.isArray(fm.membership_to_dates) ? [...fm.membership_to_dates] : [];
+				const newOrgIds = [...orgIds];
+
+				orgs.splice(indexToRemove, 1);
+				newOrgIds.splice(indexToRemove, 1);
+				roles.splice(indexToRemove, 1);
+				fromDates.splice(indexToRemove, 1);
+				toDates.splice(indexToRemove, 1);
+
+				// Update all arrays (or remove if empty)
+				if (orgs.length === 0) {
+					content = this.removeFrontmatterField(content, 'membership_orgs');
+					content = this.removeFrontmatterField(content, 'membership_org_ids');
+					content = this.removeFrontmatterField(content, 'membership_roles');
+					content = this.removeFrontmatterField(content, 'membership_from_dates');
+					content = this.removeFrontmatterField(content, 'membership_to_dates');
+				} else {
+					content = this.updateFrontmatterField(content, 'membership_orgs', orgs);
+					content = this.updateFrontmatterField(content, 'membership_org_ids', newOrgIds);
+					content = this.updateFrontmatterField(content, 'membership_roles', roles);
+					content = this.updateFrontmatterField(content, 'membership_from_dates', fromDates);
+					content = this.updateFrontmatterField(content, 'membership_to_dates', toDates);
+				}
+
+				await this.app.vault.modify(personFile, content);
+				logger.info('removeMembership', `Removed membership from ${personFile.basename}`);
+				return;
+			}
+		}
+
+		// Check legacy nested memberships array
+		if (Array.isArray(fm.memberships)) {
+			const filteredMemberships = fm.memberships.filter(
+				(m: MembershipData) => m.org_id !== orgCrId
+			);
+
+			if (filteredMemberships.length !== fm.memberships.length) {
+				if (filteredMemberships.length === 0) {
+					content = this.removeFrontmatterField(content, 'memberships');
+				} else {
+					content = this.updateFrontmatterField(content, 'memberships', filteredMemberships);
+				}
+				await this.app.vault.modify(personFile, content);
+				logger.info('removeMembership', `Removed membership from ${personFile.basename}`);
+				return;
+			}
+		}
+
+		// Check simple membership format
 		if (fm.house_id === orgCrId || fm.organization_id === orgCrId) {
-			// Remove simple membership fields
-			let newContent = this.removeFrontmatterField(content, 'house');
-			newContent = this.removeFrontmatterField(newContent, 'house_id');
-			newContent = this.removeFrontmatterField(newContent, 'organization');
-			newContent = this.removeFrontmatterField(newContent, 'organization_id');
-			newContent = this.removeFrontmatterField(newContent, 'role');
-			await this.app.vault.modify(personFile, newContent);
-			return;
+			content = this.removeFrontmatterField(content, 'house');
+			content = this.removeFrontmatterField(content, 'house_id');
+			content = this.removeFrontmatterField(content, 'organization');
+			content = this.removeFrontmatterField(content, 'organization_id');
+			content = this.removeFrontmatterField(content, 'role');
+			await this.app.vault.modify(personFile, content);
+			logger.info('removeMembership', `Removed simple membership from ${personFile.basename}`);
 		}
-
-		// Check memberships array
-		if (!Array.isArray(fm.memberships)) {
-			return;
-		}
-
-		const filteredMemberships = fm.memberships.filter(
-			(m: MembershipData) => m.org_id !== orgCrId
-		);
-
-		const newContent = this.updateFrontmatterField(
-			content,
-			'memberships',
-			filteredMemberships
-		);
-
-		await this.app.vault.modify(personFile, newContent);
-		logger.info('removeMembership', `Removed membership from ${personFile.basename}`);
 	}
 
 	/**
