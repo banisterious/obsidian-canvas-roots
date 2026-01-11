@@ -45,21 +45,95 @@ Consolidate all settings into the standard Obsidian Plugin Settings location (Se
 
 ### New Settings Organization
 
-Proposed section structure for consolidated Plugin Settings:
+Consolidated into 9 top-level sections:
 
-| Section | Contents |
-|---------|----------|
-| **Folders** | People, Places, Maps, Schemas, Canvases folder locations |
-| **Property aliases** | Field name mappings for all note types |
-| **Value aliases** | Event type, sex, place category, note type mappings |
-| **Data & detection** | cr_id generation, type property, tag detection, GEDCOM compat, bidirectional sync |
-| **Date & validation** | Date validation rules, sex normalization, inclusive parents |
-| **Privacy & export** | Privacy protection, living person threshold, display format, filename pattern |
-| **Places** | Category subfolders, custom folder overrides |
-| **Integrations** | Calendarium settings |
-| **Research tools** | Fact-level source tracking |
-| **Logging** | Log level, export folder, obfuscation |
-| **Advanced** | Folder filtering, display preferences |
+#### 1. Folders
+All note and file storage locations.
+
+| Subsection | Settings |
+|------------|----------|
+| Entity folders | People, Places, Events, Sources, Organizations, Universes |
+| Output folders | Canvases, Maps, Timelines, Reports, Bases |
+| System folders | Schemas, Staging, Logs |
+
+#### 2. Data & detection
+How Charted Roots identifies and syncs notes.
+
+| Subsection | Settings |
+|------------|----------|
+| Note type detection | Primary type property, tag detection, auto-generate cr_id |
+| Relationships | Bidirectional sync, sync on file modify, relationship history |
+| Import compatibility | GEDCOM compatibility mode |
+
+#### 3. Canvas & trees
+Tree generation layout and styling.
+
+| Subsection | Settings |
+|------------|----------|
+| Node dimensions | Width, height |
+| Spacing | Horizontal, vertical |
+| Layout options | Grouping strategy |
+| Arrow styles | Parent-child arrows, spouse arrows |
+| Colors | Node color scheme, edge colors |
+| Spouse edges | Show/hide, label format |
+
+#### 4. Privacy & export
+Privacy protection and export settings.
+
+| Subsection | Settings |
+|------------|----------|
+| Living person protection | Enable, age threshold, display format, hide details |
+| Export options | Filename pattern, GEDCOM version |
+
+#### 5. Dates & validation
+Date format and validation rules.
+
+| Setting | Description |
+|---------|-------------|
+| Format standard | iso8601 / gedcom / flexible |
+| Partial dates | Allow year-only, month-year |
+| Circa dates | Allow ABT, BEF, AFT qualifiers |
+| Date ranges | Allow BET...AND ranges |
+| Leading zeros | Require 01 vs 1 |
+
+#### 6. Sex & gender
+Sex normalization and inclusive options.
+
+| Setting | Description |
+|---------|-------------|
+| Sex normalization mode | standard / schema-aware / disabled |
+| Inclusive parents | Enable gender-neutral parent property |
+| Parent field label | Label for parent field (e.g., "Parents", "Guardians") |
+| Show pronouns | Display pronouns in UI |
+
+#### 7. Places
+Place organization and coordinate handling.
+
+| Subsection | Settings |
+|------------|----------|
+| Category organization | Use category subfolders, default category, category rules |
+| Folder mapping | Category → folder rules |
+| Coordinates | Accept DMS format |
+
+#### 8. Property & value aliases
+Custom frontmatter names and value mappings.
+
+| Subsection | Settings |
+|------------|----------|
+| Property aliases | Person, Event, Place, Source (collapsible per type) |
+| Value aliases | Event type, Sex, Place category, Note type |
+
+#### 9. Advanced
+Less frequently used settings.
+
+| Subsection | Settings |
+|------------|----------|
+| Folder filtering | Filter mode, excluded/included folders, staging isolation |
+| Template detection | Auto-detect template folders, additional template folders |
+| Media folders | Folder list, enable filter |
+| Research tools | Fact sourcing, coverage threshold, gaps in status |
+| Integrations | Calendarium mode, sync Calendarium events |
+| Logging | Log level, obfuscate exports |
 
 ### Migration Path
 
