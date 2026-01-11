@@ -218,8 +218,8 @@ export const NAV_GROUPS: NavGroupConfig[] = [
 	{ id: 'entities', label: 'Entities' },
 	{ id: 'data-structure', label: 'Data & Structure' },
 	{ id: 'output', label: 'Output' },
-	{ id: 'tools', label: 'Tools' },
-	{ id: 'settings', label: 'Settings' }
+	{ id: 'tools', label: 'Tools' }
+	// 'settings' group removed - Preferences consolidated into Plugin Settings (#176)
 ];
 
 /**
@@ -385,15 +385,8 @@ export const TAB_CONFIGS: TabConfig[] = [
 		icon: 'map',
 		description: 'Map visualizations and custom maps',
 		group: 'output'
-	},
-	// Settings group
-	{
-		id: 'preferences',
-		name: 'Preferences',
-		icon: 'sliders',
-		description: 'Aliases, folder locations, and canvas settings',
-		group: 'settings'
 	}
+	// Settings group removed - Preferences consolidated into Plugin Settings (#176)
 ];
 
 /**

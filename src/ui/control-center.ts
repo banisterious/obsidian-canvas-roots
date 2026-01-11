@@ -43,7 +43,7 @@ import { EventService } from '../events/services/event-service';
 import { AddPersonTypePreviewModal } from './add-person-type-modal';
 import { renderFamilyTimeline, getFamilyTimelineSummary } from '../events/ui/family-timeline';
 import { renderPlaceTimelineCard } from '../events/ui/place-timeline';
-import { renderPreferencesTab, renderCanvasLayoutCard, renderCanvasStylingCard } from './preferences-tab';
+import { renderCanvasLayoutCard, renderCanvasStylingCard } from './preferences-tab';
 import { renderDashboardTab } from './dashboard-tab';
 import { renderPlacesTab } from './places-tab';
 import { PropertyAliasService } from '../core/property-alias-service';
@@ -559,9 +559,6 @@ export class ControlCenterModal extends Modal {
 				break;
 			case 'sources':
 				void this.showSourcesTab();
-				break;
-			case 'preferences':
-				this.showPreferencesTab();
 				break;
 			default:
 				this.showPlaceholderTab(tabId);
@@ -1632,7 +1629,7 @@ export class ControlCenterModal extends Modal {
 						text: ' (aliased)',
 						cls: 'crc-text-muted cr-alias-indicator'
 					});
-					indicator.setAttribute('title', 'This property uses a custom name configured in Preferences');
+					indicator.setAttribute('title', 'This property uses a custom name configured in Settings → Charted Roots');
 				}
 			});
 		});
@@ -8763,20 +8760,6 @@ export class ControlCenterModal extends Modal {
 	}
 
 	/**
-	 * Show Preferences tab with property aliases and folder locations
-	 */
-	private showPreferencesTab(): void {
-		const container = this.contentContainer;
-		renderPreferencesTab(
-			container,
-			this.plugin,
-			(options) => this.createCard(options),
-			(tabId) => this.switchTab(tabId),
-			() => this.close()
-		);
-	}
-
-	/**
 	 * Get contrasting text color for a background color
 	 */
 	private getContrastColor(hexColor: string): string {
@@ -13051,7 +13034,7 @@ class BatchPreviewModal extends Modal {
 				const infoIcon = createLucideIcon('info', 16);
 				disabledWarning.appendChild(infoIcon);
 				disabledWarning.createSpan({
-					text: ' Sex normalization is disabled. The preview below shows what would be changed, but no changes will be applied. Change this in Preferences → Sex value normalization.'
+					text: ' Sex normalization is disabled. The preview below shows what would be changed, but no changes will be applied. Change this in Settings → Charted Roots → Sex & gender.'
 				});
 			}
 		}
@@ -13494,7 +13477,7 @@ class DateValidationPreviewModal extends Modal {
 		const infoIcon = infoEl.createEl('span', { cls: 'crc-batch-info-icon' });
 		setIcon(infoIcon, 'info');
 		infoEl.createEl('span', {
-			text: 'Date validation is preview-only. Click "Open note" to manually correct each date. Configure validation rules in Control Center > Preferences > Date validation.'
+			text: 'Date validation is preview-only. Click "Open note" to manually correct each date. Configure validation rules in Settings → Charted Roots → Dates & validation.'
 		});
 
 		// Buttons
