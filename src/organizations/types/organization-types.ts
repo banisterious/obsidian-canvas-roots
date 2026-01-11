@@ -97,7 +97,8 @@ export interface OrganizationFrontmatter {
 }
 
 /**
- * Membership data as stored in person frontmatter
+ * Membership data as stored in person frontmatter (legacy nested format)
+ * @deprecated Use flat parallel arrays instead (membership_orgs, membership_org_ids, etc.)
  */
 export interface MembershipData {
 	/** Wikilink to organization note */
@@ -112,6 +113,45 @@ export interface MembershipData {
 	to?: string;
 	/** Additional notes */
 	notes?: string;
+}
+
+/**
+ * Flat membership properties as stored in person frontmatter
+ *
+ * Each array is parallel - index 0 in each array represents the same membership.
+ * This format is consistent with sourced_* properties and works better with
+ * Obsidian's Properties editor and Dataview queries.
+ *
+ * Example:
+ * ```yaml
+ * membership_orgs:
+ *   - "[[House Stark]]"
+ *   - "[[Small Council]]"
+ * membership_org_ids:
+ *   - org-house-stark
+ *   - org-small-council
+ * membership_roles:
+ *   - Lord of Winterfell
+ *   - Hand of the King
+ * membership_from_dates:
+ *   - "283 AC"
+ *   - "298 AC"
+ * membership_to_dates:
+ *   - "298 AC"
+ *   - "298 AC"
+ * ```
+ */
+export interface FlatMembershipProperties {
+	/** Wikilinks to organization notes (parallel array) */
+	membership_orgs?: string[];
+	/** Organization cr_ids for robust linking (parallel array) */
+	membership_org_ids?: string[];
+	/** Roles/positions within organizations (parallel array) */
+	membership_roles?: string[];
+	/** Start dates of memberships (parallel array) */
+	membership_from_dates?: string[];
+	/** End dates of memberships (parallel array) */
+	membership_to_dates?: string[];
 }
 
 /**
