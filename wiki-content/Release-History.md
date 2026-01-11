@@ -9,6 +9,7 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ## Table of Contents
 
 - [v0.19.x](#v019x)
+  - [Romantic Relationship Label Preference](#romantic-relationship-label-preference-v0195)
   - [Partial Date Support](#partial-date-support-v0192)
   - [Plugin Rename: Canvas Roots → Charted Roots](#plugin-rename-canvas-roots--charted-roots-v0190)
 - [v0.18.x](#v018x)
@@ -94,6 +95,53 @@ For version-specific changes, see the [CHANGELOG](../CHANGELOG.md) and [GitHub R
 ---
 
 ## v0.19.x
+
+### Romantic Relationship Label Preference (v0.19.5)
+
+UI preference setting to choose whether the plugin displays "Spouse" or "Partner" terminology throughout menus, forms, labels, and wizards. The underlying data model and property names remain unchanged.
+
+**GitHub Issue:** [#167](https://github.com/banisterious/obsidian-charted-roots/issues/167)
+
+**Features Implemented:**
+
+| Feature | Description |
+|---------|-------------|
+| Setting toggle | "Romantic relationship label" dropdown in Settings → Sex & gender |
+| Terminology options | "Spouse" (default) or "Partner" |
+| UI-only change | Affects ~37 UI strings across 14 files; no data model changes |
+
+**What Changes:**
+- All UI labels showing "Spouse"/"Spouses" switch to "Partner"/"Partners" when enabled
+- Includes: person edit modals, family wizard, tree wizard, canvas settings, statistics display
+
+**What Does NOT Change:**
+- Frontmatter property names (`spouse`, `partners`)
+- Property alias mappings
+- Data model and relationship types
+- Export formats (GEDCOM, CSV column headers)
+
+**Files Added:**
+
+- `src/utils/terminology.ts` — Helper functions for dynamic terminology
+
+**Files Modified:**
+
+- `src/settings.ts` — Setting interface, default value, UI dropdown
+- `src/ui/modals/create-person-modal.ts` — Person creation/editing UI
+- `src/ui/wizards/family-creation-wizard.ts` — Family wizard labels
+- `src/control-center/tabs/preferences-tab.ts` — Display preferences
+- `src/ui/modals/canvas-style-modal.ts` — Canvas style overrides
+- `src/ui/wizards/unified-tree-wizard-modal.ts` — Tree wizard options
+- `src/ui/wizards/split-wizard-modal.ts` — Canvas split options
+- `src/ui/views/family-chart-view.ts` — Family chart relationship labels
+- `src/control-center/control-center.ts` — Statistics display
+- `src/ui/modals/merge-wizard-modal.ts` — Merge preview fields
+
+**Documentation:**
+
+- [Spouse/Partner Terminology Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/spouse-partner-terminology.md)
+
+---
 
 ### Partial Date Support (v0.19.2)
 

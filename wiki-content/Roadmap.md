@@ -14,7 +14,6 @@ This document outlines planned features for Charted Roots. For completed feature
   - [Per-Map Marker Assignment](#per-map-marker-assignment) 💡 Low
   - [Calendarium Integration](#calendarium-integration) 💡 Low
   - [Transcript Nodes & Oral History](#transcript-nodes--oral-history) 💡 Low
-  - [Romantic Relationship Label Preference](#romantic-relationship-label-preference) 💡 Low
   - [Multiple Surname Support](#multiple-surname-support) 💡 Low
 - [Future Considerations](#future-considerations)
   - [Research Tracking](#research-tracking)
@@ -33,6 +32,7 @@ For the complete list of implemented features, see [Release History](Release-His
 
 | Version | Feature | Summary |
 |:-------:|---------|---------|
+| v0.19.5 | [Romantic Relationship Label Preference](Release-History#romantic-relationship-label-preference-v0195) | UI preference to display "Spouse" or "Partner" terminology |
 | v0.19.3 | [Place Category Folder Mapping](Release-History#place-category-folder-mapping-v0193) | Automatic organization of places into category-based subfolders |
 | v0.19.3 | [Timeline Event Description Display](Release-History#timeline-event-description-display-v0193) | Descriptive event types show description instead of title in timelines |
 | v0.19.2 | [Partial Date Support](Release-History#partial-date-support-v0192) | GEDCOM import preserves date precision (year-only, month+year, qualifiers, ranges) |
@@ -336,42 +336,6 @@ oral_facts:
 - Map relationship structure of interviews
 - Interview as central hub node
 - Edge thickness indicates mention frequency
-
----
-
-### Romantic Relationship Label Preference
-
-**Priority:** 💡 Low — UI terminology preference for inclusive documentation
-
-**Status:** Planning
-
-**GitHub Issue:** [#167](https://github.com/banisterious/obsidian-charted-roots/issues/167)
-
-**Summary:** Add a preference setting that lets users choose whether the UI displays "Spouse" or "Partner" throughout the plugin — in menus, forms, labels, and wizards. The underlying data structure stays the same; this only changes what users see in the interface.
-
-**The Problem:** Some users prefer "partner" as a more inclusive term that covers all romantic relationships (marriages, civil unions, long-term partnerships, liaisons) without implying legal marriage. The current UI uses "spouse" consistently, which can feel inappropriate for users documenting non-marriage relationships.
-
-**The Solution:** A simple preference toggle:
-- **Setting name**: "Romantic relationship label"
-- **Options**: "Spouse" (default) | "Partner"
-- **Scope**: UI labels only — does not affect frontmatter property names
-
-**Implementation:**
-- Add setting to Preferences → Display
-- Create helper function that returns appropriate label based on preference
-- Update ~37 UI strings across 14 files
-
-**What Does NOT Change:**
-- Frontmatter property names (`spouse`, `partners`)
-- Property alias mappings
-- Data model and relationship types
-- Export formats (GEDCOM, CSV)
-
-**User Impact:** Non-breaking change
-- Default behavior unchanged (shows "Spouse")
-- Opt-in preference for users who want "Partner" terminology
-
-See [Spouse/Partner Terminology Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/spouse-partner-terminology.md) for detailed specifications.
 
 ---
 
