@@ -1,6 +1,7 @@
 # Plan: Romantic Relationship Label Preference (Issue #167)
 
-- **Status:** Planned
+- **Status:** In Progress
+- **Target Version:** v0.19.5
 - **GitHub Issue:** [#167](https://github.com/banisterious/obsidian-charted-roots/issues/167)
 
 ---
@@ -17,7 +18,7 @@ Some users prefer "partner" as a more inclusive term that covers all romantic re
 
 - **Setting name**: "Romantic relationship label"
 - **Options**: "Spouse" (default) | "Partner"
-- **Location**: Preferences → Display (or new "Terminology" section)
+- **Location**: Settings → Charted Roots → Sex & gender
 - **Scope**: UI labels only; does not affect frontmatter property names
 
 ## Affected UI Locations
@@ -104,12 +105,12 @@ export function getSpouseCompoundLabel(
 
 ### 3. Add UI Toggle
 
-**File**: `src/ui/preferences-tab.ts`
+**File**: `src/settings.ts`
 
-Add toggle in Display section:
+Add dropdown in Sex & gender section:
 
 ```typescript
-new Setting(displayContent)
+new Setting(sexGenderContent)
     .setName('Romantic relationship label')
     .setDesc('Choose terminology for spouse/partner relationships in the UI')
     .addDropdown(dropdown => dropdown
@@ -119,7 +120,6 @@ new Setting(displayContent)
         .onChange(async (value: 'spouse' | 'partner') => {
             this.plugin.settings.romanticRelationshipLabel = value;
             await this.plugin.saveSettings();
-            new Notice('Relationship label updated');
         }));
 ```
 

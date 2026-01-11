@@ -238,6 +238,8 @@ export interface CanvasRootsSettings {
 	privacyDisplayFormat: 'living' | 'private' | 'initials' | 'hidden';
 	hideDetailsForLiving: boolean;
 	showPronouns: boolean;
+	/** UI label preference for romantic relationships: "spouse" or "partner" */
+	romanticRelationshipLabel: 'spouse' | 'partner';
 	/** Whether the user has dismissed the privacy notice (shown after importing living persons) */
 	privacyNoticeDismissed: boolean;
 	// Relationship history settings
@@ -657,6 +659,7 @@ export const DEFAULT_SETTINGS: CanvasRootsSettings = {
 	privacyDisplayFormat: 'living',     // Show "Living" for protected persons
 	hideDetailsForLiving: true,         // Hide birth dates and places for living persons
 	showPronouns: true,                 // Show pronouns in person picker and displays
+	romanticRelationshipLabel: 'spouse', // UI label for romantic relationships (spouse/partner)
 	privacyNoticeDismissed: false,      // Show privacy notice after first import with living persons
 	// Relationship history defaults
 	enableRelationshipHistory: true,    // Default: ON - track relationship changes
