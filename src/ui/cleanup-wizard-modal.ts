@@ -1244,7 +1244,8 @@ export class CleanupWizardModal extends Modal {
 			'data_format': { icon: 'type', label: 'Format Issues', stepRef: 4 },
 			'orphan_reference': { icon: 'unlink', label: 'Orphan References', stepRef: 5 },
 			'nested_property': { icon: 'layers', label: 'Nested Properties', stepRef: 10 },
-			'legacy_type_property': { icon: 'tag', label: 'Legacy Type Property' }
+			'legacy_type_property': { icon: 'tag', label: 'Legacy Type Property' },
+			'legacy_membership': { icon: 'users', label: 'Legacy Memberships' }
 		};
 
 		// Render each category that has issues

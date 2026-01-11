@@ -9796,6 +9796,7 @@ export class ControlCenterModal extends Modal {
 			orphan_reference: 'Orphan ref',
 			nested_property: 'Nested',
 			legacy_type_property: 'Legacy type',
+			legacy_membership: 'Legacy membership',
 		};
 		return names[category] || category;
 	}

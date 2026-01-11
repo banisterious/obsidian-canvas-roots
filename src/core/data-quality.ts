@@ -37,7 +37,8 @@ export type IssueCategory =
 	| 'data_format'
 	| 'orphan_reference'
 	| 'nested_property'
-	| 'legacy_type_property';
+	| 'legacy_type_property'
+	| 'legacy_membership';
 
 /**
  * A single data quality issue
@@ -148,6 +149,7 @@ export interface DataQualityOptions {
 		orphanReferences?: boolean;
 		nestedProperties?: boolean;
 		legacyTypeProperty?: boolean;
+		legacyMemberships?: boolean;
 	};
 
 	/** Minimum severity to include */
@@ -224,6 +226,7 @@ export class DataQualityService {
 			orphanReferences: true,
 			nestedProperties: true,
 			legacyTypeProperty: true,
+			legacyMemberships: true,
 		};
 
 		for (const person of people) {
@@ -249,6 +252,9 @@ export class DataQualityService {
 			}
 			if (checks.legacyTypeProperty) {
 				issues.push(...this.checkLegacyTypeProperty(person));
+			}
+			if (checks.legacyMemberships) {
+				issues.push(...this.checkLegacyMemberships(person));
 			}
 		}
 
@@ -925,6 +931,59 @@ export class DataQualityService {
 	}
 
 	/**
+	 * Check for legacy nested memberships format
+	 * Detects person notes using the deprecated 'memberships' array or 'house'/'organization' fields
+	 * instead of the new flat parallel arrays (membership_orgs, membership_org_ids, etc.)
+	 */
+	private checkLegacyMemberships(person: PersonNode): DataQualityIssue[] {
+		const issues: DataQualityIssue[] = [];
+
+		// Get the cached frontmatter for this file
+		const cache = this.app.metadataCache.getFileCache(person.file);
+		if (!cache?.frontmatter) {
+			return issues;
+		}
+
+		const fm = cache.frontmatter as Record<string, unknown>;
+
+		// Check for legacy nested 'memberships' array format
+		if (Array.isArray(fm['memberships']) && fm['memberships'].length > 0) {
+			const count = fm['memberships'].length;
+			issues.push({
+				code: 'LEGACY_MEMBERSHIPS_NESTED',
+				message: `Uses legacy nested 'memberships' array with ${count} membership${count > 1 ? 's' : ''}. Migration to flat format recommended.`,
+				severity: 'info',
+				category: 'legacy_membership',
+				person,
+				details: {
+					format: 'nested',
+					membershipCount: count,
+				},
+			});
+			return issues; // Don't check other formats if nested is found
+		}
+
+		// Check for legacy simple 'house' or 'organization' field format
+		if (fm['house'] || fm['organization']) {
+			const orgRef = (fm['house'] || fm['organization']) as string;
+			issues.push({
+				code: 'LEGACY_MEMBERSHIPS_SIMPLE',
+				message: `Uses legacy simple '${fm['house'] ? 'house' : 'organization'}' field for membership. Migration to flat format recommended.`,
+				severity: 'info',
+				category: 'legacy_membership',
+				person,
+				details: {
+					format: 'simple',
+					field: fm['house'] ? 'house' : 'organization',
+					orgReference: typeof orgRef === 'string' ? orgRef : String(orgRef),
+				},
+			});
+		}
+
+		return issues;
+	}
+
+	/**
 	 * Check for ambiguous wikilinks in relationship fields
 	 * Detects when a wikilink could resolve to multiple files (same basename)
 	 */
@@ -1141,6 +1200,7 @@ export class DataQualityService {
 			orphan_reference: 0,
 			nested_property: 0,
 			legacy_type_property: 0,
+			legacy_membership: 0,
 		};
 		for (const issue of issues) {
 			byCategory[issue.category]++;
