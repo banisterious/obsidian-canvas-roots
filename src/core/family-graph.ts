@@ -1449,6 +1449,12 @@ export class FamilyGraphService {
 				parentCrIds.push(parentId);
 			}
 		}
+		// Merge adoptive/foster/guardian relationships from custom types
+		for (const adoptiveParentId of relationshipsFromArray.adoptiveParentCrIds) {
+			if (!adoptiveParentCrIds.includes(adoptiveParentId)) {
+				adoptiveParentCrIds.push(adoptiveParentId);
+			}
+		}
 
 		// Parse spouse relationships
 		// Priority: 1) Enhanced flat indexed format (spouse1, spouse2...), 2) Legacy 'spouse_id' or 'spouse' fields
@@ -1524,6 +1530,18 @@ export class FamilyGraphService {
 
 			// Filter out any unresolved Gramps handles from legacy fields
 			childrenCrIds = this.filterGrampsHandles(childrenCrIds);
+		}
+
+		// Merge spouse/child relationships from custom types (if not already present)
+		for (const spouseId of relationshipsFromArray.spouseCrIds) {
+			if (!spouseCrIds.includes(spouseId)) {
+				spouseCrIds.push(spouseId);
+			}
+		}
+		for (const childId of relationshipsFromArray.childrenCrIds) {
+			if (!childrenCrIds.includes(childId)) {
+				childrenCrIds.push(childId);
+			}
 		}
 
 		// Note: Frontmatter uses 'born'/'died' properties, mapped to birthDate/deathDate internally
@@ -1828,13 +1846,17 @@ export class FamilyGraphService {
 		stepfatherCrIds: string[];
 		stepmotherCrIds: string[];
 		parentCrIds: string[];
-		// Note: adoptive parents, foster parents, guardians, spouses, children
-		// could be added here in the future when their integration is implemented
+		adoptiveParentCrIds: string[];
+		spouseCrIds: string[];
+		childrenCrIds: string[];
 	} {
 		const result = {
 			stepfatherCrIds: [] as string[],
 			stepmotherCrIds: [] as string[],
-			parentCrIds: [] as string[]
+			parentCrIds: [] as string[],
+			adoptiveParentCrIds: [] as string[],
+			spouseCrIds: [] as string[],
+			childrenCrIds: [] as string[]
 		};
 
 		// Get all relationship types with family tree mappings
@@ -1879,12 +1901,8 @@ export class FamilyGraphService {
 				const targetCrId = rel.target_id || this.extractCrIdFromWikilink(rel.target);
 				if (!targetCrId) continue;
 
-				// Skip if already added from flat properties
-				const mapping = typeDef.familyGraphMapping;
-				if (mapping === 'parent' && result.parentCrIds.includes(targetCrId)) continue;
-				if (mapping === 'stepparent' && (result.stepfatherCrIds.includes(targetCrId) || result.stepmotherCrIds.includes(targetCrId))) continue;
-
-				this.addToFamilyGraphResult(result, mapping, targetCrId);
+				// Skip if already added from flat properties (addToFamilyGraphResult handles deduplication)
+				this.addToFamilyGraphResult(result, typeDef.familyGraphMapping, targetCrId);
 			}
 		}
 
@@ -1895,7 +1913,14 @@ export class FamilyGraphService {
 	 * Helper to add a cr_id to the appropriate family graph result array
 	 */
 	private addToFamilyGraphResult(
-		result: { stepfatherCrIds: string[]; stepmotherCrIds: string[]; parentCrIds: string[] },
+		result: {
+			stepfatherCrIds: string[];
+			stepmotherCrIds: string[];
+			parentCrIds: string[];
+			adoptiveParentCrIds: string[];
+			spouseCrIds: string[];
+			childrenCrIds: string[];
+		},
 		mapping: FamilyGraphMapping,
 		targetCrId: string
 	): void {
@@ -1914,9 +1939,36 @@ export class FamilyGraphService {
 				}
 				break;
 
-			// Other mappings (adoptive_parent, foster_parent, guardian, spouse, child)
-			// are not yet integrated into the family graph parsing
-			// They still require the direct frontmatter properties
+			case 'adoptive_parent':
+			case 'foster_parent':
+			case 'guardian':
+				// All these "parent-like" relationships map to adoptiveParentCrIds
+				// (gender-neutral array that gets included in ancestor trees)
+				if (!result.adoptiveParentCrIds.includes(targetCrId)) {
+					result.adoptiveParentCrIds.push(targetCrId);
+				}
+				break;
+
+			case 'spouse':
+				if (!result.spouseCrIds.includes(targetCrId)) {
+					result.spouseCrIds.push(targetCrId);
+				}
+				break;
+
+			case 'child':
+				if (!result.childrenCrIds.includes(targetCrId)) {
+					result.childrenCrIds.push(targetCrId);
+				}
+				break;
+
+			case 'father':
+			case 'mother':
+				// These are rarely used for custom types (usually direct properties)
+				// but include them for completeness - map to parentCrIds
+				if (!result.parentCrIds.includes(targetCrId)) {
+					result.parentCrIds.push(targetCrId);
+				}
+				break;
 		}
 	}
 
