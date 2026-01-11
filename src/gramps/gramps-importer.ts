@@ -1392,83 +1392,6 @@ export class GrampsImporter {
 	}
 
 	/**
-	 * Import a single place
-	 * Returns the cr_id if imported, or null if skipped (already exists)
-	 */
-	private async importPlace(
-		place: ParsedGrampsPlace,
-		grampsData: ParsedGrampsData,
-		placesFolder: string,
-		options: GrampsImportOptions,
-		mediaHandleToPath?: Map<string, string>
-	): Promise<string | null> {
-		const placeName = place.name || `Unknown Place (${place.id || place.handle})`;
-
-		// Check if place note already exists (sanitize name same way as createPlaceNote)
-		const sanitizedName = placeName
-			.replace(/^\[\[/, '').replace(/\]\]$/, '')  // Strip wikilink brackets
-			.replace(/[\\/:*?"<>|[\]]/g, '-')           // Remove invalid chars
-			.replace(/\s+/g, ' ')
-			.trim();
-		const expectedPath = normalizePath(`${placesFolder}/${sanitizedName}.md`);
-
-		if (this.app.vault.getAbstractFileByPath(expectedPath)) {
-			logger.debug('importPlace', `Skipping existing place: ${placeName}`);
-			return null;
-		}
-
-		const crId = generateCrId();
-
-		// Resolve media references to wikilinks
-		const resolvedMedia: string[] = [];
-		if (place.mediaRefs && place.mediaRefs.length > 0 && mediaHandleToPath) {
-			for (const ref of place.mediaRefs) {
-				const vaultPath = mediaHandleToPath.get(ref);
-				if (vaultPath) {
-					const filename = vaultPath.split('/').pop() || vaultPath;
-					resolvedMedia.push(`"[[${filename}]]"`);
-				}
-			}
-		}
-
-		// Resolve and format notes (if enabled)
-		let notesContent: string | undefined;
-		let hasPrivateNotes = false;
-		if (options.importNotes !== false && place.noteRefs && place.noteRefs.length > 0) {
-			const resolvedNotes: GrampsNote[] = [];
-			for (const noteRef of place.noteRefs) {
-				const note = grampsData.database.notes.get(noteRef);
-				if (note) {
-					resolvedNotes.push(note);
-				}
-			}
-			if (resolvedNotes.length > 0) {
-				notesContent = formatNotesSection(resolvedNotes);
-				hasPrivateNotes = hasPrivateNote(resolvedNotes);
-			}
-		}
-
-		// Convert Gramps place to PlaceData
-		const placeData: PlaceData = {
-			name: placeName,
-			crId: crId,
-			// Map Gramps place type to Charted Roots place type if possible
-			placeType: this.mapGrampsPlaceType(place.type),
-			media: resolvedMedia.length > 0 ? resolvedMedia : undefined,
-			notesContent,
-			private: hasPrivateNotes || undefined
-		};
-
-		// Write place note using the createPlaceNote function
-		await createPlaceNote(this.app, placeData, {
-			directory: placesFolder,
-			propertyAliases: options.propertyAliases
-		});
-
-		return crId;
-	}
-
-	/**
 	 * Parse a place name into hierarchy parts (split by comma)
 	 */
 	private parsePlaceHierarchy(placeName: string): string[] {
@@ -1667,39 +1590,6 @@ export class GrampsImporter {
 		}
 
 		return { placeNameToWikilink, placeNameToCrId, created };
-	}
-
-	/**
-	 * Map Gramps place type to Charted Roots place type
-	 */
-	private mapGrampsPlaceType(grampsType?: string): string | undefined {
-		if (!grampsType) return undefined;
-
-		// Common Gramps place types mapped to Charted Roots equivalents
-		const typeMap: Record<string, string> = {
-			'country': 'country',
-			'state': 'state',
-			'province': 'province',
-			'county': 'county',
-			'city': 'city',
-			'town': 'town',
-			'village': 'village',
-			'parish': 'parish',
-			'municipality': 'municipality',
-			'region': 'region',
-			'district': 'district',
-			'borough': 'borough',
-			'address': 'address',
-			'building': 'building',
-			'farm': 'farm',
-			'street': 'street',
-			'neighborhood': 'neighborhood',
-			'cemetery': 'cemetery',
-			'church': 'church'
-		};
-
-		const normalized = grampsType.toLowerCase();
-		return typeMap[normalized] || grampsType.toLowerCase();
 	}
 
 	/**
