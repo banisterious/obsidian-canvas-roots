@@ -317,49 +317,40 @@ export class GrampsImporter {
 				logger.info('importFile', `Extracted ${result.mediaFilesExtracted} media files to ${mediaFolder}`);
 			}
 
-			// Create mapping of Gramps handles to cr_ids
+			// Create mapping of Gramps handles to cr_ids (for person relationships)
 			const grampsToCrId = new Map<string, string>();
 			// Mapping from place name to wikilink (for linking in person notes)
-			const placeNameToWikilink = new Map<string, string>();
+			let placeNameToWikilink = new Map<string, string>();
 
 			// Create place notes FIRST if requested (so we can link to them from person notes)
 			if (options.createPlaceNotes && grampsData.places.size > 0) {
-				// Only import places that have ptitle with commas (fully qualified hierarchical names)
-				// Gramps generates ptitle for all places, but only leaf places have comma-separated
-				// hierarchies like "Atlanta, Fulton County, Georgia, USA"
-				// Intermediate places have ptitle like "Atlanta Fulton County" (no commas)
-				const leafPlaces = Array.from(grampsData.places.entries()).filter(([, place]) => {
-					// Must have ptitle AND it must contain commas (indicating hierarchy)
-					return place.hasPtitle === true && place.name?.includes(',');
-				});
-
-				const placesTotal = leafPlaces.length;
-				reportProgress('places', 0, placesTotal, `Creating ${placesTotal} place notes...`);
 				const placesFolder = options.placesFolder || options.peopleFolder;
 				await this.ensureFolderExists(placesFolder);
 
-				let placeIndex = 0;
-				for (const [handle, place] of leafPlaces) {
-					try {
-						const crId = await this.importPlace(place, grampsData, placesFolder, options, result.mediaHandleToPath);
-						if (crId !== null) {
-							// Place was created
-							result.placeNotesCreated = (result.placeNotesCreated || 0) + 1;
-						}
-						// Always count as imported (even if skipped due to existing)
-						result.placesImported = (result.placesImported || 0) + 1;
+				// Collect all places with expanded hierarchies (like GEDCOM importer)
+				const allPlaces = this.collectAllPlacesWithHierarchy(grampsData);
 
-						// Store mapping from place name to wikilink for use in person notes
-						if (place.name) {
-							placeNameToWikilink.set(place.name, `[[${place.name}]]`);
-						}
+				if (allPlaces.size > 0) {
+					reportProgress('places', 0, allPlaces.size, `Creating ${allPlaces.size} place notes (including hierarchy)...`);
+
+					try {
+						const placeResult = await this.createPlaceNotesWithHierarchy(
+							allPlaces,
+							grampsData,
+							placesFolder,
+							options,
+							result.mediaHandleToPath,
+							reportProgress
+						);
+
+						placeNameToWikilink = placeResult.placeNameToWikilink;
+						result.placeNotesCreated = placeResult.created;
+						result.placesImported = allPlaces.size;
 					} catch (error: unknown) {
 						result.errors.push(
-							`Failed to import place ${place.name || handle}: ${getErrorMessage(error)}`
+							`Failed to import places: ${getErrorMessage(error)}`
 						);
 					}
-					placeIndex++;
-					reportProgress('places', placeIndex, placesTotal);
 				}
 
 				// Build additional mappings for malformed place names (space-separated → comma-separated)
@@ -1475,6 +1466,207 @@ export class GrampsImporter {
 		});
 
 		return crId;
+	}
+
+	/**
+	 * Parse a place name into hierarchy parts (split by comma)
+	 */
+	private parsePlaceHierarchy(placeName: string): string[] {
+		if (!placeName) return [];
+		return placeName
+			.split(',')
+			.map(p => p.trim())
+			.filter(p => p.length > 0);
+	}
+
+	/**
+	 * Get canonical name for a place at a given level.
+	 * E.g., for parts ["Springfield", "Illinois", "USA"] at level 1:
+	 * Returns "Illinois, USA" (from index 1 onward)
+	 */
+	private getPlaceAtLevel(parts: string[], levelIndex: number): string {
+		return parts.slice(levelIndex).join(', ');
+	}
+
+	/**
+	 * Infer place type from hierarchy position and name patterns
+	 */
+	private inferPlaceType(name: string, parts: string[]): string {
+		const lowerName = name.toLowerCase();
+		const depth = parts.length;
+
+		// Check for common suffixes/patterns
+		if (lowerName.endsWith(' county') || lowerName.includes(' co.')) return 'county';
+		if (lowerName.endsWith(' parish')) return 'parish';
+		if (lowerName.endsWith(' township') || lowerName.endsWith(' twp')) return 'township';
+		if (lowerName.endsWith(' borough')) return 'borough';
+
+		// Infer from hierarchy depth (typical US: City, County, State, Country)
+		if (depth === 1) return 'country';
+		if (depth === 2) return 'state';
+		if (depth === 3) return 'county';
+		if (depth >= 4) return 'city';
+
+		return 'unknown';
+	}
+
+	/**
+	 * Collect all places from Gramps data, expanding hierarchies.
+	 * Returns a Map of place string → hierarchy parts
+	 */
+	private collectAllPlacesWithHierarchy(grampsData: ParsedGrampsData): Map<string, string[]> {
+		const places = new Map<string, string[]>();
+
+		const addPlace = (placeName: string | undefined) => {
+			if (!placeName) return;
+
+			const parts = this.parsePlaceHierarchy(placeName);
+			if (parts.length === 0) return;
+
+			// Add the full place
+			places.set(placeName, parts);
+
+			// Add all parent levels too
+			// E.g., "Springfield, Illinois, USA" creates:
+			// - "Springfield, Illinois, USA" (full)
+			// - "Illinois, USA" (parent)
+			// - "USA" (grandparent)
+			for (let i = 1; i < parts.length; i++) {
+				const parentPlace = this.getPlaceAtLevel(parts, i);
+				if (!places.has(parentPlace)) {
+					places.set(parentPlace, parts.slice(i));
+				}
+			}
+		};
+
+		// Collect from all Gramps places that have comma-separated names
+		for (const [, place] of grampsData.places) {
+			if (place.name && place.name.includes(',')) {
+				addPlace(place.name);
+			}
+		}
+
+		return places;
+	}
+
+	/**
+	 * Create place notes with proper hierarchy (parents created before children)
+	 */
+	private async createPlaceNotesWithHierarchy(
+		places: Map<string, string[]>,
+		grampsData: ParsedGrampsData,
+		placesFolder: string,
+		options: GrampsImportOptions,
+		mediaHandleToPath: Map<string, string> | undefined,
+		reportProgress: (phase: GrampsImportPhase, current: number, total: number, message?: string) => void
+	): Promise<{
+		placeNameToWikilink: Map<string, string>;
+		placeNameToCrId: Map<string, string>;
+		created: number;
+	}> {
+		const placeNameToWikilink = new Map<string, string>();
+		const placeNameToCrId = new Map<string, string>();
+		let created = 0;
+
+		// Sort places by hierarchy depth (fewest parts first = most general)
+		// This ensures parent places are created before children
+		const sortedPlaces = Array.from(places.entries())
+			.sort((a, b) => a[1].length - b[1].length);
+
+		const totalPlaces = sortedPlaces.length;
+		let placeIndex = 0;
+
+		for (const [placeString, parts] of sortedPlaces) {
+			reportProgress('places', placeIndex, totalPlaces);
+
+			const name = parts[0]; // Most specific part
+			const sanitizedName = name
+				.replace(/[\\/:*?"<>|[\]]/g, '-')
+				.replace(/\s+/g, ' ')
+				.trim();
+
+			// Add disambiguation if needed (e.g., "Illinois USA" to distinguish from city named Illinois)
+			let fileName = sanitizedName;
+			if (parts.length > 1 && parts.length <= 2) {
+				fileName = `${sanitizedName} ${parts[1]}`;
+			}
+
+			const filePath = normalizePath(`${placesFolder}/${fileName}.md`);
+
+			// Check if already exists
+			if (this.app.vault.getAbstractFileByPath(filePath)) {
+				// Try to read existing cr_id
+				const existingFile = this.app.vault.getAbstractFileByPath(filePath);
+				if (existingFile instanceof TFile) {
+					const content = await this.app.vault.read(existingFile);
+					const crIdMatch = content.match(/^cr_id:\s*(.+)$/m);
+					if (crIdMatch) {
+						placeNameToCrId.set(placeString, crIdMatch[1].trim());
+					}
+				}
+				placeNameToWikilink.set(placeString, `[[${fileName}]]`);
+				placeIndex++;
+				continue;
+			}
+
+			const crId = generateCrId();
+			placeNameToCrId.set(placeString, crId);
+			placeNameToWikilink.set(placeString, `[[${fileName}]]`);
+
+			// Get parent info if exists
+			let parentWikilink: string | undefined;
+			let parentCrId: string | undefined;
+			if (parts.length > 1) {
+				const parentPlaceString = this.getPlaceAtLevel(parts, 1);
+				parentWikilink = placeNameToWikilink.get(parentPlaceString)?.replace(/^\[\[/, '').replace(/\]\]$/, '');
+				parentCrId = placeNameToCrId.get(parentPlaceString);
+			}
+
+			// Infer place type
+			const placeType = this.inferPlaceType(name, parts);
+
+			// Look up original Gramps place for media/notes
+			let grampsPlace: ParsedGrampsPlace | undefined;
+			for (const [, p] of grampsData.places) {
+				if (p.name === placeString) {
+					grampsPlace = p;
+					break;
+				}
+			}
+
+			// Resolve media references
+			const resolvedMedia: string[] = [];
+			if (grampsPlace?.mediaRefs && mediaHandleToPath) {
+				for (const ref of grampsPlace.mediaRefs) {
+					const vaultPath = mediaHandleToPath.get(ref);
+					if (vaultPath) {
+						const filename = vaultPath.split('/').pop() || vaultPath;
+						resolvedMedia.push(`"[[${filename}]]"`);
+					}
+				}
+			}
+
+			// Build PlaceData
+			const placeData: PlaceData = {
+				name: name,
+				crId: crId,
+				placeType: placeType,
+				parentPlace: parentWikilink ? `[[${parentWikilink}]]` : undefined,
+				parentPlaceId: parentCrId,
+				media: resolvedMedia.length > 0 ? resolvedMedia : undefined
+			};
+
+			// Write place note
+			await createPlaceNote(this.app, placeData, {
+				directory: placesFolder,
+				propertyAliases: options.propertyAliases
+			});
+
+			created++;
+			placeIndex++;
+		}
+
+		return { placeNameToWikilink, placeNameToCrId, created };
 	}
 
 	/**
