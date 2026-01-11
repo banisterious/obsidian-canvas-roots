@@ -1352,6 +1352,18 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		new Setting(sexContent)
+			.setName('Romantic relationship label')
+			.setDesc('Choose terminology for spouse/partner relationships in the UI')
+			.addDropdown(dropdown => dropdown
+				.addOption('spouse', 'Spouse')
+				.addOption('partner', 'Partner')
+				.setValue(this.plugin.settings.romanticRelationshipLabel)
+				.onChange(async (value: 'spouse' | 'partner') => {
+					this.plugin.settings.romanticRelationshipLabel = value;
+					await this.plugin.saveSettings();
+				}));
+
 		// ═══════════════════════════════════════════════════════════════════════
 		// SECTION 7: PLACES
 		// ═══════════════════════════════════════════════════════════════════════
