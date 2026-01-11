@@ -1,6 +1,6 @@
 # Settings Consolidation
 
-- **Status:** Planning
+- **Status:** Complete
 - **Target Version:** v0.19.5
 - **Related Issue:** [#176](https://github.com/banisterious/obsidian-charted-roots/issues/176)
 - **Created:** 2026-01-10
@@ -172,10 +172,10 @@ Less frequently used settings.
 
 ## Success Criteria
 
-- [ ] All Preferences settings accessible in Plugin Settings
-- [ ] Preferences tab shows deprecation notice with link
-- [ ] Property alias editing works in new location
-- [ ] Value alias editing works in new location
-- [ ] Folder suggestions work in new location
-- [ ] No regression in existing functionality
-- [ ] Cross-reference callouts removed from both locations
+- [x] All Preferences settings accessible in Plugin Settings
+- [x] Preferences tab shows deprecation notice with link
+- [x] Property alias editing works in new location
+- [x] Value alias editing works in new location
+- [x] Folder suggestions work in new location
+- [x] No regression in existing functionality
+- [x] Cross-reference callouts removed from both locations
