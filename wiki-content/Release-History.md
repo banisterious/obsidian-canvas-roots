@@ -176,7 +176,7 @@ If you installed via BRAT using the old repository name, update your configurati
 
 **Documentation:**
 
-- [Plugin Rename Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/plugin-rename.md)
+- [Plugin Rename Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/plugin-rename.md)
 - Community discussion: [#58](https://github.com/banisterious/obsidian-charted-roots/discussions/58)
 
 ---
@@ -233,7 +233,7 @@ father: "[[John Smith]]"
 
 **Documentation:**
 
-- [Wikilink Resolution Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/wikilink-to-crid-resolution.md)
+- [Wikilink Resolution Planning Document](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/wikilink-to-crid-resolution.md)
 
 ---
 
@@ -277,7 +277,7 @@ Automatic detection and preprocessing of MyHeritage GEDCOM exports to fix vendor
 
 **Documentation:**
 
-- [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/myheritage-gedcom-compatibility.md)
+- [MyHeritage GEDCOM Compatibility Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/myheritage-gedcom-compatibility.md)
 
 ---
 
@@ -309,7 +309,7 @@ Genealogists often know relationships before identities. For example, "John's fa
 
 **Documentation:**
 
-- [Optional Person Names Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/optional-person-names.md)
+- [Optional Person Names Planning](https://github.com/banisterious/obsidian-charted-roots/blob/main/docs/planning/archive/optional-person-names.md)
 
 ---
 

@@ -1,10 +1,10 @@
 # MyHeritage GEDCOM Import Compatibility
 
 **GitHub Issue:** [#144](https://github.com/banisterious/obsidian-charted-roots/issues/144)
-**Status:** Phase 2 Implemented
+**Status:** ✅ Complete (v0.19.1)
 **Priority:** Medium
 **Labels:** `accepted`, `enhancement`, `gedcom`
-**Updated:** 2026-01-10 (Phase 2: whitespace-only line handling fix)
+**Updated:** 2026-01-11
 
 ## Implementation Status
 
