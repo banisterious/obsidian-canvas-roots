@@ -1,4 +1,4 @@
-import { App, Notice, normalizePath, PluginSettingTab, Setting } from 'obsidian';
+import { App, Notice, normalizePath, PluginSettingTab, Setting, TFolder, TextComponent, AbstractInputSuggest, setIcon } from 'obsidian';
 import CanvasRootsPlugin from '../main';
 import type { LogLevel } from './core/logging';
 import type { RelationshipTypeDefinition } from './relationships';
@@ -10,6 +10,26 @@ import type { OrganizationCategoryDefinition } from './organizations/types/organ
 import type { RelationshipCategoryDefinition } from './relationships/types/relationship-types';
 import type { PlaceTypeDefinition, PlaceTypeCategoryDefinition } from './places/types/place-types';
 import type { GedcomCompatibilityMode } from './gedcom/gedcom-preprocessor';
+import {
+	PropertyAliasService,
+	PERSON_PROPERTY_METADATA,
+	EVENT_PROPERTY_METADATA,
+	PLACE_PROPERTY_METADATA,
+	SOURCE_PROPERTY_METADATA,
+	type PropertyMetadata
+} from './core/property-alias-service';
+import {
+	ValueAliasService,
+	EVENT_TYPE_LABELS,
+	SEX_LABELS,
+	PLACE_CATEGORY_LABELS,
+	NOTE_TYPE_LABELS,
+	CANONICAL_EVENT_TYPES,
+	CANONICAL_SEX_VALUES,
+	CANONICAL_PLACE_CATEGORIES,
+	CANONICAL_NOTE_TYPES,
+	type ValueAliasField
+} from './core/value-alias-service';
 
 export interface RecentTreeInfo {
 	canvasPath: string;
