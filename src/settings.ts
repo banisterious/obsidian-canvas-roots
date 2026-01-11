@@ -1365,19 +1365,172 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				}));
 
 		// ═══════════════════════════════════════════════════════════════════════
-		// RESEARCH TOOLS SECTION (Collapsible)
+		// SECTION 8: PROPERTY & VALUE ALIASES
 		// ═══════════════════════════════════════════════════════════════════════
-		const researchDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
-		const researchSummary = researchDetails.createEl('summary');
-		researchSummary.createSpan({ text: 'Research tools' });
-		researchSummary.createSpan({ cls: 'cr-section-desc', text: 'Optional features for advanced genealogists' });
-		const researchContent = researchDetails.createDiv({ cls: 'cr-section-content' });
+		const aliasesDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
+		const aliasesSummary = aliasesDetails.createEl('summary');
+		aliasesSummary.createSpan({ text: 'Property & value aliases' });
+		aliasesSummary.createSpan({ cls: 'cr-section-desc', text: 'Custom frontmatter names and value mappings' });
+		const aliasesContent = aliasesDetails.createDiv({ cls: 'cr-section-content' });
 
-		const researchInfo = researchContent.createDiv({ cls: 'setting-item-description cr-info-box' });
-		researchInfo.createEl('strong', { text: '🔬' });
-		researchInfo.appendText(' These tools help track which facts have documentary evidence, aligned with the Genealogical Proof Standard.');
+		// Services for alias management
+		const propertyAliasService = new PropertyAliasService(this.plugin);
+		const valueAliasService = new ValueAliasService(this.plugin);
 
-		new Setting(researchContent)
+		// Description
+		const aliasExplanation = aliasesContent.createDiv({ cls: 'setting-item-description cr-info-box' });
+		aliasExplanation.appendText('Use your own property names and values—Charted Roots will recognize them without rewriting your files.');
+
+		// --- Property aliases subsection ---
+		aliasesContent.createEl('h4', { text: 'Property aliases', cls: 'cr-subsection-title' });
+
+		// Person properties
+		this.renderPropertyAliasSection(aliasesContent, 'Person properties', PERSON_PROPERTY_METADATA, propertyAliasService);
+
+		// Event properties
+		this.renderPropertyAliasSection(aliasesContent, 'Event properties', EVENT_PROPERTY_METADATA, propertyAliasService);
+
+		// Place properties
+		this.renderPropertyAliasSection(aliasesContent, 'Place properties', PLACE_PROPERTY_METADATA, propertyAliasService);
+
+		// Source properties
+		this.renderPropertyAliasSection(aliasesContent, 'Source properties', SOURCE_PROPERTY_METADATA, propertyAliasService);
+
+		// --- Value aliases subsection ---
+		aliasesContent.createEl('h4', { text: 'Value aliases', cls: 'cr-subsection-title' });
+
+		const valueAliasExplanation = aliasesContent.createDiv({ cls: 'setting-item-description cr-info-box cr-info-box--muted' });
+		valueAliasExplanation.appendText('Map your custom values to Charted Roots canonical values. For example, map "nameday" to "birth" event type.');
+
+		// Event type values
+		this.renderValueAliasSection(aliasesContent, 'Event type values', 'eventType', CANONICAL_EVENT_TYPES, EVENT_TYPE_LABELS, valueAliasService);
+
+		// Sex values
+		this.renderValueAliasSection(aliasesContent, 'Sex values', 'sex', CANONICAL_SEX_VALUES, SEX_LABELS, valueAliasService);
+
+		// Place category values
+		this.renderValueAliasSection(aliasesContent, 'Place category values', 'placeCategory', CANONICAL_PLACE_CATEGORIES, PLACE_CATEGORY_LABELS, valueAliasService);
+
+		// Note type values
+		this.renderValueAliasSection(aliasesContent, 'Note type values', 'noteType', CANONICAL_NOTE_TYPES, NOTE_TYPE_LABELS, valueAliasService);
+
+		// ═══════════════════════════════════════════════════════════════════════
+		// SECTION 9: ADVANCED
+		// ═══════════════════════════════════════════════════════════════════════
+		const advancedDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
+		const advancedSummary = advancedDetails.createEl('summary');
+		advancedSummary.createSpan({ text: 'Advanced' });
+		advancedSummary.createSpan({ cls: 'cr-section-desc', text: 'Less frequently used settings' });
+		const advancedContent = advancedDetails.createDiv({ cls: 'cr-section-content' });
+
+		// --- Folder filtering subsection ---
+		advancedContent.createEl('h4', { text: 'Folder filtering', cls: 'cr-subsection-title' });
+
+		new Setting(advancedContent)
+			.setName('Filter mode')
+			.setDesc('Control which folders are scanned for notes')
+			.addDropdown(dropdown => dropdown
+				.addOption('disabled', 'Disabled (scan all)')
+				.addOption('exclude', 'Exclude folders')
+				.addOption('include', 'Include folders only')
+				.setValue(this.plugin.settings.folderFilterMode)
+				.onChange(async (value: FolderFilterMode) => {
+					this.plugin.settings.folderFilterMode = value;
+					await this.plugin.saveSettings();
+					this.display();
+				}));
+
+		if (this.plugin.settings.folderFilterMode !== 'disabled') {
+			const isExcludeMode = this.plugin.settings.folderFilterMode === 'exclude';
+			const filterFolders = isExcludeMode
+				? this.plugin.settings.excludedFolders
+				: this.plugin.settings.includedFolders;
+
+			new Setting(advancedContent)
+				.setName(isExcludeMode ? 'Excluded folders' : 'Included folders')
+				.setDesc('One folder path per line')
+				.addTextArea(textArea => textArea
+					.setPlaceholder(isExcludeMode ? 'templates\narchive' : 'People\nFamily')
+					.setValue(filterFolders.join('\n'))
+					.onChange(async (value) => {
+						const folderList = value.split('\n').map(f => f.trim()).filter(f => f.length > 0);
+						if (isExcludeMode) {
+							this.plugin.settings.excludedFolders = folderList;
+						} else {
+							this.plugin.settings.includedFolders = folderList;
+						}
+						await this.plugin.saveSettings();
+					}));
+		}
+
+		new Setting(advancedContent)
+			.setName('Staging isolation')
+			.setDesc('Exclude staging folder from normal operations')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enableStagingIsolation)
+				.onChange(async (value) => {
+					this.plugin.settings.enableStagingIsolation = value;
+					await this.plugin.saveSettings();
+				}));
+
+		// --- Template detection subsection ---
+		advancedContent.createEl('h4', { text: 'Template detection', cls: 'cr-subsection-title' });
+
+		new Setting(advancedContent)
+			.setName('Auto-detect template folders')
+			.setDesc('Automatically exclude template folders from Templates/Templater/QuickAdd plugins')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.autoDetectTemplateFolders)
+				.onChange(async (value) => {
+					this.plugin.settings.autoDetectTemplateFolders = value;
+					await this.plugin.saveSettings();
+					const templateFilter = this.plugin.getTemplateFilter();
+					if (templateFilter) {
+						templateFilter.refresh();
+					}
+				}));
+
+		new Setting(advancedContent)
+			.setName('Additional template folders')
+			.setDesc('Additional folders to exclude from note discovery (one per line)')
+			.addTextArea(textArea => textArea
+				.setPlaceholder('_templates\nmy-templates')
+				.setValue((this.plugin.settings.templateFolders || []).join('\n'))
+				.onChange(async (value) => {
+					const folderList = value.split('\n').map(f => f.trim()).filter(f => f.length > 0);
+					this.plugin.settings.templateFolders = folderList;
+					await this.plugin.saveSettings();
+				}));
+
+		// --- Media folders subsection ---
+		advancedContent.createEl('h4', { text: 'Media folders', cls: 'cr-subsection-title' });
+
+		new Setting(advancedContent)
+			.setName('Limit media scanning')
+			.setDesc('Only scan specified folders for media files')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enableMediaFolderFilter)
+				.onChange(async (value) => {
+					this.plugin.settings.enableMediaFolderFilter = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(advancedContent)
+			.setName('Media folders')
+			.setDesc('Folders to scan for media files (one per line)')
+			.addTextArea(textArea => textArea
+				.setPlaceholder('Attachments\nMedia')
+				.setValue((this.plugin.settings.mediaFolders || []).join('\n'))
+				.onChange(async (value) => {
+					const folderList = value.split('\n').map(f => f.trim()).filter(f => f.length > 0);
+					this.plugin.settings.mediaFolders = folderList;
+					await this.plugin.saveSettings();
+				}));
+
+		// --- Research tools subsection ---
+		advancedContent.createEl('h4', { text: 'Research tools', cls: 'cr-subsection-title' });
+
+		new Setting(advancedContent)
 			.setName('Enable fact-level source tracking')
 			.setDesc('Track which specific facts have source citations')
 			.addToggle(toggle => toggle
@@ -1385,13 +1538,11 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.trackFactSourcing = value;
 					await this.plugin.saveSettings();
-					// Refresh to show/hide dependent settings
 					this.display();
 				}));
 
-		// Only show dependent settings if tracking is enabled
 		if (this.plugin.settings.trackFactSourcing) {
-			new Setting(researchContent)
+			new Setting(advancedContent)
 				.setName('Fact coverage threshold')
 				.setDesc('Number of key facts for 100% coverage calculation')
 				.addText(text => text
@@ -1405,7 +1556,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 						}
 					}));
 
-			new Setting(researchContent)
+			new Setting(advancedContent)
 				.setName('Show research gaps in status tab')
 				.setDesc('Display summary of unsourced facts in control center')
 				.addToggle(toggle => toggle
@@ -1416,16 +1567,35 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					}));
 		}
 
-		// ═══════════════════════════════════════════════════════════════════════
-		// LOGGING SECTION (Collapsible)
-		// ═══════════════════════════════════════════════════════════════════════
-		const loggingDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
-		const loggingSummary = loggingDetails.createEl('summary');
-		loggingSummary.createSpan({ text: 'Logging' });
-		loggingSummary.createSpan({ cls: 'cr-section-desc', text: 'Debug output and log exports' });
-		const loggingContent = loggingDetails.createDiv({ cls: 'cr-section-content' });
+		// --- Integrations subsection ---
+		advancedContent.createEl('h4', { text: 'Integrations', cls: 'cr-subsection-title' });
 
-		new Setting(loggingContent)
+		new Setting(advancedContent)
+			.setName('Calendarium integration')
+			.setDesc('Import calendar definitions from Calendarium plugin')
+			.addDropdown(dropdown => dropdown
+				.addOption('off', 'Off')
+				.addOption('read', 'Read calendars')
+				.setValue(this.plugin.settings.calendariumIntegration)
+				.onChange(async (value) => {
+					this.plugin.settings.calendariumIntegration = value as 'off' | 'read';
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(advancedContent)
+			.setName('Sync Calendarium events')
+			.setDesc('Show Calendarium dates (fc-date, fc-end) on timelines')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.syncCalendariumEvents)
+				.onChange(async (value) => {
+					this.plugin.settings.syncCalendariumEvents = value;
+					await this.plugin.saveSettings();
+				}));
+
+		// --- Logging subsection ---
+		advancedContent.createEl('h4', { text: 'Logging', cls: 'cr-subsection-title' });
+
+		new Setting(advancedContent)
 			.setName('Log level')
 			.setDesc('Verbosity of console logging')
 			.addDropdown(dropdown => dropdown
@@ -1438,25 +1608,11 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 				.onChange(async (value: LogLevel) => {
 					this.plugin.settings.logLevel = value;
 					await this.plugin.saveSettings();
-					// Update logger immediately
 					const { LoggerFactory } = await import('./core/logging');
 					LoggerFactory.setLogLevel(value);
 				}));
 
-		new Setting(loggingContent)
-			.setName('Log export folder')
-			.setDesc('Vault folder for exported log files')
-			.addText(text => text
-				.setPlaceholder('.canvas-roots/logs')
-				.setValue(this.plugin.settings.logExportPath)
-				.onChange(async (value) => {
-					// Normalize the path (remove leading/trailing slashes)
-					const normalized = value.replace(/^\/+|\/+$/g, '');
-					this.plugin.settings.logExportPath = normalized;
-					await this.plugin.saveSettings();
-				}));
-
-		new Setting(loggingContent)
+		new Setting(advancedContent)
 			.setName('Obfuscate log exports')
 			.setDesc('Replace PII with placeholders when exporting logs')
 			.addToggle(toggle => toggle
@@ -1466,7 +1622,7 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
-		new Setting(loggingContent)
+		new Setting(advancedContent)
 			.setName('Export logs')
 			.setDesc('Export collected logs to a file in the vault')
 			.addButton(button => button
@@ -1480,12 +1636,10 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 						return;
 					}
 
-					// Optionally obfuscate
 					const logsToExport = this.plugin.settings.obfuscateLogExports
 						? obfuscateLogs(logs)
 						: logs;
 
-					// Format logs as text
 					const lines = logsToExport.map(entry => {
 						const timestamp = entry.timestamp.toISOString();
 						const level = entry.level.toUpperCase().padEnd(5);
@@ -1494,120 +1648,18 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					});
 					const content = lines.join('\n');
 
-					// Determine output path
 					const folder = this.plugin.settings.logExportPath || '.canvas-roots/logs';
 					const filename = `canvas-roots-${new Date().toISOString().replace(/[:.]/g, '-')}.log`;
 					const fullPath = normalizePath(`${folder}/${filename}`);
 
-					// Ensure folder exists
 					const folderPath = normalizePath(folder);
 					const existingFolder = this.app.vault.getAbstractFileByPath(folderPath);
 					if (!existingFolder) {
 						await this.app.vault.createFolder(folderPath);
 					}
 
-					// Write the file
 					await this.app.vault.create(fullPath, content);
 					new Notice(`Exported ${logs.length} log entries to ${fullPath}`);
-				}));
-
-		// ═══════════════════════════════════════════════════════════════════════
-		// ADVANCED SECTION (Collapsible)
-		// ═══════════════════════════════════════════════════════════════════════
-		const advancedDetails = containerEl.createEl('details', { cls: 'cr-settings-section' });
-		const advancedSummary = advancedDetails.createEl('summary');
-		advancedSummary.createSpan({ text: 'Advanced' });
-		advancedSummary.createSpan({ cls: 'cr-section-desc', text: 'Folder filtering and edge cases' });
-		const advancedContent = advancedDetails.createDiv({ cls: 'cr-section-content' });
-
-		// Folder filtering
-		new Setting(advancedContent)
-			.setName('Folder filtering')
-			.setDesc('Control which folders are scanned for notes')
-			.addDropdown(dropdown => dropdown
-				.addOption('disabled', 'Disabled (scan all)')
-				.addOption('exclude', 'Exclude folders')
-				.addOption('include', 'Include folders only')
-				.setValue(this.plugin.settings.folderFilterMode)
-				.onChange(async (value: FolderFilterMode) => {
-					this.plugin.settings.folderFilterMode = value;
-					await this.plugin.saveSettings();
-					// Refresh display to show/hide folder list
-					this.display();
-				}));
-
-		// Show folder list based on mode
-		if (this.plugin.settings.folderFilterMode !== 'disabled') {
-			const isExcludeMode = this.plugin.settings.folderFilterMode === 'exclude';
-			const folders = isExcludeMode
-				? this.plugin.settings.excludedFolders
-				: this.plugin.settings.includedFolders;
-
-			new Setting(advancedContent)
-				.setName(isExcludeMode ? 'Excluded folders' : 'Included folders')
-				.setDesc('One folder path per line. Subfolders are included automatically.')
-				.addTextArea(textArea => textArea
-					.setPlaceholder(isExcludeMode
-						? `templates\narchive\n${this.app.vault.configDir}`
-						: 'People\nFamily')
-					.setValue(folders.join('\n'))
-					.onChange(async (value) => {
-						const folderList = value
-							.split('\n')
-							.map(f => f.trim())
-							.filter(f => f.length > 0);
-
-						if (isExcludeMode) {
-							this.plugin.settings.excludedFolders = folderList;
-						} else {
-							this.plugin.settings.includedFolders = folderList;
-						}
-						await this.plugin.saveSettings();
-					}));
-		}
-
-		// Template folder filtering
-		new Setting(advancedContent)
-			.setName('Auto-detect template folders')
-			.setDesc('Automatically exclude template folders (from Templates, Templater, QuickAdd plugins)')
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.autoDetectTemplateFolders)
-				.onChange(async (value) => {
-					this.plugin.settings.autoDetectTemplateFolders = value;
-					await this.plugin.saveSettings();
-					// Refresh template filter and display
-					const templateFilter = this.plugin.getTemplateFilter();
-					if (templateFilter) {
-						templateFilter.refresh();
-					}
-					this.display();
-				}));
-
-		// Show detected template folders (read-only info)
-		const templateFilter = this.plugin.getTemplateFilter();
-		const detectedFolders = templateFilter?.getDetectedFolders() || [];
-		if (detectedFolders.length > 0 && this.plugin.settings.autoDetectTemplateFolders) {
-			const detectedInfo = advancedContent.createDiv({ cls: 'setting-item-description cr-info-box' });
-			detectedInfo.createEl('strong', { text: '📁 Detected template folders:' });
-			detectedInfo.createEl('br');
-			detectedInfo.appendText(detectedFolders.join(', '));
-		}
-
-		// Additional template folders (user-specified)
-		new Setting(advancedContent)
-			.setName('Additional template folders')
-			.setDesc('Additional folders to exclude from note discovery (one per line)')
-			.addTextArea(textArea => textArea
-				.setPlaceholder('_templates\nmy-templates')
-				.setValue((this.plugin.settings.templateFolders || []).join('\n'))
-				.onChange(async (value) => {
-					const folderList = value
-						.split('\n')
-						.map(f => f.trim())
-						.filter(f => f.length > 0);
-
-					this.plugin.settings.templateFolders = folderList;
-					await this.plugin.saveSettings();
 				}));
 
 	}
@@ -1684,6 +1736,160 @@ export class CanvasRootsSettingTab extends PluginSettingTab {
 					})();
 				});
 			});
+	}
+
+	/**
+	 * Render a collapsible property alias section
+	 */
+	private renderPropertyAliasSection(
+		container: HTMLElement,
+		title: string,
+		properties: readonly PropertyMetadata[],
+		propertyAliasService: PropertyAliasService
+	): void {
+		// Count configured aliases
+		const configuredCount = properties.filter(meta =>
+			propertyAliasService.getAlias(meta.canonical)
+		).length;
+
+		// Create collapsible section
+		const section = container.createEl('details', { cls: 'cr-property-section' });
+		const summary = section.createEl('summary', { cls: 'cr-property-section-summary' });
+		summary.createSpan({ text: title, cls: 'cr-property-section-title' });
+		summary.createSpan({
+			text: configuredCount > 0 ? `${configuredCount} configured` : `${properties.length} properties`,
+			cls: 'cr-property-section-count'
+		});
+
+		const sectionContent = section.createDiv({ cls: 'cr-property-section-content' });
+
+		// Lazy render on first open
+		let rendered = false;
+		section.addEventListener('toggle', () => {
+			if (section.open && !rendered) {
+				rendered = true;
+				properties.forEach(meta => {
+					const currentAlias = propertyAliasService.getAlias(meta.canonical) || '';
+
+					new Setting(sectionContent)
+						.setName(meta.label)
+						.setDesc(meta.description)
+						.addText(text => {
+							text.setPlaceholder(meta.canonical).setValue(currentAlias);
+							text.inputEl.addEventListener('blur', () => {
+								void (async () => {
+									const value = text.inputEl.value.trim();
+									if (value === '') {
+										if (currentAlias) {
+											await propertyAliasService.removeAlias(currentAlias);
+											this.display();
+										}
+									} else if (value !== meta.canonical && value !== currentAlias) {
+										const existingMapping = propertyAliasService.aliases[value];
+										if (existingMapping && existingMapping !== meta.canonical) {
+											new Notice(`"${value}" is already mapped to "${existingMapping}"`);
+											text.inputEl.value = currentAlias;
+										} else {
+											await propertyAliasService.setAlias(value, meta.canonical);
+											this.display();
+										}
+									}
+								})();
+							});
+						})
+						.addExtraButton(button => {
+							button.setIcon('x').setTooltip('Clear alias').onClick(async () => {
+								if (currentAlias) {
+									await propertyAliasService.removeAlias(currentAlias);
+									this.display();
+								}
+							});
+							button.extraSettingsEl.addClass(currentAlias ? 'cr-clear-btn--enabled' : 'cr-clear-btn--disabled');
+						});
+				});
+			}
+		});
+	}
+
+	/**
+	 * Render a collapsible value alias section
+	 */
+	private renderValueAliasSection(
+		container: HTMLElement,
+		title: string,
+		field: ValueAliasField,
+		canonicalValues: readonly string[],
+		valueLabels: Record<string, string>,
+		valueAliasService: ValueAliasService
+	): void {
+		const aliases = valueAliasService.getAliases(field);
+		const aliasCount = Object.keys(aliases).length;
+
+		// Create collapsible section
+		const section = container.createEl('details', { cls: 'cr-property-section' });
+		const summary = section.createEl('summary', { cls: 'cr-property-section-summary' });
+		summary.createSpan({ text: title, cls: 'cr-property-section-title' });
+		summary.createSpan({
+			text: `${aliasCount} ${aliasCount === 1 ? 'alias' : 'aliases'}`,
+			cls: 'cr-property-section-count'
+		});
+
+		const sectionContent = section.createDiv({ cls: 'cr-property-section-content' });
+
+		// Lazy render on first open
+		let rendered = false;
+		section.addEventListener('toggle', () => {
+			if (section.open && !rendered) {
+				rendered = true;
+				canonicalValues.forEach(canonicalValue => {
+					// Find existing alias for this canonical value
+					const userValue = Object.entries(aliases).find(
+						([_, canonical]) => canonical === canonicalValue
+					)?.[0] || '';
+
+					const valueLabel = valueLabels[canonicalValue] || canonicalValue;
+
+					new Setting(sectionContent)
+						.setName(valueLabel)
+						.setDesc(canonicalValue)
+						.addText(text => {
+							text.setPlaceholder('your value').setValue(userValue);
+							text.inputEl.addEventListener('blur', () => {
+								void (async () => {
+									const value = text.inputEl.value.trim();
+									if (value === '') {
+										if (userValue) {
+											await valueAliasService.removeAlias(field, userValue);
+											this.display();
+										}
+									} else if (value.toLowerCase() !== canonicalValue.toLowerCase() && value !== userValue) {
+										const existingMapping = aliases[value.toLowerCase()];
+										if (existingMapping && existingMapping !== canonicalValue) {
+											new Notice(`"${value}" is already mapped to "${existingMapping}"`);
+											text.inputEl.value = userValue;
+										} else {
+											if (userValue) {
+												await valueAliasService.removeAlias(field, userValue);
+											}
+											await valueAliasService.setAlias(field, value, canonicalValue);
+											this.display();
+										}
+									}
+								})();
+							});
+						})
+						.addExtraButton(button => {
+							button.setIcon('x').setTooltip('Clear alias').onClick(async () => {
+								if (userValue) {
+									await valueAliasService.removeAlias(field, userValue);
+									this.display();
+								}
+							});
+							button.extraSettingsEl.addClass(userValue ? 'cr-clear-btn--enabled' : 'cr-clear-btn--disabled');
+						});
+				});
+			}
+		});
 	}
 }
 
