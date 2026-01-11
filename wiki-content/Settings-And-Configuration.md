@@ -1,9 +1,6 @@
 # Settings & Configuration
 
-This page documents all Charted Roots settings and configuration options. Settings can be accessed in two places:
-
-- **Obsidian Settings → Charted Roots** - The traditional plugin settings panel
-- **Control Center → Preferences** - Quick access to common settings
+This page documents all Charted Roots settings and configuration options. Access settings via **Obsidian Settings → Charted Roots**.
 
 ---
 
@@ -34,7 +31,6 @@ The Control Center (`Cmd/Ctrl+Shift+F`) is the main hub for Charted Roots featur
 | **Schemas** | Create and run validation schemas |
 | **Import/Export** | Import GEDCOM, CSV, Gramps; export data |
 | **Data Quality** | Validation issues, duplicate detection, research gaps |
-| **Preferences** | Folder locations, property aliases |
 
 ---
 
@@ -94,7 +90,7 @@ If your vault uses different property names than Charted Roots defaults, you can
 
 ### Configuring Aliases
 
-Go to **Control Center → Preferences → Property Aliases** to add, edit, or remove aliases.
+Go to **Settings → Charted Roots → Property & value aliases** to add, edit, or remove aliases.
 
 ### How Aliases Work
 
@@ -141,7 +137,7 @@ In addition to property names, you can also create **value aliases** to map cust
 
 ### Configuring Value Aliases
 
-Go to **Control Center → Preferences → Aliases → Property values** to add, edit, or remove value aliases.
+Go to **Settings → Charted Roots → Property & value aliases → Value aliases** to add, edit, or remove value aliases.
 
 ### How Value Aliases Work
 
@@ -211,7 +207,7 @@ If your vault uses `nameday` instead of `birth` for event types:
 
 ## Layout Settings
 
-Control the dimensions and spacing of nodes in generated family tree canvases. These settings are also available in **Control Center → Canvas Settings** for quick access.
+Control the dimensions and spacing of nodes in generated family tree canvases.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
@@ -226,7 +222,7 @@ Control the dimensions and spacing of nodes in generated family tree canvases. T
 
 ## Canvas Styling
 
-Customize the appearance of generated family trees. These settings are also available in **Control Center → Canvas Settings** for quick access.
+Customize the appearance of generated family trees.
 
 ### Node Coloring
 
@@ -470,7 +466,7 @@ Custom relationship types can be added for specialized genealogical relationship
 
 ## Integrations
 
-Settings for third-party plugin integrations. The Integrations card in Control Center → Preferences only appears when supported plugins are installed.
+Settings for third-party plugin integrations.
 
 ### Calendarium Integration
 

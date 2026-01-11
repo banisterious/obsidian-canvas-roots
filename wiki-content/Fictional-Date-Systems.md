@@ -258,9 +258,8 @@ Charted Roots integrates with the [Calendarium](https://github.com/javalent/cale
 ### Enabling the Integration
 
 1. Install and enable the [Calendarium](https://github.com/javalent/calendarium) plugin
-2. Open Control Center → **Preferences** tab
-3. Find the **Integrations** card (only visible when Calendarium is installed)
-4. Set **Integration mode** to "Read-only (import calendars)"
+2. Open **Settings → Charted Roots → Advanced → Integrations**
+3. Set **Integration mode** to "Read-only (import calendars)"
 
 ### How It Works
 

@@ -101,7 +101,7 @@ Solutions to common issues with Charted Roots.
 **Cause:** The v0.19.0 migration updated canvas metadata and code blocks, but didn't change folder settings. If you were using the default folder paths, they reset to the new `Charted Roots/...` defaults while your existing files stayed in `Canvas Roots/...`.
 
 **Solution:**
-1. Open Control Center → Preferences → Folder locations
+1. Open **Settings → Charted Roots → Folders**
 2. Update each folder path to point to your existing folders:
    - People folder: `Canvas Roots/People`
    - Places folder: `Canvas Roots/Places`

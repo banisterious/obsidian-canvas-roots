@@ -110,13 +110,9 @@ The staging workflow provides a safe way to process imported data before incorpo
 
 ### Setting Up Staging
 
-**From Plugin Settings:**
-1. Go to **Settings → Charted Roots → Data**
+1. Go to **Settings → Charted Roots → Folders → System folders**
 2. Set a **Staging folder** path (e.g., `People-Staging`)
-
-**From Preferences:**
-1. Go to **Settings → Charted Roots → Preferences**
-2. Enable **Staging isolation** to exclude staging from normal operations
+3. Enable **Staging isolation** (under **Advanced → Folder filtering**) to exclude staging from normal operations
 
 When staging is configured, imported data is kept separate from your main tree until you're ready to promote it.
 
@@ -197,7 +193,7 @@ Default thresholds: minConfidence=60, minNameSimilarity=70, maxYearDifference=5
 
 ### Staging Isolation
 
-When staging isolation is enabled (Settings → Preferences), staged files are automatically excluded from:
+When staging isolation is enabled (Settings → Charted Roots → Advanced → Folder filtering), staged files are automatically excluded from:
 - Tree generation (your trees only show main tree data)
 - Normal duplicate detection
 - Relationship sync operations

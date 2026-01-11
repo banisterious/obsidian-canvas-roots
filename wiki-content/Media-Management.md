@@ -200,7 +200,7 @@ See [Import & Export](Import-Export#gramps-xml--gpkg) for full import documentat
 
 Control which folders Charted Roots scans for media files.
 
-**Location:** Control Center → Preferences → Media
+**Location:** Settings → Charted Roots → Advanced → Media folders
 
 | Setting | Description |
 |---------|-------------|

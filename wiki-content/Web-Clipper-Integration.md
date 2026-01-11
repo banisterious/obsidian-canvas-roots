@@ -64,9 +64,9 @@ Install the browser extension for your browser:
 ### 3. Verify Staging Settings
 
 In Obsidian:
-1. Open **Control Center** → **Preferences**
+1. Open **Settings → Charted Roots → Folders → System folders**
 2. Verify **Staging folder** matches Web Clipper's output folder
-3. Enable **Staging isolation** (recommended)
+3. Enable **Staging isolation** (Settings → Charted Roots → Advanced → Folder filtering)
 
 ---
 

@@ -711,8 +711,8 @@ Places/
 
 **Enabling Category Subfolders:**
 
-1. Open Settings → Charted Roots → Preferences tab
-2. Scroll to the **Place organization** section
+1. Open **Settings → Charted Roots → Places**
+2. Scroll to the **Category organization** section
 3. Enable **Use category-based subfolders**
 
 **How It Works:**

@@ -938,7 +938,7 @@ If your vault uses different property names than Charted Roots defaults, you can
 
 ### Configuring Aliases
 
-Go to **Control Center → Preferences → Property Aliases** to add, edit, or remove aliases. You can also configure them in Obsidian's plugin settings.
+Go to **Settings → Charted Roots → Property & value aliases** to add, edit, or remove aliases.
 
 ### How Aliases Work
 
@@ -983,9 +983,7 @@ In addition to property name aliases, you can create **value aliases** to map cu
 
 ### Configuring Value Aliases
 
-Go to **Control Center → Preferences → Aliases** to add, edit, or remove value aliases. The Aliases card has two sections:
-- **Property names**: Maps your property names to Charted Roots fields (e.g., `birthdate` → `born`)
-- **Property values**: Maps your values to canonical values (e.g., `nameday` → `birth`)
+Go to **Settings → Charted Roots → Property & value aliases → Value aliases** to add, edit, or remove value aliases.
 
 ### Supported Fields
 

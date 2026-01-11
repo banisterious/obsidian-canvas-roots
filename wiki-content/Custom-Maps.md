@@ -90,7 +90,7 @@ For a simpler creation flow without the wizard:
 
 4. Click **Create**
 
-The map note is created in your configured map notes folder (Control Center → Preferences → Folder locations → Map notes folder).
+The map note is created in your configured map notes folder (Settings → Charted Roots → Folders → Entity folders → Map notes folder).
 
 ### From JSON Import
 
