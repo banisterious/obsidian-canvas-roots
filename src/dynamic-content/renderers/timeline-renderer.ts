@@ -14,7 +14,7 @@ import type { DynamicContentService } from '../services/dynamic-content-service'
  * These are "descriptive" event types where the description (e.g., "Farmer", "Paris")
  * is more informative than the generated title (e.g., "Occupation of John Smith")
  */
-const DESCRIPTION_DISPLAY_TYPES = ['occupation', 'residence', 'military', 'education'];
+const DESCRIPTION_DISPLAY_TYPES = ['occupation', 'residence', 'military', 'education', 'marriage', 'engagement'];
 
 /**
  * Timeline entry combining events from EventService with person birth/death
